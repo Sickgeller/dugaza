@@ -20,7 +20,7 @@ spring:
       max-lifetime : 1800000   
       
   messages: #메시지
-    basename: messages.member,messages.board
+    basename: messages.member,messages.JH,messages.JH2,messages.CH,messages.DW,messages.YB
     encoding: UTF-8
     
   devtools: #정적 자원(html, css, js) 수정 시 새로고침 없이 바로 적용
