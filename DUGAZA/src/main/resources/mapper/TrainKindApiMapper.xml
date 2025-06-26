@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.api.mapper.TrainKindApiMapper">
+
+    <insert id="insert">
+        INSERT INTO TRAIN_VEHICLE_TYPE
+            (VEHICLE_KIND_ID,
+             VEHICLE_KIND_NM,
+             IS_ACTIVE,
+             CREATED_AT,
+             UPDATED_AT) VALUES
+                             (
+                              #{vehicleKindId},
+                              #{vehicleKindNm},
+                              #{isActive},
+                              #{createdAt},
+                              #{updatedAt}
+                             )
+    </insert>
+
+    <update id="update">
+        UPDATE TRAIN_VEHICLE_TYPE
+        SET(
+            VEHICLE_KIND_NM = #{vehicleKindNm},
+            IS_ACTIVE = #{isActive},
+            UPDATED_AT = #{updatedAt}
+            )
+        WHERE VEHICLE_KIND_ID = #{vehicleKindId}
+    </update>
+
+</mapper>

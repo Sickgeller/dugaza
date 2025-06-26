@@ -1,7 +1,7 @@
 package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.project.dugaza.api.dto.TrainKindApiDto;
+import kr.spring.api.dto.TrainKindApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

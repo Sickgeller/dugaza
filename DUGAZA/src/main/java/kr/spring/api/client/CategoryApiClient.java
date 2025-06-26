@@ -1,7 +1,7 @@
 package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.project.dugaza.api.dto.CategoryCodeApiDto;
+import kr.spring.api.dto.CategoryCodeApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -94,6 +94,7 @@ public class CategoryApiClient {
             CategoryCodeApiDto dto = new CategoryCodeApiDto();
             dto.setCategoryCode(code);
             dto.setCategoryName(name);
+            dto.setIsActive(1L); // 기본값 설정
             
             int codeLength = code.length();
             int codeLevel;

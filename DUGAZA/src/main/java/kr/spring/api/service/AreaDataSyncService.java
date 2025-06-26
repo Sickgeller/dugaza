@@ -1,7 +1,6 @@
 package kr.spring.api.service;
 
-import com.project.dugaza.api.dto.AreaCodeApiDto;
-
+import kr.spring.api.dto.AreaCodeApiDto;
 import java.util.List;
 
 public interface AreaDataSyncService {

@@ -1,8 +1,8 @@
 package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.project.dugaza.api.dto.AreaCodeApiDto;
-import com.project.dugaza.api.dto.SigunguCodeApiDto;
+import kr.spring.api.dto.AreaCodeApiDto;
+import kr.spring.api.dto.SigunguCodeApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -65,6 +65,7 @@ public class AreaCodeApiClient{
             SigunguCodeApiDto dto = new SigunguCodeApiDto();
             dto.setSigunguCode(Long.parseLong(item.path("code").asText()));
             dto.setSigunguName(item.path("name").asText());
+            dto.setIsActive(1L);
             return dto;
         } catch (NumberFormatException e) {
             log.error("===============> JSON 파싱 오류 : {} , {}", e.getMessage(), item.toString());

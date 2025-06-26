@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.api.mapper.SigunguCodeMapper">
+
+    <resultMap id="SigunguCodeResultMap" type="kr.spring.api.dto.SigunguCodeApiDto">
+        <id property="areaCode" column="AREA_CODE"/>
+        <result property="sigunguCode" column="SIGUNGU_CODE"/>
+        <result property="sigunguName" column="SIGUNGU_NAME"/>
+        <result property="isActive" column="IS_ACTIVE"/>
+    </resultMap>
+
+    <select id="findBySigunguCode" resultMap="SigunguCodeResultMap">
+        SELECT * FROM SIGUNGU WHERE SIGUNGU_CODE = #{sigunguCode}
+    </select>
+    
+    <select id="findBySigunguCodeAndAreaCode" resultMap="SigunguCodeResultMap">
+        SELECT * FROM SIGUNGU
+        WHERE SIGUNGU_CODE = #{sigunguCode}
+        AND AREA_CODE = #{areaCode}
+    </select>
+    
+    <select id="findByAreaCode" resultMap="SigunguCodeResultMap">
+        SELECT * FROM SIGUNGU WHERE AREA_CODE = #{areaCode}
+    </select>
+
+    <insert id="insert" parameterType="kr.spring.api.dto.SigunguCodeApiDto">
+        INSERT INTO SIGUNGU(
+            AREA_CODE,
+            SIGUNGU_CODE,
+            SIGUNGU_NAME,
+            IS_ACTIVE
+        ) VALUES(
+            #{areaCode,jdbcType=NUMERIC},
+            #{sigunguCode,jdbcType=NUMERIC},
+            #{sigunguName,jdbcType=VARCHAR},
+            #{isActive,jdbcType=NUMERIC}
+        )
+    </insert>
+
+    <update id="update" parameterType="kr.spring.api.dto.SigunguCodeApiDto">
+        UPDATE SIGUNGU
+        SET SIGUNGU_NAME = #{sigunguName}
+        WHERE SIGUNGU_CODE = #{sigunguCode}
+        AND AREA_CODE = #{areaCode}
+    </update>
+    
+    <delete id="deleteAll">
+        DELETE FROM SIGUNGU
+    </delete>
+
+</mapper> 

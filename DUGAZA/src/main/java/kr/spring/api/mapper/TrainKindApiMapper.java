@@ -1,6 +1,6 @@
 package kr.spring.api.mapper;
 
-import com.project.dugaza.api.dto.TrainKindApiDto;
+import kr.spring.api.dto.TrainKindApiDto;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

@@ -1,6 +1,6 @@
 package kr.spring.api.controller;
 
-import com.project.dugaza.api.dto.ApiLogDto;
+import kr.spring.api.dto.ApiLogDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;

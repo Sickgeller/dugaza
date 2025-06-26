@@ -1,17 +1,22 @@
 package kr.spring.api.controller;
 
-import com.project.dugaza.api.dto.AreaCodeApiDto;
-import com.project.dugaza.api.service.AreaDataSyncService;
-import com.project.dugaza.api.service.CategoryDataSyncService;
-import com.project.dugaza.api.service.ContentTypeService;
+import kr.spring.api.dto.AreaCodeApiDto;
+import kr.spring.api.service.AreaDataSyncService;
+import kr.spring.api.service.CategoryDataSyncService;
+import kr.spring.api.service.ContentTypeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @Controller
 @RequestMapping("/admin/common")
@@ -127,12 +132,14 @@ public class CommonDataSyncController {
     public ResponseEntity<Map<String, Object>> updateContentTypeForLevel3Categories() {
         log.info("소분류 카테고리의 콘텐츠 타입 ID 업데이트 요청 받음");
         Map<String, Integer> result = contentTypeService.updateContentTypeForLevel3Categories();
-        return ResponseEntity.ok(Map.of(
-                "message", "소분류 카테고리의 콘텐츠 타입 ID 업데이트가 완료되었습니다.",
-                "successCount", result.get("successCount"),
-                "failCount", result.get("failCount"),
-                "totalCount", result.get("totalCount")
-        ));
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "소분류 카테고리의 콘텐츠 타입 ID 업데이트가 완료되었습니다.");
+        response.put("successCount", result.getOrDefault("successCount", 0));
+        response.put("failCount", result.getOrDefault("failCount", 0));
+        response.put("totalCount", result.getOrDefault("totalCount", 0));
+        
+        return ResponseEntity.ok(response);
     }
     
     /**

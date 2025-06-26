@@ -1,5 +1,6 @@
 package kr.spring.api.service;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,4 +21,22 @@ public interface ContentTypeService {
      * @return 업데이트 성공 여부
      */
     boolean updateContentTypeForCategory(String categoryCode, Long contentTypeId);
+
+    /**
+     * 카테고리 코드와 콘텐츠 타입 간의 매핑을 업데이트합니다.
+     */
+//    void updateCategoryContentTypeMapping();
+    
+    /**
+     * 모든 콘텐츠 타입 코드를 조회합니다.
+     * @return 콘텐츠 타입 코드 목록
+     */
+//    List<Long> getAllContentTypeCodes();
+    
+    /**
+     * 특정 카테고리 코드에 해당하는 콘텐츠 타입 코드를 조회합니다.
+     * @param categoryCode 카테고리 코드
+     * @return 콘텐츠 타입 코드 (없으면 null)
+     */
+//    Long getContentTypeCodeByCategoryCode(String categoryCode);
 } 

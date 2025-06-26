@@ -1,15 +1,16 @@
 package kr.spring.api.service.impl;
 
-import com.project.dugaza.api.client.TourApiClient;
-import com.project.dugaza.api.dto.TourApiDto;
-import com.project.dugaza.api.mapper.TourApiMapper;
-import com.project.dugaza.api.service.TourSyncService;
-import com.project.dugaza.common.ContentTypeid;
+import kr.spring.api.client.TourApiClient;
+import kr.spring.api.dto.TourApiDto;
+import kr.spring.api.mapper.TourApiMapper;
+import kr.spring.api.service.TourSyncService;
+import kr.spring.common.ContentTypeid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;

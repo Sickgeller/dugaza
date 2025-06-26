@@ -1,9 +1,9 @@
 package kr.spring.api.service.impl;
 
-import com.project.dugaza.api.client.CategoryApiClient;
-import com.project.dugaza.api.dto.CategoryCodeApiDto;
-import com.project.dugaza.api.mapper.CategoryCodeMapper;
-import com.project.dugaza.api.service.CategoryDataSyncService;
+import kr.spring.api.client.CategoryApiClient;
+import kr.spring.api.dto.CategoryCodeApiDto;
+import kr.spring.api.mapper.CategoryCodeMapper;
+import kr.spring.api.service.CategoryDataSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -54,8 +54,23 @@ public class CategoryDataSyncServiceImpl implements CategoryDataSyncService {
         if (cat1List != null && !cat1List.isEmpty()) {
             cat1List.forEach(dto -> {
                 try {
-                    categoryCodeMapper.insertCategoryCode(dto);
-                    count.incrementAndGet();
+                    // 이미 존재하는지 확인
+                    CategoryCodeApiDto existing = categoryCodeMapper.findByCategoryCode(dto.getCategoryCode());
+                    
+                    if (existing == null) {
+                        // 새로운 카테고리 코드 추가
+                        dto.setIsActive(1L); // 활성화 상태로 설정
+                        categoryCodeMapper.insertCategoryCode(dto);
+                        log.info("대분류 카테고리 코드 추가: {} - {}", dto.getCategoryCode(), dto.getCategoryName());
+                        count.incrementAndGet();
+                    } else {
+                        // 기존 카테고리 코드 업데이트
+                        existing.setCategoryName(dto.getCategoryName());
+                        // isActive 상태 유지
+                        categoryCodeMapper.updateCategoryCode(existing);
+                        log.info("대분류 카테고리 코드 업데이트: {} - {}", existing.getCategoryCode(), existing.getCategoryName());
+                        count.incrementAndGet();
+                    }
                 } catch (Exception e) {
                     log.error("대분류 카테고리 코드 저장 중 오류 발생: {}", e.getMessage(), e);
                 }
@@ -84,8 +99,25 @@ public class CategoryDataSyncServiceImpl implements CategoryDataSyncService {
                     if (cat2List != null && !cat2List.isEmpty()) {
                         cat2List.forEach(dto -> {
                             try {
-                                categoryCodeMapper.insertCategoryCode(dto);
-                                count.incrementAndGet();
+                                // 이미 존재하는지 확인
+                                CategoryCodeApiDto existing = categoryCodeMapper.findByCategoryCode(dto.getCategoryCode());
+                                
+                                if (existing == null) {
+                                    // 새로운 카테고리 코드 추가
+                                    dto.setIsActive(1L); // 활성화 상태로 설정
+                                    categoryCodeMapper.insertCategoryCode(dto);
+                                    log.info("중분류 카테고리 코드 추가: {} - {} (부모: {})", 
+                                            dto.getCategoryCode(), dto.getCategoryName(), dto.getParentCode());
+                                    count.incrementAndGet();
+                                } else {
+                                    // 기존 카테고리 코드 업데이트
+                                    existing.setCategoryName(dto.getCategoryName());
+                                    // isActive 상태 유지
+                                    categoryCodeMapper.updateCategoryCode(existing);
+                                    log.info("중분류 카테고리 코드 업데이트: {} - {} (부모: {})", 
+                                            existing.getCategoryCode(), existing.getCategoryName(), existing.getParentCode());
+                                    count.incrementAndGet();
+                                }
                             } catch (Exception e) {
                                 log.error("중분류 카테고리 코드 저장 중 오류 발생: {}", e.getMessage(), e);
                             }
@@ -123,8 +155,25 @@ public class CategoryDataSyncServiceImpl implements CategoryDataSyncService {
                     if (cat3List != null && !cat3List.isEmpty()) {
                         cat3List.forEach(dto -> {
                             try {
-                                categoryCodeMapper.insertCategoryCode(dto);
-                                count.incrementAndGet();
+                                // 이미 존재하는지 확인
+                                CategoryCodeApiDto existing = categoryCodeMapper.findByCategoryCode(dto.getCategoryCode());
+                                
+                                if (existing == null) {
+                                    // 새로운 카테고리 코드 추가
+                                    dto.setIsActive(1L); // 활성화 상태로 설정
+                                    categoryCodeMapper.insertCategoryCode(dto);
+                                    log.info("소분류 카테고리 코드 추가: {} - {} (부모: {})", 
+                                            dto.getCategoryCode(), dto.getCategoryName(), dto.getParentCode());
+                                    count.incrementAndGet();
+                                } else {
+                                    // 기존 카테고리 코드 업데이트
+                                    existing.setCategoryName(dto.getCategoryName());
+                                    // isActive 상태 유지
+                                    categoryCodeMapper.updateCategoryCode(existing);
+                                    log.info("소분류 카테고리 코드 업데이트: {} - {} (부모: {})", 
+                                            existing.getCategoryCode(), existing.getCategoryName(), existing.getParentCode());
+                                    count.incrementAndGet();
+                                }
                             } catch (Exception e) {
                                 log.error("소분류 카테고리 코드 저장 중 오류 발생: {}", e.getMessage(), e);
                             }

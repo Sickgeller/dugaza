@@ -1,6 +1,6 @@
 package kr.spring.api.controller;
 
-import com.project.dugaza.api.service.EventDataSyncService;
+import kr.spring.api.service.EventDataSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ public class EventDataSyncController {
         Long currentYear = (long) LocalDate.now().getYear();
         log.info("이벤트 정보 동기화 요청받음 - 기본 시작 연도: {}", currentYear);
         
-        Map<String, Object> result = eventDataSyncService.syncEventCode(currentYear);
+        Map<String, Object> result = eventDataSyncService.syncEventData(currentYear);
         return ResponseEntity.ok(result);
     }
 
@@ -37,7 +37,7 @@ public class EventDataSyncController {
     public ResponseEntity<Map<String, Object>> syncEventCodeWithYear(@PathVariable Long startYear) {
         log.info("이벤트 정보 동기화 요청받음 - 시작 연도: {}", startYear);
         
-        Map<String, Object> result = eventDataSyncService.syncEventCode(startYear);
+        Map<String, Object> result = eventDataSyncService.syncEventData(startYear);
         return ResponseEntity.ok(result);
     }
 }

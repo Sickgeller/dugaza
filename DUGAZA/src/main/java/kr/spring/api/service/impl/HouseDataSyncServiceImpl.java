@@ -1,9 +1,9 @@
 package kr.spring.api.service.impl;
 
-import com.project.dugaza.api.client.HouseApiClient;
-import com.project.dugaza.api.dto.HouseApiDto;
-import com.project.dugaza.api.mapper.HouseApiMapper;
-import com.project.dugaza.api.service.HouseDataSyncService;
+import kr.spring.api.client.HouseApiClient;
+import kr.spring.api.dto.HouseApiDto;
+import kr.spring.api.mapper.HouseApiMapper;
+import kr.spring.api.service.HouseDataSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

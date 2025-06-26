@@ -1,16 +1,16 @@
 package kr.spring.api.controller;
 
-import com.project.dugaza.api.service.TrainSyncService;
+import kr.spring.api.service.TrainSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping ( "/admin/train")
 @Slf4j
 @RequiredArgsConstructor
@@ -26,11 +26,11 @@ public class TrainSyncController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/sync/area-code")
-    public ResponseEntity<Map<String,Object>> syncAreaCode(){
-        log.info("area code of train sync request");
-        Map<String,Object> result = trainSyncService.syncTrainAreaCode();
-        log.info("area code of train sync end");
-    }
+//    @GetMapping("/sync/area-code")
+//    public ResponseEntity<Map<String,Object>> syncAreaCode(){
+//        log.info("area code of train sync request");
+//        Map<String,Object> result = trainSyncService.syncTrainAreaCode();
+//        log.info("area code of train sync end");
+//    }
 
 }

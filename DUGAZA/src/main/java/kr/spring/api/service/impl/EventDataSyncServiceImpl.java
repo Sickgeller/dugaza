@@ -1,9 +1,9 @@
 package kr.spring.api.service.impl;
 
-import com.project.dugaza.api.client.EventApiClient;
-import com.project.dugaza.api.dto.EventContentApiDto;
-import com.project.dugaza.api.mapper.EventContentMapper;
-import com.project.dugaza.api.service.EventDataSyncService;
+import kr.spring.api.client.EventApiClient;
+import kr.spring.api.dto.EventContentApiDto;
+import kr.spring.api.mapper.EventContentMapper;
+import kr.spring.api.service.EventDataSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class EventDataSyncServiceImpl implements EventDataSyncService {
 
     @Override
     @Transactional
-    public Map<String, Object> syncEventCode(Long startYear) {
+    public Map<String, Object> syncEventData(Long startYear) {
         log.info("이벤트 데이터 동기화 시작 - 시작 연도: {}", startYear);
         Map<String, Object> result = new HashMap<>();
         

@@ -1,14 +1,19 @@
 package kr.spring.api.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class SigunguCodeApiDto {
+    private Long areaCode;
     private Long sigunguCode;
-    private Long parentCode;
     private String sigunguName;
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
+    private Long isActive;
 }

@@ -1,6 +1,6 @@
 package kr.spring.api.mapper;
 
-import com.project.dugaza.api.dto.CategoryCodeApiDto;
+import kr.spring.api.dto.CategoryCodeApiDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

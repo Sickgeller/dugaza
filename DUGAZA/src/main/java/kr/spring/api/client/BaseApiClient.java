@@ -2,12 +2,14 @@ package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.dugaza.api.config.ApiConfig;
-import com.project.dugaza.api.dto.ApiLogDto;
-import com.project.dugaza.api.util.ApiLogUtil;
+import kr.spring.api.config.ApiConfig;
+import kr.spring.api.dto.ApiLogDto;
+import kr.spring.api.dto.HouseApiDto;
+import kr.spring.api.util.ApiLogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
@@ -123,7 +126,7 @@ public class BaseApiClient{
 
         log.info("====================> Call Api with total count Start");
 
-        List<T> pageResults =  callApiWithTotalCount(uri , dtoCreator , totalCount);
+        List<T> pageResults = callApiWithTotalCount(uri, dtoCreator, totalCount);
         allResults.addAll(pageResults);
         totalPages = calculateTotalPages(totalCount.get());
 
@@ -131,19 +134,33 @@ public class BaseApiClient{
 
         if(totalPages == 0){
             log.info("====================> totalPages is zero");
+            return allResults;
         }
-        for(pageNo = 2 ; pageNo <= totalPages ; pageNo++){
+        
+        for(pageNo = 2; pageNo <= totalPages; pageNo++){
             log.debug("====================> pageNo : {}", pageNo);
-            uri = UriComponentsBuilder.fromUri(uri)
+            
+            // API 호출 사이에 대기시간 추가 (100ms)
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                log.warn("대기 중 인터럽트 발생", e);
+                Thread.currentThread().interrupt();
+            }
+            
+            URI pageUri = UriComponentsBuilder.fromUri(uri)
                     .queryParam("pageNo", pageNo)
                     .build(true)
                     .toUri();
-            pageResults = callApi(uri, dtoCreator);
+                    
+            pageResults = callApi(pageUri, dtoCreator);
+            allResults.addAll(pageResults);
 
             log.debug("====================> pageNo : {} succeed, pageResults : {}", pageNo, pageResults.size());
         }
-        log.info("====================> Call Api with total count End");
-        return List.of();
+        
+        log.info("====================> Call Api with total count End - 총 결과 수: {}", allResults.size());
+        return allResults;
     }
 
     private int calculateTotalPages(int totalCount) {

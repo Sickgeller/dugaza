@@ -30,4 +30,5 @@ public interface CategoryDataSyncService {
      */
     int syncCategoryCode3();
 
+//    void syncCategoryCodes();
 }

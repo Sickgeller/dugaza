@@ -1,6 +1,6 @@
 package kr.spring.api.mapper;
 
-import com.project.dugaza.api.dto.EventContentApiDto;
+import kr.spring.api.dto.EventContentApiDto;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

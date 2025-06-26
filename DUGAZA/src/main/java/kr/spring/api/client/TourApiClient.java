@@ -1,7 +1,8 @@
 package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.project.dugaza.api.dto.TourApiDto;
+import kr.spring.api.dto.CategoryCodeApiDto;
+import kr.spring.api.dto.TourApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,9 +21,9 @@ public class TourApiClient {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     public List<TourApiDto> getTouristData(int contentTypeId) {
-        URI uri = baseApiClient.makeTourUri("/searchStay2","contentTypeId", String.valueOf(contentTypeId));
+        URI uri = baseApiClient.makeTourUri("/areaBasedList2","contentTypeId", String.valueOf(contentTypeId));
         log.info("----------> Tourist Data Sync Client URI : {} ", uri);
-        List<TourApiDto> allResults =  baseApiClient.callApi(uri, this::createTourApiDto);
+        List<TourApiDto> allResults =  baseApiClient.callApiManyTimes(uri, this::createTourApiDto);
         log.info("----------> Tourist Data Sync Done totalSize : {} ", allResults.size());
         return allResults;
     }

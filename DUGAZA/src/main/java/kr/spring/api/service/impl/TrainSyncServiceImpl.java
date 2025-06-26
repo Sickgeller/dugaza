@@ -1,13 +1,15 @@
 package kr.spring.api.service.impl;
 
-import com.project.dugaza.api.client.TrainApiClient;
-import com.project.dugaza.api.dto.TrainKindApiDto;
-import com.project.dugaza.api.mapper.TrainKindApiMapper;
-import com.project.dugaza.api.service.TrainSyncService;
+import kr.spring.api.client.TrainApiClient;
+import kr.spring.api.dto.TrainKindApiDto;
+import kr.spring.api.mapper.TrainKindApiMapper;
+import kr.spring.api.service.TrainSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,5 +51,10 @@ public class TrainSyncServiceImpl implements TrainSyncService {
                 "failedCount", failedCount.get(),
                 "updateCount", updateCount.get());
 
+    }
+
+    @Override
+    public Map<String, Object> syncTrainAreaCode() {
+        return Map.of();
     }
 }

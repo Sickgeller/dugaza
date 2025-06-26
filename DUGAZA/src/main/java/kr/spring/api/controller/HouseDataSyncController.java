@@ -1,6 +1,6 @@
 package kr.spring.api.controller;
 
-import com.project.dugaza.api.service.HouseDataSyncService;
+import kr.spring.api.service.HouseDataSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

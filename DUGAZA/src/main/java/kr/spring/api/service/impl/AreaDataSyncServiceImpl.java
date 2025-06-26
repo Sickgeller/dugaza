@@ -1,11 +1,11 @@
 package kr.spring.api.service.impl;
 
-import com.project.dugaza.api.client.AreaCodeApiClient;
-import com.project.dugaza.api.dto.AreaCodeApiDto;
-import com.project.dugaza.api.dto.SigunguCodeApiDto;
-import com.project.dugaza.api.mapper.AreaCodeMapper;
-import com.project.dugaza.api.mapper.SigunguCodeMapper;
-import com.project.dugaza.api.service.AreaDataSyncService;
+import kr.spring.api.client.AreaCodeApiClient;
+import kr.spring.api.dto.AreaCodeApiDto;
+import kr.spring.api.dto.SigunguCodeApiDto;
+import kr.spring.api.mapper.AreaCodeMapper;
+import kr.spring.api.mapper.SigunguCodeMapper;
+import kr.spring.api.service.AreaDataSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -124,11 +124,13 @@ public class AreaDataSyncServiceImpl implements AreaDataSyncService {
                         }
                         
                         // 부모 코드 설정 (시 코드)
-                        sigunguCode.setParentCode(areaCode);
+                        sigunguCode.setAreaCode(areaCode);
+                        // isActive 기본값 설정
+                        sigunguCode.setIsActive(1L);
                         
-                        // 이미 존재하는지 확인 (복합키: sigunguCode + parentCode)
-                        SigunguCodeApiDto existing = sigunguCodeMapper.findBySigunguCodeAndParentCode(
-                            sigunguCodeValue.toString(), 
+                        // 이미 존재하는지 확인 (복합키: sigunguCode + areaCode)
+                        SigunguCodeApiDto existing = sigunguCodeMapper.findBySigunguCodeAndAreaCode(
+                            sigunguCodeValue.toString(),
                             areaCode.toString()
                         );
                         

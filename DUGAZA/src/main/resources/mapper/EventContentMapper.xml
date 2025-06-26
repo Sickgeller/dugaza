@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.api.mapper.EventContentMapper">
+
+    <!-- 이벤트 테이블 생성 (없는 경우) -->
+    <update id="createEventContentTableIfNotExists">
+        DECLARE
+            v_cnt NUMBER;
+        BEGIN
+            SELECT COUNT(*) INTO v_cnt FROM user_tables WHERE table_name = 'EVENT_CONTENT';
+            IF v_cnt = 0 THEN
+                EXECUTE IMMEDIATE '
+                CREATE TABLE EVENT_CONTENT (
+                    id NUMBER PRIMARY KEY,
+                    contentid VARCHAR2(20) UNIQUE,
+                    contenttypeid VARCHAR2(10),
+                    title VARCHAR2(200),
+                    addr1 VARCHAR2(200),
+                    addr2 VARCHAR2(200),
+                    zipcode VARCHAR2(10),
+                    tel VARCHAR2(500),
+                    cat1 VARCHAR2(10),
+                    cat2 VARCHAR2(10),
+                    cat3 VARCHAR2(10),
+                    areacode VARCHAR2(10),
+                    sigungucode VARCHAR2(10),
+                    mapx VARCHAR2(30),
+                    mapy VARCHAR2(30),
+                    firstimage VARCHAR2(500),
+                    firstimage2 VARCHAR2(500),
+                    eventstartdate VARCHAR2(20),
+                    eventenddate VARCHAR2(20),
+                    createdtime VARCHAR2(20),
+                    modifiedtime VARCHAR2(20),
+                    cpyrhtDivCd VARCHAR2(10),
+                    mlevel VARCHAR2(10),
+                    created_at TIMESTAMP DEFAULT SYSTIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT SYSTIMESTAMP
+                )';
+                
+                EXECUTE IMMEDIATE 'CREATE SEQUENCE EVENT_CONTENT_SEQ START WITH 1 INCREMENT BY 1';
+            ELSE
+                -- 기존 테이블이 있는 경우 tel 컬럼의 크기를 500으로 변경
+                BEGIN
+                    EXECUTE IMMEDIATE 'ALTER TABLE EVENT_CONTENT MODIFY (tel VARCHAR2(500))';
+                    DBMS_OUTPUT.PUT_LINE('tel 컬럼 크기를 500으로 변경했습니다.');
+                EXCEPTION
+                    WHEN OTHERS THEN
+                        DBMS_OUTPUT.PUT_LINE('tel 컬럼 크기 변경 중 오류 발생: ' || SQLERRM);
+                END;
+            END IF;
+        END;
+    </update>
+    
+    <!-- 이벤트 데이터 삽입 또는 업데이트 -->
+    <insert id="insertOrUpdateEventContent" parameterType="kr.spring.api.dto.EventContentApiDto">
+        MERGE INTO EVENT_CONTENT ec
+        USING DUAL ON (ec.contentid = #{contentid})
+        WHEN MATCHED THEN
+            UPDATE SET
+                contenttypeid = #{contenttypeid},
+                title = #{title},
+                addr1 = #{addr1},
+                addr2 = #{addr2},
+                zipcode = #{zipcode},
+                tel = #{tel},
+                cat1 = #{cat1},
+                cat2 = #{cat2},
+                cat3 = #{cat3},
+                areacode = #{areacode},
+                sigungucode = #{sigungucode},
+                mapx = #{mapx},
+                mapy = #{mapy},
+                firstimage = #{firstimage},
+                firstimage2 = #{firstimage2},
+                eventstartdate = #{eventstartdate},
+                eventenddate = #{eventenddate},
+                createdtime = #{createdtime},
+                modifiedtime = #{modifiedtime},
+                cpyrhtDivCd = #{cpyrhtDivCd},
+                mlevel = #{mlevel},
+                updated_at = SYSTIMESTAMP
+        WHEN NOT MATCHED THEN
+            INSERT (
+                id, contentid, contenttypeid, title, addr1, addr2, zipcode, tel,
+                cat1, cat2, cat3, areacode, sigungucode, mapx, mapy,
+                firstimage, firstimage2, eventstartdate, eventenddate,
+                createdtime, modifiedtime, cpyrhtDivCd, mlevel, created_at, updated_at
+            ) VALUES (
+                EVENT_CONTENT_SEQ.NEXTVAL, #{contentid}, #{contenttypeid}, #{title}, #{addr1}, #{addr2}, #{zipcode}, #{tel},
+                #{cat1}, #{cat2}, #{cat3}, #{areacode}, #{sigungucode}, #{mapx}, #{mapy},
+                #{firstimage}, #{firstimage2}, #{eventstartdate}, #{eventenddate},
+                #{createdtime}, #{modifiedtime}, #{cpyrhtDivCd}, #{mlevel}, SYSTIMESTAMP, SYSTIMESTAMP
+            )
+    </insert>
+    
+    <!-- 이벤트 데이터 개수 조회 -->
+    <select id="countEventContent" resultType="int">
+        SELECT COUNT(*) FROM EVENT_CONTENT
+    </select>
+    
+    <!-- 이벤트 데이터 전체 삭제 -->
+    <delete id="deleteAllEventContent">
+        DELETE FROM EVENT_CONTENT
+    </delete>
+</mapper> 

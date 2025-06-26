@@ -1,6 +1,6 @@
 package kr.spring.api.mapper;
 
-import com.project.dugaza.api.dto.SigunguCodeApiDto;
+import kr.spring.api.dto.SigunguCodeApiDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -11,12 +11,12 @@ public interface SigunguCodeMapper {
 
     SigunguCodeApiDto findBySigunguCode(@Param("sigunguCode") String sigunguCode);
     
-    SigunguCodeApiDto findBySigunguCodeAndParentCode(
+    SigunguCodeApiDto findBySigunguCodeAndAreaCode(
         @Param("sigunguCode") String sigunguCode, 
-        @Param("parentCode") String parentCode
+        @Param("areaCode") String areaCode
     );
     
-    List<SigunguCodeApiDto> findByParentCode(@Param("parentCode") String parentCode);
+    List<SigunguCodeApiDto> findByAreaCode(@Param("areaCode") String areaCode);
 
     void insert(SigunguCodeApiDto sigunguCodeApiDto);
 
