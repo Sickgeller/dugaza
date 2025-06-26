@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_admin}">
+<head>
+<meta charset="UTF-8">
+<title>회원권한 수정</title>
+<link rel="stylesheet" th:href="@{/assets/css/member.css}">
+</head>
+<body>
+<div layout:fragment="content" class="page-main">
+	<h2>회원권한 수정</h2>
+	<form th:object="${memberVO}" 
+	                    th:action="@{admin_update}"
+	      id="admin_modify" method="post">
+		<input type="hidden" th:field="*{mem_num}">
+		<ul>
+			<li>
+				<label>회원권한</label>
+				<div th:if="${memberVO.authority != 'ROLE_ADMIN'}">
+					<input type="radio" th:field="*{authority}"
+					                    value="ROLE_SUSPENDED">정지
+					<input type="radio" th:field="*{authority}"
+					                    value="ROLE_USER">입반                    
+				</div>
+				<div th:if="${memberVO.authority == 'ROLE_ADMIN'}">
+					관리
+				</div>
+			</li>
+		</ul>
+		<div class="align-center">
+			<button type="submit" 
+			th:if="${memberVO.authority != 'ROLE_ADMIN'}">전송</button>
+			<input type="button" value="회원목록"
+			  onclick="location.href='admin_list'">
+		</div>
+		<ul>
+			<li>
+				<span class="span-title">아이디</span>
+				<span th:text="${memberVO.id}"></span>
+			</li>
+			<li>
+				<span class="span-title">별명</span>
+				<span th:text="${memberVO.nick_name}"></span>
+			</li>
+			<li>
+				<span class="span-title">이름</span>
+				<span th:text="${memberVO.name}"></span>
+			</li>
+			<li>
+				<span class="span-title">전화번호</span>
+				<span th:text="${memberVO.phone}"></span>
+			</li>
+			<li>
+				<span class="span-title">이메일</span>
+				<span th:text="${memberVO.email}"></span>
+			</li>
+			<li>
+				<span class="span-title">우편번호</span>
+				<span th:text="${memberVO.zipcode}"></span>
+			</li>
+			<li>
+				<span class="span-title">주소</span>
+				<span th:text="${memberVO.address1}"></span>
+				<span th:text="${memberVO.address2}"></span>
+			</li>
+		</ul>	      
+	</form>
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

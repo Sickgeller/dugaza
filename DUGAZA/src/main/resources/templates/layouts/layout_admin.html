@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title layout:title-pattern="$LAYOUT_TITLE > $CONTENT_TITLE">SpringPage 관리자</title>
+<link rel="stylesheet" th:href="@{/assets/css/common.css}" type="text/css">
+</head>
+<body>
+<div id="main">
+	<!-- header 시작 -->
+	<div id="main_header" th:insert="fragments/header::header"></div>
+	<!-- header 끝 -->
+	<div class="side-height">
+		<!-- 네비게이션 시작 -->
+		<div id="page_nav" th:insert="fragments/nav_admin::nav_admin"></div>
+		<!-- 네비게이션 끝 -->
+		<!-- 중앙 컨텐츠 시작 -->
+		<div id="page_body" layout:fragment="content"></div>
+		<!-- 중앙 컨텐츠 끝 -->
+	</div>
+	<!-- footer 시작 -->
+	<div id="main_footer" class="page-clear" th:insert="fragments/footer::footer"></div>
+	<!-- footer 끝 -->
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

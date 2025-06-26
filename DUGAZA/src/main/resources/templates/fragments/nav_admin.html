@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="side-bar" th:fragment="nav_admin">
+	<ul>
+		<li>
+			<input type="button" class="menu-btn"
+			  value="회원관리" 
+			  th:onclick="|location.href='@{/member/admin_list}'|">
+		</li>
+	</ul>
+</div>
