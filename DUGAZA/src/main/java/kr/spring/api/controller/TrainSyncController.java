@@ -41,4 +41,12 @@ public class TrainSyncController {
         log.info("train station code sync end");
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/sync/route")
+    public ResponseEntity<Map<String,Object>> syncRouteCode(){
+        log.info("train route code sync request");
+        Map<String,Object> result = trainSyncService.syncTrainRouteData();
+        log.info("train route code sync end");
+        return ResponseEntity.ok(result);
+    }
 }

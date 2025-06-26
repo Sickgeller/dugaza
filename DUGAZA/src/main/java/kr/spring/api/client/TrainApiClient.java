@@ -3,6 +3,7 @@ package kr.spring.api.client;
 import com.fasterxml.jackson.databind.JsonNode;
 import kr.spring.api.dto.TrainCityApiDto;
 import kr.spring.api.dto.TrainKindApiDto;
+import kr.spring.api.dto.TrainRouteApiDto;
 import kr.spring.api.dto.TrainStationApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
@@ -18,6 +20,8 @@ import java.util.List;
 public class TrainApiClient{
 
     private final BaseApiClient baseApiClient;
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
 
     /**
      * 기차 종류의 id와 이름 받아오는 메서드
@@ -48,6 +52,29 @@ public class TrainApiClient{
         return allResults;
     }
 
+
+    public List<TrainRouteApiDto> getTrainRouteData(String depNodeId, String arrNodeId) {
+        URI uri = baseApiClient.makeTrainUri("/getStrtpntAlocFndTrainInfo", "depPlaceId", depNodeId, "arrPlaceId", arrNodeId);
+        log.info("---------------> Train Route Data Sync Client URI : {} ", uri);
+        List<TrainRouteApiDto> allResults = baseApiClient.callApiManyTimes(uri, this::createTrainRouteDto);
+        log.info("---------------> Train Route Data Sync Done Total : {} ", allResults.size());
+        return allResults;
+    }
+
+
+    private TrainRouteApiDto createTrainRouteDto(JsonNode item, String type) {
+        return TrainRouteApiDto.builder()
+                .adultCharge(item.path("adultcharge").asLong())
+                .arrPlaceName(item.path("arrplacename").asText())
+                .depPlaceName(item.path("depplacename").asText())
+                .arrPlandTime(LocalDateTime.parse(item.path("arrplandtime").asText(), DATE_TIME_FORMATTER))
+                .depPlandtime(LocalDateTime.parse(item.path("depplandtime").asText(), DATE_TIME_FORMATTER))
+                .trainGradeName(item.path("traingradename").asText())
+                .trainNo(item.path("trainno").asLong())
+                .build();
+    }
+
+
     private TrainStationApiDto createTrainStationDto(JsonNode item, String type) {
         return TrainStationApiDto.builder()
                 .nodeId(item.path("nodeid").asText())
@@ -71,4 +98,6 @@ public class TrainApiClient{
                 .cityName(item.path("cityname").asText())
                 .build();
     }
+
+
 }

@@ -24,4 +24,10 @@ public interface TrainSyncService {
      * @return  동기화된 항목 수
      */
     Map<String, Object> syncStationCode();
+
+    /**
+     * 존재하는 도시간의 모든 루트 조회 후 동기화
+     * @return 동기화된 항목 수
+     */
+    Map<String, Object> syncTrainRouteData();
 }

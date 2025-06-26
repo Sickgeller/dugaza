@@ -3,9 +3,11 @@ package kr.spring.api.service.impl;
 import kr.spring.api.client.TrainApiClient;
 import kr.spring.api.dto.TrainCityApiDto;
 import kr.spring.api.dto.TrainKindApiDto;
+import kr.spring.api.dto.TrainRouteApiDto;
 import kr.spring.api.dto.TrainStationApiDto;
 import kr.spring.api.mapper.TrainCityApiMapper;
 import kr.spring.api.mapper.TrainKindApiMapper;
+import kr.spring.api.mapper.TrainRouteApiMapper;
 import kr.spring.api.mapper.TrainStationApiMapper;
 import kr.spring.api.service.TrainSyncService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class TrainSyncServiceImpl implements TrainSyncService {
     private final TrainKindApiMapper trainKindApiMapper;
     private final TrainCityApiMapper trainCityApiMapper;
     private final TrainStationApiMapper trainStationApiMapper;
+    private final TrainRouteApiMapper trainRouteApiMapper;
 
     @Override
     public Map<String, Object> syncTrainKindData() {
@@ -103,8 +106,10 @@ public class TrainSyncServiceImpl implements TrainSyncService {
                     if(trainStationApiMapper.update(trainStationApiDto) != 1) {
                         log.error("-----------> station code mapping failed nodeId : {}, nodeName : {}", trainStationApiDto.getNodeId(), trainStationApiDto.getNodeName());
                         failedCount.incrementAndGet();
+                        continue;
                     }
                     updateCount.incrementAndGet();
+                    continue;
                 }
                 insertCount.incrementAndGet();
             }
@@ -114,5 +119,42 @@ public class TrainSyncServiceImpl implements TrainSyncService {
                 "update", updateCount.get(),
                 "failed", failedCount.get(),
                 "total", insertCount.get() + updateCount.get() + failedCount.get());
+    }
+
+    @Override
+    public Map<String, Object> syncTrainRouteData() {
+        AtomicInteger insertCount = new AtomicInteger(0);
+        AtomicInteger failedCount = new AtomicInteger(0);
+        AtomicInteger updateCount = new AtomicInteger(0);
+        log.info("-----> Station Code Sync Service Start");
+        List<TrainStationApiDto> trainCityList = trainStationApiMapper.getAllStation();
+        for(int i = 0 ; i < trainCityList.size() ; i++) {
+            for(int j = trainCityList.size()-1 ; j >= 0 ; j--) {
+                TrainStationApiDto startStation = trainCityList.get(i);
+                TrainStationApiDto destStation = trainCityList.get(j);
+                List<TrainRouteApiDto> trainRouteData = trainApiClient.getTrainRouteData(startStation.getNodeId(), destStation.getNodeId());
+                for(TrainRouteApiDto trainRouteApiDto : trainRouteData) {
+                    log.info("----------> mapping start startStation : {}, destStation : {}", startStation.getNodeName(), destStation.getNodeName());
+                    if(trainRouteApiMapper.insert(trainRouteApiDto) != 1){
+                        log.warn("-----------> Train Route Code exist startStation : {}, destStation : {}", startStation.getNodeName(), destStation.getNodeName());
+                        if(trainRouteApiMapper.update(trainRouteApiDto) != 1) {
+                            log.error("-----------> train route code mapping failed startStation : {}, destStation : {}", startStation.getNodeName(), destStation.getNodeName());
+                            failedCount.incrementAndGet();
+                            continue;
+                        }
+                        updateCount.incrementAndGet();
+                        continue;
+                    }
+                    insertCount.incrementAndGet();
+                }
+            }
+        }
+        int total = insertCount.get() + updateCount.get() + failedCount.get();
+
+        log.info("-----> Station Code Sync Service End total : {}, insert : {}, update : {}, failed : {}", total, insertCount.get(), updateCount.get(), failedCount.get());
+        return Map.of("insert", insertCount.get(),
+                "update", updateCount.get(),
+                "failed", failedCount.get(),
+                "total", total);
     }
 }

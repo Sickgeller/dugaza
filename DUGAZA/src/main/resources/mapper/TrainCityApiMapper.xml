@@ -24,7 +24,7 @@
             CITY_CODE = #{cityCode}
     </update>
 
-    <select id="getAllCityCode">
+    <select id="getAllCityCode" resultMap="TrainCityCodeResultMap">
         SELECT * FROM TRAIN_CITY;
     </select>
 
