@@ -2,6 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.spring.api.mapper.TrainCityApiMapper">
 
+    <resultMap id="TrainCityCodeResultMap" type="kr.spring.api.dto.TrainCityApiDto">
+        <id property="cityCode" column="CITY_CODE"/>
+        <result property="cityName" column="CITY_NAME"/>
+    </resultMap>
+
     <insert id="insert">
         INSERT INTO TRAIN_CITY
         (CITY_CODE, CITY_NAME)
@@ -18,5 +23,9 @@
         WHERE
             CITY_CODE = #{cityCode}
     </update>
+
+    <select id="getAllCityCode">
+        SELECT * FROM TRAIN_CITY;
+    </select>
 
 </mapper>

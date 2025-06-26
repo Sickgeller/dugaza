@@ -3,6 +3,7 @@ package kr.spring.api.client;
 import com.fasterxml.jackson.databind.JsonNode;
 import kr.spring.api.dto.TrainCityApiDto;
 import kr.spring.api.dto.TrainKindApiDto;
+import kr.spring.api.dto.TrainStationApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,21 @@ public class TrainApiClient{
         List<TrainCityApiDto> allResults = baseApiClient.callApi(uri, this::createTrainCityDto);
         log.info("---------------> Train Area Data Sync Done Total : {} ", allResults.size());
         return allResults;
+    }
+
+    public List<TrainStationApiDto> getTrainStationData(Long cityCode) {
+        URI uri = baseApiClient.makeTrainUri("/getCtyAcctoTrainSttnList");
+        log.info("---------------> Train Station Data Sync Client URI : {} ", uri);
+        List<TrainStationApiDto> allResults = baseApiClient.callApi(uri, this::createTrainStationDto);
+        log.info("---------------> Train Station Data Sync Done Total : {} ", allResults.size());
+        return allResults;
+    }
+
+    private TrainStationApiDto createTrainStationDto(JsonNode item, String type) {
+        return TrainStationApiDto.builder()
+                .nodeId(item.path("nodeid").asText())
+                .nodeName(item.path("nodename").asText())
+                .build();
     }
 
 

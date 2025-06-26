@@ -3,8 +3,10 @@ package kr.spring.api.service.impl;
 import kr.spring.api.client.TrainApiClient;
 import kr.spring.api.dto.TrainCityApiDto;
 import kr.spring.api.dto.TrainKindApiDto;
+import kr.spring.api.dto.TrainStationApiDto;
 import kr.spring.api.mapper.TrainCityApiMapper;
 import kr.spring.api.mapper.TrainKindApiMapper;
+import kr.spring.api.mapper.TrainStationApiMapper;
 import kr.spring.api.service.TrainSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ public class TrainSyncServiceImpl implements TrainSyncService {
     private final TrainApiClient trainApiClient;
     private final TrainKindApiMapper trainKindApiMapper;
     private final TrainCityApiMapper trainCityApiMapper;
+    private final TrainStationApiMapper trainStationApiMapper;
 
     @Override
     public Map<String, Object> syncTrainKindData() {
@@ -79,5 +82,37 @@ public class TrainSyncServiceImpl implements TrainSyncService {
         }
         log.info("-----> Train Area Code Sync Service End");
         return Map.of("insert", insertCount.get(), "update", updateCount.get(), "failed", failedCount.get(), "total", trainCityList.size());
+    }
+
+    @Override
+    public Map<String, Object> syncStationCode() {
+        AtomicInteger insertCount = new AtomicInteger(0);
+        AtomicInteger failedCount = new AtomicInteger(0);
+        AtomicInteger updateCount = new AtomicInteger(0);
+        log.info("-----> Station Code Sync Service Start");
+        List<TrainCityApiDto> trainCityList = trainCityApiMapper.getCityCode();
+        log.info("-----> trainCityList size : {}", trainCityList.size());
+        log.info("-----> get Station Code Start");
+        for (TrainCityApiDto trainCityApiDto : trainCityList) {
+            log.info("----------> get Station Code Start cityCode : {}", trainCityApiDto.getCityCode());
+            List<TrainStationApiDto> trainStationList = trainApiClient.getTrainStationData(trainCityApiDto.getCityCode());
+            log.info("----------> mapping start {} , station size : {}", trainCityApiDto.getCityCode(), trainStationList.size());
+            for(TrainStationApiDto trainStationApiDto : trainStationList) {
+                if(trainStationApiMapper.insert(trainStationApiDto) != 1) {
+                    log.warn("-----------> Train Station Code exist nodeId : {}", trainStationApiDto.getNodeId());
+                    if(trainStationApiMapper.update(trainStationApiDto) != 1) {
+                        log.error("-----------> station code mapping failed nodeId : {}, nodeName : {}", trainStationApiDto.getNodeId(), trainStationApiDto.getNodeName());
+                        failedCount.incrementAndGet();
+                    }
+                    updateCount.incrementAndGet();
+                }
+                insertCount.incrementAndGet();
+            }
+            log.info("----------> mapping end cityCode : {}", trainCityApiDto.getCityCode());
+        }
+        return Map.of("insert", insertCount.get(),
+                "update", updateCount.get(),
+                "failed", failedCount.get(),
+                "total", insertCount.get() + updateCount.get() + failedCount.get());
     }
 }

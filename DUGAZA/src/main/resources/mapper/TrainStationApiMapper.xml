@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.api.mapper.TrainStationApiMapper">
+    <insert id="insert">
+        INSERT INTO TRAIN_STATION
+        (NODE_ID, NODE_NANE) VALUES (
+                                     #{nodeId},#{nodeName}
+                                            )
+    </insert>
+
+    <update id="update">
+        UPDATE TRAIN_STATION SET
+                                 NODE_NAME = #{nodeName}
+        WHERE NODE_ID = #{nodeId}
+    </update>
+</mapper>
