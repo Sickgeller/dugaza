@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.api.mapper.TrainCityApiMapper">
+
+    <insert id="insert">
+        INSERT INTO TRAIN_CITY
+        (CITY_CODE, CITY_NAME)
+        VALUES(
+               #{cityCode},
+               #{cityName}
+              )
+    </insert>
+
+    <update id="update">
+        UPDATE TRAIN_CITY
+        SET
+            CITY_NAME = #{cityName}
+        WHERE
+            CITY_CODE = #{cityCode}
+    </update>
+
+</mapper>

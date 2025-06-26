@@ -26,11 +26,11 @@ public class TrainSyncController {
         return ResponseEntity.ok(result);
     }
 
-//    @GetMapping("/sync/area-code")
-//    public ResponseEntity<Map<String,Object>> syncAreaCode(){
-//        log.info("area code of train sync request");
-//        Map<String,Object> result = trainSyncService.syncTrainAreaCode();
-//        log.info("area code of train sync end");
-//    }
-
+    @GetMapping("/sync/area-code")
+    public ResponseEntity<Map<String,Object>> syncAreaCode(){
+        log.info("area code of train sync request");
+        Map<String,Object> result = trainSyncService.syncTrainAreaCode();
+        log.info("area code of train sync end");
+        return ResponseEntity.ok(result);
+    }
 }

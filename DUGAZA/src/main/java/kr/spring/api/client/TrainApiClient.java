@@ -1,6 +1,7 @@
 package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import kr.spring.api.dto.TrainCityApiDto;
 import kr.spring.api.dto.TrainKindApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,11 +24,21 @@ public class TrainApiClient{
      */
     public List<TrainKindApiDto> getTrainKindData() {
         URI uri = baseApiClient.makeTrainUri("/getVhcleKndList");
-        log.info("----------> Train Kind Data Sync Client URI : {} ", uri);
+        log.info("---------------> Train Kind Data Sync Client URI : {} ", uri);
         List<TrainKindApiDto> allResults = baseApiClient.callApi(uri, this::createTrainKindDto);
-        log.info("----------> Train Kind Data Sync Done Total : {} ", allResults.size());
-        return baseApiClient.callApi(uri, this::createTrainKindDto);
+        log.info("---------------> Train Kind Data Sync Done Total : {} ", allResults.size());
+        return allResults;
     }
+
+
+    public List<TrainCityApiDto> getTrainAreaData() {
+        URI uri = baseApiClient.makeTrainUri("/getCtyCodeList");
+        log.info("---------------> Train Area Data Sync Client URI : {} ", uri);
+        List<TrainCityApiDto> allResults = baseApiClient.callApi(uri, this::createTrainCityDto);
+        log.info("---------------> Train Area Data Sync Done Total : {} ", allResults.size());
+        return allResults;
+    }
+
 
     private TrainKindApiDto createTrainKindDto(JsonNode item, String type) {
         return TrainKindApiDto.builder()
@@ -36,6 +47,12 @@ public class TrainApiClient{
                 .isActive(1L)  // 기본값 설정
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .build();
+    }
+    private TrainCityApiDto createTrainCityDto(JsonNode item, String type) {
+        return TrainCityApiDto.builder()
+                .cityCode(item.path("citycode").asLong())
+                .cityName(item.path("cityname").asText())
                 .build();
     }
 }
