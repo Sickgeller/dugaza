@@ -21,6 +21,7 @@ public class TrainApiClient{
 
     private final BaseApiClient baseApiClient;
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    private static final DateTimeFormatter PARSING_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 
     /**
@@ -54,7 +55,10 @@ public class TrainApiClient{
 
 
     public List<TrainRouteApiDto> getTrainRouteData(String depNodeId, String arrNodeId) {
-        URI uri = baseApiClient.makeTrainUri("/getStrtpntAlocFndTrainInfo", "depPlaceId", depNodeId, "arrPlaceId", arrNodeId);
+        URI uri = baseApiClient.makeTrainUri("/getStrtpntAlocFndTrainInfo",
+                "depPlaceId", depNodeId,
+                "arrPlaceId", arrNodeId,
+                "depPlandTime", PARSING_FORMATTER.format(LocalDateTime.now()));
         log.info("---------------> Train Route Data Sync Client URI : {} ", uri);
         List<TrainRouteApiDto> allResults = baseApiClient.callApiManyTimes(uri, this::createTrainRouteDto);
         log.info("---------------> Train Route Data Sync Done Total : {} ", allResults.size());
