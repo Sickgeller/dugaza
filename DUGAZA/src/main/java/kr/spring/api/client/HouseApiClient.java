@@ -1,6 +1,7 @@
 package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.dto.HouseApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +20,10 @@ public class HouseApiClient{
     private final BaseApiClient baseApiClient;
     private static final DateTimeFormatter CREATED_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
+    @LogExecutionTime(category = "HouseData")
     public List<HouseApiDto> getHouseDataList() {
         URI uri = baseApiClient.makeTourUri("/searchStay2");
-        log.debug("----------> House Data Sync Client URI : {} ", uri);
-        List<HouseApiDto> allResults = baseApiClient.callApiManyTimes(uri, this::createHouseDto);
-        log.debug("----------> House Data Sync Client URI result: {} ", allResults.size());
-        return allResults;
+        return baseApiClient.callApiManyTimes(uri, this::createHouseDto);
     }
 
     private HouseApiDto createHouseDto(JsonNode item, String type) {
@@ -36,14 +35,14 @@ public class HouseApiClient{
             try {
                 createdTime = LocalDateTime.parse(createdTimeStr, CREATED_TIME_FORMATTER);
             } catch (Exception e) {
-                log.error("---------------> createdtime 파싱 오류: " + createdTimeStr, e);
+                // AOP에서 예외 처리
             }
         }
         if (!updatedTimeStr.isEmpty()) {
             try {
                 updatedTime = LocalDateTime.parse(updatedTimeStr, CREATED_TIME_FORMATTER);
             } catch (Exception e) {
-                log.error("---------------> modifiedtime 파싱 오류: " + updatedTimeStr, e);
+                // AOP에서 예외 처리
             }
         }
 

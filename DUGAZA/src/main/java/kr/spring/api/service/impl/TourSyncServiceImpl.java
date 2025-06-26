@@ -1,5 +1,6 @@
 package kr.spring.api.service.impl;
 
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.client.TourApiClient;
 import kr.spring.api.dto.TourApiDto;
 import kr.spring.api.mapper.TourApiMapper;
@@ -10,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,8 +25,8 @@ public class TourSyncServiceImpl implements TourSyncService {
 
     @Override
     @Transactional
+    @LogExecutionTime(category = "TourSync")
     public Map<String, Object> getAllTourData() {
-        log.info("-----> get Every Tour Data Start");
         AtomicInteger mappingTotalCount = new AtomicInteger(0);
         AtomicInteger mappingSuccessCount = new AtomicInteger(0);
         AtomicInteger mappingFailCount = new AtomicInteger(0);
@@ -36,20 +36,14 @@ public class TourSyncServiceImpl implements TourSyncService {
                 int code = contentTypeId.getCode();
                 String name = contentTypeId.name();
     
-                log.info("----------> get contentTypeId : {} , {}", code, name);
                 List<TourApiDto> codeResult = tourApiClient.getTouristData(code);
-                log.info("----------> done contentTypeId : {}, totalNum : {}", code , codeResult.size());
                 
                 // 각 콘텐츠 타입별로 바로 매핑 처리
                 processTourData(codeResult, mappingTotalCount, mappingSuccessCount, mappingFailCount);
             }
         } catch (Exception e) {
-            log.error("관광 데이터 동기화 중 오류 발생: {}", e.getMessage(), e);
+            // AOP에서 예외 처리
         }
-        
-        log.info("-----> get Every Tour Data End");
-        log.info("-----> Tour Data Sync Summary: total={}, success={}, fail={}", 
-                mappingTotalCount.get(), mappingSuccessCount.get(), mappingFailCount.get());
                 
         return Map.of(
                 "totalMappingCount", mappingTotalCount.get(),
@@ -62,29 +56,23 @@ public class TourSyncServiceImpl implements TourSyncService {
                                AtomicInteger successCount, 
                                AtomicInteger failCount) {
         for(TourApiDto dto : tourList) {
-            int current = totalCount.incrementAndGet();
-            if (current % 100 == 0) {
-                log.info("----------> mapping progress: {}/{}", current, tourList.size());
-            }
+            totalCount.incrementAndGet();
             
             try {
                 tourApiMapper.insert(dto);
                 successCount.incrementAndGet();
             } catch (Exception e) {
                 failCount.incrementAndGet();
-                log.error("----------> mapping failed: contentId={}, error={}", 
-                        dto.getContentId(), e.getMessage());
             }
         }
     }
 
     @Override
+    @LogExecutionTime(category = "TourSync")
     public Map<String,Object> getTouristData(ContentTypeid contentTypeId){
         String name = contentTypeId.name();
         int code = contentTypeId.getCode();
-        log.info("-----> Get {} Data Start contentTypeId : {}", name, code);
         List<TourApiDto> tourList = tourApiClient.getTouristData(code);
-        log.info("-----> Get {} Data End contentTypeId : {}, count: {}", name, code, tourList.size());
         
         AtomicInteger totalCount = new AtomicInteger(0);
         AtomicInteger successCount = new AtomicInteger(0);

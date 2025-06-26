@@ -1,6 +1,7 @@
 package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.dto.TrainCityApiDto;
 import kr.spring.api.dto.TrainKindApiDto;
 import kr.spring.api.dto.TrainRouteApiDto;
@@ -28,41 +29,31 @@ public class TrainApiClient{
      * 기차 종류의 id와 이름 받아오는 메서드
      * @return TrainKindApiDto가 담긴 List
      */
+    @LogExecutionTime(category = "TrainKind")
     public List<TrainKindApiDto> getTrainKindData() {
         URI uri = baseApiClient.makeTrainUri("/getVhcleKndList");
-        log.info("---------------> Train Kind Data Sync Client URI : {} ", uri);
-        List<TrainKindApiDto> allResults = baseApiClient.callApi(uri, this::createTrainKindDto);
-        log.info("---------------> Train Kind Data Sync Done Total : {} ", allResults.size());
-        return allResults;
+        return baseApiClient.callApi(uri, this::createTrainKindDto);
     }
 
-
+    @LogExecutionTime(category = "TrainArea")
     public List<TrainCityApiDto> getTrainAreaData() {
         URI uri = baseApiClient.makeTrainUri("/getCtyCodeList");
-        log.info("---------------> Train Area Data Sync Client URI : {} ", uri);
-        List<TrainCityApiDto> allResults = baseApiClient.callApi(uri, this::createTrainCityDto);
-        log.info("---------------> Train Area Data Sync Done Total : {} ", allResults.size());
-        return allResults;
+        return baseApiClient.callApi(uri, this::createTrainCityDto);
     }
 
+    @LogExecutionTime(category = "TrainStation")
     public List<TrainStationApiDto> getTrainStationData(Long cityCode) {
         URI uri = baseApiClient.makeTrainUri("/getCtyAcctoTrainSttnList");
-        log.info("---------------> Train Station Data Sync Client URI : {} ", uri);
-        List<TrainStationApiDto> allResults = baseApiClient.callApi(uri, this::createTrainStationDto);
-        log.info("---------------> Train Station Data Sync Done Total : {} ", allResults.size());
-        return allResults;
+        return baseApiClient.callApi(uri, this::createTrainStationDto);
     }
 
-
+    @LogExecutionTime(category = "TrainRoute")
     public List<TrainRouteApiDto> getTrainRouteData(String depNodeId, String arrNodeId) {
         URI uri = baseApiClient.makeTrainUri("/getStrtpntAlocFndTrainInfo",
                 "depPlaceId", depNodeId,
                 "arrPlaceId", arrNodeId,
                 "depPlandTime", PARSING_FORMATTER.format(LocalDateTime.now()));
-        log.info("---------------> Train Route Data Sync Client URI : {} ", uri);
-        List<TrainRouteApiDto> allResults = baseApiClient.callApiManyTimes(uri, this::createTrainRouteDto);
-        log.info("---------------> Train Route Data Sync Done Total : {} ", allResults.size());
-        return allResults;
+        return baseApiClient.callApiManyTimes(uri, this::createTrainRouteDto);
     }
 
 

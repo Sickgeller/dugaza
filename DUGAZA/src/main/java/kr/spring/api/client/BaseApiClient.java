@@ -2,14 +2,13 @@ package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.config.ApiConfig;
 import kr.spring.api.dto.ApiLogDto;
-import kr.spring.api.dto.HouseApiDto;
 import kr.spring.api.util.ApiLogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -19,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
@@ -55,6 +53,7 @@ public class BaseApiClient{
         return builder.build(true).toUri();
     }
 
+    @LogExecutionTime(category = "API")
     public <T> List<T> callApi(URI uri, BiFunction<JsonNode, String, T> dtoCreator) {
         // API 로그 생성
         LocalDateTime requestTime = LocalDateTime.now();
@@ -67,8 +66,6 @@ public class BaseApiClient{
         }
 
         try {
-            log.info("=====================> API Call Start - URI: {}", uri);
-
             // API 호출 시도
             String response = webClient.get()
                     .uri(uri)
@@ -92,8 +89,6 @@ public class BaseApiClient{
             // 응답 파싱
             List<T> result = parseApiResponse(response, dtoCreator);
 
-            log.info("=====================> API Call Done - Total : {}", result.size());
-
             // 로그 저장 - 성공
             if (apiLogUtil != null && apiLog != null) {
                 String responsePreview = response != null ?
@@ -103,8 +98,6 @@ public class BaseApiClient{
 
             return result;
         } catch (Exception e) {
-            log.error("API 호출 중 오류 발생: {}", e.getMessage(), e);
-
             // 로그 저장 - 예외
             if (apiLogUtil != null && apiLog != null) {
                 long executionTime = ChronoUnit.MILLIS.between(requestTime, LocalDateTime.now());
@@ -115,36 +108,27 @@ public class BaseApiClient{
         }
     }
 
+    @LogExecutionTime(category = "API")
     public <T> List<T> callApiManyTimes(URI uri, BiFunction<JsonNode, String, T> dtoCreator) {
         // 기본 지역변수 초기화
         AtomicInteger totalCount = new AtomicInteger(0); // 총 수
-        AtomicInteger successCount = new AtomicInteger(0); // 성공한 수
-        AtomicInteger failedCount = new AtomicInteger(0); // 실패한 수
         List<T> allResults = new ArrayList<>();
         int pageNo = 1;
         int totalPages = 1;
-
-        log.info("====================> Call Api with total count Start");
 
         List<T> pageResults = callApiWithTotalCount(uri, dtoCreator, totalCount);
         allResults.addAll(pageResults);
         totalPages = calculateTotalPages(totalCount.get());
 
-        log.info("====================> first page call end - totalPages : {}, totalCount : {}", totalPages, totalCount.get());
-
         if(totalPages == 0){
-            log.info("====================> totalPages is zero");
             return allResults;
         }
         
         for(pageNo = 2; pageNo <= totalPages; pageNo++){
-            log.debug("====================> pageNo : {}", pageNo);
-            
             // API 호출 사이에 대기시간 추가 (100ms)
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
-                log.warn("대기 중 인터럽트 발생", e);
                 Thread.currentThread().interrupt();
             }
             
@@ -155,11 +139,8 @@ public class BaseApiClient{
                     
             pageResults = callApi(pageUri, dtoCreator);
             allResults.addAll(pageResults);
-
-            log.debug("====================> pageNo : {} succeed, pageResults : {}", pageNo, pageResults.size());
         }
         
-        log.info("====================> Call Api with total count End - 총 결과 수: {}", allResults.size());
         return allResults;
     }
 
@@ -174,6 +155,7 @@ public class BaseApiClient{
     /**
      * 전체 항목 수를 파악하기 위한 API 호출 메서드
      */
+    @LogExecutionTime(category = "API")
     private <T> List<T> callApiWithTotalCount(URI uri, BiFunction<JsonNode, String, T> dtoCreator, AtomicInteger totalCount) {
         try {
             String response = webClient.get()
@@ -195,7 +177,6 @@ public class BaseApiClient{
             // 응답 파싱
             return parseApiResponse(response, dtoCreator);
         } catch (Exception e) {
-            log.error("API 호출 중 오류 발생: {}", e.getMessage(), e);
             return new ArrayList<>();
         }
     }
@@ -203,6 +184,7 @@ public class BaseApiClient{
     /**
      * 관광 API URI 생성
      */
+    @LogExecutionTime(category = "API")
     public URI makeTourUri(String path, String... params) {
         return makeUri(apiConfig.getTour().getBaseUrl(), path, params);
     }
@@ -210,23 +192,19 @@ public class BaseApiClient{
     /**
      * 기차 API URI 생성
      */
+    @LogExecutionTime(category = "API")
     public URI makeTrainUri(String path, String... params) {
         return makeUri(apiConfig.getTrain().getBaseUrl(), path, params);
     }
-
-
 
     // 유틸리티 메서드들
     private boolean validateResponse(String response) {
         // 응답 유효성 검사 로직
         if (response == null) {
-            log.error("API 응답이 null입니다");
             return false;
         }
 
         if (response.trim().startsWith("<")) {
-            log.error("API가 XML 형식으로 응답했습니다. 오류 메시지일 가능성이 높습니다.");
-            log.error("응답 내용: {}", response);
             return false;
         }
 
@@ -249,42 +227,41 @@ public class BaseApiClient{
                                 contents.add(dto);
                             }
                         } catch (Exception e) {
-                            log.error("DTO 생성 중 오류: {}", e.getMessage(), e);
+                            // 예외 처리만 하고 로그는 AOP에서 처리
                         }
                     }
                 } else if (!items.isMissingNode() && !items.isNull()) {
                     try {
-                        T dto = dtoCreator.apply(items, "single");
+                        T dto = dtoCreator.apply(items, "object");
                         if (dto != null) {
                             contents.add(dto);
                         }
                     } catch (Exception e) {
-                        log.error("DTO 생성 중 오류: {}", e.getMessage(), e);
+                        // 예외 처리만 하고 로그는 AOP에서 처리
                     }
                 }
 
                 return contents;
+            } else {
+                return new ArrayList<>();
             }
-
-            return new ArrayList<>();
         } catch (Exception e) {
-            log.error("JSON 파싱 오류: {}", e.getMessage(), e);
             return new ArrayList<>();
         }
     }
 
     private String extractApiName(String path) {
-        if (path == null || path.isEmpty()) {
+        if (path == null) {
             return "unknown";
         }
         String[] parts = path.split("/");
-        return parts.length > 0 ? parts[parts.length - 1] : path;
+        return parts.length > 0 ? parts[parts.length - 1] : "unknown";
     }
 
     private String maskServiceKey(String query) {
-        if (query == null || query.isEmpty()) {
+        if (query == null) {
             return "";
         }
-        return query.replaceAll("serviceKey=[^&]+", "serviceKey=*****");
+        return query.replaceAll("serviceKey=[^&]+", "serviceKey=***");
     }
 }

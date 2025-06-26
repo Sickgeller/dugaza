@@ -30,4 +30,5 @@ public interface TrainSyncService {
      * @return 동기화된 항목 수
      */
     Map<String, Object> syncTrainRouteData();
+
 }

@@ -1,5 +1,6 @@
 package kr.spring.api.service.impl;
 
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.client.EventApiClient;
 import kr.spring.api.dto.EventContentApiDto;
 import kr.spring.api.mapper.EventContentMapper;
@@ -23,18 +24,16 @@ public class EventDataSyncServiceImpl implements EventDataSyncService {
 
     @Override
     @Transactional
+    @LogExecutionTime(category = "EventSync")
     public Map<String, Object> syncEventData(Long startYear) {
-        log.info("이벤트 데이터 동기화 시작 - 시작 연도: {}", startYear);
         Map<String, Object> result = new HashMap<>();
         
         try {
             // 테이블이 없는 경우 생성
             eventContentMapper.createEventContentTableIfNotExists();
-            log.info("이벤트 테이블 확인/생성 완료");
             
             // API에서 이벤트 데이터 가져오기
             List<EventContentApiDto> eventContentList = eventApiClient.getEventContent(startYear);
-            log.info("API에서 이벤트 데이터 {} 건 조회 완료", eventContentList.size());
             
             if (eventContentList.isEmpty()) {
                 result.put("success", false);
@@ -53,11 +52,9 @@ public class EventDataSyncServiceImpl implements EventDataSyncService {
                         successCount++;
                     } else {
                         failCount++;
-                        log.warn("이벤트 데이터 저장 실패: {}", eventContent.getContentid());
                     }
                 } catch (Exception e) {
                     failCount++;
-                    log.error("이벤트 데이터 저장 중 오류 발생: {}", e.getMessage(), e);
                 }
             }
             
@@ -71,11 +68,7 @@ public class EventDataSyncServiceImpl implements EventDataSyncService {
             result.put("failCount", failCount);
             result.put("totalDbCount", totalCount);
             
-            log.info("이벤트 데이터 동기화 완료 - 성공: {}, 실패: {}, DB 총 개수: {}", 
-                    successCount, failCount, totalCount);
-            
         } catch (Exception e) {
-            log.error("이벤트 데이터 동기화 중 오류 발생: {}", e.getMessage(), e);
             result.put("success", false);
             result.put("message", "이벤트 데이터 동기화 중 오류가 발생했습니다: " + e.getMessage());
         }
