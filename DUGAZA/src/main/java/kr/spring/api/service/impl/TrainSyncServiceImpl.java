@@ -11,11 +11,13 @@ import kr.spring.api.mapper.TrainKindApiMapper;
 import kr.spring.api.mapper.TrainRouteApiMapper;
 import kr.spring.api.mapper.TrainStationApiMapper;
 import kr.spring.api.service.TrainSyncService;
+import kr.spring.common.TrainHubStationEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -201,72 +203,57 @@ public class TrainSyncServiceImpl implements TrainSyncService {
         AtomicInteger insertCount = new AtomicInteger(0);
         AtomicInteger failedCount = new AtomicInteger(0);
         AtomicInteger updateCount = new AtomicInteger(0);
-        
-        List<TrainStationApiDto> trainStationList = trainStationApiMapper.getAllStation();
-        
-        int totalPairs = 0;
-        int processedPairs = 0;
-        
-        // 전체 경로 쌍 개수 계산
-        for(int i = 0; i < trainStationList.size(); i++) {
-            for(int j = trainStationList.size()-1; j >= 0; j--) {
-                if (i != j) totalPairs++;
-            }
-        }
-        
-        for(int i = 0; i < trainStationList.size(); i++) {
-            for(int j = trainStationList.size()-1; j >= 0; j--) {
-                if (i == j) continue; // 같은 역은 건너뛰기
-                
-                processedPairs++;
-                TrainStationApiDto startStation = trainStationList.get(i);
-                TrainStationApiDto destStation = trainStationList.get(j);
-                
-                try {
-                    List<TrainRouteApiDto> trainRouteData = trainApiClient.getTrainRouteData(
-                            startStation.getNodeId(), destStation.getNodeId());
-                    
-                    if (trainRouteData.isEmpty()) {
-                        continue;
-                    }
-                    
-                    for(TrainRouteApiDto trainRouteApiDto : trainRouteData) {
-                        try {
-                            // INSERT 시도
-                            boolean insertSuccess = false;
-                            try {
-                                insertSuccess = trainRouteApiMapper.insert(trainRouteApiDto) == 1;
-                                if (insertSuccess) {
-                                    insertCount.incrementAndGet();
-                                    continue;
-                                }
-                            } catch (Exception e) {
-                                log.debug("INSERT 중 예외 발생 (이미 존재하는 키일 가능성): {}", e.getMessage());
-                            }
-                            
-                            // INSERT 실패 또는 예외 발생 시 UPDATE 시도
-                            if(trainRouteApiMapper.update(trainRouteApiDto) != 1) {
-                                failedCount.incrementAndGet();
-                                continue;
-                            }
-                            updateCount.incrementAndGet();
-                        } catch (Exception e) {
-                            log.error("노선 데이터 처리 중 예외 발생: {}", e.getMessage(), e);
-                            failedCount.incrementAndGet();
-                        }
-                    }
-                } catch (Exception e) {
-                    log.error("노선 API 호출 중 예외 발생: {}", e.getMessage(), e);
-                    failedCount.incrementAndGet();
+
+        //모든 루트 저장할 리스트
+        List<TrainRouteApiDto> resultRoutesList = new ArrayList<>();
+
+        //주요 역끼리의 루트 정보
+        for(TrainHubStationEnum depHubStation : TrainHubStationEnum.values()) {
+            for(TrainHubStationEnum arrHubStation : TrainHubStationEnum.values()) {
+                if(depHubStation == arrHubStation) {
+                    continue;
                 }
+                List<TrainRouteApiDto> getHubRoute = trainApiClient.getTrainRouteData(depHubStation.getNodeId(), arrHubStation.getNodeId());
+                resultRoutesList.addAll(getHubRoute);
             }
         }
-        
+
+        log.debug("수신된 resultRoutesList: {}", resultRoutesList);
+
+        //주요역 에서 각 지방이 가지고있는 일반역간의 루트정보
+        for(TrainHubStationEnum hubStation : TrainHubStationEnum.values()) {
+            List<TrainStationApiDto> inHubStation = trainStationApiMapper.getStationByCityCode(hubStation.getCityCode()); // 허브역별 연결된 역들
+            for(TrainStationApiDto inHub : inHubStation) {
+                List<TrainRouteApiDto> NormalToHub = trainApiClient.getTrainRouteData(inHub.getNodeId(), hubStation.getNodeId());
+                List<TrainRouteApiDto> HubToNormal = trainApiClient.getTrainRouteData(hubStation.getNodeId(), inHub.getNodeId());
+                    resultRoutesList.addAll(NormalToHub);
+                    resultRoutesList.addAll(HubToNormal);
+            }
+        }
+        log.debug("받은 노선 개수 : {}", resultRoutesList.size());
+
+        for(TrainRouteApiDto routeElement : resultRoutesList) {
+            try {
+                trainRouteApiMapper.insert(routeElement);
+                insertCount.incrementAndGet();
+                continue;
+            } catch (Exception e) {
+                log.error("INSERT 실패 중복된 노선 , 노선 ID : {} , 출발역 : {} , 도착역 : {}, 기차번호 : {}" , routeElement.getTrainRouteId(),routeElement.getDepPlaceName(), routeElement.getArrPlaceName(), routeElement.getTrainNo());
+            }
+            try{
+                trainRouteApiMapper.update(routeElement);
+                updateCount.incrementAndGet();
+            } catch (Exception e) {
+                log.error("UPDATE도 실패  , 노선 ID : {} , 출발역 : {} , 도착역 : {}, 기차번호 : {}" , routeElement.getTrainRouteId(),routeElement.getDepPlaceName(), routeElement.getArrPlaceName(), routeElement.getTrainNo());
+                failedCount.incrementAndGet();
+            }
+        }
+
         int total = insertCount.get() + updateCount.get() + failedCount.get();
-                
-        return Map.of("insert", insertCount.get(),
-                "update", updateCount.get(),
-                "failed", failedCount.get(),
-                "total", total);
+        log.debug("루트 동기화 결과 : {}개", total);
+        return Map.of("insert" , insertCount.get(),
+                "update" , updateCount.get(),
+                "failed" , failedCount.get(),
+                "total" , total);
     }
 }
