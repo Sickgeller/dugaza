@@ -3,6 +3,7 @@ package kr.spring.api.client;
 import com.fasterxml.jackson.databind.JsonNode;
 import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.dto.ExpressBusCityApiDto;
+import kr.spring.api.dto.ExpressBusTerminalApiDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +21,26 @@ public class ExpressBusApiClient {
         return baseApiClient.callApi(uri, this::createExpressBusCityApiDto);
     }
 
+    @LogExecutionTime(category = "express-bus terminal data")
+    public List<ExpressBusTerminalApiDto> getTerminalData() {
+        URI uri = baseApiClient.makeExpressBusUri("/getExpBusTrminlList");
+        return baseApiClient.callApiManyTimes(uri, this::createExpressBusTerminalApiDto);
+    }
+
+    private ExpressBusTerminalApiDto createExpressBusTerminalApiDto(JsonNode item, String type) {
+        return ExpressBusTerminalApiDto
+                .builder()
+                .terminalId(item.path("terminalId").asText())
+                .terminalName((item.path("terminalNm").asText()))
+                .build();
+    }
+
+
     private ExpressBusCityApiDto createExpressBusCityApiDto(JsonNode item, String type) {
         return ExpressBusCityApiDto.builder()
                 .cityCode(item.get("cityCode").asLong())
                 .cityName(item.get("cityName").asText())
                 .build();
     }
+
 }

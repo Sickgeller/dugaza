@@ -6,4 +6,5 @@ public interface ExpressBusService {
 
     public Map<String,Object> syncCityData();
 
+    public Map<String, Object> syncTerminalData();
 }

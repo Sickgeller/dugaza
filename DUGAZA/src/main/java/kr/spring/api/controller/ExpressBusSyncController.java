@@ -24,5 +24,10 @@ public class ExpressBusSyncController {
         return ResponseEntity.ok(expressBusService.syncCityData());
     }
 
+    @GetMapping("sync/terminal")
+    public ResponseEntity<Map<String,Object>> syncTerminalData() {
+        log.debug("sync express bus terminal data");
+        return ResponseEntity.ok(expressBusService.syncTerminalData());
+    }
 
 }
