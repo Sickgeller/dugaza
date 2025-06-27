@@ -7,6 +7,7 @@ import kr.spring.api.config.ApiConfig;
 import kr.spring.api.dto.ApiLogDto;
 import kr.spring.api.util.ApiLogUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -204,6 +205,14 @@ public class BaseApiClient{
     public URI makeTrainUri(String path, String... params) {
         URI uri = makeUri(apiConfig.getTrain().getBaseUrl(), path, params);
         log.debug("생성된 기차 API URI: {}", uri);
+        return uri;
+    }
+
+
+    @LogExecutionTime(category = "API")
+    public URI makeExpressBusUri(String path, String... params) {
+        URI uri = makeUri(apiConfig.getExpressBus().getBaseUrl(), path, params);
+        log.debug("생성된 고속버스 API URI: {}", uri);
         return uri;
     }
 

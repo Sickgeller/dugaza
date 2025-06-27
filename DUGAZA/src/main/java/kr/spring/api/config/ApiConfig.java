@@ -13,6 +13,7 @@ public class ApiConfig {
     private String serviceKey;
     private TourApi tour;
     private TrainApi train;
+    private ExpressBusApi expressBus;
 
     @Getter
     @Setter
@@ -23,6 +24,12 @@ public class ApiConfig {
     @Getter
     @Setter
     public static class TrainApi{
+        private String baseUrl;
+    }
+
+    @Getter
+    @Setter
+    public static class ExpressBusApi{
         private String baseUrl;
     }
 }
