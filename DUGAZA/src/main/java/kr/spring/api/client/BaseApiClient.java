@@ -59,6 +59,8 @@ public class BaseApiClient{
         LocalDateTime requestTime = LocalDateTime.now();
         ApiLogDto apiLog = null;
 
+        log.debug("API 호출 시작: {}", uri);
+
         if (apiLogUtil != null) {
             String apiName = extractApiName(uri.getPath());
             String requestParams = maskServiceKey(uri.getQuery());
@@ -67,19 +69,23 @@ public class BaseApiClient{
 
         try {
             // API 호출 시도
+            log.debug("WebClient 요청 시작: {}", uri);
             String response = webClient.get()
                     .uri(uri)
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
+            log.debug("WebClient 응답 수신: {}", response != null ? (response.length() > 100 ? response.substring(0, 100) + "..." : response) : "null");
 
             long executionTime = ChronoUnit.MILLIS.between(requestTime, LocalDateTime.now());
 
             // 응답 유효성 검사
             boolean isValid = validateResponse(response);
+            log.debug("응답 유효성 검사 결과: {}", isValid);
 
             if (!isValid) {
                 // 로그 저장 - 실패
+                log.error("API 응답이 유효하지 않음: {}", response);
                 if (apiLogUtil != null && apiLog != null) {
                     apiLogUtil.updateFailLog(apiLog, "ERROR", "Invalid response", executionTime);
                 }
@@ -88,6 +94,7 @@ public class BaseApiClient{
 
             // 응답 파싱
             List<T> result = parseApiResponse(response, dtoCreator);
+            log.debug("API 응답 파싱 결과: {} 개의 항목", result.size());
 
             // 로그 저장 - 성공
             if (apiLogUtil != null && apiLog != null) {
@@ -99,6 +106,7 @@ public class BaseApiClient{
             return result;
         } catch (Exception e) {
             // 로그 저장 - 예외
+            log.error("API 호출 중 예외 발생: {}", e.getMessage(), e);
             if (apiLogUtil != null && apiLog != null) {
                 long executionTime = ChronoUnit.MILLIS.between(requestTime, LocalDateTime.now());
                 apiLogUtil.updateFailLog(apiLog, "EXCEPTION", e.getMessage(), executionTime);

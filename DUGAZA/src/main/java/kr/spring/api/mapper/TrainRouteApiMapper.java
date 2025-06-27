@@ -10,4 +10,5 @@ public interface TrainRouteApiMapper {
     int insert(TrainRouteApiDto trainStationApiDto);
     int update(TrainRouteApiDto trainStationApiDto);
     List<TrainRouteApiDto> selectAllTrainRoutes();
+
 }

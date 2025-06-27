@@ -8,6 +8,7 @@ import lombok.Data;
 public class TrainStationApiDto {
     private String nodeId; // 역코드
     private String nodeName; // 역이름
+    private Long cityCode;
     private String isActive;
 }
 

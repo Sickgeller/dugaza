@@ -44,15 +44,26 @@ public class TrainSyncServiceImpl implements TrainSyncService {
         
         for (TrainKindApiDto trainApiDto : trainKindList) {
             try {
-                if (trainKindApiMapper.insert(trainApiDto) != 1) {
-                    if (trainKindApiMapper.update(trainApiDto) != 1) {
-                        failedCount.incrementAndGet();
+                // INSERT 시도
+                boolean insertSuccess = false;
+                try {
+                    insertSuccess = trainKindApiMapper.insert(trainApiDto) == 1;
+                    if (insertSuccess) {
+                        successCount.incrementAndGet();
                         continue;
                     }
-                    updateCount.incrementAndGet();
+                } catch (Exception e) {
+                    log.debug("INSERT 중 예외 발생 (이미 존재하는 키일 가능성): {}", e.getMessage());
                 }
-                successCount.incrementAndGet();
+                
+                // INSERT 실패 또는 예외 발생 시 UPDATE 시도
+                if (trainKindApiMapper.update(trainApiDto) != 1) {
+                    failedCount.incrementAndGet();
+                    continue;
+                }
+                updateCount.incrementAndGet();
             } catch (Exception e) {
+                log.error("기차 종류 데이터 처리 중 예외 발생: {}", e.getMessage(), e);
                 failedCount.incrementAndGet();
             }
         }
@@ -77,19 +88,30 @@ public class TrainSyncServiceImpl implements TrainSyncService {
         for(TrainCityApiDto trainCityApiDto : trainCityList) {
             try {
                 log.debug("도시 데이터 처리 중: {}, 코드: {}", trainCityApiDto.getCityName(), trainCityApiDto.getCityCode());
-                if(trainCityApiMapper.insert(trainCityApiDto) != 1){
-                    log.debug("INSERT 실패, UPDATE 시도");
-                    if(trainCityApiMapper.update(trainCityApiDto) != 1){
-                        log.error("UPDATE도 실패: {}", trainCityApiDto);
-                        failedCount.incrementAndGet();
+                
+                // INSERT 시도
+                boolean insertSuccess = false;
+                try {
+                    insertSuccess = trainCityApiMapper.insert(trainCityApiDto) == 1;
+                    if (insertSuccess) {
+                        log.debug("INSERT 성공");
+                        insertCount.incrementAndGet();
                         continue;
                     }
-                    log.debug("UPDATE 성공");
-                    updateCount.incrementAndGet();
+                } catch (Exception e) {
+                    log.debug("INSERT 중 예외 발생 (이미 존재하는 키일 가능성): {}", e.getMessage());
+                }
+                
+                // INSERT 실패 또는 예외 발생 시 UPDATE 시도
+                log.debug("INSERT 실패, UPDATE 시도");
+                if(trainCityApiMapper.update(trainCityApiDto) != 1){
+                    log.error("UPDATE도 실패: {}", trainCityApiDto);
+                    failedCount.incrementAndGet();
                     continue;
                 }
-                log.debug("INSERT 성공");
-                insertCount.incrementAndGet();
+                log.debug("UPDATE 성공");
+                updateCount.incrementAndGet();
+                
             } catch (Exception e) {
                 log.error("도시 데이터 처리 중 예외 발생: {}", e.getMessage(), e);
                 failedCount.incrementAndGet();
@@ -114,37 +136,62 @@ public class TrainSyncServiceImpl implements TrainSyncService {
         AtomicInteger updateCount = new AtomicInteger(0);
         
         List<TrainCityApiDto> trainCityList = trainCityApiMapper.getAllCityDto();
+        log.debug("도시 데이터 조회 결과: {} 개의 도시", trainCityList.size());
         
         int processedCities = 0;
         for (TrainCityApiDto trainCityApiDto : trainCityList) {
             processedCities++;
             Long cityCode = trainCityApiDto.getCityCode();
+            log.debug("도시 처리 중: {}, 코드: {}, 진행: {}/{}", 
+                    trainCityApiDto.getCityName(), cityCode, processedCities, trainCityList.size());
             
             List<TrainStationApiDto> trainStationList = trainApiClient.getTrainStationData(cityCode);
+            log.debug("역 데이터 조회 결과: {} 개의 역", trainStationList.size());
             
             for(TrainStationApiDto trainStationApiDto : trainStationList) {
                 try {
-                    if(trainStationApiMapper.insert(trainStationApiDto) != 1) {
-                        if(trainStationApiMapper.update(trainStationApiDto) != 1) {
-                            failedCount.incrementAndGet();
+                    log.debug("역 데이터 처리 중: {}, ID: {}, 도시코드: {}", 
+                            trainStationApiDto.getNodeName(), trainStationApiDto.getNodeId(), trainStationApiDto.getCityCode());
+                    
+                    // INSERT 시도
+                    boolean insertSuccess = false;
+                    try {
+                        insertSuccess = trainStationApiMapper.insert(trainStationApiDto) == 1;
+                        if (insertSuccess) {
+                            log.debug("INSERT 성공");
+                            insertCount.incrementAndGet();
                             continue;
                         }
-                        updateCount.incrementAndGet();
+                    } catch (Exception e) {
+                        log.debug("INSERT 중 예외 발생 (이미 존재하는 키일 가능성): {}", e.getMessage());
+                    }
+                    
+                    // INSERT 실패 또는 예외 발생 시 UPDATE 시도
+                    log.debug("INSERT 실패, UPDATE 시도");
+                    if(trainStationApiMapper.update(trainStationApiDto) != 1) {
+                        log.error("UPDATE도 실패: {}", trainStationApiDto);
+                        failedCount.incrementAndGet();
                         continue;
                     }
-                    insertCount.incrementAndGet();
+                    log.debug("UPDATE 성공");
+                    updateCount.incrementAndGet();
+                    
                 } catch (Exception e) {
+                    log.error("역 데이터 처리 중 예외 발생: {}", e.getMessage(), e);
                     failedCount.incrementAndGet();
                 }
             }
         }
         
         int total = insertCount.get() + updateCount.get() + failedCount.get();
-                
-        return Map.of("insert", insertCount.get(),
+        
+        Map<String, Object> result = Map.of("insert", insertCount.get(),
                 "update", updateCount.get(),
                 "failed", failedCount.get(),
                 "total", total);
+        
+        log.debug("역 데이터 동기화 결과: {}", result);
+        return result;
     }
 
     @Override
@@ -185,20 +232,31 @@ public class TrainSyncServiceImpl implements TrainSyncService {
                     
                     for(TrainRouteApiDto trainRouteApiDto : trainRouteData) {
                         try {
-                            if(trainRouteApiMapper.insert(trainRouteApiDto) != 1){
-                                if(trainRouteApiMapper.update(trainRouteApiDto) != 1) {
-                                    failedCount.incrementAndGet();
+                            // INSERT 시도
+                            boolean insertSuccess = false;
+                            try {
+                                insertSuccess = trainRouteApiMapper.insert(trainRouteApiDto) == 1;
+                                if (insertSuccess) {
+                                    insertCount.incrementAndGet();
                                     continue;
                                 }
-                                updateCount.incrementAndGet();
+                            } catch (Exception e) {
+                                log.debug("INSERT 중 예외 발생 (이미 존재하는 키일 가능성): {}", e.getMessage());
+                            }
+                            
+                            // INSERT 실패 또는 예외 발생 시 UPDATE 시도
+                            if(trainRouteApiMapper.update(trainRouteApiDto) != 1) {
+                                failedCount.incrementAndGet();
                                 continue;
                             }
-                            insertCount.incrementAndGet();
+                            updateCount.incrementAndGet();
                         } catch (Exception e) {
+                            log.error("노선 데이터 처리 중 예외 발생: {}", e.getMessage(), e);
                             failedCount.incrementAndGet();
                         }
                     }
                 } catch (Exception e) {
+                    log.error("노선 API 호출 중 예외 발생: {}", e.getMessage(), e);
                     failedCount.incrementAndGet();
                 }
             }

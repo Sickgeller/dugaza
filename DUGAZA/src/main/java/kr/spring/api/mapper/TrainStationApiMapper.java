@@ -10,4 +10,5 @@ public interface TrainStationApiMapper {
     int insert(TrainStationApiDto trainStationApiDto);
     int update(TrainStationApiDto trainStationApiDto);
     List<TrainStationApiDto> getAllStation();
+    List<TrainStationApiDto> getStationByCityCode(Long cityCode);
 }

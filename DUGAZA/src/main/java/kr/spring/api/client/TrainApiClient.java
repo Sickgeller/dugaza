@@ -49,7 +49,7 @@ public class TrainApiClient{
     @LogExecutionTime(category = "TrainStation")
     public List<TrainStationApiDto> getTrainStationData(Long cityCode) {
         URI uri = baseApiClient.makeTrainUri("/getCtyAcctoTrainSttnList", "cityCode", String.valueOf(cityCode));
-        return baseApiClient.callApi(uri, this::createTrainStationDto);
+        return baseApiClient.callApi(uri, (item, type) -> createTrainStationDto(item, type, cityCode));
     }
 
     @LogExecutionTime(category = "TrainRoute")
@@ -75,10 +75,11 @@ public class TrainApiClient{
     }
 
 
-    private TrainStationApiDto createTrainStationDto(JsonNode item, String type) {
+    private TrainStationApiDto createTrainStationDto(JsonNode item, String type, Long cityCode) {
         return TrainStationApiDto.builder()
                 .nodeId(item.path("nodeid").asText())
                 .nodeName(item.path("nodename").asText())
+                .cityCode(cityCode)
                 .build();
     }
 
