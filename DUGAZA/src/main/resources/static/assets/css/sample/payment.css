@@ -1,0 +1,336 @@
+/* 결제 페이지 스타일 */
+.payment-main {
+    padding-top: 80px;
+    background-color: #f5f5f5;
+    min-height: calc(100vh - 80px);
+}
+
+.payment-section {
+    padding: 30px 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 헤더 */
+.payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.payment-header h2 {
+    font-size: 24px;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.step-indicator {
+    display: flex;
+    gap: 20px;
+}
+
+.step {
+    color: #95a5a6;
+    font-size: 14px;
+}
+
+.step.active {
+    color: #3498db;
+    font-weight: bold;
+}
+
+.step.completed {
+    color: #2ecc71;
+}
+
+/* 결제 콘텐츠 */
+.payment-content {
+    display: flex;
+    gap: 30px;
+}
+
+/* 왼쪽 섹션 - 예약 정보와 결제 금액 */
+.left-section {
+    flex: 1;
+}
+
+/* 오른쪽 섹션 - 결제 수단 */
+.right-section {
+    width: 400px;
+}
+
+/* 카드 공통 스타일 */
+.summary-card,
+.method-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.summary-card h3,
+.method-card h3 {
+    margin: 0 0 20px 0;
+    color: #2c3e50;
+    font-size: 18px;
+}
+
+/* 예약 정보 요약 */
+.trip-info {
+    border: 1px solid #ecf0f1;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.route {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.departure,
+.arrival {
+    text-align: center;
+}
+
+.departure h4,
+.arrival h4 {
+    margin: 0 0 10px 0;
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.departure p,
+.arrival p {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 16px;
+}
+
+.time {
+    font-weight: bold;
+    color: #3498db !important;
+    margin-top: 5px !important;
+}
+
+.arrow {
+    color: #bdc3c7;
+}
+
+.details {
+    display: grid;
+    gap: 10px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    color: #7f8c8d;
+}
+
+.detail-item span:last-child {
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+/* 결제 수단 */
+.method-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.method-option {
+    cursor: pointer;
+}
+
+.method-option input[type="radio"] {
+    display: none;
+}
+
+.option-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    border: 2px solid #ecf0f1;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.method-option input[type="radio"]:checked + .option-content {
+    border-color: #3498db;
+    background-color: #ebf5fb;
+}
+
+.option-content i {
+    font-size: 20px;
+    color: #3498db;
+}
+
+/* 카드 폼 */
+.card-form {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.card-number-group {
+    display: flex;
+    gap: 10px;
+}
+
+.card-number-group input {
+    width: 70px;
+    text-align: center;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.expiry-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.expiry-group input {
+    width: 40px;
+    text-align: center;
+}
+
+.expiry-group span {
+    color: #7f8c8d;
+}
+
+input[type="text"],
+input[type="password"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+/* 결제 금액 */
+.price-details {
+    margin-bottom: 30px;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.price-row:last-child {
+    border-bottom: none;
+}
+
+.price-row.total {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #ecf0f1;
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+/* 동의 체크박스 */
+.agreement {
+    margin-bottom: 20px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+.checkbox-label span {
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+/* 결제 버튼 */
+.pay-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.pay-button:hover {
+    background-color: #2980b9;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+    .payment-content {
+        flex-direction: column;
+    }
+
+    .right-section {
+        width: 100%;
+    }
+
+    .method-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .payment-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .method-options {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+} 

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로모션 관리 - 렌터카 판매자</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>렌터카 관리자</h1>
+                <p>렌터카 판매자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="car-seller.html"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li><a href="car-management.html"><i class="fas fa-car"></i><span>차량 관리</span></a></li>
+                    <li><a href="car-reservations.html"><i class="fas fa-calendar-check"></i><span>예약 관리</span></a></li>
+                    <li><a href="car-review.html"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a href="car-maintenance.html"><i class="fas fa-tools"></i><span>차량 정비</span></a></li>
+                    <li><a href="car-insurance.html"><i class="fas fa-shield-alt"></i><span>보험 관리</span></a></li>
+                    <li class="active"><a href="car-promotions.html"><i class="fas fa-tags"></i><span>프로모션 관리</span></a></li>
+                    <li><a href="car-sales.html"><i class="fas fa-chart-line"></i><span>매출 관리</span></a></li>
+                    <li><a href="car-settings.html"><i class="fas fa-cog"></i><span>설정</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>프로모션 관리</h2>
+                </div>
+                <div class="user-info">
+                    <span>제주렌트카님</span>
+                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 프로모션 통계 -->
+            <div class="content-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>진행중 프로모션</h3>
+                            <p>8개</p>
+                            <span class="stat-change">현재 기준</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>쿠폰 사용</h3>
+                            <p>234건</p>
+                            <span class="stat-change increase">+12% (전월 대비)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-percent"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>할인 금액</h3>
+                            <p>2,450,000원</p>
+                            <span class="stat-change">이번 달</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>매출 기여도</h3>
+                            <p>15.8%</p>
+                            <span class="stat-change increase">+2.3% (전월 대비)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 프로모션 검색 및 필터 -->
+            <div class="content-section">
+                <div class="search-filter-container">
+                    <div class="search-box">
+                        <input type="text" placeholder="프로모션명, 쿠폰코드 검색">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="filter-options">
+                        <select>
+                            <option value="">프로모션 유형</option>
+                            <option value="discount">할인율</option>
+                            <option value="fixed">정액할인</option>
+                            <option value="package">패키지</option>
+                            <option value="point">포인트적립</option>
+                        </select>
+                        <select>
+                            <option value="">적용 대상</option>
+                            <option value="all">전체</option>
+                            <option value="new">신규고객</option>
+                            <option value="vip">VIP고객</option>
+                            <option value="weekend">주말예약</option>
+                        </select>
+                        <select>
+                            <option value="">상태</option>
+                            <option value="active">진행중</option>
+                            <option value="scheduled">예정</option>
+                            <option value="ended">종료</option>
+                            <option value="draft">임시저장</option>
+                        </select>
+                        <input type="date" placeholder="시작일">
+                        <input type="date" placeholder="종료일">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 프로모션 목록 -->
+            <div class="content-section">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>프로모션 정보</th>
+                                <th>유형</th>
+                                <th>할인율/금액</th>
+                                <th>적용 대상</th>
+                                <th>기간</th>
+                                <th>사용 횟수</th>
+                                <th>예산</th>
+                                <th>상태</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="promotion-info">
+                                        <img src="../images/promotions/spring.jpg" alt="봄맞이 특가">
+                                        <div>
+                                            <strong>봄맞이 특가</strong>
+                                            <small>SPRING2024</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>할인율</td>
+                                <td>20%</td>
+                                <td>전체</td>
+                                <td>
+                                    <div class="promotion-period">
+                                        <div>2024-03-01</div>
+                                        <div>2024-03-31</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="usage-info">
+                                        <strong>45회</strong>
+                                        <small>목표 200회</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="budget-info">
+                                        <strong>850,000원</strong>
+                                        <small>예산 5,000,000원</small>
+                                    </div>
+                                </td>
+                                <td><span class="status scheduled">예정</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="중지"><i class="fas fa-stop"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="promotion-info">
+                                        <img src="../images/promotions/weekend.jpg" alt="주말 특가">
+                                        <div>
+                                            <strong>주말 특가</strong>
+                                            <small>WEEKEND24</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>정액할인</td>
+                                <td>30,000원</td>
+                                <td>주말예약</td>
+                                <td>
+                                    <div class="promotion-period">
+                                        <div>2024-02-01</div>
+                                        <div>2024-12-31</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="usage-info">
+                                        <strong>156회</strong>
+                                        <small>목표 500회</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="budget-info">
+                                        <strong>4,680,000원</strong>
+                                        <small>예산 15,000,000원</small>
+                                    </div>
+                                </td>
+                                <td><span class="status available">진행중</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="중지"><i class="fas fa-stop"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="promotion-info">
+                                        <img src="../images/promotions/vip.jpg" alt="VIP 특별 혜택">
+                                        <div>
+                                            <strong>VIP 특별 혜택</strong>
+                                            <small>VIP2024</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>패키지</td>
+                                <td>
+                                    <div class="package-info">
+                                        <div>할인 15%</div>
+                                        <div>포인트 5%</div>
+                                    </div>
+                                </td>
+                                <td>VIP고객</td>
+                                <td>
+                                    <div class="promotion-period">
+                                        <div>2024-01-01</div>
+                                        <div>2024-12-31</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="usage-info">
+                                        <strong>89회</strong>
+                                        <small>목표 300회</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="budget-info">
+                                        <strong>2,670,000원</strong>
+                                        <small>예산 10,000,000원</small>
+                                    </div>
+                                </td>
+                                <td><span class="status available">진행중</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="중지"><i class="fas fa-stop"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+                    <button class="btn-page"><i class="fas fa-angle-double-left"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-left"></i></button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page">2</button>
+                    <button class="btn-page">3</button>
+                    <button class="btn-page">4</button>
+                    <button class="btn-page">5</button>
+                    <button class="btn-page"><i class="fas fa-angle-right"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-double-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+</body>
+</html> 

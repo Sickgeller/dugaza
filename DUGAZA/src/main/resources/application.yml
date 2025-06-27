@@ -40,7 +40,7 @@ mybatis: #mybatis 설정
     - classpath:mapper/**/*.xml
     - classpath:kr/spring/api/mapper/*.xml
     - classpath:kr/spring/**/dao/*.xml
-  type-aliases-package: kr.spring.api.dto,kr.spring.**.vo
+  type-aliases-package: kr.spring.api.dto,kr.spring.member.vo
   configuration:
     map-underscore-to-camel-case: true
     default-fetch-size: 100

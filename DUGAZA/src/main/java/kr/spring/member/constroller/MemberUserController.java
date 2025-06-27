@@ -78,7 +78,7 @@ public class MemberUserController {
 	//로그인 폼 호출
 	@GetMapping("/login")
 	public String formLogin() {
-		return "views/member/memberLogin";
+		return "views/sample/login";
 	}
 	
 	/*

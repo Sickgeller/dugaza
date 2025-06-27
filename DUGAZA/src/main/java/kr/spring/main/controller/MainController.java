@@ -26,7 +26,7 @@ public class MainController {
 	
 	@GetMapping("/main/main")
 	public String main(Model model) {
-		return "views/main/main";
+		return "views/sample/index";
 	}
 	
 	//관리자 페이지

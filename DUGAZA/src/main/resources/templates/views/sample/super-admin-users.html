@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 관리 - 슈퍼 관리자</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>슈퍼 관리자</h1>
+                <p>시스템 관리자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="super-admin.html"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li class="active"><a href="super-admin-users.html"><i class="fas fa-users"></i><span>회원 관리</span></a></li>
+                    <li><a href="super-admin-sellers.html"><i class="fas fa-store"></i><span>판매자 관리</span></a></li>
+                    <li>
+                        <a href="super-admin-products.html"><i class="fas fa-box"></i><span>상품 관리</span></a>
+                        <ul class="sub-menu">
+                            <li><a href="super-admin-cars.html"><i class="fas fa-car"></i><span>렌터카</span></a></li>
+                            <li><a href="super-admin-accommodations.html"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
+                            <li><a href="super-admin-tours.html"><i class="fas fa-route"></i><span>투어</span></a></li>
+                        </ul>
+                    </li>
+                    <li><a href="super-admin-payments.html"><i class="fas fa-credit-card"></i><span>결제 관리</span></a></li>
+                    <li><a href="super-admin-reviews.html"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a href="super-admin-reports.html"><i class="fas fa-flag"></i><span>신고 관리</span></a></li>
+                    <li><a href="super-admin-promotions.html"><i class="fas fa-tags"></i><span>프로모션 관리</span></a></li>
+                    <li><a href="super-admin-statistics.html"><i class="fas fa-chart-bar"></i><span>통계</span></a></li>
+                    <li><a href="super-admin-settings.html"><i class="fas fa-cog"></i><span>시스템 설정</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>회원 관리</h2>
+                </div>
+                <div class="user-info">
+                    <span>관리자님</span>
+                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 회원 통계 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>회원 통계</h3>
+                    <div class="period-selector">
+                        <button class="active">일간</button>
+                        <button>주간</button>
+                        <button>월간</button>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>전체 회원</h3>
+                            <p>12,345명</p>
+                            <span class="stat-change increase">+123명 (전일 대비)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>신규 가입</h3>
+                            <p>89명</p>
+                            <span class="stat-change increase">+12명 (전일 대비)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-minus"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>탈퇴</h3>
+                            <p>5명</p>
+                            <span class="stat-change decrease">+2명 (전일 대비)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>휴면</h3>
+                            <p>234명</p>
+                            <span class="stat-change">전체</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 회원 관리 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>회원 관리</h3>
+                    <div class="management-tools">
+                        <div class="search-box">
+                            <input type="text" placeholder="회원 검색...">
+                            <button><i class="fas fa-search"></i></button>
+                        </div>
+                        <div class="filter-box">
+                            <select>
+                                <option value="all">전체 회원</option>
+                                <option value="active">활성 회원</option>
+                                <option value="inactive">휴면 회원</option>
+                                <option value="suspended">정지 회원</option>
+                            </select>
+                        </div>
+                        <button class="btn-primary">
+                            <i class="fas fa-download"></i> 회원 목록 내보내기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 회원 목록 -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>회원 정보</th>
+                                <th>가입일</th>
+                                <th>최근 접속일</th>
+                                <th>예약 건수</th>
+                                <th>리뷰 수</th>
+                                <th>신고 수</th>
+                                <th>상태</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="user-info">
+                                        <img src="../images/users/profile2.jpg" alt="회원 프로필">
+                                        <div class="user-details">
+                                            <h4>김철수</h4>
+                                            <span>kim@example.com</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>2024-01-15</td>
+                                <td>2024-02-15</td>
+                                <td>12건</td>
+                                <td>5개</td>
+                                <td>0건</td>
+                                <td><span class="status active">활성</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세보기"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="정지"><i class="fas fa-ban"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="user-info">
+                                        <img src="../images/users/profile3.jpg" alt="회원 프로필">
+                                        <div class="user-details">
+                                            <h4>이영희</h4>
+                                            <span>lee@example.com</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>2023-12-01</td>
+                                <td>2024-01-15</td>
+                                <td>8건</td>
+                                <td>3개</td>
+                                <td>1건</td>
+                                <td><span class="status inactive">휴면</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세보기"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="활성화"><i class="fas fa-check"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+                    <button class="btn-page"><i class="fas fa-chevron-left"></i></button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page">2</button>
+                    <button class="btn-page">3</button>
+                    <button class="btn-page"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <!-- 회원 활동 분석 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>회원 활동 분석</h3>
+                    <div class="chart-controls">
+                        <div class="date-range">
+                            <input type="date" class="date-picker">
+                            <span>~</span>
+                            <input type="date" class="date-picker">
+                        </div>
+                        <div class="chart-type">
+                            <button class="active">선형</button>
+                            <button>막대</button>
+                            <button>영역</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <!-- 차트가 들어갈 자리 -->
+                    <div class="placeholder-chart" style="height: 300px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                        <span>차트 영역</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+</body>
+</html> 
