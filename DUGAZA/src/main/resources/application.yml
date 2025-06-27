@@ -77,6 +77,8 @@ api:
     base-url: http://apis.data.go.kr/B551011/KorService2
   train:
     base-url: http://apis.data.go.kr/1613000/TrainInfoService
+  express-bus:
+    base-url: http://apis.data.go.kr/1613000/ExpBusInfoService
 
 server:
   port: 8080
