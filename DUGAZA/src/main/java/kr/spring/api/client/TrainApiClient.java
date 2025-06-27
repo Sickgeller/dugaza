@@ -38,12 +38,17 @@ public class TrainApiClient{
     @LogExecutionTime(category = "TrainArea")
     public List<TrainCityApiDto> getTrainAreaData() {
         URI uri = baseApiClient.makeTrainUri("/getCtyCodeList");
-        return baseApiClient.callApi(uri, this::createTrainCityDto);
+        List<TrainCityApiDto> result = baseApiClient.callApi(uri, this::createTrainCityDto);
+        log.debug("기차 지역 코드 API 호출 결과: {} 개의 데이터", result.size());
+        for (TrainCityApiDto dto : result) {
+            log.debug("지역 데이터: {}", dto);
+        }
+        return result;
     }
 
     @LogExecutionTime(category = "TrainStation")
     public List<TrainStationApiDto> getTrainStationData(Long cityCode) {
-        URI uri = baseApiClient.makeTrainUri("/getCtyAcctoTrainSttnList");
+        URI uri = baseApiClient.makeTrainUri("/getCtyAcctoTrainSttnList", "cityCode", String.valueOf(cityCode));
         return baseApiClient.callApi(uri, this::createTrainStationDto);
     }
 
@@ -82,16 +87,17 @@ public class TrainApiClient{
         return TrainKindApiDto.builder()
                 .vehicleKindId(item.path("vehiclekndid").asText())
                 .vehicleKindNm(item.path("vehiclekndnm").asText())
-                .isActive(1L)  // 기본값 설정
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
     }
     private TrainCityApiDto createTrainCityDto(JsonNode item, String type) {
-        return TrainCityApiDto.builder()
+        TrainCityApiDto dto = TrainCityApiDto.builder()
                 .cityCode(item.path("citycode").asLong())
                 .cityName(item.path("cityname").asText())
                 .build();
+        log.debug("파싱된 도시 데이터: {}", dto);
+        return dto;
     }
 
 

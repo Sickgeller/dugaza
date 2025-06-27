@@ -25,7 +25,7 @@ public class CustomAccessDeniedHandler
                         implements AccessDeniedHandler{
 
 	//파일의 최대 업로드 사이트
-	@Value("${spring.servlet.multipart.max-file-size}")
+	@Value("${spring.servlet.multipart.max-file-size:50MB}")
 	private String max_file_size;
 
 	@Override
@@ -56,11 +56,18 @@ public class CustomAccessDeniedHandler
 		String contentType = request.getContentType();
 		String contentLength = 
 				   request.getHeader("Content-Length");
+		
+		// max_file_size가 null이거나 비어있으면 기본값 사용
+		if (max_file_size == null || max_file_size.isEmpty()) {
+			max_file_size = "50MB";
+		}
+		
 		long maxSize = Long.parseLong(
 				max_file_size.substring(
 						0,max_file_size.indexOf("MB")))*1024*1024;
 		if(contentType!=null 
-				&& contentType.startsWith("multipart/form-data")) {
+				&& contentType.startsWith("multipart/form-data")
+				&& contentLength != null) {
 			long size = Long.parseLong(contentLength);
 			log.debug("<<파일 업로드 오류>> 파일 사이즈 : {}, 최대 업로드 파일 사이즈 : {}", size, maxSize);
 			if(size > maxSize) {

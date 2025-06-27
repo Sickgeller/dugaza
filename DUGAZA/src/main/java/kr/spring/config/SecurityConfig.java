@@ -20,7 +20,6 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 
 import kr.spring.member.security.CustomAccessDeniedHandler;
 import kr.spring.member.security.UserSecurityService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -34,27 +33,24 @@ public class SecurityConfig {
 	//쿠키에 사용되는 값을 암호화하기 위한 키(key)값
 	@Value("${dataconfig.rememberme-key}")
 	private String rememberme_key;
-		
+
 	//DB연동을 위한 DataSource 지정
 	@Autowired
 	@Qualifier("dataSource")
 	private DataSource dataSource;
-	
 	//로그인 시 사용자 정보를 조회하고, 이를 기반으로
 	//인증을 수행
 	@Autowired
 	private UserSecurityService userSecurityService;
-	
 	//인증에 성공한 후, 리다이렉트할 URL 지정
 	@Autowired
 	private AuthenticationSuccessHandler authenticationSuccessHandler;
 	//로그인 실패 시 처리를 담당하는 클래스
 	@Autowired
 	private AuthenticationFailureHandler authenticationFailureHandler;
-	
 	@Autowired
 	private CustomAccessDeniedHandler customAccessDeniedHandler;
-	
+
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http)
 			                                              throws Exception{
@@ -63,11 +59,12 @@ public class SecurityConfig {
 				    //롤 설정을 먼저하고 permitAll()를 호출해야
 				    //정상적으로 롤이 지정됨
 				    // /main/admin : ROLE_ADMIN 권한 필요 지정
-				    .requestMatchers("/main/admin").hasAuthority("ROLE_ADMIN")
+//				    .requestMatchers("/main/admin").hasAuthority("ROLE_ADMIN")
 				    //기타 경로: 누구나 접근 가능
 				    .requestMatchers("/**").permitAll()
 				    // 인증되지 않은 요청은 로그인 페이지로 리다이렉트됨
-				    .anyRequest().authenticated())
+//				    .anyRequest().authenticated()
+				)
 			//폼 기반 로그인 설정
 			.formLogin(form -> form
 					//커스텀 로그인 페이지 URL 지정
@@ -97,14 +94,14 @@ public class SecurityConfig {
 					.tokenValiditySeconds(60*60*24*7)
 					.userDetailsService(userSecurityService))
 			//CSRF(Cross-Site Request Forgery)는 인증된 사용자의
-			//권한을 악용하여 사용자가 의도하지 않은 요청을 웹 서버에 
+			//권한을 악용하여 사용자가 의도하지 않은 요청을 웹 서버에
 			//보내게 하는 공격
 			//GET방식을 제외한 상태를 변경하는 요청(POST,PUT,DELETE,
 			//PATCH)에만 CSRF 검사
 			//.csrf(csrf -> csrf.disable()) //CSRF 보호 기능을 비활성화
 			.build();
 	}
-	
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -123,14 +120,14 @@ public class SecurityConfig {
 	 * */
 	//자동로그인 처리
 	@Bean
-	public PersistentTokenRepository 
+	public PersistentTokenRepository
 	                    persistentTokenRepository() {
-		JdbcTokenRepositoryImpl repo = 
+		JdbcTokenRepositoryImpl repo =
 				new JdbcTokenRepositoryImpl();
 		repo.setDataSource(dataSource);
 		return repo;
 	}
-	
+
 }
 
 

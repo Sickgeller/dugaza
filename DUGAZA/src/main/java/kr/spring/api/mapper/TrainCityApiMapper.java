@@ -9,5 +9,5 @@ import java.util.List;
 public interface TrainCityApiMapper {
     int insert(TrainCityApiDto trainCityApiDto);
     int update(TrainCityApiDto trainCityApiDto);
-    List<TrainCityApiDto> getCityCode();
+    List<TrainCityApiDto> getAllCityDto();
 }

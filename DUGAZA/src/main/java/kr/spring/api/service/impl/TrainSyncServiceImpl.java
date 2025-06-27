@@ -14,6 +14,7 @@ import kr.spring.api.service.TrainSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class TrainSyncServiceImpl implements TrainSyncService {
 
     @Override
     @LogExecutionTime(category = "TrainKind")
+    @Transactional
     public Map<String, Object> syncTrainKindData() {
         List<TrainKindApiDto> trainKindList = trainApiClient.getTrainKindData();
         int total = trainKindList.size();
@@ -63,43 +65,55 @@ public class TrainSyncServiceImpl implements TrainSyncService {
 
     @Override
     @LogExecutionTime(category = "TrainArea")
+    @Transactional
     public Map<String, Object> syncTrainAreaCode() {
         AtomicInteger insertCount = new AtomicInteger(0);
         AtomicInteger failedCount = new AtomicInteger(0);
         AtomicInteger updateCount = new AtomicInteger(0);
         
         List<TrainCityApiDto> trainCityList = trainApiClient.getTrainAreaData();
+        log.debug("API에서 가져온 도시 데이터 수: {}", trainCityList.size());
         
         for(TrainCityApiDto trainCityApiDto : trainCityList) {
             try {
+                log.debug("도시 데이터 처리 중: {}, 코드: {}", trainCityApiDto.getCityName(), trainCityApiDto.getCityCode());
                 if(trainCityApiMapper.insert(trainCityApiDto) != 1){
+                    log.debug("INSERT 실패, UPDATE 시도");
                     if(trainCityApiMapper.update(trainCityApiDto) != 1){
+                        log.error("UPDATE도 실패: {}", trainCityApiDto);
                         failedCount.incrementAndGet();
                         continue;
                     }
+                    log.debug("UPDATE 성공");
                     updateCount.incrementAndGet();
                     continue;
                 }
+                log.debug("INSERT 성공");
                 insertCount.incrementAndGet();
             } catch (Exception e) {
+                log.error("도시 데이터 처리 중 예외 발생: {}", e.getMessage(), e);
                 failedCount.incrementAndGet();
             }
         }
-                
-        return Map.of("insert", insertCount.get(), 
+        
+        Map<String, Object> result = Map.of("insert", insertCount.get(), 
                 "update", updateCount.get(), 
                 "failed", failedCount.get(), 
                 "total", trainCityList.size());
+        
+        log.debug("도시 데이터 동기화 결과: {}", result);
+        return result;
     }
 
     @Override
     @LogExecutionTime(category = "Station")
+    @Transactional
     public Map<String, Object> syncStationCode() {
         AtomicInteger insertCount = new AtomicInteger(0);
         AtomicInteger failedCount = new AtomicInteger(0);
         AtomicInteger updateCount = new AtomicInteger(0);
         
-        List<TrainCityApiDto> trainCityList = trainCityApiMapper.getCityCode();
+        List<TrainCityApiDto> trainCityList = trainCityApiMapper.getAllCityDto();
         
         int processedCities = 0;
         for (TrainCityApiDto trainCityApiDto : trainCityList) {
@@ -135,6 +149,7 @@ public class TrainSyncServiceImpl implements TrainSyncService {
 
     @Override
     @LogExecutionTime(category = "TrainRoute")
+    @Transactional
     public Map<String, Object> syncTrainRouteData() {
         AtomicInteger insertCount = new AtomicInteger(0);
         AtomicInteger failedCount = new AtomicInteger(0);

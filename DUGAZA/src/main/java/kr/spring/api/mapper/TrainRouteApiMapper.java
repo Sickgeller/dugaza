@@ -9,5 +9,5 @@ import java.util.List;
 public interface TrainRouteApiMapper {
     int insert(TrainRouteApiDto trainStationApiDto);
     int update(TrainRouteApiDto trainStationApiDto);
-    List<TrainRouteApiMapper> selectAllTrainRoutes();
+    List<TrainRouteApiDto> selectAllTrainRoutes();
 }

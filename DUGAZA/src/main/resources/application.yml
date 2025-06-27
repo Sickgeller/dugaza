@@ -1,7 +1,6 @@
-spring: 
-  config:
-    import: data-config.yml
-
+spring:
+  application:
+    name: SpringPage
   thymeleaf:
     prefix: classpath:templates/
     suffix: .html
@@ -11,9 +10,9 @@ spring:
       
   datasource: #DB 접속
     driver-class-name: oracle.jdbc.OracleDriver 
-    url: ${dataconfig.db-url}
-    username: ${dataconfig.db-username}
-    password: ${dataconfig.db-password}
+    url: jdbc:oracle:thin:@211.238.142.200:1521/xe
+    username: fteam02
+    password: f1234
     hikari: #커넥션풀 
       connection-timeout : 30000 #클라이언트가 pool에 connection을 요청하는데 기다리는 최대시간을 설정 30초
       maximum-pool-size : 10 #최대 커넥션 개수 설정
@@ -22,31 +21,62 @@ spring:
   messages: #메시지
     basename: messages.member,messages.JH,messages.JH2,messages.CH,messages.DW,messages.YB
     encoding: UTF-8
-    
+
   devtools: #정적 자원(html, css, js) 수정 시 새로고침 없이 바로 적용
     livereload:
       enabled: true
-    
+
     restart: #컨트롤러, 모델단이 바뀌었을 때 프로젝트 재시작 설정 (정확히는 classpath에 있는 모든 파일)
       enabled: true
-      
-  servlet:
-    multipart:
-      max-file-size: 50MB #파일 한 개당 최대 사이즈
-      max-request-size: 50MB #요청당 최대 파일 크기
 
-mybatis: #mybatis 설정
-  type-aliases-package: kr.spring.**.vo
-  mapper-locations: kr/spring/**/dao/*.xml  
-  
-logging: #로그 지정
-  level:
-    root: error
-    '[kr.spring]': debug
-    org:
-      spring:
-        security: info
-    
+    servlet:
+      multipart:
+        max-file-size: 50MB #파일 한 개당 최대 사이즈
+        max-request-size: 50MB #요청당 최대 파일 크기
+
+  mybatis: #mybatis 설정
+    mapper-locations:
+      - classpath:mapper/*.xml
+      - classpath:mapper/**/*.xml
+      - classpath:kr/spring/api/mapper/*.xml
+    type-aliases-package: kr.spring.api.dto
+    configuration:
+      map-underscore-to-camel-case: true
+      default-fetch-size: 100
+      default-statement-timeout: 30
+
+
+  logging: #로그 지정
+    level:
+      root: debug
+      '[kr.spring]': debug
+      '[kr.spring.api.aop]': trace
+      '[kr.spring.api.client]': debug
+      '[kr.spring.api.controller]': debug
+      '[kr.spring.api.service]': trace
+      '[org.mybatis]': debug
+      '[org.apache.ibatis]': debug
+      org:
+        spring:
+          security: info
+    pattern:
+      console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+dataconfig:
+  google-mail-url: dragonyxit@gmail.com
+  google-mail-password: tepmacdqorgmlbfx
+  rememberme-key: hayden
+  db-url: jdbc:oracle:thin:@211.238.142.200:1521:xe
+  db-username: fteam02
+  db-password: f1234
+
+api:
+  service-key: nqdefZ0rPUt2bdW%2F1Y%2FSRq%2Bb4knLjMYY1MQN7vktElEOlDQLAM3uvrs%2Fh2aos2ptIHeU%2FRqGH%2FhJaMPmgDax2Q%3D%3D
+  tour:
+    base-url: http://apis.data.go.kr/B551011/KorService2
+  train:
+    base-url: http://apis.data.go.kr/1613000/TrainInfoService
+
 server:
   port: 8080
   servlet:

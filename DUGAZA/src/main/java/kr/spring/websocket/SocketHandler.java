@@ -45,7 +45,7 @@ public class SocketHandler extends TextWebSocketHandler {
 	protected void handleTextMessage(
 			WebSocketSession session, TextMessage message) throws Exception {
 		log.debug(session.getId() + "로부터 메시지 수신: " + message.getPayload());
-		
+
 		log.debug("[접속 user 수 : " + users.values().size()+"]");
 		for (WebSocketSession s : users.values()) {
 			s.sendMessage(message);

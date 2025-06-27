@@ -27,4 +27,4 @@
         SELECT * FROM TRAIN_CITY
     </select>
 
-</mapper>
+</mapper> 

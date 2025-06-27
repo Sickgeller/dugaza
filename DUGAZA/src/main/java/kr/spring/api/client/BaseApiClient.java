@@ -127,7 +127,7 @@ public class BaseApiClient{
         for(pageNo = 2; pageNo <= totalPages; pageNo++){
             // API 호출 사이에 대기시간 추가 (100ms)
             try {
-                Thread.sleep(100);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -194,7 +194,9 @@ public class BaseApiClient{
      */
     @LogExecutionTime(category = "API")
     public URI makeTrainUri(String path, String... params) {
-        return makeUri(apiConfig.getTrain().getBaseUrl(), path, params);
+        URI uri = makeUri(apiConfig.getTrain().getBaseUrl(), path, params);
+        log.debug("생성된 기차 API URI: {}", uri);
+        return uri;
     }
 
     // 유틸리티 메서드들
