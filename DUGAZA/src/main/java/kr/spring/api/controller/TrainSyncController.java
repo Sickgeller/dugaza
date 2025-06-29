@@ -34,7 +34,7 @@ public class TrainSyncController {
     }
 
     @GetMapping("/sync/station")
-    @LogExecutionTime(category = "TrainSync")
+
     public ResponseEntity<Map<String,Object>> syncStationCode(){
         Map<String,Object> result = trainSyncService.syncStationCode();
         return ResponseEntity.ok(result);

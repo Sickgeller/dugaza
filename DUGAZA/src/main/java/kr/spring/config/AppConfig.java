@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -26,13 +27,13 @@ import javax.sql.DataSource;
 @Configuration
 @EnableWebSecurity
 @MapperScan(basePackages = {"kr.spring.api.mapper", "kr.spring.member.dao"})
+@ComponentScan(basePackages = {"kr.spring.aop"})
 public class AppConfig implements WebMvcConfigurer, WebSocketConfigurer {
 
-	@Value("${dataconfig.google-mail-url}")
+	@Value("${spring.mail.username}")
 	private String google_mail_url;
-	@Value("${dataconfig.google-mail-password}")
+	@Value("${spring.mail.password}")
 	private String google_mail_password;
-
 	@Autowired
 	private ApplicationContext applicationContext;
 

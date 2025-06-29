@@ -4,7 +4,9 @@ import java.util.Map;
 
 public interface ExpressBusService {
 
-    public Map<String,Object> syncCityData();
+    Map<String,Object> syncCityData();
 
-    public Map<String, Object> syncTerminalData();
+    Map<String, Object> syncTerminalData();
+
+    Map<String, Object> syncGradeData();
 }

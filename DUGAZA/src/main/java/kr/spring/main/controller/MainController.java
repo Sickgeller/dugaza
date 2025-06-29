@@ -8,20 +8,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import kr.spring.member.vo.PrincipalDetails;
 import kr.spring.member.vo.UserRole;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @Slf4j
 public class MainController {
+	
 	@GetMapping("/")
-	public String init(@AuthenticationPrincipal
-			           PrincipalDetails principal) {
-		if(principal!=null
-				&& principal.getMemberVO()
-				            .getAuthority().equals(
-						  UserRole.ADMIN.getValue())) {
-			return "redirect:/main/admin";
+	public String init(@AuthenticationPrincipal PrincipalDetails principal) {
+		if(principal != null && principal.getMemberVO().getAuthority().equals(UserRole.ADMIN.getValue())) {
+			return "redirect:/admin";
 		}
-		return "redirect:/main/main";
+		return "index";
 	}
 	
 	@GetMapping("/main/main")
@@ -44,7 +42,6 @@ public class MainController {
 	public String fileSizeLimit() {
 		return "views/common/fileSizeLimit";
 	}
-	
 }
 
 

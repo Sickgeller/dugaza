@@ -38,9 +38,9 @@ public class MemberUserController {
 	}
 	
 	//회원가입 폼 호출
-	@GetMapping("/registerUser")
+	@GetMapping("/register")
 	public String form() {
-		return "views/member/memberRegister";
+		return "views/member/register";
 	}
 	
 	//회원가입 처리
