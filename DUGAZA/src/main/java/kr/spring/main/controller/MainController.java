@@ -29,6 +29,11 @@ public class MainController {
 		return "views/sample/index";
 	}
 	
+	@GetMapping("/terms")
+	public String termsPage() {
+	    return "views/common/terms";
+	}
+	
 	//관리자 페이지
 	@GetMapping("/admin")
 	public String adminMain(Model model, HttpServletRequest request) {
