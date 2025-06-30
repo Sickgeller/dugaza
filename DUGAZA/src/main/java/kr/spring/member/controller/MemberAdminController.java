@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -21,11 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/member")
+@RequiredArgsConstructor
 public class MemberAdminController {
-	@Autowired
-	private MemberService memberService;
+
+	private final MemberService memberService;
 	
 	//회원목록
 	@GetMapping("/admin_list")

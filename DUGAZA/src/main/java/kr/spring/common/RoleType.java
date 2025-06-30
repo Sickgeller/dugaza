@@ -4,9 +4,15 @@ import lombok.Getter;
 
 @Getter
 public enum RoleType {
-    ADMIN,
-    USER,
-    INACTIVE,
-    SUSPENDED;
+    ADMIN("ADMIN"),
+    MEMBER("MEMBER"),
+    INACTIVE("INACTIVE"),
+    SUSPENDED("SUSPENDED"),
+    SELLER("SELLER");
 
+    private final String value;
+
+    RoleType(String value) {
+        this.value = value;
+    }
 }

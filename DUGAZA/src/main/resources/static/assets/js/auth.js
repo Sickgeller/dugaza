@@ -94,7 +94,7 @@ class Auth {
         
         if (userInfo) {
             // 로그인 상태 UI
-            document.querySelectorAll('.logged-in').forEach(el => el.style.display = 'block');
+            document.querySelectorAll('.logged-in').forEach(el => el.style.display = 'flex');
             document.querySelectorAll('.logged-out').forEach(el => el.style.display = 'none');
             
             // 사용자 이름 표시
@@ -103,8 +103,15 @@ class Auth {
         } else {
             // 로그아웃 상태 UI
             document.querySelectorAll('.logged-in').forEach(el => el.style.display = 'none');
-            document.querySelectorAll('.logged-out').forEach(el => el.style.display = 'block');
+            document.querySelectorAll('.logged-out').forEach(el => el.style.display = 'flex');
         }
+        
+        // 사업자 로그인 버튼은 항상 표시
+        document.querySelectorAll('.btn-outline-secondary').forEach(el => {
+            if (el.textContent.includes('사업자 로그인')) {
+                el.style.display = 'inline-block';
+            }
+        });
     }
 }
 

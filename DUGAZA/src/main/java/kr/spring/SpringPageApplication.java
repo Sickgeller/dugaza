@@ -8,7 +8,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 @EnableAspectJAutoProxy
-@MapperScan(basePackages = {"kr.spring.api.mapper", "kr.spring.member.dao"})
+@MapperScan(basePackages = {"kr.spring.api.mapper", "kr.spring.member.dao", "kr.spring.faq.dao"})
 public class SpringPageApplication {
 
 	public static void main(String[] args) {
