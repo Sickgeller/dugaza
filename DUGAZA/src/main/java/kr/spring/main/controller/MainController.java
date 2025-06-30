@@ -19,12 +19,12 @@ public class MainController {
 		if(principal != null && principal.getMemberVO().getAuthority().equals(UserRole.ADMIN.getValue())) {
 			return "redirect:/admin";
 		}
-		return "index";
+		return main(null);
 	}
 	
 	@GetMapping("/main/main")
 	public String main(Model model) {
-		return "views/sample/index";
+		return "views/main/main";
 	}
 	
 	//관리자 페이지

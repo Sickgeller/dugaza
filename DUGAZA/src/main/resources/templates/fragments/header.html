@@ -5,20 +5,20 @@
 <th:block th:fragment="header">
 	  <div class="header-container">
             <div class="logo">
-                <a href="index.html">드가자닷컴</a>
+                <a th:href="@{/main/main}">드가자닷컴</a>
             </div>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="#" class="active">홈</a></li>
-                    <li><a href="pages/tour.html">관광지</a></li>
-                    <li><a href="pages/restaurant.html">맛집</a></li>
-                    <li><a href="pages/accommodation.html">숙소</a></li>
-                    <li><a href="pages/community.html">커뮤니티</a></li>
+                    <li><a th:href="@{/main/main}" class="active">홈</a></li>
+                    <li><a th:href="@{/tour/main}">관광지</a></li>
+                    <li><a th:href="@{/restaurant/main}">맛집</a></li>
+                    <li><a th:href="@{/accommodation/main}">숙소</a></li>
+                    <li><a th:href="@{/community/main}">커뮤니티</a></li>
                 </ul>
             </nav> 
             <div class="user-menu">
                 <a th:href="@{/member/login}" class="login-btn">로그인</a>
-                <a href="pages/register.html" class="register-btn">회원가입</a>
+                <a th:href="@{/member/register}" class="register-btn">회원가입</a>
             </div>
         </div>
 </th:block>
