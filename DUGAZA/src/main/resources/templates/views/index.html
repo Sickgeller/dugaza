@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+
+<div layout:fragment="content" class="fullscreen-content">
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">여행으로 드가자</h1>
+            <p class="hero-subtitle">당신의 완벽한 여행을 위한 모든 것</p>
+            
+            <div class="search-box">
+                <form class="search-form" onsubmit="return false;">
+                    <div class="search-input">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="어디로 여행을 가시나요?">
+                    </div>
+                    <button type="submit" class="search-button">
+                        검색
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="popular-section">
+        <div class="section-container">
+            <h2>인기 여행지</h2>
+            <div class="popular-grid">
+                <div class="popular-item">
+                    <img th:src="@{/assets/images/seoul.jpg}" alt="서울">
+                    <h3>서울</h3>
+                    <p>대한민국의 수도</p>
+                </div>
+                <div class="popular-item">
+                    <img th:src="@{/assets/images/busan.jpg}" alt="부산">
+                    <h3>부산</h3>
+                    <p>해운대와 광안리</p>
+                </div>
+                <div class="popular-item">
+                    <img th:src="@{/assets/images/jeju.jpg}" alt="제주">
+                    <h3>제주</h3>
+                    <p>아름다운 섬</p>
+                </div>
+                <div class="popular-item">
+                    <img th:src="@{/assets/images/gangwon.jpg}" alt="강원">
+                    <h3>강원</h3>
+                    <p>자연과 휴양</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="category-section">
+        <div class="section-container">
+            <h2>카테고리</h2>
+            <div class="category-grid">
+                <a th:href="@{/tour}" class="category-item">
+                    <i class="fas fa-landmark"></i>
+                    <span>관광지</span>
+                </a>
+                <a th:href="@{/restaurant}" class="category-item">
+                    <i class="fas fa-utensils"></i>
+                    <span>맛집</span>
+                </a>
+                <a th:href="@{/accommodation}" class="category-item">
+                    <i class="fas fa-bed"></i>
+                    <span>숙소</span>
+                </a>
+                <a th:href="@{/community}" class="category-item">
+                    <i class="fas fa-users"></i>
+                    <span>커뮤니티</span>
+                </a>
+            </div>
+        </div>
+    </section>
+</div>

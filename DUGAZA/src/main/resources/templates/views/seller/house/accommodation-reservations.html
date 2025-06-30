@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약 관리 - 숙소 판매자</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>숙소 관리자</h1>
+                <p>숙소 판매자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="accommodation-seller.html"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li><a href="accommodation-rooms.html"><i class="fas fa-bed"></i><span>객실 관리</span></a></li>
+                    <li class="active"><a href="accommodation-reservations.html"><i class="fas fa-calendar-check"></i><span>예약 관리</span></a></li>
+                    <li><a href="accommodation-reviews.html"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a href="accommodation-promotions.html"><i class="fas fa-tags"></i><span>프로모션 관리</span></a></li>
+                    <li><a href="accommodation-facilities.html"><i class="fas fa-swimming-pool"></i><span>부대시설 관리</span></a></li>
+                    <li><a href="accommodation-sales.html"><i class="fas fa-chart-line"></i><span>매출 관리</span></a></li>
+                    <li><a href="accommodation-settings.html"><i class="fas fa-cog"></i><span>설정</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>예약 관리</h2>
+                </div>
+                <div class="user-info">
+                    <span>홍길동님</span>
+                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 예약 통계 -->
+            <div class="content-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>오늘 예약</h3>
+                            <p>12건</p>
+                            <span class="stat-change increase">+3건 (전일 대비)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>체크인 예정</h3>
+                            <p>8건</p>
+                            <span class="stat-change">오늘</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-door-closed"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>체크아웃 예정</h3>
+                            <p>5건</p>
+                            <span class="stat-change">오늘</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>노쇼</h3>
+                            <p>1건</p>
+                            <span class="stat-change warning">조치 필요</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 예약 검색 및 필터 -->
+            <div class="content-section">
+                <div class="search-filter-container">
+                    <div class="search-box">
+                        <input type="text" placeholder="예약번호, 고객명, 연락처 검색">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="filter-options">
+                        <select>
+                            <option value="">예약 상태</option>
+                            <option value="confirmed">예약확정</option>
+                            <option value="checkin">체크인</option>
+                            <option value="checkout">체크아웃</option>
+                            <option value="canceled">취소</option>
+                            <option value="noshow">노쇼</option>
+                        </select>
+                        <select>
+                            <option value="">객실 유형</option>
+                            <option value="standard">스탠다드</option>
+                            <option value="deluxe">디럭스</option>
+                            <option value="suite">스위트</option>
+                            <option value="family">패밀리</option>
+                        </select>
+                        <select>
+                            <option value="">결제 상태</option>
+                            <option value="paid">결제완료</option>
+                            <option value="pending">미결제</option>
+                            <option value="refunded">환불</option>
+                        </select>
+                        <input type="date" placeholder="시작일">
+                        <input type="date" placeholder="종료일">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 예약 목록 -->
+            <div class="content-section">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>예약번호</th>
+                                <th>객실정보</th>
+                                <th>고객정보</th>
+                                <th>체크인/아웃</th>
+                                <th>인원</th>
+                                <th>결제정보</th>
+                                <th>요청사항</th>
+                                <th>상태</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#A12345</td>
+                                <td>
+                                    <div class="room-info">
+                                        <img src="../images/accommodation/room1.jpg" alt="디럭스 더블룸">
+                                        <div>
+                                            <strong>디럭스 더블룸</strong>
+                                            <small>201호</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="customer-info">
+                                        <strong>김철수</strong>
+                                        <small>010-1234-5678</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="check-info">
+                                        <div>체크인: 2024-02-15 15:00</div>
+                                        <div>체크아웃: 2024-02-17 11:00</div>
+                                    </div>
+                                </td>
+                                <td>성인 2명</td>
+                                <td>
+                                    <div class="payment-info">
+                                        <strong>360,000원</strong>
+                                        <small>카드결제</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn-icon" title="요청사항 보기" data-request="늦은 체크인 예정입니다.">
+                                        <i class="fas fa-comment-dots"></i>
+                                    </button>
+                                </td>
+                                <td><span class="status available">예약확정</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="취소"><i class="fas fa-times"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#A12346</td>
+                                <td>
+                                    <div class="room-info">
+                                        <img src="../images/accommodation/room2.jpg" alt="스위트룸">
+                                        <div>
+                                            <strong>스위트룸</strong>
+                                            <small>301호</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="customer-info">
+                                        <strong>이영희</strong>
+                                        <small>010-2345-6789</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="check-info">
+                                        <div>체크인: 2024-02-16 15:00</div>
+                                        <div>체크아웃: 2024-02-18 11:00</div>
+                                    </div>
+                                </td>
+                                <td>성인 2명, 아동 1명</td>
+                                <td>
+                                    <div class="payment-info">
+                                        <strong>500,000원</strong>
+                                        <small>무통장입금</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn-icon" title="요청사항 보기" data-request="엑스트라 베드 요청">
+                                        <i class="fas fa-comment-dots"></i>
+                                    </button>
+                                </td>
+                                <td><span class="status occupied">체크인</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="체크아웃"><i class="fas fa-sign-out-alt"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#A12347</td>
+                                <td>
+                                    <div class="room-info">
+                                        <img src="../images/accommodation/room1.jpg" alt="패밀리룸">
+                                        <div>
+                                            <strong>패밀리룸</strong>
+                                            <small>401호</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="customer-info">
+                                        <strong>박민수</strong>
+                                        <small>010-3456-7890</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="check-info">
+                                        <div>체크인: 2024-02-14 15:00</div>
+                                        <div>체크아웃: 2024-02-15 11:00</div>
+                                    </div>
+                                </td>
+                                <td>성인 4명</td>
+                                <td>
+                                    <div class="payment-info">
+                                        <strong>320,000원</strong>
+                                        <small>카카오페이</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn-icon" title="요청사항 보기" data-request="없음">
+                                        <i class="fas fa-comment-dots"></i>
+                                    </button>
+                                </td>
+                                <td><span class="status warning">노쇼</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="패널티"><i class="fas fa-gavel"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+                    <button class="btn-page"><i class="fas fa-angle-double-left"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-left"></i></button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page">2</button>
+                    <button class="btn-page">3</button>
+                    <button class="btn-page">4</button>
+                    <button class="btn-page">5</button>
+                    <button class="btn-page"><i class="fas fa-angle-right"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-double-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+</body>
+</html> 
+</body>
+</html> 

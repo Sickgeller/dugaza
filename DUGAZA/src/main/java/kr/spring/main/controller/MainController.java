@@ -1,45 +1,50 @@
 package kr.spring.main.controller;
 
+import kr.spring.common.RoleType;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import kr.spring.member.vo.PrincipalDetails;
-import kr.spring.member.vo.UserRole;
+import kr.spring.auth.security.PrincipalDetails;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @Slf4j
 public class MainController {
 	
 	@GetMapping("/")
-	public String init(@AuthenticationPrincipal PrincipalDetails principal) {
-		if(principal != null && principal.getMemberVO().getAuthority().equals(UserRole.ADMIN.getValue())) {
+	public String init(@AuthenticationPrincipal PrincipalDetails principal, Model model, HttpServletRequest request) {
+		model.addAttribute("requestURI", request.getRequestURI());
+		if(principal != null && principal.getMemberVO().getRole().equals(RoleType.ADMIN.toString())) {
 			return "redirect:/admin";
 		}
-		return main(null);
+		return "views/index";
 	}
 	
 	@GetMapping("/main/main")
-	public String main(Model model) {
-		return "views/main/main";
+	public String main(Model model, HttpServletRequest request) {
+		model.addAttribute("requestURI", request.getRequestURI());
+		return "views/sample/index";
 	}
 	
 	//관리자 페이지
-	@GetMapping("/main/admin")
-	public String adminMain(Model model) {
+	@GetMapping("/admin")
+	public String adminMain(Model model, HttpServletRequest request) {
+		model.addAttribute("requestURI", request.getRequestURI());
 		return "views/main/admin";
 	}
 	
 	@GetMapping("/accessDenied")
-	public String access() {
+	public String access(Model model, HttpServletRequest request) {
+		model.addAttribute("requestURI", request.getRequestURI());
 		return "views/common/accessDenied";
 	}
 	
 	@GetMapping("/fileSizeLimit")
-	public String fileSizeLimit() {
+	public String fileSizeLimit(Model model, HttpServletRequest request) {
+		model.addAttribute("requestURI", request.getRequestURI());
 		return "views/common/fileSizeLimit";
 	}
 }
