@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import kr.spring.member.vo.PrincipalDetails;
+import kr.spring.auth.security.PrincipalDetails;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
@@ -27,6 +27,11 @@ public class MainController {
 	public String main(Model model, HttpServletRequest request) {
 		model.addAttribute("requestURI", request.getRequestURI());
 		return "views/sample/index";
+	}
+	
+	@GetMapping("/terms")
+	public String termsPage() {
+	    return "views/common/terms";
 	}
 	
 	//관리자 페이지

@@ -1,0 +1,38 @@
+<!-- templates/views/faq/faq.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+
+<head>
+    <title>고객센터 - 드가자닷컴</title>
+</head>
+
+<body>
+<div layout:fragment="content" class="page-main">
+    
+    <!-- 🔽 여기에만 복붙 -->
+    <main>
+        <section class="hero-section">
+            <div class="search-container">
+                <h1>무엇을 도와드릴까요?</h1>
+                <div class="search-box">
+                    <div class="search-input">
+                        <input type="text" placeholder="궁금한 내용을 입력하세요">
+                    </div>
+                    <button class="search-btn">검색</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-section">
+            <div class="section-container">
+                <h2>자주 묻는 질문</h2>
+                <!-- 여기에 Thymeleaf FAQ 루프 등 추가 -->
+            </div>
+        </section>
+    </main>
+
+</div>
+</body>
+</html>

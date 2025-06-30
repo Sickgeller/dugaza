@@ -20,8 +20,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
-import kr.spring.member.security.CustomAccessDeniedHandler;
-import kr.spring.member.security.UserSecurityService;
+import kr.spring.auth.security.CustomAccessDeniedHandler;
+import kr.spring.auth.security.UserSecurityService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

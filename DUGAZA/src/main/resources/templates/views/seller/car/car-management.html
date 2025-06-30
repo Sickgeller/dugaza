@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차량 관리 - 판매자 관리자</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>차량 관리자</h1>
+                <p>차량 판매자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="car-seller.html"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li class="active"><a href="car-management.html"><i class="fas fa-car"></i><span>차량 관리</span></a></li>
+                    <li><a href="car-reservation.html"><i class="fas fa-calendar-check"></i><span>예약 관리</span></a></li>
+                    <li><a href="car-review.html"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a href="car-sales.html"><i class="fas fa-chart-line"></i><span>매출 관리</span></a></li>
+                    <li><a href="../../sample/car-settings.html"><i class="fas fa-cog"></i><span>설정</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>차량 관리</h2>
+                </div>
+                <div class="user-info">
+                    <span>홍길동님</span>
+                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 차량 등록 폼 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>새 차량 등록</h3>
+                    <button class="btn-primary" id="toggleForm">
+                        <i class="fas fa-plus"></i> 차량 등록하기
+                    </button>
+                </div>
+                <form id="carRegistrationForm" class="registration-form" style="display: none;">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="carName">차량명</label>
+                            <input type="text" id="carName" name="carName" placeholder="예: 아반떼 CN7" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carType">차종</label>
+                            <select id="carType" name="carType" required>
+                                <option value="">선택하세요</option>
+                                <option value="경차">경차</option>
+                                <option value="소형">소형</option>
+                                <option value="준중형">준중형</option>
+                                <option value="중형">중형</option>
+                                <option value="대형">대형</option>
+                                <option value="SUV">SUV</option>
+                                <option value="승합">승합</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="carNumber">차량번호</label>
+                            <input type="text" id="carNumber" name="carNumber" placeholder="예: 123가4567" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carYear">연식</label>
+                            <input type="number" id="carYear" name="carYear" min="2000" max="2024" placeholder="예: 2024" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carColor">색상</label>
+                            <input type="text" id="carColor" name="carColor" placeholder="예: 화이트" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carFuel">연료</label>
+                            <select id="carFuel" name="carFuel" required>
+                                <option value="">선택하세요</option>
+                                <option value="가솔린">가솔린</option>
+                                <option value="디젤">디젤</option>
+                                <option value="LPG">LPG</option>
+                                <option value="전기">전기</option>
+                                <option value="하이브리드">하이브리드</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="carSeats">승차정원</label>
+                            <input type="number" id="carSeats" name="carSeats" min="2" max="15" placeholder="예: 5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carPrice">일일 대여료</label>
+                            <input type="number" id="carPrice" name="carPrice" min="0" step="1000" placeholder="예: 50000" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="carImage">차량 이미지</label>
+                        <input type="file" id="carImage" name="carImage" accept="image/*" multiple required>
+                        <div class="image-preview" id="imagePreview"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="carDescription">차량 설명</label>
+                        <textarea id="carDescription" name="carDescription" rows="4" placeholder="차량에 대한 상세 설명을 입력하세요"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">등록하기</button>
+                        <button type="button" class="btn-secondary" id="cancelRegistration">취소</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 차량 목록 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>차량 목록</h3>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <input type="text" placeholder="차량 검색...">
+                            <button class="btn-icon"><i class="fas fa-search"></i></button>
+                        </div>
+                        <div class="filter-box">
+                            <select>
+                                <option value="">모든 차종</option>
+                                <option value="경차">경차</option>
+                                <option value="소형">소형</option>
+                                <option value="준중형">준중형</option>
+                                <option value="중형">중형</option>
+                                <option value="대형">대형</option>
+                                <option value="SUV">SUV</option>
+                                <option value="승합">승합</option>
+                            </select>
+                            <select>
+                                <option value="">모든 상태</option>
+                                <option value="available">대여가능</option>
+                                <option value="rented">대여중</option>
+                                <option value="maintenance">정비중</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>차량</th>
+                                <th>차종</th>
+                                <th>차량번호</th>
+                                <th>연식</th>
+                                <th>상태</th>
+                                <th>일일 요금</th>
+                                <th>예약률</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="seller-info">
+                                        <img src="../images/cars/avante.jpg" alt="아반떼">
+                                        <span>아반떼 CN7</span>
+                                    </div>
+                                </td>
+                                <td>중형 세단</td>
+                                <td>123가4567</td>
+                                <td>2024년</td>
+                                <td><span class="status rented">대여중</span></td>
+                                <td>89,000원</td>
+                                <td>85%</td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="삭제"><i class="fas fa-trash-alt"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="seller-info">
+                                        <img src="../images/cars/tucson.jpg" alt="투싼">
+                                        <span>투싼 NX4</span>
+                                    </div>
+                                </td>
+                                <td>중형 SUV</td>
+                                <td>456나7890</td>
+                                <td>2023년</td>
+                                <td><span class="status available">대여가능</span></td>
+                                <td>129,000원</td>
+                                <td>92%</td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="삭제"><i class="fas fa-trash-alt"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="seller-info">
+                                        <img src="../images/cars/morning.jpg" alt="모닝">
+                                        <span>모닝 JA</span>
+                                    </div>
+                                </td>
+                                <td>경차</td>
+                                <td>789다1234</td>
+                                <td>2023년</td>
+                                <td><span class="status maintenance">정비중</span></td>
+                                <td>49,000원</td>
+                                <td>78%</td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="삭제"><i class="fas fa-trash-alt"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <button class="btn-icon" disabled><i class="fas fa-chevron-left"></i></button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button class="btn-icon"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <!-- 차량 통계 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>차량 통계</h3>
+                    <div class="period-selector">
+                        <button class="active">일간</button>
+                        <button>주간</button>
+                        <button>월간</button>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>총 보유 차량</h3>
+                            <p>15대</p>
+                            <span class="stat-change increase">+2대 (이번 달)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>대여 가능</h3>
+                            <p>8대</p>
+                            <span class="stat-change">현재 기준</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>정비 필요</h3>
+                            <p>2대</p>
+                            <span class="stat-change increase">+1대 (전일 대비)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>평균 예약률</h3>
+                            <p>85%</p>
+                            <span class="stat-change increase">+5% (전월 대비)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="placeholder-chart">
+                        차량별 예약률 차트가 표시될 영역입니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+    <script>
+        // 차량 등록 폼 토글
+        document.getElementById('toggleForm').addEventListener('click', function() {
+            const form = document.getElementById('carRegistrationForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            this.innerHTML = form.style.display === 'none' ? 
+                '<i class="fas fa-plus"></i> 차량 등록하기' : 
+                '<i class="fas fa-minus"></i> 등록 취소';
+        });
+
+        document.getElementById('cancelRegistration').addEventListener('click', function() {
+            document.getElementById('carRegistrationForm').style.display = 'none';
+            document.getElementById('toggleForm').innerHTML = '<i class="fas fa-plus"></i> 차량 등록하기';
+        });
+
+        // 이미지 미리보기
+        document.getElementById('carImage').addEventListener('change', function(e) {
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            
+            [...e.target.files].forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'preview-image';
+                        preview.appendChild(img);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        // 차량 등록 폼 제출
+        document.getElementById('carRegistrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // 여기에 차량 등록 로직 구현
+            alert('차량이 등록되었습니다.');
+            this.reset();
+            this.style.display = 'none';
+            document.getElementById('toggleForm').innerHTML = '<i class="fas fa-plus"></i> 차량 등록하기';
+        });
+    </script>
+</body>
+</html>
