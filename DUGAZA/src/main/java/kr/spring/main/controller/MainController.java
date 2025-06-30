@@ -17,7 +17,7 @@ public class MainController {
 	@GetMapping("/")
 	public String init(@AuthenticationPrincipal PrincipalDetails principal, Model model, HttpServletRequest request) {
 		model.addAttribute("requestURI", request.getRequestURI());
-		if(principal != null && principal.getMemberVO().getRole().equals(RoleType.ADMIN.toString())) {
+		if(principal != null && principal.getMemberVO().getRole().equals(RoleType.ADMIN.toString())) { 
 			return "redirect:/admin";
 		}
 		return "views/index";
