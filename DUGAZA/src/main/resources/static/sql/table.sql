@@ -1,29 +1,20 @@
 --회원관리
-create table spmember(
- mem_num number not null,
- id varchar2(16) unique not null,
- nick_name varchar2(30) unique,
- authority varchar2(30) default 'ROLE_USER' not null,
- constraint spmember_pk primary key (mem_num)
+CREATE TABLE MEMBER(
+    MEMBER_ID NUMBER PRIMARY KEY,
+    ID VARCHAR2(50) UNIQUE NOT NULL,
+    PASSWORD VARCHAR2(300),
+    NAME VARCHAR2(20),
+    EMAIL VARCHAR2(200),
+    PHONE VARCHAR2(50),
+    ADDRESS VARCHAR2(200),
+    ADDRESS_DETAIL VARCHAR2(200),
+    STATUS VARCHAR2(20),
+    ROLE VARCHAR2(20),
+    CREATED_AT DATE DEFAULT SYSDATE,
+    UPDATED_AT DATE DEFAULT SYSDATE
 );
-create table spmember_detail(
- mem_num number not null,
- name varchar2(30) not null,
- passwd varchar2(60) not null,
- phone varchar2(15) not null,
- email varchar2(50) not null,
- zipcode varchar2(5) not null,
- address1 varchar2(120) not null,
- address2 varchar2(90) not null,
- photo blob,
- photo_name varchar2(100),
- reg_date date default sysdate not null,
- modify_date date,
- constraint spmember_detail_pk primary key (mem_num),
- constraint spmember_detail_fk foreign key (mem_num)
-                         references spmember (mem_num)
-);
-create sequence spmember_seq;
+
+CREATE SEQUENCE MEMBER_SEQ;
 
 --자동 로그인(스프링 시큐리티 자동 로그인 기능 사용)
 create table persistent_logins(
@@ -31,4 +22,34 @@ create table persistent_logins(
  username varchar2(64) not null,
  token varchar2(64) not null,
  last_used timestamp not null
+);
+
+-- 기차 관련 테이블
+CREATE TABLE TRAIN_CITY(
+  CITY_CODE NUMBER PRIMARY KEY,
+  CITY_NAME VARCHAR2(20)
+);
+
+CREATE TABLE TRAIN_KIND(
+  VEHICLE_KIND_ID VARCHAR2(20) PRIMARY KEY,
+  VEHICLE_KIND_NM VARCHAR2(50),
+  IS_ACTIVE NUMBER(1) DEFAULT 1,
+  CREATED_AT DATE DEFAULT SYSDATE,
+  UPDATED_AT DATE DEFAULT SYSDATE
+);
+
+CREATE TABLE TRAIN_STATION(
+  NODE_ID VARCHAR2(20) PRIMARY KEY,
+  NODE_NAME VARCHAR2(50)
+);
+
+CREATE TABLE TRAIN_ROUTE(
+  TRAIN_NO NUMBER,
+  DEP_PLACE_NAME VARCHAR2(50),
+  ARR_PLACE_NAME VARCHAR2(50),
+  DEP_PLANDTIME TIMESTAMP,
+  ARR_PLANDTIME TIMESTAMP,
+  TRAIN_GRADE_NAME VARCHAR2(30),
+  ADULT_CHARGE NUMBER,
+  PRIMARY KEY (TRAIN_NO, DEP_PLACE_NAME, ARR_PLACE_NAME)
 );
