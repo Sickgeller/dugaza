@@ -6,14 +6,13 @@ import java.util.Map;
 import kr.spring.member.vo.MemberVO;
 
 public interface MemberService {
-	//회원관리 - 일반회원
 	public void insertMember(MemberVO member);
-	public MemberVO selectIdAndNickName(Map<String,String> map);
+	public MemberVO selectIdCheck(String id);
 	public MemberVO selectCheckMember(String id);
-	public MemberVO selectMember(Long mem_num);
+	public MemberVO selectMember(Long memberId);
 	public void updateMember(MemberVO member);
 	public void updatePassword(MemberVO member);
-	public void deleteMember(Long mem_num);
+	public void deleteMember(Long memberId);
 	//비밀번호 찾기
 	public void updateRadomPassword(MemberVO member);
 	//프로필 이미지 업데이트

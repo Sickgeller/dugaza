@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -52,6 +54,11 @@ public class SecurityConfig {
 	private CustomAccessDeniedHandler customAccessDeniedHandler;
 
 	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
+
+	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http)
 			                                              throws Exception{
 		//HTTP 요청에 대한 보안 설정
@@ -64,9 +71,8 @@ public class SecurityConfig {
 			.formLogin(form -> form
 					//커스텀 로그인 페이지 URL 지정
 					.loginPage("/member/login")
-					//사용자명의 name 속성 지정
-					.usernameParameter("id")
-					//비밀번호의 name 속성 지정
+					.loginProcessingUrl("auth/login")
+					.usernameParameter("username")
 					.passwordParameter("password")
 					.successHandler(authenticationSuccessHandler)
 					.failureHandler(authenticationFailureHandler))
@@ -86,7 +92,7 @@ public class SecurityConfig {
 					.userDetailsService(userSecurityService))
 			//GET방식을 제외한 상태를 변경하는 요청(POST,PUT,DELETE,
 			//PATCH)에만 CSRF 검사
-			//.csrf(csrf -> csrf.disable()) //CSRF 보호 기능을 비활성화
+			.csrf(csrf -> csrf.disable()) //CSRF 보호 기능을 비활성화
 			.build();
 	}
 
@@ -94,6 +100,7 @@ public class SecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+
 	@Bean
 	public PersistentTokenRepository
 	                    persistentTokenRepository() {

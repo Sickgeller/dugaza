@@ -23,8 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 //인증(로그인)에 성공한 후, 리다이렉트할 URL을 지정하거나 처리 로직을
 //직접 작성할 때 사용
-public class CustomSuccessHandler 
-           extends SimpleUrlAuthenticationSuccessHandler{
+public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
 	@Override
 	public void onAuthenticationSuccess(
 			       HttpServletRequest request,
@@ -36,10 +35,10 @@ public class CustomSuccessHandler
 				((PrincipalDetails)authentication.getPrincipal()).getMemberVO();
 		log.debug("[Spring Security Login Check 2]" + user);
 		
-		if(user.getAuthority().equals(
+		if(user.getRole().equals(
 				   UserRole.ADMIN.getValue())) {//관리자
-			setDefaultTargetUrl("/main/admin");
-		}else if(user.getAuthority().equals(
+			setDefaultTargetUrl("/admin");
+		}else if(user.getRole().equals(
 				UserRole.SUSPENDED.getValue())) {//정지회원
 			log.debug("[Spring Security Login Check 2] 정지회원 : " 
 				                                   + user.getId());

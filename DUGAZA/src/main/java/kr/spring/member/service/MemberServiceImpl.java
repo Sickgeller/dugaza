@@ -19,14 +19,13 @@ public class MemberServiceImpl implements MemberService{
 	
 	@Override
 	public void insertMember(MemberVO member) {
-		member.setMem_num(memberMapper.selectMemNum());
+		member.setMemberId(memberMapper.selectMemberId());
 		memberMapper.insertMember(member);
-		memberMapper.insertMemberDetail(member);
 	}
 
 	@Override
-	public MemberVO selectIdAndNickName(Map<String, String> map) {
-		return memberMapper.selectIdAndNickName(map);
+	public MemberVO selectIdCheck(String id) {
+		return memberMapper.selectIdCheck(id);
 	}
 
 	@Override
@@ -35,14 +34,13 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
-	public MemberVO selectMember(Long mem_num) {
-		return memberMapper.selectMember(mem_num);
+	public MemberVO selectMember(Long memberId) {
+		return memberMapper.selectMember(memberId);
 	}
 
 	@Override
 	public void updateMember(MemberVO member) {
 		memberMapper.updateMember(member);
-		memberMapper.updateMemberDetail(member);
 	}
 
 	@Override
@@ -53,9 +51,8 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
-	public void deleteMember(Long mem_num) {
-		// TODO Auto-generated method stub
-		
+	public void deleteMember(Long memberId) {
+		memberMapper.deleteMember(memberId);
 	}
 
 	@Override
