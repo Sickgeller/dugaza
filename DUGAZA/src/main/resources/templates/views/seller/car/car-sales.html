@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>매출 관리 - 렌터카 판매자</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>렌터카 관리자</h1>
+                <p>렌터카 판매자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="car-seller.html"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li><a href="car-management.html"><i class="fas fa-car"></i><span>차량 관리</span></a></li>
+                    <li><a href="car-reservations.html"><i class="fas fa-calendar-check"></i><span>예약 관리</span></a></li>
+                    <li><a href="car-review.html"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a href="car-maintenance.html"><i class="fas fa-tools"></i><span>차량 정비</span></a></li>
+                    <li><a href="car-insurance.html"><i class="fas fa-shield-alt"></i><span>보험 관리</span></a></li>
+                    <li><a href="car-promotions.html"><i class="fas fa-tags"></i><span>프로모션 관리</span></a></li>
+                    <li class="active"><a href="car-sales.html"><i class="fas fa-chart-line"></i><span>매출 관리</span></a></li>
+                    <li><a href="../../sample/car-settings.html"><i class="fas fa-cog"></i><span>설정</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>매출 관리</h2>
+                </div>
+                <div class="user-info">
+                    <span>제주렌트카님</span>
+                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 매출 통계 -->
+            <div class="content-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-won-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>이번 달 매출</h3>
+                            <p>45,850,000원</p>
+                            <span class="stat-change increase">+12% (전월 대비)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>예약 건수</h3>
+                            <p>234건</p>
+                            <span class="stat-change increase">+8% (전월 대비)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>차량 가동률</h3>
+                            <p>78%</p>
+                            <span class="stat-change increase">+5% (전월 대비)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>순이익률</h3>
+                            <p>32%</p>
+                            <span class="stat-change increase">+2% (전월 대비)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 매출 차트 -->
+            <div class="content-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>매출 추이</h3>
+                        <div class="chart-controls">
+                            <button class="active">일간</button>
+                            <button>주간</button>
+                            <button>월간</button>
+                            <button>연간</button>
+                        </div>
+                    </div>
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 차종별 매출 -->
+            <div class="content-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>차종별 매출</h3>
+                        <div class="chart-controls">
+                            <select>
+                                <option value="amount">금액</option>
+                                <option value="count">건수</option>
+                            </select>
+                        </div>
+                    </div>
+                    <canvas id="carTypeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 매출 상세 -->
+            <div class="content-section">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>날짜</th>
+                                <th>차량</th>
+                                <th>예약번호</th>
+                                <th>대여기간</th>
+                                <th>결제금액</th>
+                                <th>할인금액</th>
+                                <th>순매출</th>
+                                <th>결제수단</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-02-15</td>
+                                <td>
+                                    <div class="car-info">
+                                        <img src="../images/cars/morning.jpg" alt="모닝 JA">
+                                        <div>
+                                            <strong>모닝 JA</strong>
+                                            <small>123가4567</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>#R12345</td>
+                                <td>2일</td>
+                                <td>180,000원</td>
+                                <td>20,000원</td>
+                                <td>160,000원</td>
+                                <td>신용카드</td>
+                                <td><span class="status available">완료</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-02-16</td>
+                                <td>
+                                    <div class="car-info">
+                                        <img src="../images/cars/avante.jpg" alt="아반떼 CN7">
+                                        <div>
+                                            <strong>아반떼 CN7</strong>
+                                            <small>234가5678</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>#R12346</td>
+                                <td>3일</td>
+                                <td>240,000원</td>
+                                <td>0원</td>
+                                <td>240,000원</td>
+                                <td>계좌이체</td>
+                                <td><span class="status available">완료</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-02-16</td>
+                                <td>
+                                    <div class="car-info">
+                                        <img src="../images/cars/tucson.jpg" alt="투싼 NX4">
+                                        <div>
+                                            <strong>투싼 NX4</strong>
+                                            <small>345가6789</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>#R12347</td>
+                                <td>1일</td>
+                                <td>120,000원</td>
+                                <td>12,000원</td>
+                                <td>108,000원</td>
+                                <td>카카오페이</td>
+                                <td><span class="status refunded">환불</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+                    <button class="btn-page"><i class="fas fa-angle-double-left"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-left"></i></button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page">2</button>
+                    <button class="btn-page">3</button>
+                    <button class="btn-page">4</button>
+                    <button class="btn-page">5</button>
+                    <button class="btn-page"><i class="fas fa-angle-right"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-double-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+    <script>
+        // 매출 추이 차트
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        new Chart(salesCtx, {
+            type: 'line',
+            data: {
+                labels: ['1일', '2일', '3일', '4일', '5일', '6일', '7일'],
+                datasets: [{
+                    label: '매출',
+                    data: [1200000, 1500000, 1800000, 1600000, 2000000, 1900000, 1700000],
+                    borderColor: '#4CAF50',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString() + '원';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 차종별 매출 차트
+        const carTypeCtx = document.getElementById('carTypeChart').getContext('2d');
+        new Chart(carTypeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['경차', '소형', '중형', '대형', 'SUV', '승합'],
+                datasets: [{
+                    label: '매출',
+                    data: [8500000, 12000000, 15000000, 18000000, 20000000, 10000000],
+                    backgroundColor: [
+                        '#4CAF50',
+                        '#2196F3',
+                        '#FFC107',
+                        '#9C27B0',
+                        '#FF5722',
+                        '#795548'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString() + '원';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 
