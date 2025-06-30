@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TourController {
 	
 	// 관광지 메인 화면 호출
-	@GetMapping("/main")
+	@GetMapping("")
 	public String tourMain() {
 		return "views/sample/tour";
 	}

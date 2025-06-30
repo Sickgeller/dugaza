@@ -1,4 +1,8 @@
-<header th:fragment="header">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<!-- <script type="text/javascript" th:src="@{/assets/js/auth.js}"></script>-->
+<header th:fragment="header" style="position: relative; z-index: 0;">
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" th:href="@{/}">DUGAZA</a>
@@ -25,33 +29,35 @@
                 </ul>
                 
                 <div class="user-menu">
+                <th:block sec:authorize="!isAuthenticated()">
                     <!-- 로그인하지 않은 경우 -->
                     <div class="logged-out">
                         <a th:href="@{/member/login}" class="btn btn-outline-primary me-2">로그인</a>
                         <a th:href="@{/member/register}" class="btn btn-primary">회원가입</a>
                     </div>
-                    
+                    </th:block>
+                  <th:block sec:authorize="isAuthenticated()">
                     <!-- 로그인한 경우 -->
                     <div class="logged-in">
-                        <span class="user-name me-2"></span>님 환영합니다
+                        <span class="user-name me-2" th:text="${#authentication.principal.memberVO.name}"></span>님 환영합니다
                         <a th:href="@{/member/mypage}" class="btn btn-outline-primary me-2">마이페이지</a>
-                        <button onclick="handleLogout(event)" class="btn btn-outline-danger">로그아웃</button>
+                        <button id="logout" class="btn btn-outline-danger">로그아웃</button>
+                        <form th:action="@{/member/logout}" method="post"
+	    		  		style="display:none;" id="frm_logout"></form>
+	    				<script type="text/javascript">
+	    					const logout = document.getElementById('logout');
+	    					logout.onclick=function(event){
+	    						document.getElementById('frm_logout').submit();
+	    						event.preventDefault();
+	    					};
+	    				</script>
                     </div>
+                   </th:block>
                 </div>
             </div>
         </div>
     </nav>
 </header>
-<script>
-    async function handleLogout(event) {
-        event.preventDefault();
-        const result = await Auth.logout();
-        if (result.success) {
-            window.location.href = '/';
-        } else {
-            alert(result.message);
-        }
-    }
-</script>
+</html>
 
 

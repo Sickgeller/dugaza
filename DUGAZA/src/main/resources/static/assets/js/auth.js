@@ -88,7 +88,7 @@ class Auth {
         }
     }
 
-    // UI 업데이트
+  /*  // UI 업데이트
     static updateUI() {
         const userInfo = this.getUserInfo();
         
@@ -112,3 +112,4 @@ class Auth {
 document.addEventListener('DOMContentLoaded', () => {
     Auth.updateUI();
 }); 
+*/

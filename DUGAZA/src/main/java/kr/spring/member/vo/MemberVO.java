@@ -21,6 +21,7 @@ public class MemberVO {
 	private Date createdAt;
 	private Date updatedAt;
 	private String profileImage;
+		
 }
 
 /*

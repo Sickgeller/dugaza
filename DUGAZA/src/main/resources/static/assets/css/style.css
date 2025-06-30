@@ -509,10 +509,10 @@ body.no-header-padding {
 }
 
 /* 로그인/로그아웃 상태에 따른 요소 표시 */
-.logged-in, 
+/*.logged-in, 
 .logged-out {
     display: none;
-}
+}*/
 
 /* 인기 여행지 섹션 */
 .popular-section {

@@ -71,8 +71,7 @@ public class SecurityConfig {
 			.formLogin(form -> form
 					//커스텀 로그인 페이지 URL 지정
 					.loginPage("/member/login")
-					.loginProcessingUrl("auth/login")
-					.usernameParameter("username")
+					.usernameParameter("id")
 					.passwordParameter("password")
 					.successHandler(authenticationSuccessHandler)
 					.failureHandler(authenticationFailureHandler))

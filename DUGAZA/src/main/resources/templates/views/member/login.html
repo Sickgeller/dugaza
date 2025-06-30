@@ -16,7 +16,7 @@
                     <h1>드가자닷컴</h1>
                     <p>여행으로 드가자</p>
                 </div>
-                <form id="loginForm" class="login-form" onsubmit="handleLogin(event)">
+                <form id="loginForm" class="login-form" th:action="@{login}" method="post">
                     <div class="form-group">
                         <label for="id">아이디</label>
                         <div class="input-with-icon">
@@ -67,7 +67,7 @@
             </div>
         </div>
 
-        <script>
+       <!--  <script>
             async function handleLogin(event) {
                 event.preventDefault();
                 
@@ -82,7 +82,7 @@
                     alert(result.message);
                 }
             }
-        </script>
+        </script> -->
     </div>
 
     <th:block layout:fragment="script">

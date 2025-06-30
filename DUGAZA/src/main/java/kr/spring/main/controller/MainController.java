@@ -33,7 +33,7 @@ public class MainController {
 	@GetMapping("/admin")
 	public String adminMain(Model model, HttpServletRequest request) {
 		model.addAttribute("requestURI", request.getRequestURI());
-		return "views/main/admin";
+		return "views/sample/admin";
 	}
 	
 	@GetMapping("/accessDenied")
