@@ -7,18 +7,17 @@ import kr.spring.api.service.ContentTypeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-@Controller
+@RestController
 @RequestMapping("/admin/common")
 @Slf4j
 @RequiredArgsConstructor
@@ -30,7 +29,6 @@ public class CommonDataSyncController {
 
 
     @GetMapping("/sync/first-init")
-    @ResponseBody
     public ResponseEntity<Map<String, Object>> syncFirstInit() {
         syncAreaCodes();
         syncSigunguCodes();
@@ -40,7 +38,6 @@ public class CommonDataSyncController {
     }
 
     @GetMapping("/sync/area-codes")
-    @ResponseBody
     public ResponseEntity<List<AreaCodeApiDto>> syncAreaCodes() {
         log.info("지역코드 동기화 요청 받음");
         List<AreaCodeApiDto> result = areaDataSyncService.syncAreaCodes();
@@ -56,7 +53,6 @@ public class CommonDataSyncController {
 //    }
     
     @GetMapping("/sync/sigungu-codes")
-    @ResponseBody
     public ResponseEntity<String> syncSigunguCodes() {
         log.info("시군구 코드 동기화 요청 받음");
         areaDataSyncService.syncSigunguCodes();
@@ -68,7 +64,6 @@ public class CommonDataSyncController {
      * @return 동기화 결과 메시지
      */
     @GetMapping("/sync/category-codes")
-    @ResponseBody
     public ResponseEntity<Map<String, Object>> syncCategoryCodes() {
         log.info("카테고리 코드 동기화 요청 받음");
         int totalCount = categoryDataSyncService.syncAllCategoryCodes();
@@ -83,7 +78,6 @@ public class CommonDataSyncController {
      * @return 동기화 결과 메시지
      */
     @GetMapping("/sync/category-codes/level1")
-    @ResponseBody
     public ResponseEntity<Map<String, Object>> syncCategoryCode1() {
         log.info("대분류 카테고리 코드 동기화 요청 받음");
         int count = categoryDataSyncService.syncCategoryCode1();
@@ -98,7 +92,6 @@ public class CommonDataSyncController {
      * @return 동기화 결과 메시지
      */
     @GetMapping("/sync/category-codes/level2")
-    @ResponseBody
     public ResponseEntity<Map<String, Object>> syncCategoryCode2() {
         log.info("중분류 카테고리 코드 동기화 요청 받음");
         int count = categoryDataSyncService.syncCategoryCode2();
@@ -113,7 +106,6 @@ public class CommonDataSyncController {
      * @return 동기화 결과 메시지
      */
     @GetMapping("/sync/category-codes/level3")
-    @ResponseBody
     public ResponseEntity<Map<String, Object>> syncCategoryCode3() {
         log.info("소분류 카테고리 코드 동기화 요청 받음");
         int count = categoryDataSyncService.syncCategoryCode3();
@@ -128,7 +120,6 @@ public class CommonDataSyncController {
      * @return 업데이트 결과
      */
     @GetMapping("/sync/category-codes/content-type")
-    @ResponseBody
     public ResponseEntity<Map<String, Object>> updateContentTypeForLevel3Categories() {
         log.info("소분류 카테고리의 콘텐츠 타입 ID 업데이트 요청 받음");
         Map<String, Integer> result = contentTypeService.updateContentTypeForLevel3Categories();
@@ -149,7 +140,6 @@ public class CommonDataSyncController {
      * @return 업데이트 결과
      */
     @GetMapping("/category/{categoryCode}/content-type")
-    @ResponseBody
     public ResponseEntity<Map<String, Object>> updateContentTypeForCategory(
             @PathVariable String categoryCode,
             @RequestParam Long contentTypeId) {

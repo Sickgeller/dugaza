@@ -122,7 +122,8 @@ public class SecurityConfig {
     }
 
     /**
-     * REST API용 Security Filter Chain
+     * REST API용 Security Filter Chain 역할별로
+     * API부분은 따로 시작부분 수정해야함
      */
     @Bean
     @Order(1)
