@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @Slf4j
 public class PrincipalDetails implements UserDetails{
+
 	private MemberVO memberVO;
 	
 	public PrincipalDetails(MemberVO memberVO) {
@@ -39,7 +40,7 @@ public class PrincipalDetails implements UserDetails{
 			@Override
 			public String getAuthority() {
 				log.debug("memberVO : " + memberVO);
-				return memberVO.getAuthority();
+				return memberVO.getRole();
 			}
 		});		
 		return collect;
@@ -47,7 +48,7 @@ public class PrincipalDetails implements UserDetails{
 
 	@Override
 	public String getPassword() {
-		return memberVO.getPasswd();
+		return memberVO.getPassword();
 	}
 
 	//사용자 아이디(username) 반환
