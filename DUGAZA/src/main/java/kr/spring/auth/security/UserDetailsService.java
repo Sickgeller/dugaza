@@ -31,7 +31,7 @@ public class UserDetailsService implements org.springframework.security.core.use
             return new CustomUserDetails(member);
         }
         
-        // 2. 판매자로 조회 (SellerMapper가 있다면)
+        // 2. 판매자로 조회
         // TODO: SellerMapper 구현 후 활성화
         /*
         SellerVO seller = sellerMapper.selectSeller(username);

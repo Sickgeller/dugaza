@@ -75,17 +75,12 @@ public class SecurityConfig {
         return http
                 .securityMatcher("/**")
                 .authorizeHttpRequests(authorize -> authorize
-                    // 정적 리소스 허용
-                    .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**", "/favicon.*").permitAll()
-                    // 인증 없이 접근 가능한 페이지
-                    .requestMatchers("/", "/member/login", "/member/register", "/member/registerUser").permitAll()
-                    // 공통 페이지들
-                    .requestMatchers("/views/common/**").permitAll()
-                    // 판매자 전용 페이지
+                    .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**", "/favicon.*").permitAll() // 정적 리소스 허용
+                    .requestMatchers("/", "/member/login", "/member/register", "/member/registerUser").permitAll() // 인증 없이 접근 가능한 페이지
+                    .requestMatchers("/views/common/**").permitAll() // 공통 페이지들(추후 추가)
                     .requestMatchers("/seller/login", "/seller/register").permitAll()
-                    .requestMatchers("/seller/**").hasRole("SELLER")
-                    // 관리자 전용 페이지
-                    .requestMatchers("/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/seller/**").hasRole("SELLER") // 판매자 전용 페이지
+                    .requestMatchers("/admin/**").hasRole("ADMIN")// 관리자 전용 페이지
                     // API 제외한 나머지 요청은 인증 필요
                     .requestMatchers("/api/**").denyAll() // API는 별도 필터체인에서 처리
                     .anyRequest().authenticated()
@@ -158,7 +153,7 @@ public class SecurityConfig {
 
     /**
      * DaoAuthenticationProvider 설정
-     * 순환참조를 방지하면서 향상된 사용자 인증 서비스 사용
+     * 순환참조를 방지하면서 사용자 인증 서비스 사용
      */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
