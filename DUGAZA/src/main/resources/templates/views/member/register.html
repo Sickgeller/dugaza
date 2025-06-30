@@ -3,111 +3,143 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout_basic}">
 
-<th:block layout:fragment="css">
-  <link rel="stylesheet" th:href="@{/assets/css/register.css}">
-</th:block>
+<head>
+    <title>회원가입</title>
+    <link rel="stylesheet" th:href="@{/assets/css/login.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/register.css}">
+</head>
 
-<div layout:fragment="content">
-  <div class="container">
-    <div class="form-box">
-      <h2>드가자닷컴</h2>
-      <p>여행의 모든 것, 드가자</p>
-      <form th:action="@{/member/registerUser}" method="post" th:object="${memberVO}">
-        <div class="form-group">
-          <label for="id">아이디</label>
-          <div class="input-group">
-            <input type="text" id="id" th:field="*{id}" placeholder="아이디를 입력하세요" required>
-            <button type="button" id="idCheck" class="btn-check">중복확인</button>
-          </div>
-          <div class="notice">※ 아이디는 4~12자의 영문자와 숫자만 사용 가능합니다.</div>
-          <div class="error-message" th:if="${#fields.hasErrors('id')}" th:errors="*{id}"></div>
+<body>
+    <div layout:fragment="content" class="fullscreen-content">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h1>드가자닷컴</h1>
+                    <p>여행으로 드가자</p>
+                </div>
+                <form th:action="@{/member/registerUser}" method="post" th:object="${memberVO}" class="login-form">
+                    <div class="form-group">
+                        <label for="id">아이디</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="id" th:field="*{id}" placeholder="아이디를 입력하세요" required>
+                        </div>
+                        <div class="notice">※ 아이디는 4~12자의 영문자와 숫자만 사용 가능합니다.</div>
+                        <div class="error-message" th:if="${#fields.hasErrors('id')}" th:errors="*{id}"></div>
+                        <button type="button" id="idCheck" class="btn-check">중복확인</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">비밀번호</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" th:field="*{password}" placeholder="비밀번호를 입력하세요" required>
+                        </div>
+                        <div class="notice">※ 비밀번호는 영문자, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다.</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm">비밀번호 확인</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="confirm" placeholder="비밀번호를 재입력" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">이름</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="name" th:field="*{name}" placeholder="이름을 입력하세요" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">이메일</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="email" th:field="*{email}" placeholder="이메일을 입력하세요" required>
+                        </div>
+                        <div class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">전화번호</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-phone"></i>
+                            <input type="text" id="phone" th:field="*{phone}" placeholder="전화번호를 입력하세요" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">주소</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-home"></i>
+                            <input type="text" id="address" th:field="*{address}" placeholder="주소를 입력하세요" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="addressDetail">상세주소</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" id="addressDetail" th:field="*{addressDetail}" placeholder="상세주소를 입력하세요">
+                        </div>
+                    </div>
+                    <div class="checkbox-group">
+                        <strong>▶︎ 본인은 다음 사항에 모두 동의합니다.</strong>
+                        <label><input type="checkbox" required> 만 18세 이상 이용약관 동의 (필수)</label>
+                        <label><input type="checkbox" required> 개인정보 수집 및 이용 동의 (필수)</label>
+                        <label><input type="checkbox" required> 개인정보 제3자 제공 동의 (필수)</label>
+                        <label><input type="checkbox"> 마케팅 정보 수신 동의 (선택)</label>
+                    </div>
+                    <button type="submit" class="btn-login">회원가입</button>
+                    <div class="login-footer">
+                        <div class="footer-links">
+                            <a href="#">이용약관</a>
+                            <a href="#">개인정보처리방침</a>
+                            <a href="#">고객센터</a>
+                        </div>
+                        <div class="footer-options">
+                            이미 계정이 있으신가요? <a th:href="@{/member/login}">로그인</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="form-group">
-          <label for="password">비밀번호</label>
-          <input type="password" id="password" th:field="*{password}" placeholder="비밀번호를 입력하세요" required>
-          <div class="notice">※ 비밀번호는 영문자, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다.</div>
-        </div>
-        <div class="form-group">
-          <label for="confirm">비밀번호 확인</label>
-          <input type="password" id="confirm" placeholder="비밀번호를 재입력" required>
-        </div>
-        <div class="form-group">
-          <label for="name">이름</label>
-          <input type="text" id="name" th:field="*{name}" placeholder="이름을 입력하세요" required>
-        </div>
-        <div class="form-group">
-          <label for="email">이메일</label>
-          <input type="email" id="email" th:field="*{email}" placeholder="이메일을 입력하세요" required>
-          <div class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-        </div>
-        <div class="form-group">
-          <label for="phone">전화번호</label>
-          <input type="text" id="phone" th:field="*{phone}" placeholder="전화번호를 입력하세요" required>
-        </div>
-        <div class="form-group">
-          <label for="address">주소</label>
-          <input type="text" id="address" th:field="*{address}" placeholder="주소를 입력하세요" required>
-        </div>
-        <div class="form-group">
-          <label for="addressDetail">상세주소</label>
-          <input type="text" id="addressDetail" th:field="*{addressDetail}" placeholder="상세주소를 입력하세요">
-        </div>
-        <div class="checkbox-group">
-          <strong>▶︎ 본인은 다음 사항에 모두 동의합니다.</strong>
-          <label><input type="checkbox" required> 만 18세 이상 이용약관 동의 (필수)</label>
-          <label><input type="checkbox" required> 개인정보 수집 및 이용 동의 (필수)</label>
-          <label><input type="checkbox" required> 개인정보 제3자 제공 동의 (필수)</label>
-          <label><input type="checkbox"> 마케팅 정보 수신 동의 (선택)</label>
-        </div>
-        <button type="submit">회원가입</button>
-      </form>
-      <div class="footer-links">
-        <a href="#">이용약관</a>
-        <a href="#">개인정보처리방침</a>
-        <a href="#">고객센터</a>
-      </div>
-      <div class="login-link">
-        이미 계정이 있으신가요? <a th:href="@{/member/login}">로그인</a>
-      </div>
     </div>
-  </div>
-</div>
 
-<th:block layout:fragment="script">
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const idCheckBtn = document.getElementById('idCheck');
-      const idInput = document.getElementById('id');
-      const passwordInput = document.getElementById('password');
-      const confirmInput = document.getElementById('confirm');
-      const form = document.querySelector('form');
-      idCheckBtn.addEventListener('click', function() {
-        const id = idInput.value.trim();
-        if (!id) {
-          alert('아이디를 입력해주세요.');
-          return;
-        }
-        const idRegex = /^[a-zA-Z0-9]{4,12}$/;
-        if (!idRegex.test(id)) {
-          alert('아이디는 4~12자의 영문자와 숫자만 사용 가능합니다.');
-          return;
-        }
-        alert('사용 가능한 아이디입니다.');
-      });
-      form.addEventListener('submit', function(e) {
-        if (passwordInput.value !== confirmInput.value) {
-          e.preventDefault();
-          alert('비밀번호가 일치하지 않습니다.');
-          return;
-        }
-        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-        if (!passwordRegex.test(passwordInput.value)) {
-          e.preventDefault();
-          alert('비밀번호는 영문자, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다.');
-          return;
-        }
-      });
-    });
-  </script>
-</th:block>
+    <th:block layout:fragment="script">
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const idCheckBtn = document.getElementById('idCheck');
+                const idInput = document.getElementById('id');
+                const passwordInput = document.getElementById('password');
+                const confirmInput = document.getElementById('confirm');
+                const form = document.querySelector('form');
+                
+                idCheckBtn.addEventListener('click', function() {
+                    const id = idInput.value.trim();
+                    if (!id) {
+                        alert('아이디를 입력해주세요.');
+                        return;
+                    }
+                    const idRegex = /^[a-zA-Z0-9]{4,12}$/;
+                    if (!idRegex.test(id)) {
+                        alert('아이디는 4~12자의 영문자와 숫자만 사용 가능합니다.');
+                        return;
+                    }
+                    alert('사용 가능한 아이디입니다.');
+                });
+                
+                form.addEventListener('submit', function(e) {
+                    if (passwordInput.value !== confirmInput.value) {
+                        e.preventDefault();
+                        alert('비밀번호가 일치하지 않습니다.');
+                        return;
+                    }
+                    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+                    if (!passwordRegex.test(passwordInput.value)) {
+                        e.preventDefault();
+                        alert('비밀번호는 영문자, 숫자, 특수문자를 포함하여 8자 이상이어야 합니다.');
+                        return;
+                    }
+                });
+            });
+        </script>
+    </th:block>
+</body>
 </html>
