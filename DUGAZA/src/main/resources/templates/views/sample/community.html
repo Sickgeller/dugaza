@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>커뮤니티 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/sample/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/sample/community.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <main class="community-main" layout:fragment="content">
+        <div class="community-container">
+            <div class="community-header">
+                <h1>여행 이야기</h1>
+                <p>다른 여행자들과 경험을 공유해보세요</p>
+            </div>
+
+            <div class="write-post">
+                <button class="write-btn"><i class="fas fa-pen"></i> 글쓰기</button>
+            </div>
+
+            <div class="category-tabs">
+                <button class="tab active">전체</button>
+                <button class="tab">여행 후기</button>
+                <button class="tab">여행 계획</button>
+                <button class="tab">동행 찾기</button>
+                <button class="tab">질문/답변</button>
+            </div>
+
+            <div class="post-filters">
+                <div class="filter-left">
+                    <select class="sort-select">
+                        <option>최신순</option>
+                        <option>인기순</option>
+                        <option>조회순</option>
+                        <option>댓글순</option>
+                    </select>
+                </div>
+                <div class="filter-right">
+                    <div class="search-box">
+                        <input type="text" placeholder="검색어를 입력하세요">
+                        <button class="search-btn"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-list">
+                <article class="post-item">
+                    <div class="post-image">
+                        <img src="../images/community/post1.jpg" alt="여행 사진">
+                        <span class="category-tag">여행 후기</span>
+                    </div>
+                    <div class="post-content">
+                        <h2>제주도 3박 4일 여행 후기</h2>
+                        <p class="post-excerpt">
+                            제주도의 아름다운 자연과 맛있는 음식들, 그리고 특별한 추억을 공유합니다.
+                            봄날의 제주는 정말 아름답더라구요...
+                        </p>
+                        <div class="post-meta">
+                            <div class="meta-left">
+                                <span class="author">
+                                    <img src="../images/users/profile1.jpg" alt="프로필">
+                                    여행러버
+                                </span>
+                                <span class="date">2024.01.15</span>
+                            </div>
+                            <div class="meta-right">
+                                <span><i class="fas fa-heart"></i> 128</span>
+                                <span><i class="fas fa-comment"></i> 23</span>
+                                <span><i class="fas fa-eye"></i> 1,234</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="post-item">
+                    <div class="post-image">
+                        <img src="../images/community/post2.jpg" alt="여행 사진">
+                        <span class="category-tag">동행 찾기</span>
+                    </div>
+                    <div class="post-content">
+                        <h2>다음 달 부산 여행 동행 구해요!</h2>
+                        <p class="post-excerpt">
+                            2월 중순 부산 여행 계획 중입니다. 맛집 탐방과 야경 구경이 목적이에요.
+                            함께하실 2-3분 구합니다.
+                        </p>
+                        <div class="post-meta">
+                            <div class="meta-left">
+                                <span class="author">
+                                    <img src="../images/users/profile2.jpg" alt="프로필">
+                                    부산가자
+                                </span>
+                                <span class="date">2024.01.14</span>
+                            </div>
+                            <div class="meta-right">
+                                <span><i class="fas fa-heart"></i> 45</span>
+                                <span><i class="fas fa-comment"></i> 12</span>
+                                <span><i class="fas fa-eye"></i> 856</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="post-item">
+                    <div class="post-image">
+                        <img src="../images/community/post3.jpg" alt="여행 사진">
+                        <span class="category-tag">여행 계획</span>
+                    </div>
+                    <div class="post-content">
+                        <h2>강원도 1주일 여행 코스 공유</h2>
+                        <p class="post-excerpt">
+                            강원도 여행 계획 세워봤어요. 속초, 강릉, 평창을 중심으로
+                            맛집과 명소를 정리했습니다.
+                        </p>
+                        <div class="post-meta">
+                            <div class="meta-left">
+                                <span class="author">
+                                    <img src="../images/users/profile3.jpg" alt="프로필">
+                                    산과바다
+                                </span>
+                                <span class="date">2024.01.13</span>
+                            </div>
+                            <div class="meta-right">
+                                <span><i class="fas fa-heart"></i> 89</span>
+                                <span><i class="fas fa-comment"></i> 15</span>
+                                <span><i class="fas fa-eye"></i> 967</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="post-item">
+                    <div class="post-image">
+                        <img src="../images/community/post4.jpg" alt="여행 사진">
+                        <span class="category-tag">질문/답변</span>
+                    </div>
+                    <div class="post-content">
+                        <h2>전주 한옥마을 맛집 추천해주세요</h2>
+                        <p class="post-excerpt">
+                            이번 주말 전주 여행 갑니다. 한옥마을 근처 맛집 추천
+                            부탁드려요. 비빔밥은 꼭 먹어보고 싶어요!
+                        </p>
+                        <div class="post-meta">
+                            <div class="meta-left">
+                                <span class="author">
+                                    <img src="../images/users/profile4.jpg" alt="프로필">
+                                    맛집탐험가
+                                </span>
+                                <span class="date">2024.01.12</span>
+                            </div>
+                            <div class="meta-right">
+                                <span><i class="fas fa-heart"></i> 34</span>
+                                <span><i class="fas fa-comment"></i> 8</span>
+                                <span><i class="fas fa-eye"></i> 562</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="pagination">
+                <button class="prev-btn"><i class="fas fa-chevron-left"></i></button>
+                <div class="page-numbers">
+                    <a href="#" class="active">1</a>
+                    <a href="#">2</a>
+                    <a href="#">3</a>
+                    <a href="#">4</a>
+                    <a href="#">5</a>
+                </div>
+                <button class="next-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </main>
+</body>
+</html> 

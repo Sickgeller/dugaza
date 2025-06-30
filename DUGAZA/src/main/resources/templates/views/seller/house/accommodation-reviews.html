@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리뷰 관리 - 숙소 판매자</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>숙소 관리자</h1>
+                <p>숙소 판매자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="accommodation-seller.html"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li><a href="accommodation-rooms.html"><i class="fas fa-bed"></i><span>객실 관리</span></a></li>
+                    <li><a href="accommodation-reservations.html"><i class="fas fa-calendar-check"></i><span>예약 관리</span></a></li>
+                    <li class="active"><a href="accommodation-reviews.html"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a href="accommodation-promotions.html"><i class="fas fa-tags"></i><span>프로모션 관리</span></a></li>
+                    <li><a href="accommodation-facilities.html"><i class="fas fa-swimming-pool"></i><span>부대시설 관리</span></a></li>
+                    <li><a href="accommodation-sales.html"><i class="fas fa-chart-line"></i><span>매출 관리</span></a></li>
+                    <li><a href="accommodation-settings.html"><i class="fas fa-cog"></i><span>설정</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>리뷰 관리</h2>
+                </div>
+                <div class="user-info">
+                    <span>홍길동님</span>
+                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 리뷰 통계 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>리뷰 통계</h3>
+                    <div class="period-selector">
+                        <button class="active">일간</button>
+                        <button>주간</button>
+                        <button>월간</button>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>평균 평점</h3>
+                            <p>4.5</p>
+                            <span class="stat-change increase">+0.2 (전월 대비)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>전체 리뷰</h3>
+                            <p>128개</p>
+                            <span class="stat-change">누적</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>미답변 리뷰</h3>
+                            <p>3개</p>
+                            <span class="stat-change warning">답변 필요</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>부정 리뷰</h3>
+                            <p>2개</p>
+                            <span class="stat-change warning">조치 필요</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 리뷰 검색 및 필터 -->
+            <div class="content-section">
+                <div class="search-filter-container">
+                    <div class="search-box">
+                        <input type="text" placeholder="리뷰 내용, 작성자 검색">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="filter-options">
+                        <select>
+                            <option value="">평점</option>
+                            <option value="5">5점</option>
+                            <option value="4">4점</option>
+                            <option value="3">3점</option>
+                            <option value="2">2점</option>
+                            <option value="1">1점</option>
+                        </select>
+                        <select>
+                            <option value="">답변 상태</option>
+                            <option value="answered">답변 완료</option>
+                            <option value="waiting">미답변</option>
+                        </select>
+                        <select>
+                            <option value="">객실 유형</option>
+                            <option value="standard">스탠다드</option>
+                            <option value="deluxe">디럭스</option>
+                            <option value="suite">스위트</option>
+                            <option value="family">패밀리</option>
+                        </select>
+                        <input type="date" placeholder="시작일">
+                        <input type="date" placeholder="종료일">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 리뷰 목록 -->
+            <div class="content-section">
+                <div class="review-list">
+                    <!-- 리뷰 카드 1 -->
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <img src="../images/users/profile2.jpg" alt="리뷰어 프로필">
+                                <div class="user-details">
+                                    <span class="user-name">김철수</span>
+                                    <span class="review-date">2024-02-15</span>
+                                </div>
+                            </div>
+                            <div class="review-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span>5.0</span>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            <div class="room-info">
+                                <span class="room-type">디럭스 더블룸</span>
+                                <span class="stay-date">2024-02-10 ~ 2024-02-12</span>
+                            </div>
+                            <p>객실이 매우 청결하고 전망도 좋았습니다. 조식도 맛있었고 직원분들도 친절하셨어요!</p>
+                            <div class="review-images">
+                                <img src="../images/accommodation/room1.jpg" alt="리뷰 이미지 1">
+                                <img src="../images/accommodation/room2.jpg" alt="리뷰 이미지 2">
+                            </div>
+                        </div>
+                        <div class="review-actions">
+                            <button class="btn-primary">답변하기</button>
+                            <button class="btn-secondary">신고하기</button>
+                            <button class="btn-icon" title="삭제"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- 리뷰 카드 2 -->
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <img src="../images/users/profile3.jpg" alt="리뷰어 프로필">
+                                <div class="user-details">
+                                    <span class="user-name">이영희</span>
+                                    <span class="review-date">2024-02-14</span>
+                                </div>
+                            </div>
+                            <div class="review-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span>3.0</span>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            <div class="room-info">
+                                <span class="room-type">스위트룸</span>
+                                <span class="stay-date">2024-02-12 ~ 2024-02-14</span>
+                            </div>
+                            <p>객실은 깨끗했지만 야간에 소음이 있었고, 에어컨 작동이 원활하지 않았습니다. 개선이 필요해 보입니다.</p>
+                            <div class="review-images">
+                                <img src="../images/accommodation/room2.jpg" alt="리뷰 이미지 1">
+                            </div>
+                        </div>
+                        <div class="review-response">
+                            <div class="response-header">
+                                <i class="fas fa-reply"></i>
+                                <span>숙소 관리자</span>
+                                <span class="response-date">2024-02-14</span>
+                            </div>
+                            <p>안녕하세요, 이영희 고객님. 불편을 끼쳐 대단히 죄송합니다. 소음 문제와 에어컨 작동 문제는 즉시 점검하여 조치하도록 하겠습니다. 다음 방문 시에는 더 나은 서비스로 보답하겠습니다.</p>
+                        </div>
+                        <div class="review-actions">
+                            <button class="btn-primary">답변 수정</button>
+                            <button class="btn-secondary">신고하기</button>
+                            <button class="btn-icon" title="삭제"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- 리뷰 카드 3 -->
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <img src="../images/users/profile1.jpg" alt="리뷰어 프로필">
+                                <div class="user-details">
+                                    <span class="user-name">박지성</span>
+                                    <span class="review-date">2024-02-13</span>
+                                </div>
+                            </div>
+                            <div class="review-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span>4.0</span>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            <div class="room-info">
+                                <span class="room-type">패밀리룸</span>
+                                <span class="stay-date">2024-02-11 ~ 2024-02-13</span>
+                            </div>
+                            <p>가족여행으로 좋았습니다. 특히 미니주방이 있어서 편리했어요. 다만 주차장이 좀 좁았네요.</p>
+                            <div class="review-images">
+                                <img src="../images/accommodation/room1.jpg" alt="리뷰 이미지 1">
+                            </div>
+                        </div>
+                        <div class="review-actions">
+                            <button class="btn-primary">답변하기</button>
+                            <button class="btn-secondary">신고하기</button>
+                            <button class="btn-icon" title="삭제"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+                    <button class="btn-page"><i class="fas fa-angle-double-left"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-left"></i></button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page">2</button>
+                    <button class="btn-page">3</button>
+                    <button class="btn-page">4</button>
+                    <button class="btn-page">5</button>
+                    <button class="btn-page"><i class="fas fa-angle-right"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-double-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+</body>
+</html> 

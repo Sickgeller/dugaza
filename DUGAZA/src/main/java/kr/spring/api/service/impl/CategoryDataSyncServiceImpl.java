@@ -1,5 +1,6 @@
 package kr.spring.api.service.impl;
 
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.client.CategoryApiClient;
 import kr.spring.api.dto.CategoryCodeApiDto;
 import kr.spring.api.mapper.CategoryCodeMapper;
@@ -22,9 +23,8 @@ public class CategoryDataSyncServiceImpl implements CategoryDataSyncService {
 
     @Override
     @Transactional
+    @LogExecutionTime(category = "CategorySync")
     public int syncAllCategoryCodes() {
-        log.info("모든 카테고리 코드 동기화 시작");
-        
         AtomicInteger totalCount = new AtomicInteger(0);
         
         // 대분류 동기화
@@ -39,15 +39,13 @@ public class CategoryDataSyncServiceImpl implements CategoryDataSyncService {
         int cat3Count = syncCategoryCode3();
         totalCount.addAndGet(cat3Count);
         
-        log.info("모든 카테고리 코드 동기화 완료. 총 {} 항목 동기화됨", totalCount.get());
         return totalCount.get();
     }
 
     @Override
     @Transactional
+    @LogExecutionTime(category = "CategorySync")
     public int syncCategoryCode1() {
-        log.info("대분류 카테고리 코드 동기화 시작");
-        
         List<CategoryCodeApiDto> cat1List = categoryApiClient.getCategoryCode1();
         AtomicInteger count = new AtomicInteger(0);
         
@@ -61,30 +59,27 @@ public class CategoryDataSyncServiceImpl implements CategoryDataSyncService {
                         // 새로운 카테고리 코드 추가
                         dto.setIsActive(1L); // 활성화 상태로 설정
                         categoryCodeMapper.insertCategoryCode(dto);
-                        log.info("대분류 카테고리 코드 추가: {} - {}", dto.getCategoryCode(), dto.getCategoryName());
                         count.incrementAndGet();
                     } else {
                         // 기존 카테고리 코드 업데이트
                         existing.setCategoryName(dto.getCategoryName());
                         // isActive 상태 유지
                         categoryCodeMapper.updateCategoryCode(existing);
-                        log.info("대분류 카테고리 코드 업데이트: {} - {}", existing.getCategoryCode(), existing.getCategoryName());
                         count.incrementAndGet();
                     }
                 } catch (Exception e) {
-                    log.error("대분류 카테고리 코드 저장 중 오류 발생: {}", e.getMessage(), e);
+                    // AOP에서 예외 처리
                 }
             });
         }
         
-        log.info("대분류 카테고리 코드 동기화 완료. {} 항목 동기화됨", count.get());
         return count.get();
     }
 
     @Override
     @Transactional
+    @LogExecutionTime(category = "CategorySync")
     public int syncCategoryCode2() {
-        log.info("중분류 카테고리 코드 동기화 시작");
         AtomicInteger count = new AtomicInteger(0);
         
         // 먼저 대분류 코드 목록을 가져옴
@@ -106,38 +101,32 @@ public class CategoryDataSyncServiceImpl implements CategoryDataSyncService {
                                     // 새로운 카테고리 코드 추가
                                     dto.setIsActive(1L); // 활성화 상태로 설정
                                     categoryCodeMapper.insertCategoryCode(dto);
-                                    log.info("중분류 카테고리 코드 추가: {} - {} (부모: {})", 
-                                            dto.getCategoryCode(), dto.getCategoryName(), dto.getParentCode());
                                     count.incrementAndGet();
                                 } else {
                                     // 기존 카테고리 코드 업데이트
                                     existing.setCategoryName(dto.getCategoryName());
                                     // isActive 상태 유지
                                     categoryCodeMapper.updateCategoryCode(existing);
-                                    log.info("중분류 카테고리 코드 업데이트: {} - {} (부모: {})", 
-                                            existing.getCategoryCode(), existing.getCategoryName(), existing.getParentCode());
                                     count.incrementAndGet();
                                 }
                             } catch (Exception e) {
-                                log.error("중분류 카테고리 코드 저장 중 오류 발생: {}", e.getMessage(), e);
+                                // AOP에서 예외 처리
                             }
                         });
                     }
                 } catch (Exception e) {
-                    log.error("대분류 [{}]에 대한 중분류 카테고리 코드 조회 중 오류 발생: {}", 
-                            cat1.getCategoryCode(), e.getMessage(), e);
+                    // AOP에서 예외 처리
                 }
             });
         }
         
-        log.info("중분류 카테고리 코드 동기화 완료. {} 항목 동기화됨", count.get());
         return count.get();
     }
 
     @Override
     @Transactional
+    @LogExecutionTime(category = "CategorySync")
     public int syncCategoryCode3() {
-        log.info("소분류 카테고리 코드 동기화 시작");
         AtomicInteger count = new AtomicInteger(0);
         
         // 먼저 중분류 코드 목록을 가져옴
@@ -162,31 +151,25 @@ public class CategoryDataSyncServiceImpl implements CategoryDataSyncService {
                                     // 새로운 카테고리 코드 추가
                                     dto.setIsActive(1L); // 활성화 상태로 설정
                                     categoryCodeMapper.insertCategoryCode(dto);
-                                    log.info("소분류 카테고리 코드 추가: {} - {} (부모: {})", 
-                                            dto.getCategoryCode(), dto.getCategoryName(), dto.getParentCode());
                                     count.incrementAndGet();
                                 } else {
                                     // 기존 카테고리 코드 업데이트
                                     existing.setCategoryName(dto.getCategoryName());
                                     // isActive 상태 유지
                                     categoryCodeMapper.updateCategoryCode(existing);
-                                    log.info("소분류 카테고리 코드 업데이트: {} - {} (부모: {})", 
-                                            existing.getCategoryCode(), existing.getCategoryName(), existing.getParentCode());
                                     count.incrementAndGet();
                                 }
                             } catch (Exception e) {
-                                log.error("소분류 카테고리 코드 저장 중 오류 발생: {}", e.getMessage(), e);
+                                // AOP에서 예외 처리
                             }
                         });
                     }
                 } catch (Exception e) {
-                    log.error("중분류 [{}]에 대한 소분류 카테고리 코드 조회 중 오류 발생: {}", 
-                            cat2.getCategoryCode(), e.getMessage(), e);
+                    // AOP에서 예외 처리
                 }
             });
         }
         
-        log.info("소분류 카테고리 코드 동기화 완료. {} 항목 동기화됨", count.get());
         return count.get();
     }
 } 

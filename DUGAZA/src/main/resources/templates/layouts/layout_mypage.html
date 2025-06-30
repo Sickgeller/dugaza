@@ -6,11 +6,11 @@
 <meta name="csrf-header" th:content="${_csrf.headerName}">
 <meta name="csrf-token" th:content="${_csrf.token}">
 <title layout:title-pattern="$LAYOUT_TITLE > $CONTENT_TITLE">SpringPage</title>
-<link rel="stylesheet" th:href="@{/assets/css/common.css}" type="text/css">
-<link rel="stylesheet" th:href="@{/assets/css/member.css}" type="text/css">
+<link rel="stylesheet" th:href="@{/assets/css/style.css}" type="text/css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<th:block layout:fragment="css"></th:block>
 <script type="text/javascript" th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
 <script type="text/javascript" th:src="@{/assets/js/customjs.js}"></script>
-<script type="text/javascript" th:src="@{/assets/js/member.profile.js}"></script>
 </head>
 <body>
 <div id="main">
@@ -29,6 +29,7 @@
 	<div id="main_footer" class="page-clear" th:insert="fragments/footer::footer"></div>
 	<!-- footer 끝 -->
 </div>
+<th:block layout:fragment="script"></th:block>
 </body>
 </html>
 

@@ -13,6 +13,16 @@ java {
 	}
 }
 
+// XML 파일을 클래스패스에 포함시키는 설정
+//sourceSets {
+//    main {
+//        resources {
+//            srcDirs = ["src/main/resources", "src/main/java"]
+//            include "**/*.xml"
+//        }
+//    }
+//}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -32,8 +42,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'commons-io:commons-io:2.15.1'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'

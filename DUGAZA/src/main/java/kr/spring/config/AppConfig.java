@@ -2,9 +2,17 @@ package kr.spring.config;
 
 import java.util.Properties;
 
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -13,17 +21,31 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 import kr.spring.websocket.SocketHandler;
 
+import javax.sql.DataSource;
+
 // 자바코드 기반 설정 클래스
 @Configuration
 @EnableWebSecurity
-public class AppConfig implements WebMvcConfigurer, WebSocketConfigurer{
+@MapperScan(basePackages = {"kr.spring.api.mapper", "kr.spring.member.dao"})
+@ComponentScan(basePackages = {"kr.spring.aop"})
+public class AppConfig implements WebMvcConfigurer, WebSocketConfigurer {
 
-	@Value("${dataconfig.google-mail-url}")
+	@Value("${spring.mail.username}")
 	private String google_mail_url;
-	@Value("${dataconfig.google-mail-password}")
+	@Value("${spring.mail.password}")
 	private String google_mail_password;
+	@Autowired
+	private ApplicationContext applicationContext;
 
-	
+	// Oracle JDBC 드라이버 로드
+	static {
+		try {
+			Class.forName("oracle.jdbc.OracleDriver");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/*
 	 * 1. 구글 이메일 접속
 	 * 2. 계정관리
@@ -59,6 +81,22 @@ public class AppConfig implements WebMvcConfigurer, WebSocketConfigurer{
 																	// 허용할 도메인 지정
 		registry.addHandler(new SocketHandler(), "message-ws").setAllowedOrigins("*");
 		
+	}
+
+	@Bean
+	public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
+		SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
+		sessionFactory.setDataSource(dataSource);
+		
+		// 매퍼 XML 파일 위치 설정
+		Resource[] mapperLocations = new PathMatchingResourcePatternResolver()
+				.getResources("classpath:mapper/**/*.xml");
+		sessionFactory.setMapperLocations(mapperLocations);
+		
+		// 타입 별칭 패키지 설정
+		sessionFactory.setTypeAliasesPackage("kr.spring.api.dto");
+		
+		return sessionFactory.getObject();
 	}
 
 }

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>렌터카 관리 - 슈퍼 관리자</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>슈퍼 관리자</h1>
+                <p>시스템 관리자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="super-admin.html"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li><a href="super-admin-users.html"><i class="fas fa-users"></i><span>회원 관리</span></a></li>
+                    <li><a href="super-admin-sellers.html"><i class="fas fa-store"></i><span>판매자 관리</span></a></li>
+                    <li class="active">
+                        <a href="super-admin-products.html"><i class="fas fa-boxes"></i><span>상품 관리</span></a>
+                        <ul class="submenu">
+                            <li class="active"><a href="super-admin-cars.html"><i class="fas fa-car"></i><span>렌터카</span></a></li>
+                            <li><a href="super-admin-accommodations.html"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
+                            <li><a href="super-admin-tours.html"><i class="fas fa-map-marked-alt"></i><span>투어</span></a></li>
+                        </ul>
+                    </li>
+                    <li><a href="super-admin-payments.html"><i class="fas fa-credit-card"></i><span>결제 관리</span></a></li>
+                    <li><a href="super-admin-reviews.html"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a href="super-admin-reports.html"><i class="fas fa-flag"></i><span>신고 관리</span></a></li>
+                    <li><a href="super-admin-promotions.html"><i class="fas fa-tags"></i><span>프로모션 관리</span></a></li>
+                    <li><a href="super-admin-statistics.html"><i class="fas fa-chart-bar"></i><span>통계</span></a></li>
+                    <li><a href="super-admin-settings.html"><i class="fas fa-cog"></i><span>시스템 설정</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>렌터카 관리</h2>
+                </div>
+                <div class="user-info">
+                    <span>관리자님</span>
+                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 렌터카 통계 -->
+            <div class="content-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>총 등록 차량</h3>
+                            <p>1,234대</p>
+                            <span class="stat-change increase">+45대 (이번 달)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>이번 달 예약</h3>
+                            <p>3,567건</p>
+                            <span class="stat-change increase">+12.5% (전월 대비)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>평균 평점</h3>
+                            <p>4.5 ⭐</p>
+                            <span class="stat-change increase">+0.2 (전월 대비)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>신고 접수</h3>
+                            <p>15건</p>
+                            <span class="stat-change decrease">-5건 (전월 대비)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 렌터카 검색 및 필터 -->
+            <div class="content-section">
+                <div class="search-filter-container">
+                    <div class="search-box">
+                        <input type="text" placeholder="차량명, 판매자, 차량번호 검색">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="filter-options">
+                        <select>
+                            <option value="">차종</option>
+                            <option value="compact">경차/소형</option>
+                            <option value="medium">중형</option>
+                            <option value="large">대형</option>
+                            <option value="suv">SUV</option>
+                            <option value="van">승합</option>
+                        </select>
+                        <select>
+                            <option value="">연료</option>
+                            <option value="gasoline">휘발유</option>
+                            <option value="diesel">경유</option>
+                            <option value="lpg">LPG</option>
+                            <option value="ev">전기</option>
+                            <option value="hybrid">하이브리드</option>
+                        </select>
+                        <select>
+                            <option value="">상태</option>
+                            <option value="available">대여가능</option>
+                            <option value="rented">대여중</option>
+                            <option value="maintenance">정비중</option>
+                            <option value="disabled">운행중지</option>
+                        </select>
+                        <select>
+                            <option value="">정렬 기준</option>
+                            <option value="recent">최근 등록순</option>
+                            <option value="popular">인기순</option>
+                            <option value="rating">평점순</option>
+                            <option value="price-low">가격 낮은순</option>
+                            <option value="price-high">가격 높은순</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 렌터카 목록 -->
+            <div class="content-section">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>차량 정보</th>
+                                <th>판매자</th>
+                                <th>차종/연료</th>
+                                <th>일일요금</th>
+                                <th>예약률</th>
+                                <th>평점</th>
+                                <th>상태</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="car-info">
+                                        <img src="../images/cars/avante.jpg" alt="아반떼 이미지">
+                                        <div>
+                                            <strong>아반떼 CN7</strong>
+                                            <small>12가 3456</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>제주렌트카</td>
+                                <td>중형/휘발유</td>
+                                <td>₩50,000</td>
+                                <td>85%</td>
+                                <td>4.8 ⭐</td>
+                                <td><span class="status available">대여가능</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="운행중지"><i class="fas fa-ban"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="car-info">
+                                        <img src="../images/cars/tucson.jpg" alt="투싼 이미지">
+                                        <div>
+                                            <strong>투싼 NX4</strong>
+                                            <small>34가 5678</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>한라렌트카</td>
+                                <td>SUV/디젤</td>
+                                <td>₩70,000</td>
+                                <td>92%</td>
+                                <td>4.6 ⭐</td>
+                                <td><span class="status rented">대여중</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="운행중지"><i class="fas fa-ban"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="car-info">
+                                        <img src="../images/cars/morning.jpg" alt="차량 이미지">
+                                        <div>
+                                            <strong>아이오닉 6</strong>
+                                            <small>56가 7890</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>성산렌트카</td>
+                                <td>중형/전기</td>
+                                <td>₩80,000</td>
+                                <td>78%</td>
+                                <td>4.9 ⭐</td>
+                                <td><span class="status maintenance">정비중</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="운행중지"><i class="fas fa-ban"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+                    <button class="btn-page"><i class="fas fa-angle-double-left"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-left"></i></button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page">2</button>
+                    <button class="btn-page">3</button>
+                    <button class="btn-page">4</button>
+                    <button class="btn-page">5</button>
+                    <button class="btn-page"><i class="fas fa-angle-right"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-double-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+</body>
+</html> 

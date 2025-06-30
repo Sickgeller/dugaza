@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>교통 & 숙소 추천 - Trip.com</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/transportation.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <main class="transportation-main">
+        <div class="transportation-container">
+            <section class="transport-search-section">
+                <h1>교통 & 숙소 패키지</h1>
+                <div class="search-form">
+                    <div class="form-group">
+                        <label>출발지</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" placeholder="출발지를 입력하세요">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>도착지</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" placeholder="도착지를 입력하세요">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>날짜</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-calendar"></i>
+                            <input type="date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>인원</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <select>
+                                <option>1명</option>
+                                <option>2명</option>
+                                <option>3명</option>
+                                <option>4명</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="transport-options-section">
+                <h2>교통 수단 선택</h2>
+                <div class="transport-options">
+                    <div class="transport-card selected">
+                        <div class="transport-icon">
+                            <i class="fas fa-train"></i>
+                        </div>
+                        <h3>KTX</h3>
+                        <p>서울 → 부산</p>
+                        <div class="transport-details">
+                            <span><i class="fas fa-clock"></i> 2시간 30분</span>
+                            <span><i class="fas fa-won-sign"></i> 59,000원</span>
+                        </div>
+                    </div>
+                    <div class="transport-card">
+                        <div class="transport-icon">
+                            <i class="fas fa-bus"></i>
+                        </div>
+                        <h3>고속버스</h3>
+                        <p>서울 → 부산</p>
+                        <div class="transport-details">
+                            <span><i class="fas fa-clock"></i> 4시간 30분</span>
+                            <span><i class="fas fa-won-sign"></i> 34,000원</span>
+                        </div>
+                    </div>
+                    <div class="transport-card">
+                        <div class="transport-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <h3>렌터카</h3>
+                        <p>서울 → 부산</p>
+                        <div class="transport-details">
+                            <span><i class="fas fa-clock"></i> 4시간</span>
+                            <span><i class="fas fa-won-sign"></i> 150,000원</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="recommended-accommodations">
+                <div class="section-header">
+                    <h2>추천 숙소</h2>
+                    <p>선택하신 KTX 도착 시각 기준 주변 추천 숙소입니다</p>
+                </div>
+                <div class="accommodation-grid">
+                    <div class="accommodation-card">
+                        <div class="accommodation-image">
+                            <img src="../images/accommodation/hotel.jpg" alt="파라다이스 호텔">
+                            <span class="distance-badge">역에서 500m</span>
+                        </div>
+                        <div class="accommodation-info">
+                            <div class="accommodation-header">
+                                <h3>파라다이스 호텔</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <span>4.8</span>
+                                </div>
+                            </div>
+                            <p class="location"><i class="fas fa-map-marker-alt"></i> 부산 해운대구</p>
+                            <div class="amenities">
+                                <span><i class="fas fa-wifi"></i> 무료 WiFi</span>
+                                <span><i class="fas fa-parking"></i> 주차가능</span>
+                                <span><i class="fas fa-swimming-pool"></i> 수영장</span>
+                            </div>
+                            <div class="price-info">
+                                <div class="price">
+                                    <span class="amount">180,000원</span>
+                                    <span class="unit">/ 1박</span>
+                                </div>
+                                <button class="book-btn">예약하기</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accommodation-card">
+                        <div class="accommodation-image">
+                            <img src="../images/accommodation/pension.jpg" alt="해운대 펜션">
+                            <span class="distance-badge">역에서 1km</span>
+                        </div>
+                        <div class="accommodation-info">
+                            <div class="accommodation-header">
+                                <h3>해운대 펜션</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <span>4.5</span>
+                                </div>
+                            </div>
+                            <p class="location"><i class="fas fa-map-marker-alt"></i> 부산 해운대구</p>
+                            <div class="amenities">
+                                <span><i class="fas fa-wifi"></i> 무료 WiFi</span>
+                                <span><i class="fas fa-parking"></i> 주차가능</span>
+                                <span><i class="fas fa-utensils"></i> 취사가능</span>
+                            </div>
+                            <div class="price-info">
+                                <div class="price">
+                                    <span class="amount">120,000원</span>
+                                    <span class="unit">/ 1박</span>
+                                </div>
+                                <button class="book-btn">예약하기</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accommodation-card">
+                        <div class="accommodation-image">
+                            <img src="../images/accommodation/hanok.jpg" alt="전통 한옥">
+                            <span class="distance-badge">역에서 1.5km</span>
+                        </div>
+                        <div class="accommodation-info">
+                            <div class="accommodation-header">
+                                <h3>전통 한옥</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <span>4.7</span>
+                                </div>
+                            </div>
+                            <p class="location"><i class="fas fa-map-marker-alt"></i> 부산 수영구</p>
+                            <div class="amenities">
+                                <span><i class="fas fa-wifi"></i> 무료 WiFi</span>
+                                <span><i class="fas fa-parking"></i> 주차가능</span>
+                                <span><i class="fas fa-spa"></i> 온돌방</span>
+                            </div>
+                            <div class="price-info">
+                                <div class="price">
+                                    <span class="amount">150,000원</span>
+                                    <span class="unit">/ 1박</span>
+                                </div>
+                                <button class="book-btn">예약하기</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="package-deals">
+                <div class="section-header">
+                    <h2>교통 + 숙소 패키지 할인</h2>
+                    <p>패키지로 예약하시면 최대 15% 할인됩니다</p>
+                </div>
+                <div class="package-grid">
+                    <div class="package-card">
+                        <div class="package-header">
+                            <h3>KTX + 파라다이스 호텔</h3>
+                            <span class="discount-tag">15% 할인</span>
+                        </div>
+                        <div class="package-details">
+                            <div class="transport-part">
+                                <h4><i class="fas fa-train"></i> 교통</h4>
+                                <p>KTX (서울 → 부산)</p>
+                                <p>59,000원</p>
+                            </div>
+                            <div class="accommodation-part">
+                                <h4><i class="fas fa-hotel"></i> 숙소</h4>
+                                <p>파라다이스 호텔 (1박)</p>
+                                <p>180,000원</p>
+                            </div>
+                            <div class="total-price">
+                                <div class="original-price">239,000원</div>
+                                <div class="discounted-price">203,150원</div>
+                            </div>
+                            <button class="package-book-btn">패키지 예약</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+</html> 

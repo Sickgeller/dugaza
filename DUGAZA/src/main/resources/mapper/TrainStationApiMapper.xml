@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.api.mapper.TrainStationApiMapper">
+
+    <resultMap id="TrainStationApiResultMap" type="kr.spring.api.dto.TrainStationApiDto">
+        <id property="nodeId" column="NODE_ID"/>
+        <result property="nodeName" column="NODE_NAME"/>
+        <result property="cityCode" column="CITY_CODE"/>
+        <result property="isActive" column="IS_ACTIVE" jdbcType="VARCHAR" javaType="java.lang.String"/>
+    </resultMap>
+
+    <select id="getAllStation" resultMap="TrainStationApiResultMap">
+        SELECT NODE_ID, NODE_NAME, CITY_CODE, 
+               NVL(IS_ACTIVE, 'Y') AS IS_ACTIVE 
+        FROM TRAIN_STATION
+    </select>
+
+    <insert id="insert">
+        INSERT INTO TRAIN_STATION
+        (NODE_ID, NODE_NAME, CITY_CODE, IS_ACTIVE) VALUES (
+                                     #{nodeId},#{nodeName},#{cityCode}, 'Y'
+                                            )
+    </insert>
+
+    <update id="update">
+        UPDATE TRAIN_STATION SET
+            CITY_CODE = #{cityCode},
+            NODE_NAME = #{nodeName},
+            IS_ACTIVE = 'Y'
+        WHERE NODE_ID = #{nodeId}
+    </update>
+
+    <select id="getStationByCityCode" resultMap="TrainStationApiResultMap">
+        SELECT NODE_ID, NODE_NAME, CITY_CODE, 
+               NVL(IS_ACTIVE, 'Y') AS IS_ACTIVE 
+        FROM TRAIN_STATION 
+        WHERE CITY_CODE = #{cityCode}
+    </select>
+</mapper>

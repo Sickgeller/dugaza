@@ -1,7 +1,7 @@
 package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import kr.spring.api.dto.CategoryCodeApiDto;
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.dto.TourApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,20 +20,11 @@ public class TourApiClient {
     private final BaseApiClient baseApiClient;
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
+    @LogExecutionTime(category = "TourData")
     public List<TourApiDto> getTouristData(int contentTypeId) {
         URI uri = baseApiClient.makeTourUri("/areaBasedList2","contentTypeId", String.valueOf(contentTypeId));
-        log.info("----------> Tourist Data Sync Client URI : {} ", uri);
-        List<TourApiDto> allResults =  baseApiClient.callApiManyTimes(uri, this::createTourApiDto);
-        log.info("----------> Tourist Data Sync Done totalSize : {} ", allResults.size());
-        return allResults;
+        return baseApiClient.callApiManyTimes(uri, this::createTourApiDto);
     }
-
-
-
-
-
-
-
 
     private TourApiDto createTourApiDto(JsonNode node, String item) {
         String createdTimeStr = node.path("createdtime").asText();

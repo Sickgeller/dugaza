@@ -1,6 +1,7 @@
 package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.dto.EventContentApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,67 +28,24 @@ public class EventApiClient {
      * @param startYear 조회 시작 연도
      * @return 이벤트 정보 목록
      */
+    @LogExecutionTime(category = "EventData")
     public List<EventContentApiDto> getEventContent(Long startYear) {
-        log.info("이벤트 정보 조회 시작 - 시작 연도: {}", startYear);
-
         List<EventContentApiDto> allResults = new ArrayList<>();
         AtomicInteger totalCount = new AtomicInteger(0);
 
         // 첫 페이지 요청으로 전체 개수 파악
         int pageNo = 1;
         URI firstPageUri = baseApiClient.makeTourUri(
+                "/searchFestival",
                 "eventStartDate", String.valueOf(startYear),
                 "pageNo", String.valueOf(pageNo),
                 "numOfRows", String.valueOf(DEFAULT_PAGE_SIZE));
-
-//        List<EventContentApiDto> firstPageResults = baseApiClient.callApiWithTotalCount(firstPageUri, this::createEventContentDto, totalCount);
-//        allResults.addAll(firstPageResults);
-//
-//        log.info("첫 페이지 조회 완료 - 전체 항목 수: {}, 첫 페이지 항목 수: {}",
-//                totalCount.get(), firstPageResults.size());
-//
-//        // 남은 페이지 요청
-//        int totalPages = baseApiClient.calculateTotalPages(totalCount.get(), DEFAULT_PAGE_SIZE);
-//        totalPages = Math.min(totalPages, MAX_TOTAL_ITEMS / DEFAULT_PAGE_SIZE); // API 최대 제한 고려
-
-//        log.info("총 페이지 수: {}", totalPages);
-
-        // 이미 첫 페이지는 조회했으므로 2페이지부터 시작
-//        for (pageNo = 2; pageNo <= totalPages; pageNo++) {
-//            log.info("페이지 {} 조회 중...", pageNo);
-//
-//            URI pageUri = baseApiClient.makeTourUri(
-//                    "eventStartDate", String.valueOf(startYear),
-//                    "pageNo", String.valueOf(pageNo),
-//                    "numOfRows", String.valueOf(DEFAULT_PAGE_SIZE));
-//
-//            List<EventContentApiDto> pageResults = baseApiClient.callApi(pageUri, this::createEventContentDto);
-//
-//            if (pageResults.isEmpty()) {
-//                log.warn("페이지 {}에서 결과가 없습니다. 페이징 종료", pageNo);
-//                break;
-//            }
-//
-//            allResults.addAll(pageResults);
-//            log.info("페이지 {} 조회 완료 - 항목 수: {}, 누적 항목 수: {}",
-//                    pageNo, pageResults.size(), allResults.size());
-//
-//            // API 호출 제한 준수를 위한 딜레이
-//            try {
-//                Thread.sleep(100);
-//            } catch (InterruptedException e) {
-//                Thread.currentThread().interrupt();
-//                log.warn("API 호출 간 대기 중 인터럽트 발생");
-//            }
-//        }
-
-        log.info("이벤트 정보 조회 완료 - 총 {}건", allResults.size());
-        return allResults;
+        
+        return baseApiClient.callApiManyTimes(firstPageUri, this::createEventContentDto);
     }
 
-
     private EventContentApiDto createEventContentDto(JsonNode item, String type) {
-        // tel 필드 값 로깅
+        // tel 필드 값 처리
         String telValue = item.path("tel").asText();
         
         return EventContentApiDto.builder()

@@ -1,5 +1,6 @@
 package kr.spring.api.service.impl;
 
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.client.HouseApiClient;
 import kr.spring.api.dto.HouseApiDto;
 import kr.spring.api.mapper.HouseApiMapper;
@@ -24,19 +25,19 @@ public class HouseDataSyncServiceImpl implements HouseDataSyncService {
 
     @Override
     @Transactional
+    @LogExecutionTime(category = "HouseSync")
     public Map<String, Object> syncHouseData() {
         AtomicInteger totalCount = new AtomicInteger(0);
         AtomicInteger successCount = new AtomicInteger(0);
         AtomicInteger failedCount = new AtomicInteger(0);
-        log.info("-----> House Data Sync Service Start");
+        
         try {
             List<HouseApiDto> houseList = houseApiClient.getHouseDataList();
-            log.info("----------> House Data Mapping Service start, 데이터 개수: {}", houseList.size());
+            
             for(HouseApiDto houseApiDto : houseList) {
                 totalCount.incrementAndGet();
                 try {
                     if (houseApiDto.getContentId() == null) {
-                        log.warn("----------> House Data contentId is null, skipping record #{}", totalCount.get());
                         failedCount.incrementAndGet();
                         continue;
                     }
@@ -50,31 +51,24 @@ public class HouseDataSyncServiceImpl implements HouseDataSyncService {
                     }
                     
                     try {
-                        log.debug("----------> Inserting house data: {}", houseApiDto);
                         houseApiMapper.insert(houseApiDto);
                         successCount.incrementAndGet();
                     } catch (Exception e) {
-                        log.error("----------> House Data insert error: {}", e.getMessage());
                         failedCount.incrementAndGet();
                     }
                 } catch (Exception e) {
                     failedCount.incrementAndGet();
-                    log.error("----------> House Data Mapping Service error, errornum: {}, contentId: {}, error: {}", 
-                            failedCount.get(), 
-                            houseApiDto != null ? houseApiDto.getContentId() : "null",
-                            e.getMessage(), e);
                 }
             }
-            log.info("----------> House Data Mapping Service end, totalCount: {}, successCount: {}, failedCount: {}",
-                    totalCount.get(), successCount.get(), failedCount.get());
         } catch (Exception e) {
-            log.error("-----> House Data Sync Service Error: {}", e.getMessage(), e);
+            // AOP에서 예외 처리
         }
+        
         int totalDelete = houseApiMapper.deleteInvalidHouseData();
-        log.info("-----> Delete InvalidHouseData: {}", totalDelete);
-        log.info("-----> House Data Sync Service End");
+        
         return Map.of("successCount", successCount.get(),
                 "failedCount", failedCount.get(),
-                "totalCount", totalCount.get());
+                "totalCount", totalCount.get(),
+                "deletedCount", totalDelete);
     }
 }

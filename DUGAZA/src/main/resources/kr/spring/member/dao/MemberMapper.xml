@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="kr.spring.member.dao.MemberMapper">
+	<!-- 회원가입 -->
+	<insert id="insertMemberDetail" parameterType="kr.spring.member.vo.MemberVO">
+		INSERT INTO MEMBER(
+		  MEMBER_ID,
+		  ID,
+		  PASSWORD,
+		  NAME,
+		  EMAIL,
+		  PHONE,
+		  ADDRESS,
+		  ADDRESS_DETAIL,
+		  STATUS,
+		  ROLE,
+		  CREATED_AT,
+		  UPDATED_AT)
+		VALUES (
+		  #{memberId},
+		  #{id},
+		  #{password},
+		  #{name},
+		  #{email},
+		  #{phone},
+		  #{address, jdbcType=VARCHAR},
+		  #{addressDetail, jdbcType=VARCHAR},
+		  #{status, jdbcType=VARCHAR},
+		  #{role, jdbcType=VARCHAR},
+		  SYSDATE,
+		  SYSDATE)  
+	</insert>
+	
+	<!-- 아이디 중복 체크 -->
+	<select id="selectIdCheck" parameterType="string"
+	                               resultType="kr.spring.member.vo.MemberVO">
+		SELECT
+		  *
+		FROM MEMBER
+		WHERE id = #{id}
+	</select>
+	
+	<!-- 로그인 처리 -->
+	<select id="selectCheckMember" parameterType="string"
+	                               resultType="kr.spring.member.vo.MemberVO">
+		SELECT
+		  MEMBER_ID as memberId,
+		  ID as id,
+		  PASSWORD as password,
+		  NAME as name,
+		  EMAIL as email,
+		  PHONE as phone,
+		  ADDRESS as address,
+		  ADDRESS_DETAIL as addressDetail,
+		  STATUS as status,
+		  ROLE as role,
+		  CREATED_AT as createdAt,
+		  UPDATED_AT as updatedAt
+		FROM MEMBER
+		WHERE id = #{id}  			
+	</select>
+	
+	<!-- 회원정보수정 -->
+	<update id="updateMemberDetail" parameterType="kr.spring.member.vo.MemberVO">
+		UPDATE MEMBER
+		SET
+		  NAME = #{name},
+		  EMAIL = #{email},
+		  PHONE = #{phone},
+		  ADDRESS = #{address},
+		  ADDRESS_DETAIL = #{addressDetail},
+		  UPDATED_AT = SYSDATE
+		WHERE MEMBER_ID = #{memberId}
+	</update>
+	
+	<!-- 회원목록 처리 -->
+	<!-- sql 태그와 include 태그를 이용해서 SQL문을 재사용 -->
+	<sql id="memberSearch">
+		<where>
+			<if test="keyword != null and keyword != ''">
+				<if test="keyfield==1">
+					ID LIKE '%' || #{keyword} || '%'
+				</if>
+				<if test="keyfield==2">
+					NAME LIKE '%' || #{keyword} || '%'
+				</if>
+				<if test="keyfield==3">
+					EMAIL LIKE '%' || #{keyword} || '%'
+				</if>
+				<if test="keyfield==4">
+					ID LIKE '%' || #{keyword} || '%' OR
+					NAME LIKE '%' || #{keyword} || '%' OR
+					EMAIL LIKE '%' || #{keyword} || '%'
+				</if>
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 전체/검색 레코드수 -->
+	<select id="selectRowCount" parameterType="map"
+	                            resultType="integer">
+		SELECT
+		  COUNT(*)
+		FROM MEMBER
+		<include refid="memberSearch"/>                            
+	</select>
+	
+	<!-- 전체/검색 목록 -->
+	<select id="selectList" parameterType="map"
+	                        resultType="kr.spring.member.vo.MemberVO">
+		SELECT
+		  MEMBER_ID as memberId,
+		  ID as id,
+		  PASSWORD as password,
+		  NAME as name,
+		  EMAIL as email,
+		  PHONE as phone,
+		  ADDRESS as address,
+		  ADDRESS_DETAIL as addressDetail,
+		  STATUS as status,
+		  ROLE as role,
+		  CREATED_AT as createdAt,
+		  UPDATED_AT as updatedAt
+		FROM (SELECT
+		        a.*,
+		        rownum rnum
+		      FROM (SELECT
+		              *
+		            FROM MEMBER
+		            <include refid="memberSearch"/>
+		            ORDER BY CREATED_AT DESC)a)
+	<![CDATA[
+		WHERE rnum >= #{start} AND rnum <= #{end}
+	]]>	             
+	</select>
+	
+</mapper> 

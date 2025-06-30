@@ -1,5 +1,6 @@
 package kr.spring.api.controller;
 
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.service.TrainSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,18 +20,30 @@ public class TrainSyncController {
     private final TrainSyncService trainSyncService;
 
     @GetMapping("/sync/kind")
+    @LogExecutionTime(category = "TrainSync")
     public ResponseEntity<Map<String, Object>> syncTrainKind() {
-        log.info("kind of train sync request");
         Map<String,Object> result = trainSyncService.syncTrainKindData();
-        log.info("kind of train sync done");
         return ResponseEntity.ok(result);
     }
 
-//    @GetMapping("/sync/area-code")
-//    public ResponseEntity<Map<String,Object>> syncAreaCode(){
-//        log.info("area code of train sync request");
-//        Map<String,Object> result = trainSyncService.syncTrainAreaCode();
-//        log.info("area code of train sync end");
-//    }
+    @GetMapping("/sync/area-code")
+    @LogExecutionTime(category = "TrainSync")
+    public ResponseEntity<Map<String,Object>> syncAreaCode(){
+        Map<String,Object> result = trainSyncService.syncTrainAreaCode();
+        return ResponseEntity.ok(result);
+    }
 
+    @GetMapping("/sync/station")
+
+    public ResponseEntity<Map<String,Object>> syncStationCode(){
+        Map<String,Object> result = trainSyncService.syncStationCode();
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/sync/route")
+    @LogExecutionTime(category = "TrainSync")
+    public ResponseEntity<Map<String,Object>> syncRouteCode(){
+        Map<String,Object> result = trainSyncService.syncTrainRouteData();
+        return ResponseEntity.ok(result);
+    }
 }

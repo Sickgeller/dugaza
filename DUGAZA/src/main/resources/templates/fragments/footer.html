@@ -1,8 +1,31 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<!-- 하단 시작 -->
-<th:block th:fragment="footer" class="align-center">
-	&copy; SpringPage
-</th:block>
-<!-- 하단 끝 -->
-</html>
+<footer th:fragment="footer" class="footer mt-auto py-3 bg-dark text-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h3 class="h5">드가자닷컴</h3>
+                <p class="text-muted">당신의 완벽한 여행을 위한 모든 것</p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h5>바로가기</h5>
+                <ul class="list-unstyled">
+                    <li><a th:href="@{/about}" class="text-white-50">회사소개</a></li>
+                    <li><a th:href="@{/terms}" class="text-white-50">이용약관</a></li>
+                    <li><a th:href="@{/privacy}" class="text-white-50">개인정보처리방침</a></li>
+                    <li><a th:href="@{/support}" class="text-white-50">고객센터</a></li>
+                </ul>
+            </div>
+            <div class="col-md-4 mb-3">
+                <h5>고객센터</h5>
+                <p class="text-white-50">
+                    운영시간: 09:00 - 18:00<br>
+                    점심시간: 12:00 - 13:00<br>
+                    주말 및 공휴일 휴무
+                </p>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="text-center text-white-50">
+            <p>&copy; 2024 드가자닷컴. All rights reserved.</p>
+        </div>
+    </div>
+</footer>

@@ -3,28 +3,25 @@
 <mapper namespace="kr.spring.api.mapper.TrainKindApiMapper">
 
     <insert id="insert">
-        INSERT INTO TRAIN_VEHICLE_TYPE
+        INSERT INTO TRAIN_KIND
             (VEHICLE_KIND_ID,
              VEHICLE_KIND_NM,
-             IS_ACTIVE,
              CREATED_AT,
              UPDATED_AT) VALUES
                              (
                               #{vehicleKindId},
                               #{vehicleKindNm},
-                              #{isActive},
                               #{createdAt},
                               #{updatedAt}
                              )
     </insert>
 
     <update id="update">
-        UPDATE TRAIN_VEHICLE_TYPE
-        SET(
+        UPDATE TRAIN_KIND
+        SET
             VEHICLE_KIND_NM = #{vehicleKindNm},
             IS_ACTIVE = #{isActive},
             UPDATED_AT = #{updatedAt}
-            )
         WHERE VEHICLE_KIND_ID = #{vehicleKindId}
     </update>
 

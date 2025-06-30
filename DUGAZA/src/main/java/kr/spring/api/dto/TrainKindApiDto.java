@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class TrainKindApiDto {
     private String vehicleKindId;
     private String vehicleKindNm;
-    private Long isActive;
+    private String isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

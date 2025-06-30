@@ -1,58 +1,60 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
-<!-- 상단 시작 -->
-<th:block th:fragment="header">
-	<div class="menu-title">
-		<h2 class="site-logo" sec:authorize="!isAuthenticated() || principal.memberVO.authorityOrdinal < 3">
-			<a th:href="@{/main/main}">SpringPage</a>
-		</h2>
-		<h2 class="site-logo" sec:authorize="hasAuthority('ROLE_ADMIN')">
-			<a th:href="@{/main/admin}">SpringPage (관리자 전용)</a>
-		</h2>
-	</div>
-	<div class="menu-login">
-	    <!--/* 사용자 로그인 영역 */-->
-	    <th:block sec:authorize="isAuthenticated()">
-	    	<div class="menu-item">
-	    		<a th:href="@{/member/myPage}"><img th:src="@{/assets/images/mypage.png}" width="20" height="20">MY페이지</a>
-	    	</div>
-	    	<div class="menu-item">
-	    		<img th:src="@{/member/photoView}" width="20" height="20" class="my-photo">
-	    		<span class="user-name" th:text="${#authentication.principal.memberVO.userName}"></span>
-	    	</div>
-	    	<div class="menu-item">
-	    		<a href="#" id="logout"><img th:src="@{/assets/images/logout.png}" width="20" height="20">로그아웃</a>
-	    		<!--/* 폼을 만들고 post 방식으로 전달해야 스프링 시큐리티가 지원하는 로그아웃 기능 사용 */-->
-	    		<form th:action="@{/member/logout}" method="post"
-	    		  style="display:none;" id="frm_logout"></form>
-	    		<script type="text/javascript">
-	    			const logout = document.getElementById('logout');
-	    			logout.onclick=function(event){
-	    				document.getElementById('frm_logout').submit();
-	    				event.preventDefault();
-	    			};
-	    		</script>
-	    	</div>
-	    </th:block>
-		<!--/* 사용자 비로그인 영역 */-->
-		<th:block sec:authorize="!isAuthenticated()">
-			<div class="menu-item">
-				<a th:href="@{/member/registerUser}">회원가입</a>
-			</div>
-			<div class="menu-item">
-				<a th:href="@{/member/login}"><img th:src="@{/assets/images/login.png}" width="20" height="20">로그인</a>
-			</div>
-		</th:block>
-	</div>
-	<div class="menu-list">
-		<th:block>
-			<div class="menu-main-item"><a th:href="@{/board/list}">게시판</a></div>
-		</th:block>
-	</div>
-</th:block>
-<!-- 상단 끝 -->
-</html>
+<header th:fragment="header">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">DUGAZA</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">홈</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/tour}">여행</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/accommodation}">숙소</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/transportation}">교통</a>
+                    </li>
+                </ul>
+                
+                <div class="user-menu">
+                    <!-- 로그인하지 않은 경우 -->
+                    <div class="logged-out">
+                        <a th:href="@{/member/login}" class="btn btn-outline-primary me-2">로그인</a>
+                        <a th:href="@{/member/register}" class="btn btn-primary">회원가입</a>
+                        <a th:href="@{/seller/login}" class="btn btn-outline-secondary ms-2">사업자 로그인</a>
+                    </div>
 
+                    <!-- 사업자 로그인 버튼 (항상 표시) -->
+
+                    <!-- 로그인한 경우 -->
+                    <div class="logged-in">
+                        <span class="user-name me-2"></span>님 환영합니다
+                        <a th:href="@{/member/mypage}" class="btn btn-outline-primary me-2">마이페이지</a>
+                        <button onclick="handleLogout(event)" class="btn btn-outline-danger">로그아웃</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+<script>
+    async function handleLogout(event) {
+        event.preventDefault();
+        const result = await Auth.logout();
+        if (result.success) {
+            window.location.href = '/';
+        } else {
+            alert(result.message);
+        }
+    }
+</script>
 
 

@@ -1,6 +1,7 @@
 package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.dto.AreaCodeApiDto;
 import kr.spring.api.dto.SigunguCodeApiDto;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class AreaCodeApiClient{
      * 지역 코드 목록을 조회합니다.
      * @return 지역 코드 목록
      */
+    @LogExecutionTime(category = "AreaData")
     public List<AreaCodeApiDto> getAreaCode() {
         URI uri = baseApiClient.makeTourUri("/areaCode2");
         return baseApiClient.callApi(uri, this::createAreaCodeDto);
@@ -31,6 +33,7 @@ public class AreaCodeApiClient{
      * @param areaCode 지역 코드
      * @return 시군구 코드 목록
      */
+    @LogExecutionTime(category = "AreaData")
     public List<SigunguCodeApiDto> getSigunguCode(Long areaCode) {
         URI uri = baseApiClient.makeTourUri("/areaCode2", "areaCode" , String.valueOf(areaCode));
         return baseApiClient.callApi(uri, this::createSigunguCodeDto);
@@ -49,7 +52,6 @@ public class AreaCodeApiClient{
             dto.setAreaName(item.path("name").asText());
             return dto;
         } catch (NumberFormatException e) {
-            log.error("===============> JSON 파싱 오류 : {} , {}", e.getMessage(), item.toString());
             return null;
         }
     }
@@ -68,7 +70,6 @@ public class AreaCodeApiClient{
             dto.setIsActive(1L);
             return dto;
         } catch (NumberFormatException e) {
-            log.error("===============> JSON 파싱 오류 : {} , {}", e.getMessage(), item.toString());
             return null;
         }
     }

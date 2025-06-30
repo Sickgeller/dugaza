@@ -1,6 +1,7 @@
 package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.dto.CategoryCodeApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ public class CategoryApiClient {
      * 대분류 카테고리 코드 목록을 조회합니다.
      * @return 대분류 카테고리 코드 담긴 List
      */
+    @LogExecutionTime(category = "CategoryData")
     public List<CategoryCodeApiDto> getCategoryCode1() {
         URI uri = baseApiClient.makeTourUri("/categoryCode2");
         return baseApiClient.callApi(uri, this::createCategoryCodeDto);
@@ -30,6 +32,7 @@ public class CategoryApiClient {
      * @param cat1 대분류 코드
      * @return 중분류 카테고리 코드 목록 담긴 List
      */
+    @LogExecutionTime(category = "CategoryData")
     public List<CategoryCodeApiDto> getCategoryCode2(String cat1) {
         URI uri = baseApiClient.makeTourUri("/categoryCode2","cat1", cat1);
         return baseApiClient.callApi(uri, this::createCategoryCodeDto);
@@ -41,6 +44,7 @@ public class CategoryApiClient {
      * @param cat2 중분류 코드
      * @return 소분류 카테고리 코드 목록 담긴 List
      */
+    @LogExecutionTime(category = "CategoryData")
     public List<CategoryCodeApiDto> getCategoryCode3(String cat1, String cat2) {
         URI uri = baseApiClient.makeTourUri("/categoryCode2","cat1", cat1, "cat2", cat2);
         return baseApiClient.callApi(uri, this::createCategoryCodeDto);
@@ -51,6 +55,7 @@ public class CategoryApiClient {
      * @param tourContentId (요구되는 tourContentId)
      * @return 해당 콘텐츠 id에 맞는 대분류
      */
+    @LogExecutionTime(category = "CategoryData")
     public List<CategoryCodeApiDto> getCategoryCodeWithTourContentId(Long tourContentId) {
         URI uri = baseApiClient.makeTourUri("/categoryCode2","contentTypeId", String.valueOf(tourContentId));
         return baseApiClient.callApi(uri, this::createCategoryCodeDto);
@@ -61,13 +66,14 @@ public class CategoryApiClient {
      * @param cat1Dto 파싱된 cat1아이디
      * @return cat2 해당되는 덩어리
      */
+    @LogExecutionTime(category = "CategoryData")
     public List<CategoryCodeApiDto> getCategoryCodeWithTourContentIdCat2(Long tourContentId, CategoryCodeApiDto cat1Dto) {
         URI uri = baseApiClient.makeTourUri("/categoryCode2", "contentTypeId", String.valueOf(tourContentId), "cat1", cat1Dto.getCategoryCode());
         return baseApiClient.callApi(uri, this::createCategoryCodeDto);
 
     }
 
-
+    @LogExecutionTime(category = "CategoryData")
     public List<CategoryCodeApiDto> getCategoryCodeWithTourContentIdCat3(Long tourContentId, CategoryCodeApiDto cat1Dto, CategoryCodeApiDto cat2Dto) {
         URI uri = baseApiClient.makeTourUri("/categoryCode2", "contentTypeId", String.valueOf(tourContentId),"cat1", cat1Dto.getCategoryCode(),  "cat2", cat2Dto.getCategoryCode());
         return baseApiClient.callApi(uri, this::createCategoryCodeDto);
@@ -84,7 +90,6 @@ public class CategoryApiClient {
             // 필수 필드 검증
             if (!item.has("code") || item.path("code").isNull() || 
                 !item.has("name") || item.path("name").isNull()) {
-                log.warn("필수 필드(code/name)가 없거나 null인 항목 건너뜀: {}", item);
                 return null;
             }
             
@@ -117,10 +122,8 @@ public class CategoryApiClient {
             dto.setCodeLevel(codeLevel);
             dto.setParentCode(parentCode);
             
-            log.debug("===============> 파싱된 CategoryCodeDto: {}", dto);
             return dto;
         } catch (Exception e) {
-            log.error("===============> CategoryCodeDto 생성 중 오류 발생: {}", e.getMessage(), e);
             return null;
         }
     }
