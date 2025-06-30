@@ -1,7 +1,7 @@
 package kr.spring.seller.controller;
 
 import kr.spring.common.SellerType;
-import kr.spring.member.security.PrincipalDetails;
+import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.seller.vo.SellerVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,24 +43,28 @@ public class SellerController {
             // 현재 인증된 사용자 정보 가져오기
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             
-            if (authentication != null && authentication.getPrincipal() instanceof PrincipalDetails) {
-                PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+            if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
+                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
                 
-                if (principalDetails.isSeller()) {
-                    SellerVO seller = principalDetails.getSeller();
+                if (userDetails.isSeller()) {
+                    SellerVO seller = userDetails.getSeller();
                     String sellerType = seller.getSellerType();
                     
-                    log.info("판매자 타입: {}", sellerType);
+                    log.info("판매자 로그인 - 사용자: {}, 타입: {}", userDetails.getUsername(), sellerType);
+                    
+                    // 모델에 사용자 정보 추가
+                    model.addAttribute("userDetails", userDetails);
+                    model.addAttribute("seller", seller);
                     
                     // 판매자 타입에 따라 다른 페이지로 연결
                     if (SellerType.CAR.getValue().equals(sellerType)) {
-                        log.info("렌터카 판매자 페이지로 연결");
+                        log.info("렌터카 판매자 페이지로 연결 - 사용자: {}", userDetails.getUsername());
                         return "views/seller/car-seller"; // 1번 HTML
                     } else if (SellerType.HOUSE.getValue().equals(sellerType)) {
-                        log.info("숙소 판매자 페이지로 연결");
+                        log.info("숙소 판매자 페이지로 연결 - 사용자: {}", userDetails.getUsername());
                         return "views/seller/house-seller"; // 2번 HTML
                     } else {
-                        log.warn("알 수 없는 판매자 타입: {}", sellerType);
+                        log.warn("알 수 없는 판매자 타입: {} - 사용자: {}", sellerType, userDetails.getUsername());
                         model.addAttribute("error", "알 수 없는 판매자 타입입니다.");
                         return "views/common/error";
                     }

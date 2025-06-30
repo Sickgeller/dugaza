@@ -23,6 +23,8 @@ public interface MemberMapper {
 	public MemberVO selectIdCheck(String id);
 	public MemberVO selectCheckMember(String id);
 	@Select("SELECT * FROM MEMBER WHERE ID=#{id}")
+	public MemberVO selectMemberByUsername(String id);
+	@Select("SELECT * FROM MEMBER WHERE MEMBER_ID=#{memberId}")
 	public MemberVO selectMember(Long memberId);
 	@Update("UPDATE MEMBER SET NAME=#{name}, EMAIL=#{email}, PHONE=#{phone}, ADDRESS=#{address}, ADDRESS_DETAIL=#{addressDetail}, UPDATED_AT=SYSDATE WHERE MEMBER_ID=#{memberId}")
 	public void updateMember(MemberVO member);

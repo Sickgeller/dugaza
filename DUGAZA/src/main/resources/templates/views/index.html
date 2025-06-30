@@ -4,6 +4,13 @@
       layout:decorate="~{layouts/layout_basic}">
 
 <div layout:fragment="content" class="fullscreen-content">
+    <!-- 로그아웃 성공 메시지 -->
+    <div th:if="${logoutMessage}" class="alert alert-success alert-dismissible fade show" style="margin: 20px; border-radius: 8px;">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${logoutMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    
     <section class="hero-section">
         <div class="hero-content">
             <h1 class="hero-title">여행으로 드가자</h1>

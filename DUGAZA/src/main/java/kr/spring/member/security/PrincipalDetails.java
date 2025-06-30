@@ -9,6 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * @deprecated CustomUserDetails로 마이그레이션됨
+ * @see kr.spring.auth.security.CustomUserDetails
+ */
+@Deprecated
 public class PrincipalDetails implements UserDetails {
     
     private MemberVO member;
