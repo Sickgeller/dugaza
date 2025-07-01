@@ -209,7 +209,7 @@ public class MemberUserController {
 		시큐리티 필터에서 권한 통제중이라 이거 안붙여도되긴함
 		이렇게 붙여놓으면 2번체크함 -> 서비스 커지면 DB부하 커짐 (중대한 로직 돌릴때 사용하면됨 삭제, 업데이트 그런거 ㅇㅇ)
 	*/
-	@GetMapping("/detail")
+	@GetMapping("/mypage")
 	public String viewDetail(Model model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		/*
