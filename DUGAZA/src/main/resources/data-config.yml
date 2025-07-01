@@ -4,7 +4,7 @@ data-config:
   db-password: f1234 #f1234 #1234
   google-mail-url: dragonyxit@gmail.com
   google-mail-password: tepmacdqorgmlbfx
-  rememberMe-key: hayden
+  rememberMe-key: remember-me
   api:
     service-key: nqdefZ0rPUt2bdW%2F1Y%2FSRq%2Bb4knLjMYY1MQN7vktElEOlDQLAM3uvrs%2Fh2aos2ptIHeU%2FRqGH%2FhJaMPmgDax2Q%3D%3D
     tour:

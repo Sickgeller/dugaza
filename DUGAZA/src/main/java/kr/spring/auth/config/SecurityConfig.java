@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
 
 import kr.spring.auth.security.CustomAccessDeniedHandler;
 import kr.spring.auth.security.CustomLogoutSuccessHandler;
@@ -110,9 +112,13 @@ public class SecurityConfig {
                     .tokenRepository(persistentTokenRepository())
                     .tokenValiditySeconds(60 * 60 * 24 * 7) // 7일
                     .userDetailsService(userDetailsService)
+                    .useSecureCookie(false) // HTTPS가 아닌 환경에서도 쿠키 사용 가능
+                    .rememberMeParameter("remember-me") // 파라미터 이름 명시
+                    .rememberMeCookieName("remember-me") // 쿠키 이름 명시
+                    .alwaysRemember(false) // 체크박스 선택 시에만 remember-me 활성화
                 )
                 .authenticationProvider(authenticationProvider()) // 명시적 AuthenticationProvider 설정
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .build();
     }
 
@@ -144,13 +150,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public PersistentTokenRepository persistentTokenRepository() {
-        JdbcTokenRepositoryImpl repo = new JdbcTokenRepositoryImpl();
-        repo.setDataSource(dataSource);
-        return repo;
-    }
-
     /**
      * DaoAuthenticationProvider 설정
      * 순환참조를 방지하면서 사용자 인증 서비스 사용
@@ -161,5 +160,12 @@ public class SecurityConfig {
         authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
+    }
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        return tokenRepository;
     }
 } 

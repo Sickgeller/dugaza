@@ -32,6 +32,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("로그인 성공: 사용자 = {}, 권한 = {}", 
                 userDetails.getUsername(), userDetails.getAuthorities());
         
+        // Remember-me 체크 여부 로깅
+        String rememberMeParam = request.getParameter("remember-me");
+        log.info("Remember-me 파라미터: {}", rememberMeParam);
+        
         // 세션에 사용자 정보 저장
         HttpSession session = request.getSession();
         session.setAttribute("user", userDetails);
@@ -40,12 +44,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String defaultUrl = determineDefaultUrl(userDetails);
         setDefaultTargetUrl(defaultUrl);
         
-        // 저장된 요청 정보 제거 (Chrome DevTools 등 문제 있는 URL 방지)
-        requestCache.removeRequest(request, response);
-        
-        // 항상 기본 URL로 리다이렉트
-        log.info("기본 URL로 리다이렉트: {}", defaultUrl);
-        redirectStrategy.sendRedirect(request, response, defaultUrl);
+        // Remember-me 처리를 위해 부모 클래스의 메서드 호출
+        super.onAuthenticationSuccess(request, response, authentication);
     }
     
     /**
