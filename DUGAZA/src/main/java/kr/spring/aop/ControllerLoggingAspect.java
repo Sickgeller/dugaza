@@ -24,19 +24,41 @@ import java.util.stream.Collectors;
 public class ControllerLoggingAspect {
 
     /**
-     * 모든 컨트롤러 메서드에 대한 포인트컷
+     * 모든 컨트롤러 메서드에 대한 포인트컷 (@Controller 및 @RestController)
      */
     @Pointcut("execution(* kr.spring..*.controller..*Controller.*(..))")
     private void allControllerMethods() {}
+    
+    /**
+     * @RestController 어노테이션이 붙은 클래스의 모든 메서드
+     */
+    @Pointcut("@within(org.springframework.web.bind.annotation.RestController)")
+    private void allRestControllerMethods() {}
+    
+    /**
+     * @Controller 어노테이션이 붙은 클래스의 모든 메서드  
+     */
+    @Pointcut("@within(org.springframework.stereotype.Controller)")
+    private void allControllerAnnotatedMethods() {}
+    
+    /**
+     * 모든 컨트롤러 메서드 (패턴 + 어노테이션 기반)
+     */
+    @Pointcut("allControllerMethods() || allRestControllerMethods() || allControllerAnnotatedMethods()")
+    private void allWebControllerMethods() {}
 
     /**
      * 모든 컨트롤러 메서드 실행 전후 로깅
      */
-    @Around("allControllerMethods()")
+    @Around("allWebControllerMethods()")
     public Object logControllerMethodExecution(ProceedingJoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
         String className = joinPoint.getTarget().getClass().getSimpleName();
         String category = "[" + className.replace("Controller", "") + "]";
+        
+        // REST API인지 확인
+        boolean isRestController = joinPoint.getTarget().getClass()
+                .isAnnotationPresent(org.springframework.web.bind.annotation.RestController.class);
         
         HttpServletRequest request = null;
         String requestURI = "";
@@ -61,8 +83,9 @@ public class ControllerLoggingAspect {
                 .map(arg -> arg != null ? arg.toString() : "null")
                 .collect(Collectors.joining(", "));
         
-        log.info("{} 요청 시작 - URI: {} [{}], 메서드: {}, 파라미터: [{}]", 
-                category, requestURI, httpMethod, methodName, params);
+        String controllerType = isRestController ? "REST API" : "WEB";
+        log.info("{} [{}] 요청 시작 - URI: {} [{}], 메서드: {}, 파라미터: [{}]", 
+                category, controllerType, requestURI, httpMethod, methodName, params);
         
         LocalDateTime startTime = LocalDateTime.now();
         Object result;
@@ -72,14 +95,14 @@ public class ControllerLoggingAspect {
             result = joinPoint.proceed();
             
             long executionTime = ChronoUnit.MILLIS.between(startTime, LocalDateTime.now());
-            log.info("{} 요청 완료 - URI: {} [{}], 메서드: {}, 실행 시간: {}ms", 
-                    category, requestURI, httpMethod, methodName, executionTime);
+            log.info("{} [{}] 요청 완료 - URI: {} [{}], 메서드: {}, 실행 시간: {}ms", 
+                    category, controllerType, requestURI, httpMethod, methodName, executionTime);
             
             return result;
         } catch (Exception e) {
             long executionTime = ChronoUnit.MILLIS.between(startTime, LocalDateTime.now());
-            log.error("{} 요청 오류 - URI: {} [{}], 메서드: {}, 실행 시간: {}ms, 오류: {}", 
-                    category, requestURI, httpMethod, methodName, executionTime, e.getMessage(), e);
+            log.error("{} [{}] 요청 오류 - URI: {} [{}], 메서드: {}, 실행 시간: {}ms, 오류: {}", 
+                    category, controllerType, requestURI, httpMethod, methodName, executionTime, e.getMessage(), e);
             throw e;
         }
     }

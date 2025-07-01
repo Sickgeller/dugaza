@@ -1,8 +1,0 @@
--- 기존 테이블 구조 확인
-DESC TRAIN_STATION;
-
--- CITY_CODE 컬럼 추가
-ALTER TABLE TRAIN_STATION ADD CITY_CODE NUMBER;
-
--- 테이블 구조 다시 확인
-DESC TRAIN_STATION; 

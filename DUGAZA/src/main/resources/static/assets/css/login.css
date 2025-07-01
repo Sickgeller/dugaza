@@ -52,6 +52,26 @@
     font-size: 1rem;
 }
 
+/* 알림 메시지 스타일 */
+.alert {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+}
+
+.alert-danger {
+    background-color: #FEF2F2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+}
+
+.alert-success {
+    background-color: #F0FDF4;
+    color: #16A34A;
+    border: 1px solid #BBF7D0;
+}
+
 /* 폼 스타일 */
 .form-group {
     margin-bottom: 1.5rem;
