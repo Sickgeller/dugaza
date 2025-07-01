@@ -22,7 +22,7 @@ public interface MemberService {
 	public Integer selectRowCount(Map<String,Object> map);
 	public List<MemberVO> selectList(Map<String,Object> map);
 	public void updateByAdmin(MemberVO memberVO);
-
+	public Integer selectMemberCount();
 }
 
 

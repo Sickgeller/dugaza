@@ -33,6 +33,15 @@ public class TourDataSyncController {
     public ResponseEntity<Map<String, Object>> syncTourDataByType(@PathVariable ContentTypeid contentTypeId) {
         log.info("관광 데이터 동기화 요청 받음: {}", contentTypeId.name());
         Map<String, Object> result = tourSyncService.getTouristData(contentTypeId);
+        log.info("관광 데이터 전체 동기화 끝");
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/sync/update")
+    public ResponseEntity<Map<String, Object>> syncTourDataUpdate() {
+        log.info("관광 전체 데이터 업데이트 요청 받음");
+        Map<String, Object> result = tourSyncService.updateTourData();
+        log.info("관광 전체 데이터 업데이트 완료");
         return ResponseEntity.ok(result);
     }
 }

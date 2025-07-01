@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="kr.spring.member.dao.MemberMapper">
+	<resultMap type="kr.spring.member.vo.MemberVO" id="memberMap">
+		<result property="createdAt" column="created_at"/>
+	</resultMap>
+	<!-- 회원목록 처리 -->
+	<!-- sql 태그와 include 태그를 이용해서 SQL문을 재사용 -->
+	<sql id="memberSearch">
+		<where>
+			<if test="keyword != null and keyword != ''">
+				<if test="keyfield==1">
+					m.id LIKE '%' || #{keyword} || '%' OR
+					m.nick_name LIKE '%' || #{keyword} || '%'
+				</if>
+				<if test="keyfield==2">
+					d.name LIKE '%' || #{keyword} || '%'
+				</if>
+				<if test="keyfield==3">
+					d.email LIKE '%' || #{keyword} || '%'
+				</if>
+				<if test="keyfield==4">
+					m.id LIKE '%' || #{keyword} || '%' OR
+					m.nick_name LIKE '%' || #{keyword} || '%' OR
+					d.name LIKE '%' || #{keyword} || '%' OR
+					d.email LIKE '%' || #{keyword} || '%'
+				</if>
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 전체/검색 레코드수 -->
+	<select id="selectRowCount" parameterType="map"
+	                            resultType="integer">
+		SELECT
+		  COUNT(*)
+		FROM member m WHERE m.role != 'ADMIN'
+		<!-- <include refid="memberSearch"/> -->                           
+	</select>
+	
+	<!-- 전체/검색 목록 -->
+	<select id="selectList" parameterType="map"
+	                        resultMap="memberMap">
+		SELECT
+		  *
+		FROM (SELECT
+		        a.*,
+		        rownum rnum
+		      FROM (SELECT
+		              *
+		            FROM member m WHERE m.role != 'ADMIN'
+		            <!-- <include refid="memberSearch"/> -->
+		            ORDER BY m.member_id DESC NULLS LAST)a)
+	<![CDATA[
+		WHERE rnum >= #{start} AND rnum <= #{end}
+	]]>	             
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

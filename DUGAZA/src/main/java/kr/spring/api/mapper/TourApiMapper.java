@@ -6,4 +6,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TourApiMapper {
     void insert(TourApiDto tourApiDto);
+
+    void update(TourApiDto tourApiDto);
 }

@@ -14,4 +14,7 @@ public interface TourSyncService {
     Map<String,Object> getAllTourData();
 
     Map<String,Object> getTouristData(ContentTypeid contentTypeId);
+
+    Map<String, Object> updateTourData();
+
 }

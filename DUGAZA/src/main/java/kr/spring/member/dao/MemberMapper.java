@@ -48,6 +48,8 @@ public interface MemberMapper {
 	public List<MemberVO> selectList(Map<String,Object> map);
 	@Update("UPDATE MEMBER SET ROLE=#{role}, UPDATED_AT=SYSDATE WHERE MEMBER_ID=#{memberId}")
 	public void updateByAdmin(MemberVO memberVO);
+	@Select("SELECT COUNT(*) FROM member WHERE role != 'ADMIN'")
+	public Integer selectMemberCount();
 }
 
 

@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
-@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
+@SpringBootApplication
 @EnableAspectJAutoProxy
 @MapperScan(basePackages = {"kr.spring.api.mapper", "kr.spring.member.dao", "kr.spring.faq.dao"})
 public class SpringPageApplication {

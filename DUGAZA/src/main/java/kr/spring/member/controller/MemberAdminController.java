@@ -29,8 +29,19 @@ public class MemberAdminController {
 
 	private final MemberService memberService;
 	
+	// 관리자 회원관리 페이지 이동
+//	@GetMapping("/admin_member")
+//	public String form(Model model) {
+//		// 전체 회원 수
+//		int memberCount = memberService.selectMemberCount();
+//		
+//		model.addAttribute("count",memberCount);
+//		
+//		return "views/admin/super-admin-users";
+//	}
+	
 	//회원목록
-	@GetMapping("/admin_list")
+	@GetMapping("/admin_member")
 	public String getList(
 			@RequestParam(defaultValue="1") int pageNum,
 			String keyfield,String keyword,Model model) {
@@ -64,7 +75,7 @@ public class MemberAdminController {
 		model.addAttribute("keyfield", keyfield);
 		model.addAttribute("keyword", keyword);
 		
-		return "views/member/admin_list";
+		return "views/admin/super-admin-users";
 	}
 	
 	//회원권한 수정 폼 호출

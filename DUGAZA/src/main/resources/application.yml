@@ -28,15 +28,6 @@ spring:
       maximum-pool-size: 10 #최대 커넥션 개수 설정
       max-lifetime: 1800000
 
-  api:
-    service-key: ${data-config.api.service-key}
-    train:
-      base-url: ${data-config.api.train.base-url}
-    express-bus:
-      base-url: ${data-config.api.express-bus.base-url}
-    kakao:
-      base-url: ${data-config.api.kakao.base-url}
-
   messages: #메시지
     basename: messages.member,messages.JH,messages.JH2,messages.CH,messages.DW,messages.YB
     encoding: UTF-8
@@ -114,5 +105,17 @@ server:
 # (이미 data-config.yml에 hayden으로 지정되어 있음)
 data-config:
   rememberMe-key: remember-me
+
+# api 설정을 spring과 같은 레벨(최상위)로 이동
+api:
+  service-key: ${data-config.api.service-key}
+  tour:
+    base-url: ${data-config.api.tour.base-url}
+  train:
+    base-url: ${data-config.api.train.base-url}
+  express-bus:
+    base-url: ${data-config.api.express-bus.base-url}
+  kakao:
+    base-url: ${data-config.api.kakao.base-url}
 
 

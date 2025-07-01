@@ -8,7 +8,7 @@ public enum ContentTypeid {
     CULTURAL_CENTER(14), // 문화시설
     EVENT(15), // 행사 및 축제
     TRIP_COURSE(25), // 여행코스
-    REPORTS(28), // 레포츠
+    LEPORTS(28), // 레포츠
     HOUSE(32), // 숙소
     SHOPPING(38), // 쇼핑
     RESTAURANT(39); // 식당

@@ -27,6 +27,16 @@ public class MemberVO {
 	
 	// 사용자가 가진 역할들 (다중 역할 지원)
 	private List<RoleVO> userRoles;
+	
+	// 역할 문자로 출력
+	public String getStringStatus() {
+		switch (this.status) {
+		case "ACTIVE": return "일반";
+		case "SUSPEND": return "정지";
+		case "HUMAN": return "휴먼";
+		default: return "오류";
+		}
+	}
 }
 
 /*

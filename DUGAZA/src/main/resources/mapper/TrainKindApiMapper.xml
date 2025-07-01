@@ -20,7 +20,6 @@
         UPDATE TRAIN_KIND
         SET
             VEHICLE_KIND_NM = #{vehicleKindNm},
-            IS_ACTIVE = #{isActive},
             UPDATED_AT = #{updatedAt}
         WHERE VEHICLE_KIND_ID = #{vehicleKindId}
     </update>

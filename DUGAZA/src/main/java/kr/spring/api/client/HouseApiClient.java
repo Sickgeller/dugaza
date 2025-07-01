@@ -3,6 +3,7 @@ package kr.spring.api.client;
 import com.fasterxml.jackson.databind.JsonNode;
 import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.dto.HouseApiDto;
+import kr.spring.api.dto.HouseDetailApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,47 @@ public class HouseApiClient{
         URI uri = baseApiClient.makeTourUri("/searchStay2");
         return baseApiClient.callApiManyTimes(uri, this::createHouseDto);
     }
+
+    public HouseDetailApiDto getHouseDetailData(Long contentId) {
+        URI uri = baseApiClient.makeTourUri("/detailIntro2","contentId", String.valueOf(contentId), "contentTypeId", String.valueOf(32));
+        return baseApiClient.callApi(uri, this::createHouseDetailApiDto).get(0);
+    }
+
+    private HouseDetailApiDto createHouseDetailApiDto(JsonNode item, String type) {
+        return HouseDetailApiDto.builder()
+                .contentId(item.path("contentid").asLong())
+                .contentTypeId(item.path("contenttypeid").asLong())
+                .accomCountLodging(item.path("accomcountlodging").asLong())
+                .checkInTime(item.path("checkintime").asText())
+                .checkOutTime(item.path("checkouttime").asText())
+                .chkCooking(item.path("chkcooking").asText())
+                .foodPlace(item.path("foodplace").asText())
+                .infoCenterLodging(item.path("infocenterlodging").asText())
+                .parkingLodging(item.path("parkinglodging").asText())
+                .pickup(item.path("pickup").asText())
+                .roomCount(item.path("roomcount").asInt())
+                .reservationLodging(item.path("reservationlodging").asText())
+                .reservationUrl(item.path("reservationurl").asText())
+                .roomType(item.path("roomtype").asText())
+                .scaleLodging(item.path("scalelodging").asText())
+                .subFacility(item.path("subfacility").asText())
+                .barbecue(item.path("barbecue").asText())
+                .beauty(item.path("beauty").asText())
+                .beverage(item.path("beverage").asText())
+                .bicycle(item.path("bicycle").asText())
+                .campfire(item.path("campfire").asText())
+                .fitness(item.path("fitness").asText())
+                .karaoke(item.path("karaoke").asText())
+                .publicBath(item.path("publicbath").asText())
+                .publicPC(item.path("publicpc").asText())
+                .sauna(item.path("sauna").asText())
+                .seminar(item.path("seminar").asText())
+                .sports(item.path("sports").asText())
+                .refundRegulation(item.path("refundregulation").asText())
+                .build();
+
+    }
+
 
     private HouseApiDto createHouseDto(JsonNode item, String type) {
         String createdTimeStr = item.path("createdtime").asText();
