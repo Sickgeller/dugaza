@@ -33,6 +33,7 @@
             mlevel = #{mlevel},
             first_image = #{firstImage},
             first_image2 = #{firstImage2},
+            created_at = #{createdAt},
             cpyrht_div_cd = #{cpyrhtDivCd},
             updated_at = #{updatedAt},
             show_flag = #{showFlag}

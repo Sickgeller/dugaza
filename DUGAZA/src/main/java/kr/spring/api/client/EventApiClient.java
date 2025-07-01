@@ -3,6 +3,8 @@ package kr.spring.api.client;
 import com.fasterxml.jackson.databind.JsonNode;
 import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.dto.EventContentApiDto;
+import kr.spring.api.dto.EventDetailApiDto;
+import kr.spring.api.dto.HouseDetailApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -42,6 +44,36 @@ public class EventApiClient {
                 "numOfRows", String.valueOf(DEFAULT_PAGE_SIZE));
         
         return baseApiClient.callApiManyTimes(firstPageUri, this::createEventContentDto);
+    }
+
+    public EventDetailApiDto getEventDetailData(Long contentId) {
+        URI uri = baseApiClient.makeTourUri("/detailIntro2","contentId", String.valueOf(contentId), "contentTypeId", String.valueOf(15));
+        return baseApiClient.callApi(uri, this::createEventDetailApiDto).get(0);
+    }
+
+    private EventDetailApiDto createEventDetailApiDto(JsonNode item, String typs) {
+            return EventDetailApiDto.builder()
+                .contentId(item.path("contentid").asLong())
+                .contentTypeId(item.path("contenttypeid").asLong())
+                .ageLimit(item.path("agelimit").asText())
+                .bookingPlace(item.path("bookingplace").asText())
+                .discountInfoFestival(item.path("discountinfofestival").asText())
+                .eventEndDate(item.path("eventenddate").asText())
+                .eventHomePage(item.path("eventhomepage").asText())
+                .eventPlace(item.path("eventplace").asText())
+                .eventStartDate(item.path("eventstartdate").asText())
+                .festivalGrade(item.path("festivalgrade").asText())
+                .placeInfo(item.path("placeinfo").asText())
+                .playTime(item.path("playtime").asText())
+                .program(item.path("program").asText())
+                .spendTimeFestival(item.path("spendtimefestival").asText())
+                .sponsor1(item.path("sponsor1").asText())
+                .sponsor1Tel(item.path("sponsor1tel").asText())
+                .sponsor2(item.path("sponsor2").asText())
+                .sponsor2Tel(item.path("sponsor2tel").asText())
+                .subEvent(item.path("subevent").asText())
+                .useTimeFestival(item.path("usetimefestival").asText())
+                .build();
     }
 
     private EventContentApiDto createEventContentDto(JsonNode item, String type) {
