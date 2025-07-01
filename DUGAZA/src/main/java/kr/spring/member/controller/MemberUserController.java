@@ -2,7 +2,10 @@ package kr.spring.member.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +23,7 @@ import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.util.FileUtil;
 import kr.spring.util.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
+import kr.spring.seller.vo.SellerVO;
 
 @Slf4j
 @Controller
@@ -199,6 +203,36 @@ public class MemberUserController {
 		
 		return "views/common/resultAlert";
 	}
+	//사용예시 메서드 나중에 주석처리를하든 삭제를하든 고쳐도됨 
+	@PreAuthorize("isAuthenticated()")
+	/*
+		시큐리티 필터에서 권한 통제중이라 이거 안붙여도되긴함
+		이렇게 붙여놓으면 2번체크함 -> 서비스 커지면 DB부하 커짐 (중대한 로직 돌릴때 사용하면됨 삭제, 업데이트 그런거 ㅇㅇ)
+	*/
+	@GetMapping("/detail")
+	public String viewDetail(Model model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		/*
+		 인증된 정보를 가져와서 넣어줌 이경우엔 member 정보
+		 getPrincipal() -> 인증된 경우에는 인증주체의 정보를 담음 이 경우엔 Member의 정보가되겠지 (CustomUserDetails 에 memberVO 사용중)
+		 getAuthentication() -> Principal()의 인증주체 정보 + 인증 관련 정보까지 포함돼서 나옴
+		*/
+		
+		if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
+			CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+			// 잘 구워삶아서 member나 seller로 뽑아서 쓰는과정
+			if (userDetails.isMember()) {
+				MemberVO member = userDetails.getMember();
+				model.addAttribute("member", member);
+			} else if (userDetails.isSeller()) {
+				SellerVO seller = userDetails.getSeller();
+				model.addAttribute("seller", seller);
+			}
+		}
+		return "views/member/detail";
+	}
+
+
 }
 
 

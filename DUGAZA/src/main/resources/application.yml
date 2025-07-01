@@ -113,6 +113,6 @@ server:
 # rememberMeKey 명확하게 지정
 # (이미 data-config.yml에 hayden으로 지정되어 있음)
 data-config:
-  rememberMe-key: hayden
+  rememberMe-key: remember-me
 
 
