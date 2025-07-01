@@ -1,9 +1,11 @@
 package kr.spring.member.vo;
 
 import java.sql.Date;
+import java.util.List;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import kr.spring.auth.vo.RoleVO;
 
 @Data
 public class MemberVO {
@@ -22,6 +24,9 @@ public class MemberVO {
 	private Date updatedAt;
 	private String profileImage;
 		
+	
+	// 사용자가 가진 역할들 (다중 역할 지원)
+	private List<RoleVO> userRoles;
 }
 
 /*

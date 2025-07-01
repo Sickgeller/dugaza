@@ -2,7 +2,10 @@ package kr.spring.member.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,10 +19,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kr.spring.member.service.MemberService;
 import kr.spring.member.vo.MemberVO;
-import kr.spring.auth.security.PrincipalDetails;
+import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.util.FileUtil;
 import kr.spring.util.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
+import kr.spring.seller.vo.SellerVO;
 
 @Slf4j
 @Controller
@@ -65,12 +69,12 @@ public class MemberUserController {
 		memberService.insertMember(memberVO);
 		
 		//결과 메시지 처리
-		model.addAttribute("accessTitle", "회원가입");
+		model.addAttribute("accessTitle", "회원가입 완료");
 		model.addAttribute("accessMsg", 
-				            "회원가입이 완료되었습니다.");
-		model.addAttribute("accessBtn", "홈으로");
+				            "회원가입이 완료되었습니다. 이제 로그인하여 서비스를 이용해보세요!");
+		model.addAttribute("accessBtn", "로그인하러 가기");
 		model.addAttribute("accessUrl", 
-				  request.getContextPath()+"/");
+				  request.getContextPath()+"/member/login");
 		
 		return "views/common/resultView";
 	}
@@ -92,16 +96,14 @@ public class MemberUserController {
 	@GetMapping("/myPage")
 	public String getMyPage(
 			@AuthenticationPrincipal 
-			PrincipalDetails principal,
+			CustomUserDetails principal,
 			Model model) {
 		
 		//회원정보
-		MemberVO member =
-				memberService.selectMember(
-						principal.getMemberVO()
-						         .getMemberId());
+		MemberVO member = memberService.selectMember(principal.getMember().getMemberId());
 		
 		model.addAttribute("member", member);
+		model.addAttribute("userDetails", principal); // 추가 사용자 정보
 		
 		return "views/member/memberView";
 	}
@@ -111,13 +113,13 @@ public class MemberUserController {
 	@GetMapping("/updateUser")
 	public String formUpdate(
 			        @AuthenticationPrincipal
-			        PrincipalDetails principal,
+			        CustomUserDetails principal,
 			        Model model) {
 		//회원정보
-		MemberVO memberVO =
-				memberService.selectMember(
-				  principal.getMemberVO().getMemberId());
+		MemberVO memberVO = memberService.selectMember(
+				  principal.getMember().getMemberId());
 		model.addAttribute("memberVO", memberVO);
+		model.addAttribute("userDetails", principal); // 추가 사용자 정보
 		
 		return "views/member/memberModify";
 	}
@@ -128,7 +130,7 @@ public class MemberUserController {
 	public String submitUpdate(@Valid MemberVO memberVO,
 			                   BindingResult result,
 			                   @AuthenticationPrincipal
-			                   PrincipalDetails principal) {
+			                   CustomUserDetails principal) {
 		log.debug("<<회원정보수정>> : {}",memberVO);
 		
 		//유효성 체크 결과 오류가 있으면 폼 호출
@@ -138,13 +140,18 @@ public class MemberUserController {
 		}
 		
 		memberVO.setMemberId(
-				principal.getMemberVO().getMemberId());		
+				principal.getMember().getMemberId());		
 		//회원정보수정
 		memberService.updateMember(memberVO);
 		
-		//PrincipalDetails에 저장된 자바빈의 email 정보 갱신
-		principal.getMemberVO().setEmail(
-				                  memberVO.getEmail());
+		//CustomUserDetails에 저장된 자바빈의 정보 갱신
+		principal.getMember().setEmail(memberVO.getEmail());
+		principal.getMember().setName(memberVO.getName());
+		principal.getMember().setPhone(memberVO.getPhone());
+		principal.getMember().setAddress(memberVO.getAddress());
+		principal.getMember().setAddressDetail(memberVO.getAddressDetail());
+		
+		log.info("회원정보 수정 완료: 사용자 = {}", principal.getUsername());
 		
 		return "redirect:/member/myPage";
 	}
@@ -178,7 +185,7 @@ public class MemberUserController {
 	// 비밀번호 변경
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/changePassword")
-	public String submitChangePassword(@Valid MemberVO memberVO, BindingResult result, HttpServletRequest request, @AuthenticationPrincipal PrincipalDetails principal) {
+	public String submitChangePassword(@Valid MemberVO memberVO, BindingResult result, HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
 		log.debug("<<비밀번호 변경>> : {}", memberVO);
 		if(result.hasFieldErrors("now_passwd") || result.hasFieldErrors("passwd")) {
 			ValidationUtil.printErrorFields(result);
@@ -186,10 +193,46 @@ public class MemberUserController {
 		}
 		
 		// 회원번호 저장
-		memberVO.setMemberId(principal.getMemberVO().getMemberId());
+		memberVO.setMemberId(principal.getMember().getMemberId());
+		
+		// 비밀번호 암호화 후 업데이트
+		memberVO.setPassword(passwordEncoder.encode(memberVO.getPassword()));
+		memberService.updatePassword(memberVO);
+		
+		log.info("비밀번호 변경 완료: 사용자 = {}", principal.getUsername());
 		
 		return "views/common/resultAlert";
 	}
+	//사용예시 메서드 나중에 주석처리를하든 삭제를하든 고쳐도됨 
+	@PreAuthorize("isAuthenticated()")
+	/*
+		시큐리티 필터에서 권한 통제중이라 이거 안붙여도되긴함
+		이렇게 붙여놓으면 2번체크함 -> 서비스 커지면 DB부하 커짐 (중대한 로직 돌릴때 사용하면됨 삭제, 업데이트 그런거 ㅇㅇ)
+	*/
+	@GetMapping("/mypage")
+	public String viewDetail(Model model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		/*
+		 인증된 정보를 가져와서 넣어줌 이경우엔 member 정보
+		 getPrincipal() -> 인증된 경우에는 인증주체의 정보를 담음 이 경우엔 Member의 정보가되겠지 (CustomUserDetails 에 memberVO 사용중)
+		 getAuthentication() -> Principal()의 인증주체 정보 + 인증 관련 정보까지 포함돼서 나옴
+		*/
+		
+		if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
+			CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+			// 잘 구워삶아서 member나 seller로 뽑아서 쓰는과정
+			if (userDetails.isMember()) {
+				MemberVO member = userDetails.getMember();
+				model.addAttribute("member", member);
+			} else if (userDetails.isSeller()) {
+				SellerVO seller = userDetails.getSeller();
+				model.addAttribute("seller", seller);
+			}
+		}
+		return "views/member/detail";
+	}
+
+
 }
 
 

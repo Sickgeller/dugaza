@@ -4,16 +4,15 @@ import kr.spring.api.service.EventDataSyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.Map;
 
-@Controller
+@RestController
 @RequestMapping("/admin/event")
 @Slf4j
 @RequiredArgsConstructor
@@ -22,7 +21,6 @@ public class EventDataSyncController {
     private final EventDataSyncService eventDataSyncService;
 
     @GetMapping("/sync")
-    @ResponseBody
     public ResponseEntity<Map<String, Object>> syncEventCode() {
         // 올해 년도를 기본값으로 사용
         Long currentYear = (long) LocalDate.now().getYear();
@@ -33,7 +31,6 @@ public class EventDataSyncController {
     }
 
     @GetMapping("/sync/{startYear}")
-    @ResponseBody
     public ResponseEntity<Map<String, Object>> syncEventCodeWithYear(@PathVariable Long startYear) {
         log.info("이벤트 정보 동기화 요청받음 - 시작 연도: {}", startYear);
         

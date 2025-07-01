@@ -7,11 +7,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,108 +23,149 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
+
 import kr.spring.auth.security.CustomAccessDeniedHandler;
-import kr.spring.auth.security.UserSecurityService;
+import kr.spring.auth.security.CustomLogoutSuccessHandler;
+import kr.spring.auth.security.UserDetailsService;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
-//모든 요청 URL이 스프링 시큐리티의 제어를 받도록 만드는 어노테이션
 @EnableWebSecurity
-//Controller 메서드 레벨에서 권한을 체크할 수 있도록 설정.
-//@PreAuthorize 사용시 추가
 @EnableMethodSecurity
 public class SecurityConfig {
-	//쿠키에 사용되는 값을 암호화하기 위한 키(key)값
-	@Value("${data-config.rememberMe-key}")
-	private String rememberMe_key;
+    
+    @Value("${data-config.rememberMe-key}")
+    private String rememberMeKey;
 
-	//DB연동을 위한 DataSource 지정
-	@Autowired
-	@Qualifier("dataSource")
-	private DataSource dataSource;
-	//로그인 시 사용자 정보를 조회하고, 이를 기반으로
-	//인증을 수행
-	@Autowired
-	private UserSecurityService userSecurityService;
-	//인증에 성공한 후, 리다이렉트할 URL 지정
-	@Autowired
-	private AuthenticationSuccessHandler authenticationSuccessHandler;
-	//로그인 실패 시 처리를 담당하는 클래스
-	@Autowired
-	private AuthenticationFailureHandler authenticationFailureHandler;
-	@Autowired
-	private CustomAccessDeniedHandler customAccessDeniedHandler;
+    @Autowired
+    @Qualifier("dataSource")
+    private DataSource dataSource;
+    
+    @Autowired
+    private UserDetailsService userDetailsService;
+    
+    @Autowired
+    @Qualifier("customSuccessHandler")
+    private AuthenticationSuccessHandler successHandler;
+    
+    @Autowired
+    @Qualifier("customFailureHandler")
+    private AuthenticationFailureHandler failureHandler;
+    
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
+    
+    @Autowired
+    @Qualifier("customLogoutSuccessHandler")
+    private CustomLogoutSuccessHandler logoutSuccessHandler;
 
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-		return authenticationConfiguration.getAuthenticationManager();
-	}
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) 
+            throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http)
-			                                              throws Exception{
-		//HTTP 요청에 대한 보안 설정
-		return http.authorizeHttpRequests(authorize -> authorize
-//				    .requestMatchers("/admin").hasAuthority("ROLE_ADMIN")
-					.requestMatchers("/seller/login","/seller/register").permitAll()   // 가장 구체적인 경로를 먼저
-					.requestMatchers("/seller/**").hasRole("SELLER") // 그 다음 범위 지정
-					.requestMatchers("/**").permitAll()
-//				    .anyRequest().authenticated()
-				)
-			//폼 기반 로그인 설정
-			.formLogin(form -> form
-					//커스텀 로그인 페이지 URL 지정
-					.loginPage("/member/login")
-					.loginProcessingUrl("auth/login")
-					.usernameParameter("username")
-					.passwordParameter("password")
-					.successHandler(authenticationSuccessHandler)
-					.failureHandler(authenticationFailureHandler))
-			//로그아웃 설정
-			.logout(logout -> logout
-					.logoutUrl("/member/logout")
-					.logoutSuccessUrl("/")
-					.invalidateHttpSession(true)
-					.deleteCookies("JSESSIONID"))
-			.exceptionHandling(error -> error
-					.accessDeniedHandler(customAccessDeniedHandler)
-			)
-			.rememberMe(me -> me
-					.key(rememberMe_key) //쿠키에 사용되는 값을 암호화하기 위한 키(key) 값
-					.tokenRepository(persistentTokenRepository())//토큰은 데이터베이스에 저장
-					.tokenValiditySeconds(60*60*24*7)
-					.userDetailsService(userSecurityService))
-			//GET방식을 제외한 상태를 변경하는 요청(POST,PUT,DELETE,
-			//PATCH)에만 CSRF 검사
-			.csrf(csrf -> csrf.disable()) //CSRF 보호 기능을 비활성화
-			.build();
-	}
+    /**
+     * 웹 애플리케이션용 Security Filter Chain
+     */
+    @Bean
+    @Order(2)
+    public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
+        
+        return http
+                .securityMatcher("/**")
+                .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**", "/favicon.*").permitAll() // 정적 리소스 허용
+                    .requestMatchers("/", "/member/login", "/member/register", "/member/registerUser").permitAll() // 인증 없이 접근 가능한 페이지
+                    .requestMatchers("/views/common/**").permitAll() // 공통 페이지들(추후 추가)
+                    .requestMatchers("/seller/login", "/seller/register").permitAll()
+                    .requestMatchers("/seller/**").hasRole("SELLER") // 판매자 전용 페이지
+                    .requestMatchers("/admin/**").hasRole("ADMIN")// 관리자 전용 페이지
+                    // API 제외한 나머지 요청은 인증 필요
+                    .requestMatchers("/api/**").denyAll() // API는 별도 필터체인에서 처리
+                    .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                    .loginPage("/member/login")
+                    .loginProcessingUrl("/auth/login")
+                    .usernameParameter("username")
+                    .passwordParameter("password")
+                    .successHandler(successHandler)
+                    .failureHandler(failureHandler)
+                    .permitAll()
+                )
+                .logout(logout -> logout
+                    .logoutUrl("/member/logout")  // 로그아웃 처리 URL
+                    .logoutSuccessHandler(logoutSuccessHandler)  // 커스텀 로그아웃 성공 핸들러
+                    .invalidateHttpSession(true)  // 세션 무효화
+                    .clearAuthentication(true)    // 인증 정보 클리어
+                    .deleteCookies("JSESSIONID", "remember-me")  // 쿠키 삭제
+                    .permitAll()  // 로그아웃 URL에 모든 사용자 접근 허용
+                )
+                .exceptionHandling(exception -> exception
+                    .accessDeniedHandler(customAccessDeniedHandler)
+                )
+                .rememberMe(remember -> remember
+                    .key(rememberMeKey)
+                    .tokenRepository(persistentTokenRepository())
+                    .tokenValiditySeconds(60 * 60 * 24 * 7) // 7일
+                    .userDetailsService(userDetailsService)
+                    .useSecureCookie(false) // HTTPS가 아닌 환경에서도 쿠키 사용 가능
+                    .rememberMeParameter("remember-me") // 파라미터 이름 명시
+                    .rememberMeCookieName("remember-me") // 쿠키 이름 명시
+                    .alwaysRemember(false) // 체크박스 선택 시에만 remember-me 활성화
+                )
+                .authenticationProvider(authenticationProvider()) // 명시적 AuthenticationProvider 설정
+                .csrf(AbstractHttpConfigurer::disable)
+                .build();
+    }
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    /**
+     * REST API용 Security Filter Chain 역할별로
+     * API부분은 따로 시작부분 수정해야함
+     */
+    @Bean
+    @Order(1)
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
+        
+        return http
+                .securityMatcher("/api/**")
+                .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers("/api/public/**").permitAll()
+                    .requestMatchers("/api/user/**").hasRole("USER")
+                    .requestMatchers("/api/seller/**").hasRole("SELLER")
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .anyRequest().authenticated()
+                )
+                .authenticationProvider(authenticationProvider()) // 명시적 AuthenticationProvider 설정
+                .csrf(csrf -> csrf.disable())
+                .httpBasic(basic -> {}) // REST API는 Basic Auth 사용
+                .build();
+    }
 
-	@Bean
-	public PersistentTokenRepository
-	                    persistentTokenRepository() {
-		JdbcTokenRepositoryImpl repo =
-				new JdbcTokenRepositoryImpl();
-		repo.setDataSource(dataSource);
-		return repo;
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-}
+    /**
+     * DaoAuthenticationProvider 설정
+     * 순환참조를 방지하면서 사용자 인증 서비스 사용
+     */
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
+        tokenRepository.setDataSource(dataSource);
+        return tokenRepository;
+    }
+} 

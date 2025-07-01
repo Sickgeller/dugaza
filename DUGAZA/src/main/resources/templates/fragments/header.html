@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
-<!-- <script type="text/javascript" th:src="@{/assets/js/auth.js}"></script>-->
-<header th:fragment="header" style="position: relative; z-index: 0;">
+<header th:fragment="header" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" th:href="@{/}">DUGAZA</a>
@@ -29,41 +25,32 @@
                 </ul>
                 
                 <div class="user-menu">
-                <th:block sec:authorize="!isAuthenticated()">
                     <!-- 로그인하지 않은 경우 -->
-                    <div class="logged-out">
+                    <div sec:authorize="!isAuthenticated()">
                         <a th:href="@{/member/login}" class="btn btn-outline-primary me-2">로그인</a>
                         <a th:href="@{/member/register}" class="btn btn-primary">회원가입</a>
                         <a th:href="@{/seller/login}" class="btn btn-outline-secondary ms-2">사업자 로그인</a>
                     </div>
-                    </th:block>
-                  <th:block sec:authorize="isAuthenticated()">
-
-
-                    <!-- 사업자 로그인 버튼 (항상 표시) -->
-
 
                     <!-- 로그인한 경우 -->
-                    <div class="logged-in">
-                        <span class="user-name me-2" th:text="${#authentication.principal.memberVO.name}"></span>님 환영합니다
+                    <div sec:authorize="isAuthenticated()">
+                        <span class="me-2">
+                            <span sec:authentication="name"></span>님 환영합니다
+                            <span class="badge bg-secondary ms-1" sec:authorize="hasRole('ADMIN')">관리자</span>
+                            <span class="badge bg-info ms-1" sec:authorize="hasRole('SELLER')">사업자</span>
+                            <span class="badge bg-primary ms-1" sec:authorize="hasRole('MEMBER')">회원</span>
+                        </span>
                         <a th:href="@{/member/mypage}" class="btn btn-outline-primary me-2">마이페이지</a>
-                        <button id="logout" class="btn btn-outline-danger">로그아웃</button>
-                        <form th:action="@{/member/logout}" method="post"
-	    		  		style="display:none;" id="frm_logout"></form>
-	    				<script type="text/javascript">
-	    					const logout = document.getElementById('logout');
-	    					logout.onclick=function(event){
-	    						document.getElementById('frm_logout').submit();
-	    						event.preventDefault();
-	    					};
-	    				</script>
+                        <a th:href="@{/admin}" class="btn btn-outline-warning me-2" sec:authorize="hasRole('ADMIN')">관리자</a>
+                        <a th:href="@{/seller/dashboard}" class="btn btn-outline-info me-2" sec:authorize="hasRole('SELLER')">사업자 대시보드</a>
+                        <form th:action="@{/member/logout}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-outline-danger">로그아웃</button>
+                        </form>
                     </div>
-                   </th:block>
                 </div>
             </div>
         </div>
     </nav>
 </header>
-</html>
 
 
