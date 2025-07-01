@@ -75,11 +75,12 @@ mybatis: #mybatis 설정
     - classpath:mapper/**/*.xml
     - classpath:kr/spring/api/mapper/*.xml
     - classpath:kr/spring/**/dao/*.xml
-  type-aliases-package: kr.spring.api.dto,kr.spring.member.vo
+  type-aliases-package: kr.spring.api.dto,kr.spring.member.vo,kr.spring.faq.vo
   configuration:
     map-underscore-to-camel-case: true
     default-fetch-size: 100
     default-statement-timeout: 30
+
 
 logging: #로그 지정
   level:

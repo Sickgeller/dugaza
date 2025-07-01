@@ -28,6 +28,7 @@ public class MainController {
 		// 관리자는 자동으로 관리자 페이지로 리다이렉트
 		if(userDetails != null && userDetails.getAuthorities().stream()
 				.anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+
 			return "redirect:/admin";
 		}
 		return "views/index";
@@ -37,6 +38,11 @@ public class MainController {
 	public String main(Model model, HttpServletRequest request) {
 		model.addAttribute("requestURI", request.getRequestURI());
 		return "views/sample/index";
+	}
+	
+	@GetMapping("/terms")
+	public String termsPage() {
+	    return "views/common/terms";
 	}
 	
 	//관리자 페이지
