@@ -80,6 +80,11 @@ public class MemberServiceImpl implements MemberService{
 		memberMapper.updateByAdmin(memberVO);
 	}
 
+	@Override
+	public Integer selectMemberCount() {
+		return memberMapper.selectMemberCount();
+	}
+
 }
 
 
