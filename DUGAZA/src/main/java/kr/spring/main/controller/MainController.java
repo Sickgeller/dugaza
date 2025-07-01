@@ -44,6 +44,14 @@ public class MainController {
 	public String termsPage() {
 	    return "views/common/terms";
 	}
+    @GetMapping("/privacy")
+    public String showPrivacyPage() {
+        return "views/common/privacy";  
+    }
+    @GetMapping("/about")
+    public String showAboutPage() {
+        return "views/common/about"; 
+    }
 	
 	//관리자 페이지
 	@GetMapping("/admin")

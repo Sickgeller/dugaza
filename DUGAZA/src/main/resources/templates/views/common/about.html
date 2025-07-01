@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout_basic}">
+
+<head>
+<meta charset="UTF-8">
+<title>DUGAZA 회사 소개</title>
+<link rel="stylesheet" th:href="@{/assets/css/about.css}">
+</head>
+<body>
+	<div layout:fragment="content">
+
+		<!-- 상단 히어로 섹션 -->
+		<section class="hero-section">
+			<div class="hero-text">
+				<h1>DUGAZA</h1>
+				<p>든든한 여행 파트너</p>
+				<section class="about-section">
+					<h3>회사 소개</h3>
+					<p>트립닷컴은 39개 국가 및 지역에서 24개 언어, 35개 현지 통화로 이용할 수 있는 글로벌 원스톱 여행
+						서비스 기업입니다.</p>
+					<p>트립닷컴은 전세계 220개 국가 및 지역의 3,400개 공항을 연결하는 600개 이상의 항공사와 170만 개
+						이상의 호텔로 구성된 광범위한 호텔 및 항공편 네트워크를 보유하고 있습니다.</p>
+					<p>트립닷컴은 세계 최고 수준의 연중무휴 24시간 다국어 고객 서비스를 제공하고 있으며, 에든버러, 도쿄,
+						서울에 위치한 추가적인 고객센터를 통해 전세계 수백만 고객에게 '최고의 여행 경험'을 제공하기 위해 노력하고 있습니다.
+						다음 여행은 트립닷컴과 함께 하세요.</p>
+				</section>
+			</div>
+		</section>
+
+		<main class="about-main">
+
+			<!-- 회사 소개 -->
+
+
+			<!-- 지속가능성 -->
+			<section class="about-section with-image">
+				<h2>지속가능성</h2>
+				<img src="images/sustainability.jpg" alt="지속가능성 이미지">
+				<p>DUGAZA는 지역사회 상생, 환경보호, 가족친화 정책, 주주 신뢰를 모두 아우르는 지속가능경영을 실천하고
+					있습니다.</p>
+			</section>
+
+			<!-- 지역사회친화 -->
+			<section class="about-section">
+				<h2>지역사회친화</h2>
+				<img src="images/community.jpg" alt="지역사회 이미지">
+				<p>우리는 지역사회를 위한 기부, 자원봉사, 청년 여행 지원 등 다양한 사회 공헌 프로그램을 운영합니다.</p>
+			</section>
+
+			<!-- 환경 중심 -->
+			<section class="about-section">
+				<h2>환경 중심</h2>
+				<img src="images/environment.jpg" alt="환경 이미지">
+				<p>종이 없는 서비스, 탄소 절감 여행상품, 에너지 효율화 등 친환경 기술을 도입하여 지속 가능한 여행을
+					지원합니다.</p>
+			</section>
+
+			<!-- 가족 친화 -->
+			<section class="about-section">
+				<h2>가족 친화</h2>
+				<img src="images/family.jpg" alt="가족 이미지">
+				<p>직원과 고객 모두의 가족 삶의 질 향상을 위해 육아휴직 지원, 가족 할인 프로그램, 유연근무제를 운영하고
+					있습니다.</p>
+			</section>
+
+			<!-- 주주 친화 -->
+			<section class="about-section">
+				<h2>주주 친화</h2>
+				<img src="images/shareholder.jpg" alt="주주 이미지">
+				<p>DUGAZA는 투명한 정보 공개와 안정적인 수익 구조를 통해 신뢰받는 주주 중심 기업이 되기 위해 노력하고
+					있습니다.</p>
+			</section>
+
+		</main>
+	</div>
+</body>
+</html>

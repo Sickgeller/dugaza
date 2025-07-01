@@ -1,0 +1,66 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #333;
+  background-color: #fff;
+}
+
+/* 상단 히어로 섹션 */
+.hero-section {
+  background: url('../images/dugaza-hero.jpg') no-repeat center center;
+  background-size: cover;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+}
+
+.hero-text h1 {
+  font-size: 42px;
+  margin: 0;
+}
+
+.hero-text p {
+  font-size: 18px;
+  margin-top: 8px;
+}
+
+/* 본문 영역 */
+.about-main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 50px 20px;
+}
+
+.about-section {
+  margin-bottom: 60px;
+}
+
+.about-section h2 {
+  font-size: 24px;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 6px;
+  margin-bottom: 16px;
+}
+
+.about-section p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #444;
+  margin-bottom: 14px;
+}
+
+/* 섹션 이미지 스타일 */
+.about-section img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
