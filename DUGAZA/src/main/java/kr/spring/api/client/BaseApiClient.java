@@ -6,13 +6,14 @@ import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.config.ApiConfig;
 import kr.spring.api.dto.ApiLogDto;
 import kr.spring.api.util.ApiLogUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import jakarta.annotation.PostConstruct;
 
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -24,7 +25,6 @@ import java.util.function.BiFunction;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class BaseApiClient{
 
     private final WebClient webClient;
@@ -32,12 +32,47 @@ public class BaseApiClient{
     private final WebClient.Builder builder;
     private final ApiConfig apiConfig;
 
-
     @Autowired(required = false)
     private ApiLogUtil apiLogUtil;
 
+    // 생성자를 통한 명시적 초기화
+    @Autowired
+    public BaseApiClient(WebClient webClient, ObjectMapper objectMapper, WebClient.Builder builder, ApiConfig apiConfig) {
+        this.webClient = webClient;
+        this.objectMapper = objectMapper;
+        this.builder = builder;
+        this.apiConfig = apiConfig;
+        
+        // ApiConfig 초기화 확인
+        if (apiConfig == null) {
+            log.error("ApiConfig가 주입되지 않았습니다!");
+        } else {
+            log.info("ApiConfig 주입 성공");
+            
+            // tour 필드 초기화
+            if (apiConfig.getTour() == null) {
+                log.warn("TourApi 객체가 null이어서 초기화합니다.");
+                ApiConfig.TourApi tourApi = new ApiConfig.TourApi();
+                apiConfig.setTour(tourApi);
+            }
+            
+            // train 필드 초기화
+            if (apiConfig.getTrain() == null) {
+                log.warn("TrainApi 객체가 null이어서 초기화합니다.");
+                ApiConfig.TrainApi trainApi = new ApiConfig.TrainApi();
+                apiConfig.setTrain(trainApi);
+            }
+            
+            // expressBus 필드 초기화
+            if (apiConfig.getExpressBus() == null) {
+                log.warn("ExpressBusApi 객체가 null이어서 초기화합니다.");
+                ApiConfig.ExpressBusApi expressBusApi = new ApiConfig.ExpressBusApi();
+                apiConfig.setExpressBus(expressBusApi);
+            }
+        }
+    }
 
-    public URI makeUri(String baseUrl, String path, String... params) {
+    private URI makeUri(String baseUrl, String path, String... params) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl + path)
                 .queryParam("serviceKey", apiConfig.getServiceKey())
                 .queryParam("MobileOS", "ETC")
@@ -195,6 +230,18 @@ public class BaseApiClient{
      */
     @LogExecutionTime(category = "API")
     public URI makeTourUri(String path, String... params) {
+        log.info("[makeTourUri] apiConfig.getTour(): {}", apiConfig.getTour());
+        log.info("[makeTourUri] apiConfig.getTour().getBaseUrl(): {}", apiConfig.getTour() != null ? apiConfig.getTour().getBaseUrl() : "tour is null");
+        log.info("[makeTourUri] path: {}, params: {}", path, params);
+        if (apiConfig.getTour() == null) {
+            log.error("TourApi 객체가 null입니다. ApiConfig 초기화가 필요합니다.");
+            throw new IllegalStateException("TourApi 객체가 null입니다.");
+        }
+        if (apiConfig.getTour().getBaseUrl() == null) {
+            log.error("Tour API 기본 URL이 null입니다. application.yml 또는 data-config.yml 설정을 확인하세요.");
+            throw new IllegalStateException("Tour API 기본 URL이 null입니다.");
+        }
+        log.debug("Tour API 호출: baseUrl={}, path={}", apiConfig.getTour().getBaseUrl(), path);
         return makeUri(apiConfig.getTour().getBaseUrl(), path, params);
     }
 
@@ -203,14 +250,19 @@ public class BaseApiClient{
      */
     @LogExecutionTime(category = "API")
     public URI makeTrainUri(String path, String... params) {
+        log.info("[makeTrainUri] apiConfig.getTrain(): {}", apiConfig.getTrain());
+        log.info("[makeTrainUri] apiConfig.getTrain().getBaseUrl(): {}", apiConfig.getTrain() != null ? apiConfig.getTrain().getBaseUrl() : "train is null");
+        log.info("[makeTrainUri] path: {}, params: {}", path, params);
         URI uri = makeUri(apiConfig.getTrain().getBaseUrl(), path, params);
         log.debug("생성된 기차 API URI: {}", uri);
         return uri;
     }
 
-
     @LogExecutionTime(category = "API")
     public URI makeExpressBusUri(String path, String... params) {
+        log.info("[makeExpressBusUri] apiConfig.getExpressBus(): {}", apiConfig.getExpressBus());
+        log.info("[makeExpressBusUri] apiConfig.getExpressBus().getBaseUrl(): {}", apiConfig.getExpressBus() != null ? apiConfig.getExpressBus().getBaseUrl() : "expressBus is null");
+        log.info("[makeExpressBusUri] path: {}, params: {}", path, params);
         URI uri = makeUri(apiConfig.getExpressBus().getBaseUrl(), path, params);
         log.debug("생성된 고속버스 API URI: {}", uri);
         return uri;

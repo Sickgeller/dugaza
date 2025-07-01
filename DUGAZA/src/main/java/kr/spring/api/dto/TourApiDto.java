@@ -30,6 +30,7 @@ public class TourApiDto {
     private String tel;
     private String title;
     private String zipcode;
+    private Long showFlag; // 0이면 비활성화 1이면 활성화
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

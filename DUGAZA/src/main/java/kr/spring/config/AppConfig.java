@@ -20,14 +20,19 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import kr.spring.websocket.SocketHandler;
+import kr.spring.api.config.ApiConfig;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import javax.sql.DataSource;
 
-// 자바코드 기반 설정 클래스
+/**
+ * 애플리케이션 전체 설정을 관리하는 설정 클래스
+ */
 @Configuration
 @EnableWebSecurity
 @MapperScan(basePackages = {"kr.spring.api.mapper", "kr.spring.member.dao"})
 @ComponentScan(basePackages = {"kr.spring.aop"})
+@EnableConfigurationProperties({ApiConfig.class})
 public class AppConfig implements WebMvcConfigurer, WebSocketConfigurer {
 
 	@Value("${spring.mail.username}")

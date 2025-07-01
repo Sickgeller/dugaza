@@ -27,64 +27,85 @@ public class TourSyncServiceImpl implements TourSyncService {
     @Transactional
     @LogExecutionTime(category = "TourSync")
     public Map<String, Object> getAllTourData() {
-        AtomicInteger mappingTotalCount = new AtomicInteger(0);
-        AtomicInteger mappingSuccessCount = new AtomicInteger(0);
-        AtomicInteger mappingFailCount = new AtomicInteger(0);
-        
+        AtomicInteger insertCount = new AtomicInteger(0);
+        AtomicInteger updateCount = new AtomicInteger(0);
+        AtomicInteger failedCount = new AtomicInteger(0);
+        AtomicInteger totalCount = new AtomicInteger(0);
+
+
         try {
             for(ContentTypeid contentTypeId : ContentTypeid.values()) {
                 int code = contentTypeId.getCode();
                 String name = contentTypeId.name();
     
-                List<TourApiDto> codeResult = tourApiClient.getTouristData(code);
-                
                 // 각 콘텐츠 타입별로 바로 매핑 처리
-                processTourData(codeResult, mappingTotalCount, mappingSuccessCount, mappingFailCount);
+                List<TourApiDto> tourList = tourApiClient.getTouristData(code);
+                Map<String, Object> result = processTourData(tourList);
+
+                totalCount.addAndGet(insertCount.addAndGet((int)result.get("insertCount")));
+                totalCount.addAndGet(updateCount.addAndGet((int)result.get("updateCount")));
+                totalCount.addAndGet(failedCount.addAndGet((int)result.get("failedCount")));
+
             }
         } catch (Exception e) {
             // AOP에서 예외 처리
         }
-                
-        return Map.of(
-                "totalMappingCount", mappingTotalCount.get(),
-                "successMappingCount", mappingSuccessCount.get(),
-                "failMappingCount", mappingFailCount.get());
+
+        return Map.of("insertCount", insertCount.get(),
+                "updateCount" , updateCount.get(),
+                "failedCount" , failedCount.get(),
+                "totalCount" , totalCount.get());
     }
-    
-    private void processTourData(List<TourApiDto> tourList, 
-                               AtomicInteger totalCount, 
-                               AtomicInteger successCount, 
-                               AtomicInteger failCount) {
-        for(TourApiDto dto : tourList) {
-            totalCount.incrementAndGet();
-            
-            try {
-                tourApiMapper.insert(dto);
-                successCount.incrementAndGet();
-            } catch (Exception e) {
-                failCount.incrementAndGet();
-            }
-        }
-    }
+
 
     @Override
     @LogExecutionTime(category = "TourSync")
     public Map<String,Object> getTouristData(ContentTypeid contentTypeId){
-        String name = contentTypeId.name();
         int code = contentTypeId.getCode();
         List<TourApiDto> tourList = tourApiClient.getTouristData(code);
+        processTourData(tourList);
         
-        AtomicInteger totalCount = new AtomicInteger(0);
-        AtomicInteger successCount = new AtomicInteger(0);
-        AtomicInteger failCount = new AtomicInteger(0);
-        
-        processTourData(tourList, totalCount, successCount, failCount);
-        
-        return Map.of(
-                "contentTypeId", code,
-                "contentTypeName", name,
-                "totalCount", totalCount.get(),
-                "successCount", successCount.get(),
-                "failCount", failCount.get());
+        return processTourData(tourList);
+    }
+
+    @Override
+    @LogExecutionTime(category = "TourSync")
+    public Map<String, Object> updateTourData() {
+        List<TourApiDto> tourList = tourApiClient.updateTouristData();
+        processTourData(tourList);
+        return Map.of();
+    }
+
+
+    private Map<String,Object> processTourData(List<TourApiDto> tourList) {
+
+        AtomicInteger insertCount = new AtomicInteger(0);
+        AtomicInteger updateCount = new AtomicInteger(0);
+        AtomicInteger failedCount = new AtomicInteger(0);
+
+        for(TourApiDto dto : tourList) {
+
+            try {
+                tourApiMapper.insert(dto);
+                insertCount.incrementAndGet();
+                continue;
+            } catch (Exception e) {
+                log.debug("insert failed", e);
+            }
+
+            try{
+                tourApiMapper.update(dto);
+                updateCount.incrementAndGet();
+            } catch (Exception e) {
+                log.debug("update failed", e);
+                failedCount.incrementAndGet();
+            }
+        }
+
+        return Map.of("insertCount", insertCount.get(),
+                "updateCount" , updateCount.get(),
+                "failedCount" , failedCount.get(),
+                "totalCount" , insertCount.get() + failedCount.get() + updateCount.get());
+
     }
 }
