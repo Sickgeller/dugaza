@@ -34,6 +34,7 @@ public class MemberVO {
 		case "ACTIVE": return "일반";
 		case "SUSPEND": return "정지";
 		case "HUMAN": return "휴먼";
+		case "WITHDRAWN": return "탈퇴";
 		default: return "오류";
 		}
 	}

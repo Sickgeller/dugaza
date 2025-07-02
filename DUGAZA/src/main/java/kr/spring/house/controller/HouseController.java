@@ -1,4 +1,4 @@
-package kr.spring.accommodation.controller;
+package kr.spring.house.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,8 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
-@RequestMapping("/accommodation")
-public class AccommodationController {
+@RequestMapping("/house")
+public class HouseController {
 	@GetMapping("")
 	public String accommodationMain() {
 		return "views/sample/accommodation";

@@ -50,6 +50,15 @@ public interface MemberMapper {
 	public void updateByAdmin(MemberVO memberVO);
 	@Select("SELECT COUNT(*) FROM member WHERE role != 'ADMIN'")
 	public Integer selectMemberCount();
+	// 해당 년월의 신규 가입 회원 수
+	@Select("SELECT COUNT(*) FROM member WHERE role != 'ADMIN' AND TO_CHAR(created_at, 'MM') = TO_CHAR(SYSDATE, 'MM') AND TO_CHAR(created_at, 'YYYY') = TO_CHAR(SYSDATE, 'YYYY')")
+	public Integer selectNewMemberCount();
+	// 탈퇴 회원 수
+	@Select("SELECT COUNT(*) FROM member WHERE role != 'ADMIN' AND status = 'WITHDRAWN'")
+	public Integer selectWithdrawnMemberCount();
+	// 휴면 회원 수
+	@Select("SELECT COUNT(*) FROM member WHERE role != 'ADMIN' AND status = 'HUMAN'")
+	public Integer selectHumanMemberCount();
 }
 
 

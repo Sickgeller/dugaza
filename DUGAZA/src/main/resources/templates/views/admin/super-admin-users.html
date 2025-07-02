@@ -43,7 +43,7 @@
                         <div class="stat-info">
                             <h3>전체 회원</h3>
                             <p th:text="${count} + '명'"></p>
-                            <span class="stat-change increase">+123명 (전일 대비)</span>
+                            <!-- <span class="stat-change increase">+123명 (전일 대비)</span> -->
                         </div>
                     </div>
                     <div class="stat-card">
@@ -52,8 +52,8 @@
                         </div>
                         <div class="stat-info">
                             <h3>신규 가입</h3>
-                            <p>89명</p>
-                            <span class="stat-change increase">+12명 (전일 대비)</span>
+                            <p th:text="${newCount} + '명'"></p>
+                            <span class="stat-change increase">(이번 달)</span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -62,8 +62,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>탈퇴</h3>
-                            <p>5명</p>
-                            <span class="stat-change decrease">+2명 (전일 대비)</span>
+                            <p th:text="${withdrawnCount} + '명'"></p>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -72,7 +71,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>휴면</h3>
-                            <p>234명</p>
+                            <p th:text="${humanCount} + '명'"></p>
                             <span class="stat-change">전체</span>
                         </div>
                     </div>
@@ -92,7 +91,7 @@
                             <select>
                                 <option value="all">전체 회원</option>
                                 <option value="active">활성 회원</option>
-                                <option value="inactive">휴면 회원</option>
+                                <option value="human">휴면 회원</option>
                                 <option value="suspended">정지 회원</option>
                             </select>
                         </div>

@@ -23,6 +23,9 @@ public interface MemberService {
 	public List<MemberVO> selectList(Map<String,Object> map);
 	public void updateByAdmin(MemberVO memberVO);
 	public Integer selectMemberCount();
+	public Integer selectNewMemberCount();
+	public Integer selectWithdrawnMemberCount();
+	public Integer selectHumanMemberCount();
 }
 
 
