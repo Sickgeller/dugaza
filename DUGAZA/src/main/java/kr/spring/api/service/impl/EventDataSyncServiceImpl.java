@@ -3,6 +3,7 @@ package kr.spring.api.service.impl;
 import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.client.EventApiClient;
 import kr.spring.api.dto.EventContentApiDto;
+import kr.spring.api.dto.EventDetailApiDto;
 import kr.spring.api.mapper.EventContentMapper;
 import kr.spring.api.service.EventDataSyncService;
 import lombok.RequiredArgsConstructor;
@@ -74,6 +75,39 @@ public class EventDataSyncServiceImpl implements EventDataSyncService {
         }
         
         return result;
+    }
+
+    @Override
+    @Transactional
+    @LogExecutionTime(category = "EventSync")
+    public Map<String, Object> syncEventDateData(Long startYear) {
+
+        List<EventDetailApiDto> list = eventApiClient.getEventContent2(startYear);
+        int insert = 0;
+        int update = 0;
+        int failed = 0;
+        for(EventDetailApiDto dto : list) {
+            try {
+                eventContentMapper.insertEventDate(dto);
+                insert++;
+                continue;
+            } catch (Exception e) {
+                log.debug("insert failed", e);
+            }
+
+            try{
+                eventContentMapper.updateEventDate(dto);
+                update++;
+            } catch (Exception e) {
+                log.debug("update failed", e);
+                failed++;
+            }
+        }
+        return Map.of("total" ,insert+update+failed ,
+                "insert",insert ,
+                "update" , update,
+                "failed" , failed);
+
     }
 }
 

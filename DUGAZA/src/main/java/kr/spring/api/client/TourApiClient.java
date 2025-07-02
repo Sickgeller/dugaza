@@ -21,7 +21,7 @@ public class TourApiClient {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
     @LogExecutionTime(category = "TourData")
-    public List<TourApiDto> getTouristData(int contentTypeId) {
+    public List<TourApiDto> getTouristData(Long contentTypeId) {
         URI uri = baseApiClient.makeTourUri("/areaBasedList2","contentTypeId", String.valueOf(contentTypeId));
         return baseApiClient.callApiManyTimes(uri, this::createTourApiDto);
     }

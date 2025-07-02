@@ -3,6 +3,8 @@ package kr.spring.api.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 public class EventDetailApiDto {
@@ -11,10 +13,10 @@ public class EventDetailApiDto {
     private String ageLimit;
     private String bookingPlace;
     private String discountInfoFestival;
-    private String eventEndDate;
+    private LocalDateTime eventEndDate;
     private String eventHomePage;
     private String eventPlace;
-    private String eventStartDate;
+    private LocalDateTime eventStartDate;
     private String festivalGrade;
     private String placeInfo;
     private String playTime;
