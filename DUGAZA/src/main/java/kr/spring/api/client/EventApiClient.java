@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,7 +24,9 @@ public class EventApiClient {
 
     private final BaseApiClient baseApiClient;
     private static final int DEFAULT_PAGE_SIZE = 100;
-    private static final int MAX_TOTAL_ITEMS = 50000; // API 최대 제한 (필요에 따라 조정)
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
+
 
     /**
      * 특정 연도 이후의 모든 이벤트 정보를 조회합니다.
@@ -38,7 +43,7 @@ public class EventApiClient {
         // 첫 페이지 요청으로 전체 개수 파악
         int pageNo = 1;
         URI firstPageUri = baseApiClient.makeTourUri(
-                "/searchFestival",
+                "/searchFestival2",
                 "eventStartDate", String.valueOf(startYear),
                 "pageNo", String.valueOf(pageNo),
                 "numOfRows", String.valueOf(DEFAULT_PAGE_SIZE));
@@ -51,17 +56,54 @@ public class EventApiClient {
         return baseApiClient.callApi(uri, this::createEventDetailApiDto).get(0);
     }
 
+    public List<EventDetailApiDto> getEventContent2(Long startYear) {
+        List<EventDetailApiDto> allResults = new ArrayList<>();
+
+        // 첫 페이지 요청으로 전체 개수 파악
+        int pageNo = 1;
+        URI firstPageUri = baseApiClient.makeTourUri(
+                "/searchFestival2",
+                "eventStartDate", String.valueOf(startYear),
+                "pageNo", String.valueOf(pageNo),
+                "numOfRows", String.valueOf(DEFAULT_PAGE_SIZE));
+
+        return baseApiClient.callApiManyTimes(firstPageUri, this::createEventDetailApiDto);
+    }
+
     private EventDetailApiDto createEventDetailApiDto(JsonNode item, String typs) {
+
+        String startDateS = item.path("eventstartdate").asText();
+        String endDateS = item.path("eventenddate").asText();
+        LocalDateTime startDate = null;
+        LocalDateTime endDate = null;
+
+        if (!startDateS.isEmpty()) {
+            try {
+                startDate = LocalDate.parse(startDateS, DATE_FORMATTER).atStartOfDay();
+            } catch (Exception e) {
+                // AOP에서 예외 처리
+            }
+        }
+
+        if (!endDateS.isEmpty()) {
+            try {
+                endDate = LocalDate.parse(endDateS, DATE_FORMATTER).atStartOfDay();
+            } catch (Exception e) {
+                // AOP에서 예외 처리
+            }
+        }
+
+
             return EventDetailApiDto.builder()
                 .contentId(item.path("contentid").asLong())
                 .contentTypeId(item.path("contenttypeid").asLong())
                 .ageLimit(item.path("agelimit").asText())
                 .bookingPlace(item.path("bookingplace").asText())
                 .discountInfoFestival(item.path("discountinfofestival").asText())
-                .eventEndDate(item.path("eventenddate").asText())
+                .eventEndDate(endDate)
                 .eventHomePage(item.path("eventhomepage").asText())
                 .eventPlace(item.path("eventplace").asText())
-                .eventStartDate(item.path("eventstartdate").asText())
+                .eventStartDate(startDate)
                 .festivalGrade(item.path("festivalgrade").asText())
                 .placeInfo(item.path("placeinfo").asText())
                 .playTime(item.path("playtime").asText())

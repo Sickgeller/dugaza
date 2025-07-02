@@ -103,4 +103,76 @@
     <delete id="deleteAllEventContent">
         DELETE FROM EVENT_CONTENT
     </delete>
+
+    <insert id="insertEventDate">
+        INSERT INTO event_detail (
+            content_id,
+            content_type_id,
+            age_limit,
+            booking_place,
+            discount_info_festival,
+            event_end_date,
+            event_homepage,
+            event_place,
+            event_start_date,
+            festival_grade,
+            place_info,
+            play_time,
+            program,
+            spend_time_festival,
+            sponsor_1,
+            sponsor_1_tel,
+            sponsor_2,
+            sponsor_2_tel,
+            sub_event,
+            use_time_festival
+        ) VALUES (
+                     #{contentId},
+                     #{contentTypeId},
+                     #{ageLimit},
+                     #{bookingPlace},
+                     #{discountInfoFestival},
+                     #{eventEndDate, jdbcType=TIMESTAMP},
+                     #{eventHomePage},
+                     #{eventPlace},
+                     #{eventStartDate, jdbcType=TIMESTAMP},
+                     #{festivalGrade},
+                     #{placeInfo},
+                     #{playTime},
+                     #{program},
+                     #{spendTimeFestival},
+                     #{sponsor1},
+                     #{sponsor1Tel},
+                     #{sponsor2},
+                     #{sponsor2Tel},
+                     #{subEvent},
+                     #{useTimeFestival}
+                 )
+    </insert>
+
+    <update id="updateEventDate">
+            UPDATE event_detail
+            SET
+                content_type_id = #{contentTypeId},
+                age_limit = #{ageLimit},
+                booking_place = #{bookingPlace},
+                discount_info_festival = #{discountInfoFestival},
+                event_end_date = #{eventEndDate, jdbcType=TIMESTAMP},
+                event_homepage = #{eventHomePage},
+                event_place = #{eventPlace},
+                event_start_date = #{eventStartDate, jdbcType=TIMESTAMP},
+                festival_grade = #{festivalGrade},
+                place_info = #{placeInfo},
+                play_time = #{playTime},
+                program = #{program},
+                spend_time_festival = #{spendTimeFestival},
+                sponsor_1 = #{sponsor1},
+                sponsor_1_tel = #{sponsor1Tel},
+                sponsor_2 = #{sponsor2},
+                sponsor_2_tel = #{sponsor2Tel},
+                sub_event = #{subEvent},
+                use_time_festival = #{useTimeFestival}
+            WHERE content_id = #{contentId}
+    </update>
+
 </mapper> 

@@ -1,6 +1,7 @@
 package kr.spring.api.client;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.dto.ShoppingDetailApiDto;
 import kr.spring.api.dto.TripCourseDetailApiDto;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ public class TripCourseApiClient {
 
     private final BaseApiClient baseApiClient;
 
+    @LogExecutionTime(category = "TripCourseDetailData")
     public TripCourseDetailApiDto getTripCourseDetailData(Long contentId) {
         URI uri = baseApiClient.makeTourUri("/detailIntro2","contentId", String.valueOf(contentId), "contentTypeId", String.valueOf(25));
         return baseApiClient.callApi(uri, this::createTripCourseDetailApiDto).get(0);

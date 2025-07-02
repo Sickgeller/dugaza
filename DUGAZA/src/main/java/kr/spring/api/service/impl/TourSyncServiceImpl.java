@@ -35,7 +35,7 @@ public class TourSyncServiceImpl implements TourSyncService {
 
         try {
             for(ContentTypeid contentTypeId : ContentTypeid.values()) {
-                int code = contentTypeId.getCode();
+                Long code = (long) contentTypeId.getCode();
                 String name = contentTypeId.name();
     
                 // 각 콘텐츠 타입별로 바로 매핑 처리
@@ -62,7 +62,7 @@ public class TourSyncServiceImpl implements TourSyncService {
     @LogExecutionTime(category = "TourSync")
     public Map<String,Object> getTouristData(ContentTypeid contentTypeId){
         int code = contentTypeId.getCode();
-        List<TourApiDto> tourList = tourApiClient.getTouristData(code);
+        List<TourApiDto> tourList = tourApiClient.getTouristData((long) code);
         processTourData(tourList);
         
         return processTourData(tourList);

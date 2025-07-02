@@ -15,9 +15,7 @@ public interface EventDataSyncService {
      */
     Map<String, Object> syncEventData(Long startYear);
     
-    /**
-     * 이벤트 데이터 테이블을 초기화합니다.
-     * @return 삭제된 항목 수
-     */
-//    int resetEventData();
+
+
+    Map<String, Object> syncEventDateData (Long startYear);
 }

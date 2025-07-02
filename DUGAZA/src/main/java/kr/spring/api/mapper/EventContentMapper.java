@@ -1,6 +1,7 @@
 package kr.spring.api.mapper;
 
 import kr.spring.api.dto.EventContentApiDto;
+import kr.spring.api.dto.EventDetailApiDto;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
@@ -29,4 +30,9 @@ public interface EventContentMapper {
      * @return 삭제된 행 수
      */
     int deleteAllEventContent();
+
+
+    void insertEventDate(EventDetailApiDto dto);
+
+    void updateEventDate(EventDetailApiDto dto);
 } 
