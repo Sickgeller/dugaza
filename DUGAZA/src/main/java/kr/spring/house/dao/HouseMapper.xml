@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="kr.spring.house.dao.HouseMapper">
+	<!-- 전체/검색 레코드수 (숙박:32번) -->
+	<select id="selectRowCount" resultType="integer">
+		SELECT
+		  COUNT(*)
+		FROM tour_content WHERE content_type_id = 32
+		<!-- <include refid="memberSearch"/> -->                           
+	</select>
+	
+	<!-- 전체/검색 목록 -->
+	<select id="selectList" parameterType="map"
+	                        resultType="kr.spring.content.vo.ContentVO">
+		SELECT
+		  *
+		FROM (SELECT
+		        a.*,
+		        rownum rnum
+		      FROM (SELECT
+		              *
+		            FROM tour_content c WHERE c.content_type_id = 32
+		            <!-- <include refid="memberSearch"/> -->
+		            ORDER BY c.updated_at DESC NULLS LAST)a)
+	<![CDATA[
+		WHERE rnum >= #{start, jdbcType=INTEGER} AND rnum <= #{end, jdbcType=INTEGER}
+	]]>	             
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
