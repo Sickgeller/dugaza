@@ -85,6 +85,21 @@ public class MemberServiceImpl implements MemberService{
 		return memberMapper.selectMemberCount();
 	}
 
+	@Override
+	public Integer selectNewMemberCount() {
+		return memberMapper.selectNewMemberCount();
+	}
+
+	@Override
+	public Integer selectWithdrawnMemberCount() {
+		return memberMapper.selectWithdrawnMemberCount();
+	}
+
+	@Override
+	public Integer selectHumanMemberCount() {
+		return memberMapper.selectHumanMemberCount();
+	}
+
 }
 
 

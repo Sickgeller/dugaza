@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
-@PreAuthorize("hasRole('ADMIN')")
+//@PreAuthorize("hasRole('ADMIN')")
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberAdminController {
@@ -54,6 +54,15 @@ public class MemberAdminController {
 		//전체/검색 레코드수
 		int count = memberService.selectRowCount(map);
 		
+		// 신규 회원 수
+		int newCount = memberService.selectNewMemberCount();
+		
+		// 탈퇴 회원 수
+		int withdrawnCount = memberService.selectWithdrawnMemberCount();
+		
+		// 휴면 회원 수
+		int humanCount = memberService.selectHumanMemberCount();
+		
 		log.debug("<<회원목록 - count>> : {}",count);
 		
 		//페이지 처리
@@ -70,6 +79,9 @@ public class MemberAdminController {
 		}
 		
 		model.addAttribute("count", count);
+		model.addAttribute("newCount", newCount);
+		model.addAttribute("withdrawnCount", withdrawnCount);
+		model.addAttribute("humanCount", humanCount);
 		model.addAttribute("list", list);
 		model.addAttribute("page", page.getPage());
 		model.addAttribute("keyfield", keyfield);
