@@ -16,7 +16,7 @@ public class FaqServiceImpl implements FaqService{
 	
 	@Override
 	public List<FaqVO> getFaqList() {
-		return faqMapper.selectActivefaqList();
+		return faqMapper.getFaqList();
 	}
 
 }

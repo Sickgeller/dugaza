@@ -18,6 +18,7 @@ public class FaqController {
 	@GetMapping("/faq")
 	public String faqPage(Model model) {
 		List<FaqVO> faq = faqService.getFaqList();
+		System.out.println("FAQ 개수 : " + faq.size());
 		model.addAttribute("faq",faq);
 		return "views/faq/faq";
 	}

@@ -18,6 +18,4 @@ public class FaqVO {
 	private String isActive;
 	private Date createdAt;
 	private Date updatedAt;
-	
-	
 }

@@ -8,5 +8,5 @@ import kr.spring.faq.vo.FaqVO;
 
 @Mapper
 public interface FaqMapper {
-	List<FaqVO> selectActivefaqList();
+	List<FaqVO> getFaqList();
 }

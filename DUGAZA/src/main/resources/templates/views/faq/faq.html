@@ -9,8 +9,8 @@
 </head>
 
 <body>
+
 <div layout:fragment="content" class="page-main">
-    
     <!-- 🔽 여기에만 복붙 -->
     <main>
         <section class="hero-section">
@@ -24,11 +24,35 @@
                 </div>
             </div>
         </section>
+        
+
+
+        
 
         <section class="faq-section">
             <div class="section-container">
                 <h2>자주 묻는 질문</h2>
-                <!-- 여기에 Thymeleaf FAQ 루프 등 추가 -->
+            	<!-- 여기에 Thymeleaf FAQ 루프 등 추가 -->
+				<div class="accordion" id="faqAccordion">
+				    <div th:each="item, iStat : ${faq}" class="accordion-item">
+				        <h2 class="accordion-header" th:id="'heading' + ${iStat.index}">
+				            <button class="accordion-button collapsed"
+				                    type="button"
+				                    data-bs-toggle="collapse"
+				                    th:attr="data-bs-target='#collapse' + ${iStat.index}"
+				                    aria-expanded="false"
+				                    th:attrappend="aria-controls='collapse' + ${iStat.index}">
+				                [[${item.question}]]
+				            </button>
+				        </h2>
+				        <div class="accordion-collapse collapse"
+				             th:id="'collapse' + ${iStat.index}"
+				             data-bs-parent="#faqAccordion"
+				             th:attrappend="aria-labelledby='heading' + ${iStat.index}">
+				            <div class="accordion-body" th:utext="${item.answer}"></div>
+				        </div>
+				    </div>
+				</div>
             </div>
         </section>
     </main>

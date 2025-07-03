@@ -72,7 +72,6 @@ mybatis: #mybatis 설정
     default-fetch-size: 100
     default-statement-timeout: 30
 
-
 logging: #로그 지정
   level:
     root: info

@@ -4,7 +4,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.spring.faq.dao.FaqMapper">
-  <select id="selectActivefaqList" resultType="kr.spring.faq.vo.FaqVO">
+  <select id="getFaqList" resultType="kr.spring.faq.vo.FaqVO">
     SELECT 
       FAQ_ID AS faqId,
       CATEGORY,
