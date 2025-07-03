@@ -1,0 +1,109 @@
+.category-tabs {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.category-tab {
+  padding: 0.6rem 1.2rem;
+  border: 1px solid #ccc;
+  background-color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.category-tab.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+
+.hero-section {
+    position: relative;
+    background-image: url('/assets/images/busan.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 80px 20px;
+    color: white;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.search-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.search-container {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 50px;
+    border-radius: 10px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.search-box input {
+    width: 70%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+.search-box button {
+    padding: 10px 20px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+}
+
+.faq-category-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.category-btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.category-btn.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.faq-list {
+    margin-top: 30px;
+    text-align: left;
+}
+
+.question{
+	color: white;
+}
+
+.help{
+	font-size: 2.5rem;
+	font-weight: bold;
+	color: white;
+	margin-bottom: 30px;
+}
+
+.accordion-button {
+  font-size: 1.15rem; /* 글씨 크기 키움 (기본이 1rem임) */
+  font-weight: 400;  /* 필요하면 글씨 굵기도 살짝 줘봐 */
+}
+

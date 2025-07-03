@@ -3,38 +3,40 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout_basic}">
-
 <head>
-    <title>고객센터 - 드가자닷컴</title>
+    <meta charset="UTF-8">
+    <title>FAQ</title>
+    <link rel="stylesheet" th:href="@{/assets/css/faq.css}">
+    <script type="text/javascript" th:src="@{/assets/js/faq.js}" defer></script>
+    <script type="text/javascript" th:src="@{/assets/js/faqSearch.js}" defer></script>
 </head>
 
 <body>
-
 <div layout:fragment="content" class="page-main">
     <!-- 🔽 여기에만 복붙 -->
     <main>
         <section class="hero-section">
             <div class="search-container">
-                <h1>무엇을 도와드릴까요?</h1>
+                <h1 class="help">무엇을 도와드릴까요?</h1>
                 <div class="search-box">
-                    <div class="search-input">
-                        <input type="text" placeholder="궁금한 내용을 입력하세요">
-                    </div>
-                    <button class="search-btn">검색</button>
+                        <input type="text" id="faqSearchInput" placeholder="궁금한 내용을 입력하세요">
+                    <button class="search-btn" onclick="filterFaq()">검색</button>
                 </div>
-            </div>
-        </section>
-        
+                
 
+			    <div class="category-tabs">
+			      <button class="category-tab active" data-category="ALL">전체</button>
+			      <button class="category-tab" data-category="예약">예약</button>
+			      <button class="category-tab" data-category="환불">환불</button>
+			      <button class="category-tab" data-category="회원">회원</button>
+			    </div>
 
-        
-
-        <section class="faq-section">
-            <div class="section-container">
-                <h2>자주 묻는 질문</h2>
+		
+                <div class="section-container">
+                <h2 class="question">자주 묻는 질문</h2>
             	<!-- 여기에 Thymeleaf FAQ 루프 등 추가 -->
 				<div class="accordion" id="faqAccordion">
-				    <div th:each="item, iStat : ${faq}" class="accordion-item">
+				    <div th:each="item, iStat : ${faq}" class="accordion-item" th:attr="data-category=${item.category}">
 				        <h2 class="accordion-header" th:id="'heading' + ${iStat.index}">
 				            <button class="accordion-button collapsed"
 				                    type="button"
@@ -53,6 +55,7 @@
 				        </div>
 				    </div>
 				</div>
+            </div>
             </div>
         </section>
     </main>
