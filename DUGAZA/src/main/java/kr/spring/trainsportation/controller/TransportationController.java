@@ -12,6 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 public class TransportationController {
 	@GetMapping("")
 	public String transportationMain() {
-		return "views/sample/transportation";
+		return "views/transportation/transportation";
 	}
 }

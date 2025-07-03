@@ -8,6 +8,7 @@
     <title>관광지 - 드가자닷컴</title>
     <link rel="stylesheet" th:href="@{/assets/css/style.css}">
     <link rel="stylesheet" th:href="@{/assets/css/tour.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
@@ -26,10 +27,13 @@
                 <div class="filter-group">
                     <label>카테고리</label>
                     <select>
-                        <option>전체</option>
-                        <option>자연</option>
-                        <option>문화</option>
-                        <option>레저</option>
+                        <option value="0">전체</option>
+                        <option value="12">관광지</option>
+                        <option value="14">문화시설</option>
+                        <option value="15">축제/공연/행사</option>
+                        <option value="25">여행코스</option>
+                        <option value="28">레포츠</option>
+                        <option value="38">쇼핑</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -39,6 +43,10 @@
                         <option>평점순</option>
                         <option>리뷰순</option>
                     </select>
+                </div>
+                <div class="search-box" style="display: contents;">
+                	<input type="text" placeholder="통합 검색">	
+	                <button><i class="fas fa-search"></i></button>
                 </div>
             </div>
         </section>

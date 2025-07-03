@@ -34,8 +34,8 @@
                         </div>
                         <div class="stat-info">
                             <h3>총 등록 숙소</h3>
-                            <p>567개</p>
-                            <span class="stat-change increase">+23개 (이번 달)</span>
+                            <p th:text="${count} + '개'"></p>
+                            <!-- <span class="stat-change increase">+23개 (이번 달)</span> -->
                         </div>
                     </div>
                     <div class="stat-card">
@@ -112,6 +112,9 @@
                         </select>
                     </div>
                 </div>
+                <div class="search-box">
+                	<button>숙소 등록 신청</button>
+                </div>
             </div>
 
             <!-- 숙소 목록 -->
@@ -134,7 +137,8 @@
                             <tr th:each="house : ${list}">
                                 <td>
                                     <div class="accommodation-info">
-                                        <img src="../images/accommodation/hotel.jpg" alt="숙소 이미지">
+                                        <img th:src="${house.firstImage2 != null ? house.firstImage2 : '/assets/images/house.png'}" alt="숙소 이미지"
+                                        onerror="this.onerror=null; this.src='/assets/images/house.png';">
                                         <div>
                                             <strong th:text="${house.title}"></strong>
                                             <small th:text="${house.addr1}"></small>
@@ -157,8 +161,8 @@
                     </table>
                 </div>
                 <!-- 페이지네이션 -->
-                <div class="pagination">
-                    <button class="btn-page"><i class="fas fa-angle-double-left"></i></button>
+                <div class="pagination" th:utext="${page}">
+                    <!-- <button class="btn-page"><i class="fas fa-angle-double-left"></i></button>
                     <button class="btn-page"><i class="fas fa-angle-left"></i></button>
                     <button class="btn-page active">1</button>
                     <button class="btn-page">2</button>
@@ -166,7 +170,7 @@
                     <button class="btn-page">4</button>
                     <button class="btn-page">5</button>
                     <button class="btn-page"><i class="fas fa-angle-right"></i></button>
-                    <button class="btn-page"><i class="fas fa-angle-double-right"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-double-right"></i></button> -->
                 </div>
             </div>
         </div>

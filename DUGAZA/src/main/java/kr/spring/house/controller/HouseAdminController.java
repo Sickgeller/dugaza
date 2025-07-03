@@ -35,8 +35,8 @@ public class HouseAdminController {
 		
 		//페이지 처리
 		PagingUtil page = new PagingUtil(null,null,
-				pageNum,count,20,10,
-				"admin_list");
+				pageNum,count,10,10,
+				"admin_house");
 		Map<String,Object> map = 
 				new HashMap<String,Object>();
 		List<ContentVO> list = null;
@@ -45,10 +45,10 @@ public class HouseAdminController {
 			map.put("end", page.getEndRow());
 			
 			list = houseService.selectList(map);
-			log.debug("<<회원목록 - list>> : {}",list);
 		}
-
+		model.addAttribute("count", count);
 		model.addAttribute("list", list);
+		model.addAttribute("page", page.getPage());
 
 		return "views/admin/super-admin-accommodations";
 	}

@@ -37,7 +37,7 @@ public class MainController {
 	@GetMapping("/main/main")
 	public String main(Model model, HttpServletRequest request) {
 		model.addAttribute("requestURI", request.getRequestURI());
-		return "views/sample/index";
+		return "views/sample/main";
 	}
 	
 	@GetMapping("/terms")
