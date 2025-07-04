@@ -1,12 +1,12 @@
 package kr.spring.house.vo;
 
-import kr.spring.content.vo.ContentVO;
+import kr.spring.tour.vo.TourVO;
 import lombok.Data;
 /*
  * House_detail 자바빈 - 여행 콘텐츠 상속 받음
  * */
 @Data
-public class HouseVO extends ContentVO{
+public class HouseVO extends TourVO{
 	private Integer accomCountLodging;       // 수용 가능 인원
     private String checkInTime;              // 입실 시간
     private String checkOutTime;             // 퇴실 시간

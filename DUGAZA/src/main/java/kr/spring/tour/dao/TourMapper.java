@@ -5,9 +5,9 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import kr.spring.content.vo.ContentVO;
+import kr.spring.tour.vo.TourVO;
 
 @Mapper
 public interface TourMapper {
-	public List<ContentVO> selectList(Map<String, Object> map);
+	public List<TourVO> selectList(Map<String, Object> map);
 }

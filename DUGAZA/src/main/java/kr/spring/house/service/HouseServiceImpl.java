@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import kr.spring.content.vo.ContentVO;
 import kr.spring.house.dao.HouseMapper;
+import kr.spring.tour.vo.TourVO;
 @Service
 @Transactional
 public class HouseServiceImpl implements HouseService{
@@ -22,7 +22,7 @@ public class HouseServiceImpl implements HouseService{
 	}
 
 	@Override
-	public List<ContentVO> selectList(Map<String, Object> map) {
+	public List<TourVO> selectList(Map<String, Object> map) {
 		return houseMapper.selectList(map);
 	}
 
