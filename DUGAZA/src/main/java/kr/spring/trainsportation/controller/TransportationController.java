@@ -10,8 +10,21 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("/transportation")
 public class TransportationController {
+
 	@GetMapping("")
 	public String transportationMain() {
 		return "views/transportation/transportation";
 	}
+	
+	@GetMapping("/train")
+	public String trainForm() {
+		return "views/transportation/train";
+	}
+	
+	@GetMapping("/bus")
+	public String busForm() { 
+		return "views/transportation/bus";
+	}
+	
+	
 }

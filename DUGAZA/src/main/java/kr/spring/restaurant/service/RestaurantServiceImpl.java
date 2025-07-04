@@ -1,4 +1,4 @@
-package kr.spring.tour.service;
+package kr.spring.restaurant.service;
 
 import java.util.List;
 import java.util.Map;
@@ -7,24 +7,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import kr.spring.tour.dao.TourMapper;
+import kr.spring.restaurant.dao.RestaurantMapper;
 import kr.spring.tour.vo.TourVO;
-
 @Service
 @Transactional
-public class TourServiceImpl implements TourService{
-	
+public class RestaurantServiceImpl implements RestaurantService{
+
 	@Autowired
-	private TourMapper tourMapper;
+	private RestaurantMapper restaurantMapper;
 	
 	@Override
 	public Integer selectRowCount() {
-		return tourMapper.selectRowCount();
+		return restaurantMapper.selectRowCount();
 	}
 
 	@Override
 	public List<TourVO> selectList(Map<String, Object> map) {
-		return tourMapper.selectList(map);
+		return restaurantMapper.selectList(map);
 	}
 
 }

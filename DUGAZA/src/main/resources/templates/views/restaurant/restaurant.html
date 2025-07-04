@@ -6,18 +6,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>맛집 - 드가자닷컴</title>
-    <link rel="stylesheet" th:href="@{/assets/css/sample/style.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/sample/restaurant.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/restaurant.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="text/javascript" th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
 </head>
 <body>
     <main class="restaurant-main" layout:fragment="content">
+    <form id="searchForm" method="get" action="/restaurant">
         <section class="search-section">
             <div class="search-container">
                 <div class="search-box">
                     <div class="search-input">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="     지역, 음식점 또는 음식 검색">
+                        <input type="text" placeholder="	지역, 음식점 또는 음식 검색" name="keyword" id="keyword">
+                        <script type="text/javascript">
+                        $(function() {
+                        	  // 탭 자동 삽입 (보일 때만)
+                        	  $('#keyword').on('input', function() {
+                        	    let val = $(this).val();
+                        	    if (!val.startsWith('\t')) {
+                        	      $(this).val('\t' + val);
+                        	    }
+                        	  });
+
+                        	  // 전송 전 탭 제거
+                        	  $('#searchForm').on('submit', function() {
+                        	    let input = $('#keyword');
+                        	    let val = input.val();
+                        	    if (val.startsWith('\t')) {
+                        	      input.val(val.substring(1)); // 탭 제거
+                        	    }
+                        	  });
+                        	});
+                        </script>
                     </div>
                     <button class="search-btn">검색</button>
                 </div>
@@ -31,6 +53,7 @@
                 </div>
             </div>
         </section>
+        </form>
 
         <section class="restaurant-list">
             <div class="list-header">
@@ -46,18 +69,18 @@
             </div>
 
             <div class="restaurant-grid">
-                <article class="restaurant-card">
+                <article class="restaurant-card" th:each="restaurant : ${list}">
                     <div class="restaurant-image">
-                        <img src="../images/restaurant/samgyeopsal.jpg" alt="삼겹살">
+                        <img th:src="${restaurant.firstImage != null ? restaurant.firstImage : '/assets/images/house.png'}" alt="삼겹살">
                         <div class="restaurant-badge">한식</div>
                         <button class="like-btn"><i class="fas fa-heart"></i></button>
                     </div>
                     <div class="restaurant-content">
-                        <h3>맛있는 삼겹살</h3>
+                        <h3 th:text="${restaurant.title}"></h3>
                         <div class="restaurant-meta">
                             <span class="rating"><i class="fas fa-star"></i> 4.8</span>
                             <span class="reviews">(리뷰 238)</span>
-                            <span class="location">서울 강남구</span>
+                            <span class="location" th:text="${restaurant.addr1}"></span>
                         </div>
                         <p class="restaurant-description">
                             최고급 생삼겹살과 특제 소스로 유명한 맛집
@@ -70,7 +93,7 @@
                     </div>
                 </article>
 
-                <article class="restaurant-card">
+                <!-- <article class="restaurant-card">
                     <div class="restaurant-image">
                         <img src="../images/restaurant/sushi.jpg" alt="스시">
                         <div class="restaurant-badge">일식</div>
@@ -116,7 +139,7 @@
                             <span>#와인</span>
                         </div>
                     </div>
-                </article>
+                </article> -->
 
             </div>
 

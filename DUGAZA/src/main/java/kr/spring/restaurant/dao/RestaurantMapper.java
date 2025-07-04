@@ -1,4 +1,4 @@
-package kr.spring.tour.dao;
+package kr.spring.restaurant.dao;
 
 import java.util.List;
 import java.util.Map;
@@ -8,7 +8,9 @@ import org.apache.ibatis.annotations.Mapper;
 import kr.spring.tour.vo.TourVO;
 
 @Mapper
-public interface TourMapper {
+public interface RestaurantMapper {
+	// 음식점 총 개수
 	public Integer selectRowCount();
-	public List<TourVO> selectList(Map<String, Object> map);
+	// 음식점 목록
+	public List<TourVO> selectList(Map<String,Object> map);
 }

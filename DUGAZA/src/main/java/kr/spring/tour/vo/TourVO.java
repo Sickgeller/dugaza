@@ -30,4 +30,9 @@ public class TourVO {
     private Date createdAt;  		  // 생성일
     private Date updatedAt;  		  // 수정일
     private Integer showFlag;         // 표시 여부 (1: 표시, 0: 비표시)
+    
+    public String getContentTypeName() {
+        return ContentType.getNameById(this.contentTypeId);
+    }
+
 }

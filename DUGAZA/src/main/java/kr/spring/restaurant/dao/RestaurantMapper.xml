@@ -2,7 +2,7 @@
 <!DOCTYPE mapper   
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
-<mapper namespace="kr.spring.house.dao.HouseMapper">
+<mapper namespace="kr.spring.restaurant.dao.RestaurantMapper">
 <resultMap id="contentMap" type="kr.spring.tour.vo.TourVO">
     <result property="areaCode" column="AREA_CODE" />
     <result property="cat1" column="CAT1" />
@@ -20,7 +20,7 @@
     <result property="updatedAt" column="UPDATED_AT" />
     <result property="showFlag" column="SHOW_FLAG" />
 </resultMap>
-	<sql id="houseSearch">
+	<sql id="restaurantSearch">
 			<if test="category != null and category != 0">
 				content_type_id = #{category}	
 			</if>
@@ -31,12 +31,12 @@
 				addr2 LIKE '%' || #{keyword} || '%') 
 			</if>
 	</sql>
-	<!-- 전체/검색 레코드수 (숙박:32번) -->
+	<!-- 전체/검색 레코드수 (음식점:39번) -->
 	<select id="selectRowCount" resultType="integer">
 		SELECT
 		  COUNT(*)
-		FROM tour_content WHERE content_type_id = 32
-		<include refid="houseSearch"/>                          
+		FROM tour_content WHERE content_type_id = 39
+		<include refid="restaurantSearch"/>                          
 	</select>
 	
 	<!-- 전체/검색 목록 -->
@@ -49,8 +49,8 @@
 		        rownum rnum
 		      FROM (SELECT
 		              *
-		            FROM tour_content c WHERE c.content_type_id = 32
-		            <include refid="houseSearch"/> 
+		            FROM tour_content c WHERE c.content_type_id = 39
+		            <include refid="restaurantSearch"/> 
 		            ORDER BY c.updated_at DESC NULLS LAST)a)
 	<![CDATA[
 		WHERE rnum >= #{start, jdbcType=INTEGER} AND rnum <= #{end, jdbcType=INTEGER}

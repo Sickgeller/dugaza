@@ -1,34 +1,17 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>버스 예약 - 드가자닷컴</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/bus.css">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bus.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">
-                <a href="../index.html">드가자닷컴</a>
-            </div>
-            <ul class="menu">
-                <li><a href="tour.html">관광지</a></li>
-                <li><a href="restaurant.html">맛집</a></li>
-                <li><a href="../seller/house/accommodation.html">숙소</a></li>
-                <li><a href="transportation.html" class="active">교통</a></li>
-                <li><a href="community.html">커뮤니티</a></li>
-            </ul>
-            <div class="user-menu">
-                <a href="#" class="login-btn">로그인</a>
-                <a href="#" class="register-btn">회원가입</a>
-            </div>
-        </nav>
-    </header>
-
-    <main>
+    <main layout:fragment="content">
         <section class="booking-section">
             <div class="booking-container">
                 <h1>버스 예약</h1>
@@ -186,30 +169,5 @@
             </div>
         </section>
     </main>
-
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>드가자닷컴</h3>
-                <p>대한민국 여행의 모든 것</p>
-            </div>
-            <div class="footer-section">
-                <h3>고객센터</h3>
-                <p>1588-1588</p>
-                <p>평일 09:00-18:00</p>
-            </div>
-            <div class="footer-section">
-                <h3>팔로우</h3>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 드가자닷컴. All rights reserved.</p>
-        </div>
-    </footer>
 </body>
 </html> 

@@ -9,17 +9,19 @@
     <link rel="stylesheet" th:href="@{/assets/css/style.css}">
     <link rel="stylesheet" th:href="@{/assets/css/accommodation.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="text/javascript" th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
 </head>
 <body>
     <main class="accommodation-main" layout:fragment="content">
         <section class="search-section">
+        <form id="searchForm" method="get" action="/house">
             <div class="search-container">
                 <div class="search-box">
                     <div class="search-group">
                         <label>위치</label>
                         <div class="search-input">
                             <i class="fas fa-map-marker-alt"></i>
-                            <input type="text" placeholder="어디로 가시나요?">
+                            <input type="text" placeholder="어디로 가시나요?" name="keyword">
                         </div>
                     </div>
                     <div class="search-group">
@@ -41,25 +43,42 @@
                         <div class="search-input">
                             <i class="fas fa-user"></i>
                             <select>
-                                <option>1명</option>
-                                <option>2명</option>
-                                <option>3명</option>
-                                <option>4명</option>
-                                <option>5명 이상</option>
+                                <option value="1">1명</option>
+                                <option value="2">2명</option>
+                                <option value="3">3명</option>
+                                <option value="4">4명</option>
+                                <option value="5">5명 이상</option>
                             </select>
                         </div>
                     </div>
                     <button class="search-btn">검색</button>
                 </div>
                 <div class="filter-tags">
-                    <button class="tag active">전체</button>
-                    <button class="tag">호텔</button>
-                    <button class="tag">펜션</button>
-                    <button class="tag">리조트</button>
-                    <button class="tag">게스트하우스</button>
-                    <button class="tag">한옥</button>
+                    <button class="tag active" value="0" name="tag" type="button">전체</button>
+                    <button class="tag" value="1" name="tag" type="button">호텔</button>
+                    <button class="tag" value="2" name="tag" type="button">펜션</button>
+                    <button class="tag" value="3" name="tag" type="button">리조트</button>
+                    <button class="tag" value="4" name="tag" type="button">게스트하우스</button>
+                    <button class="tag" value="5" name="tag" type="button">한옥</button>
                 </div>
+                <input type="hidden" name="tag" value="" id="tag">
+                <script type="text/javascript">
+                $(function() {
+                	  $('.tag').on('click', function(event) {
+                	    // 선택된 값 hidden input에 저장
+                	    $('#tag').val($(this).val());
+
+                	    // 모든 버튼에서 'active' 제거
+                	    $('.tag').removeClass('active');
+
+                	    // 클릭한 버튼에만 'active' 추가
+                	    $(this).addClass('active');
+                	  });
+                	});
+
+                </script>
             </div>
+           </form>
         </section>
 
         <section class="accommodation-list">
@@ -77,18 +96,18 @@
             </div>
 
             <div class="accommodation-grid">
-                <article class="accommodation-card">
+                <article class="accommodation-card" th:each="house : ${list}">
                     <div class="accommodation-image">
-                        <img src="../images/accommodation/hotel.jpg" alt="호텔">
+                        <img th:src="${house.firstImage != null ? house.firstImage : '/assets/images/house.png'}" alt="호텔">
                         <div class="accommodation-badge">호텔</div>
                         <button class="like-btn"><i class="fas fa-heart"></i></button>
                     </div>
                     <div class="accommodation-content">
-                        <h3>그랜드 호텔</h3>
+                        <h3 th:text="${house.title}"></h3>
                         <div class="accommodation-meta">
                             <span class="rating"><i class="fas fa-star"></i> 4.8</span>
                             <span class="reviews">(리뷰 523)</span>
-                            <span class="location">서울 강남구</span>
+                            <span class="location" th:text="${house.addr1}"></span>
                         </div>
                         <p class="accommodation-description">
                             도심 속 럭셔리 호텔, 최상의 서비스와 편안한 휴식
@@ -105,7 +124,7 @@
                     </div>
                 </article>
 
-                <article class="accommodation-card">
+                <!-- <article class="accommodation-card">
                     <div class="accommodation-image">
                         <img src="../images/accommodation/pension.jpg" alt="펜션">
                         <div class="accommodation-badge">펜션</div>
@@ -187,7 +206,7 @@
                             <span class="unit">/ 1박</span>
                         </div>
                     </div>
-                </article>
+                </article> -->
             </div>
 
             <div class="pagination">
