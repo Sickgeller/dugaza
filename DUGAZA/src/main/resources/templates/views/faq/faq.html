@@ -19,23 +19,26 @@
             <div class="search-container">
                 <h1 class="help">무엇을 도와드릴까요?</h1>
                 <div class="search-box">
-                        <input type="text" id="faqSearchInput" placeholder="궁금한 내용을 입력하세요">
+                        <input type="text" id="faqSearchInput" placeholder="궁금한 내용을 입력해보세요!">
                     <button class="search-btn" onclick="filterFaq()">검색</button>
                 </div>
                 
 
 			    <div class="category-tabs">
-			      <button class="category-tab active" data-category="ALL">전체</button>
 			      <button class="category-tab" data-category="예약">예약</button>
 			      <button class="category-tab" data-category="환불">환불</button>
 			      <button class="category-tab" data-category="회원">회원</button>
+			      <button class="category-tab" data-category="숙소">숙소</button>
+			      <button class="category-tab" data-category="렌터카">렌터카</button>
+			      <button class="category-tab" data-category="기차표">기차표</button>
+			      <button class="category-tab" data-category="투어">투어</button>
 			    </div>
 
 		
                 <div class="section-container">
-                <h2 class="question">자주 묻는 질문</h2>
             	<!-- 여기에 Thymeleaf FAQ 루프 등 추가 -->
-				<div class="accordion" id="faqAccordion">
+				<div class="accordion" id="faqAccordion" style="display: none;">
+                <h2 class="question">자주 묻는 질문</h2>
 				    <div th:each="item, iStat : ${faq}" class="accordion-item" th:attr="data-category=${item.category}">
 				        <h2 class="accordion-header" th:id="'heading' + ${iStat.index}">
 				            <button class="accordion-button collapsed"
