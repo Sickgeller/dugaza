@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import kr.spring.house.dao.HouseMapper;
-import kr.spring.tour.vo.TourVO;
+import kr.spring.house.vo.HouseVO;
 @Service
 @Transactional
 public class HouseServiceImpl implements HouseService{
@@ -17,13 +17,13 @@ public class HouseServiceImpl implements HouseService{
 	private HouseMapper houseMapper;
 	
 	@Override
-	public Integer selectRowCount() {
-		return houseMapper.selectRowCount();
+	public List<HouseVO> selectList(Map<String, Object> map) {
+		return houseMapper.selectList(map);
 	}
 
 	@Override
-	public List<TourVO> selectList(Map<String, Object> map) {
-		return houseMapper.selectList(map);
+	public Integer selectRowCount() {
+		return houseMapper.selectRowCount();
 	}
 
 }

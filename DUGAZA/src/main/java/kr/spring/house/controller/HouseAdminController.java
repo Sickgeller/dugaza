@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.spring.house.service.HouseService;
-import kr.spring.tour.vo.TourVO;
+import kr.spring.house.vo.HouseVO;
 import kr.spring.util.PagingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class HouseAdminController {
 				"admin_house");
 		Map<String,Object> map = 
 				new HashMap<String,Object>();
-		List<TourVO> list = null;
+		List<HouseVO> list = null;
 		if(count > 0) {
 			map.put("start", page.getStartRow());
 			map.put("end", page.getEndRow());
