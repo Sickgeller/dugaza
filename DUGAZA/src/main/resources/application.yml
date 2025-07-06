@@ -89,7 +89,7 @@ logging: #로그 지정
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
 server:
-  port: 8081
+  port: 8080
   servlet:
     context-path: /
     encoding:
