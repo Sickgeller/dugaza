@@ -5,7 +5,7 @@ import kr.spring.api.dto.EventDetailApiDto;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface EventContentMapper {
+public interface EventContentMapper extends CommonApiMapper{
     
     /**
      * 이벤트 테이블이 없는 경우 생성
@@ -32,7 +32,7 @@ public interface EventContentMapper {
     int deleteAllEventContent();
 
 
-    void insertEventDate(EventDetailApiDto dto);
+    void insert(EventDetailApiDto dto);
 
-    void updateEventDate(EventDetailApiDto dto);
+    void update(EventDetailApiDto dto);
 } 

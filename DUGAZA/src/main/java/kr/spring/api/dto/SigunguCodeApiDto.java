@@ -1,16 +1,11 @@
 package kr.spring.api.dto;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
+@Builder
 public class SigunguCodeApiDto {
     private Long areaCode;
     private Long sigunguCode;

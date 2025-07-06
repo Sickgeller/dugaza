@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 @Mapper
-public interface SigunguCodeMapper {
+public interface SigunguApiMapper extends CommonApiMapper{
 
     SigunguCodeApiDto findBySigunguCode(@Param("sigunguCode") String sigunguCode);
     

@@ -4,6 +4,7 @@ import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.client.TourApiClient;
 import kr.spring.api.dto.TourApiDto;
 import kr.spring.api.mapper.TourApiMapper;
+import kr.spring.api.service.CommonDataSyncSupportService;
 import kr.spring.api.service.TourSyncService;
 import kr.spring.common.ContentTypeid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,39 +24,27 @@ public class TourSyncServiceImpl implements TourSyncService {
 
     private final TourApiClient tourApiClient;
     private final TourApiMapper tourApiMapper;
+    private final CommonDataSyncSupportService common;
 
     @Override
     @Transactional
     @LogExecutionTime(category = "TourSync")
     public Map<String, Object> getAllTourData() {
-        AtomicInteger insertCount = new AtomicInteger(0);
-        AtomicInteger updateCount = new AtomicInteger(0);
-        AtomicInteger failedCount = new AtomicInteger(0);
-        AtomicInteger totalCount = new AtomicInteger(0);
+        Map<String, Object> result = new HashMap<>();
+        result.put("insertCount", 0);
+        result.put("updateCount", 0);
+        result.put("failedCount", 0);
 
-
-        try {
-            for(ContentTypeid contentTypeId : ContentTypeid.values()) {
-                Long code = (long) contentTypeId.getCode();
-                String name = contentTypeId.name();
-    
-                // 각 콘텐츠 타입별로 바로 매핑 처리
-                List<TourApiDto> tourList = tourApiClient.getTouristData(code);
-                Map<String, Object> result = processTourData(tourList);
-
-                totalCount.addAndGet(insertCount.addAndGet((int)result.get("insertCount")));
-                totalCount.addAndGet(updateCount.addAndGet((int)result.get("updateCount")));
-                totalCount.addAndGet(failedCount.addAndGet((int)result.get("failedCount")));
-
-            }
-        } catch (Exception e) {
-            // AOP에서 예외 처리
+        for(ContentTypeid contentTypeId : ContentTypeid.values()) {
+            Long code = (long) contentTypeId.getCode();
+            // 각 콘텐츠 타입별로 바로 매핑 처리
+            List<TourApiDto> tourList = tourApiClient.getTouristData(code);
+            Map<String, Object> process = common.processDataListToDB(tourApiMapper, tourList);
+            result.compute("insertCount", (k, v) -> (int)v + (int) process.getOrDefault("insertCount", 0));
+            result.compute("updateCount", (k, v) -> (int)v + (int) process.getOrDefault("updateCount", 0));
+            result.compute("failedCount", (k, v) -> (int)v + (int) process.getOrDefault("failedCount", 0));
         }
-
-        return Map.of("insertCount", insertCount.get(),
-                "updateCount" , updateCount.get(),
-                "failedCount" , failedCount.get(),
-                "totalCount" , totalCount.get());
+        return result;
     }
 
 
@@ -63,49 +53,13 @@ public class TourSyncServiceImpl implements TourSyncService {
     public Map<String,Object> getTouristData(ContentTypeid contentTypeId){
         int code = contentTypeId.getCode();
         List<TourApiDto> tourList = tourApiClient.getTouristData((long) code);
-        processTourData(tourList);
-        
-        return processTourData(tourList);
+        return common.processDataListToDB(tourApiMapper,tourList);
     }
 
     @Override
     @LogExecutionTime(category = "TourSync")
     public Map<String, Object> updateTourData() {
         List<TourApiDto> tourList = tourApiClient.updateTouristData();
-        processTourData(tourList);
-        return Map.of();
-    }
-
-
-    private Map<String,Object> processTourData(List<TourApiDto> tourList) {
-
-        AtomicInteger insertCount = new AtomicInteger(0);
-        AtomicInteger updateCount = new AtomicInteger(0);
-        AtomicInteger failedCount = new AtomicInteger(0);
-
-        for(TourApiDto dto : tourList) {
-
-            try {
-                tourApiMapper.insert(dto);
-                insertCount.incrementAndGet();
-                continue;
-            } catch (Exception e) {
-                log.debug("insert failed", e);
-            }
-
-            try{
-                tourApiMapper.update(dto);
-                updateCount.incrementAndGet();
-            } catch (Exception e) {
-                log.debug("update failed", e);
-                failedCount.incrementAndGet();
-            }
-        }
-
-        return Map.of("insertCount", insertCount.get(),
-                "updateCount" , updateCount.get(),
-                "failedCount" , failedCount.get(),
-                "totalCount" , insertCount.get() + failedCount.get() + updateCount.get());
-
+        return common.processDataListToDB(tourApiMapper,tourList);
     }
 }

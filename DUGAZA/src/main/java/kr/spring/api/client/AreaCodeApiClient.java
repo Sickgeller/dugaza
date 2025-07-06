@@ -36,7 +36,11 @@ public class AreaCodeApiClient{
     @LogExecutionTime(category = "AreaData")
     public List<SigunguCodeApiDto> getSigunguCode(Long areaCode) {
         URI uri = baseApiClient.makeTourUri("/areaCode2", "areaCode" , String.valueOf(areaCode));
-        return baseApiClient.callApi(uri, this::createSigunguCodeDto);
+        List<SigunguCodeApiDto> sigunguCodeApiDtos = baseApiClient.callApi(uri, this::createSigunguCodeDto);
+        for( SigunguCodeApiDto sigunguCodeApiDto : sigunguCodeApiDtos ){
+            sigunguCodeApiDto.setAreaCode(areaCode);
+        }
+        return sigunguCodeApiDtos;
     }
 
     /**
@@ -63,14 +67,10 @@ public class AreaCodeApiClient{
      * @return 생성된 SigunguCodeDto 객체
      */
     private SigunguCodeApiDto createSigunguCodeDto(JsonNode item, String type) {
-        try {
-            SigunguCodeApiDto dto = new SigunguCodeApiDto();
-            dto.setSigunguCode(Long.parseLong(item.path("code").asText()));
-            dto.setSigunguName(item.path("name").asText());
-            dto.setIsActive(1L);
-            return dto;
-        } catch (NumberFormatException e) {
-            return null;
-        }
+        return SigunguCodeApiDto.builder()
+                .sigunguCode(item.path("code").asLong())
+                .sigunguName(item.path("name").asText())
+                .build();
+
     }
 }

@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
-public interface AreaCodeMapper {
+public interface AreaCodeMapper extends CommonApiMapper{
 
     AreaCodeApiDto findByAreaCode(@Param("areaCode") String areaCode);
 

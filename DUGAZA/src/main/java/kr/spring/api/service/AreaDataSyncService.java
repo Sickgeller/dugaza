@@ -1,10 +1,8 @@
 package kr.spring.api.service;
 
-import kr.spring.api.dto.AreaCodeApiDto;
-import java.util.List;
+import java.util.Map;
 
 public interface AreaDataSyncService {
-    public List<AreaCodeApiDto> syncAreaCodes();
-    public void syncSidoCodes();
-    public void syncSigunguCodes();
+    public Map<String, Object> syncAreaCodes();
+    public Map<String, Object> syncSigunguCodes();
 }

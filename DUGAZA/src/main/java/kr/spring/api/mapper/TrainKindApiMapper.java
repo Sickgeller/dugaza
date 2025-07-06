@@ -4,7 +4,7 @@ import kr.spring.api.dto.TrainKindApiDto;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface TrainKindApiMapper {
+public interface TrainKindApiMapper extends CommonApiMapper{
 
     /**
      * trainKind type dto insert

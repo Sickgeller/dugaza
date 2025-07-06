@@ -38,9 +38,9 @@ public class CommonDataSyncController {
     }
 
     @GetMapping("/sync/area-codes")
-    public ResponseEntity<List<AreaCodeApiDto>> syncAreaCodes() {
+    public ResponseEntity<Map<String, Object>> syncAreaCodes() {
         log.info("지역코드 동기화 요청 받음");
-        List<AreaCodeApiDto> result = areaDataSyncService.syncAreaCodes();
+        Map<String, Object> result = areaDataSyncService.syncAreaCodes();
         return ResponseEntity.ok(result);
     }
     
@@ -53,10 +53,10 @@ public class CommonDataSyncController {
 //    }
     
     @GetMapping("/sync/sigungu-codes")
-    public ResponseEntity<String> syncSigunguCodes() {
+    public ResponseEntity<Map<String, Object>> syncSigunguCodes() {
         log.info("시군구 코드 동기화 요청 받음");
-        areaDataSyncService.syncSigunguCodes();
-        return ResponseEntity.ok("시군구 코드 동기화가 완료되었습니다.");
+        Map<String, Object> result = areaDataSyncService.syncSigunguCodes();
+        return ResponseEntity.ok(result);
     }
     
     /**

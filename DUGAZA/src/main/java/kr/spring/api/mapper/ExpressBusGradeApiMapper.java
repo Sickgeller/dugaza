@@ -4,7 +4,7 @@ import kr.spring.api.dto.ExpressBusGradeApiDto;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface ExpressBusGradeApiMapper {
+public interface ExpressBusGradeApiMapper extends CommonApiMapper{
     int insert(ExpressBusGradeApiDto expressBusGradeApiDto);
     int update(ExpressBusGradeApiDto expressBusGradeApiDto);
 }
