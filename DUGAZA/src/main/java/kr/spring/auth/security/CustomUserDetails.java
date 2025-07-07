@@ -51,7 +51,10 @@ public class CustomUserDetails implements UserDetails {
         List<GrantedAuthority> authorities = new ArrayList<>();
         
         if (isSeller()) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_SELLER"));
+            String basicRole = seller.getRole();
+            if("SELLER".equals(basicRole)){
+                authorities.add(new SimpleGrantedAuthority("ROLE_SELLER"));
+            }
         } else if (isMember()) {
             // 기본 역할 추가
             String basicRole = member.getRole();

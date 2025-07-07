@@ -2,6 +2,8 @@ package kr.spring.auth.security;
 
 import kr.spring.member.dao.MemberMapper;
 import kr.spring.member.vo.MemberVO;
+import kr.spring.seller.dao.SellerMapper;
+import kr.spring.seller.vo.SellerVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
     
     private final MemberMapper memberMapper;
+    private final SellerMapper sellerMapper;
     
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -32,15 +35,12 @@ public class UserDetailsService implements org.springframework.security.core.use
         }
         
         // 2. 판매자로 조회
-        // TODO: SellerMapper 구현 후 활성화
-        /*
         SellerVO seller = sellerMapper.selectSeller(username);
         if (seller != null) {
             log.debug("판매자 로그인: {}", seller.getId());
             return new CustomUserDetails(seller);
         }
-        */
-        
+
         log.warn("사용자를 찾을 수 없음: {}", username);
         throw new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username);
     }

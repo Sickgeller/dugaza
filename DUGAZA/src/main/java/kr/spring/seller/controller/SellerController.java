@@ -1,15 +1,24 @@
 package kr.spring.seller.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import kr.spring.aop.LogExecutionTime;
 import kr.spring.common.SellerType;
 import kr.spring.auth.security.CustomUserDetails;
+import kr.spring.seller.service.SellerService;
 import kr.spring.seller.vo.SellerVO;
+import kr.spring.util.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -17,9 +26,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/seller")
 public class SellerController {
 
+    @Autowired
+    private SellerService sellerService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @GetMapping("/register")
     public String registerForm(){
         return "views/seller/register";
+    }
+
+    @PostMapping("/registerSeller")
+    public String submit(@Valid SellerVO sellerVO,
+                         BindingResult result,
+                         Model model,
+                         HttpServletRequest request) {
+        if(result.hasErrors()) {
+            ValidationUtil.printErrorFields(result);
+            return registerForm();
+        }
+
+        sellerVO.setPassword(passwordEncoder.encode(sellerVO.getPassword()));
+        sellerService.register(sellerVO);
+
+        model.addAttribute("accessTitle", "회원가입 완료");
+        model.addAttribute("accessMsg",
+                "회원가입이 완료되었습니다. 이제 로그인하여 서비스를 이용해보세요!");
+        model.addAttribute("accessBtn", "로그인하러 가기");
+        model.addAttribute("accessUrl",
+                request.getContextPath()+"/seller/login");
+
+        return "views/common/resultView";
     }
 
     @GetMapping("/login")

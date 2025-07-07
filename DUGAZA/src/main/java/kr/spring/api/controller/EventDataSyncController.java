@@ -39,7 +39,7 @@ public class EventDataSyncController {
     }
 
     @GetMapping("/sync/{startYear}/date")
-    public ResponseEntity<Map<String, Object>> syncEventDateWithYear(@PathVariable Long startYear){
+    public ResponseEntity<Map<String, Object>> syncEventDateWithYear(@PathVariable("startYear") Long startYear){
         log.info("이벤트 시작 끝 정도 동기화 요청 - 시작 연도 : {}", startYear);
         Map<String,Object> result = eventDataSyncService.syncEventDateData(startYear);
         return ResponseEntity.ok(result);

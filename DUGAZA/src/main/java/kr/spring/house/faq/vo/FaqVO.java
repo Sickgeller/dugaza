@@ -1,4 +1,4 @@
-package kr.spring.faq.vo;
+package kr.spring.house.faq.vo;
 
 import java.sql.Date;
 

@@ -18,12 +18,12 @@
                     <h1>드가자닷컴 파트너</h1>
                     <p>사업자 회원가입</p>
                 </div>
-                <form class="login-form" th:action="@{/seller/register-process}" method="post">
+                <form class="login-form" th:action="@{/seller/registerProc}" method="post">
                     <div class="form-group">
                         <label class="required" for="businessName">상호명</label>
                         <div class="input-with-icon">
                             <i class="fas fa-building"></i>
-                            <input type="text" id="businessName" name="name" required>
+                            <input type="text" id="businessName" name="businessName" required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -35,10 +35,10 @@
                         <span class="error-message">올바른 사업자등록번호 형식이 아닙니다</span>
                     </div>
                     <div class="form-group">
-                        <label class="required" for="representativeName">대표자명</label>
+                        <label class="required" for="name">대표자명</label>
                         <div class="input-with-icon">
                             <i class="fas fa-user-tie"></i>
-                            <input type="text" id="representativeName" name="representativeName" required>
+                            <input type="text" id="name" name="name" required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -49,10 +49,10 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="required" for="loginId">아이디</label>
+                        <label class="required" for="id">아이디</label>
                         <div class="input-with-icon">
                             <i class="fas fa-user"></i>
-                            <input type="text" id="loginId" name="loginId" required>
+                            <input type="text" id="id" name="id" required>
                         </div>
                     </div>
                     <div class="form-group">

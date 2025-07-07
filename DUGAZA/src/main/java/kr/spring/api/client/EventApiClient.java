@@ -21,10 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 @RequiredArgsConstructor
 public class EventApiClient {
-
     private final BaseApiClient baseApiClient;
-    private static final int DEFAULT_PAGE_SIZE = 100;
-
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 
@@ -37,17 +34,10 @@ public class EventApiClient {
      */
     @LogExecutionTime(category = "EventData")
     public List<EventContentApiDto> getEventContent(Long startYear) {
-        List<EventContentApiDto> allResults = new ArrayList<>();
-        AtomicInteger totalCount = new AtomicInteger(0);
-
-        // 첫 페이지 요청으로 전체 개수 파악
-        int pageNo = 1;
         URI firstPageUri = baseApiClient.makeTourUri(
                 "/searchFestival2",
-                "eventStartDate", String.valueOf(startYear),
-                "pageNo", String.valueOf(pageNo),
-                "numOfRows", String.valueOf(DEFAULT_PAGE_SIZE));
-        
+                "eventStartDate", String.valueOf(startYear));
+
         return baseApiClient.callApiManyTimes(firstPageUri, this::createEventContentDto);
     }
 
@@ -57,15 +47,9 @@ public class EventApiClient {
     }
 
     public List<EventDetailApiDto> getEventContent2(Long startYear) {
-        List<EventDetailApiDto> allResults = new ArrayList<>();
-
-        // 첫 페이지 요청으로 전체 개수 파악
-        int pageNo = 1;
         URI firstPageUri = baseApiClient.makeTourUri(
                 "/searchFestival2",
-                "eventStartDate", String.valueOf(startYear),
-                "pageNo", String.valueOf(pageNo),
-                "numOfRows", String.valueOf(DEFAULT_PAGE_SIZE));
+                "eventStartDate", String.valueOf(startYear));
 
         return baseApiClient.callApiManyTimes(firstPageUri, this::createEventDetailApiDto);
     }

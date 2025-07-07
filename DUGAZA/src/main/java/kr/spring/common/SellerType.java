@@ -2,8 +2,11 @@ package kr.spring.common;
 
 public enum SellerType {
 
+    GENERAL("GENERAL"),
     CAR("CAR"),
-    HOUSE("HOUSE");
+    HOUSE("HOUSE"),
+    RESTAURANT("RESTAURANT"),
+    TOUR("TOUR");
 
     private final String value;
 

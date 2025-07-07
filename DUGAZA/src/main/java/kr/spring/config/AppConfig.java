@@ -30,7 +30,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableWebSecurity
-@MapperScan(basePackages = {"kr.spring.api.mapper", "kr.spring.member.dao"})
+@MapperScan(basePackages = {"kr.spring.api.mapper", "kr.spring.member.dao", "kr.spring.seller.dao"})
 @ComponentScan(basePackages = {"kr.spring.aop"})
 @EnableConfigurationProperties({ApiConfig.class})
 public class AppConfig implements WebMvcConfigurer, WebSocketConfigurer {

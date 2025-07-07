@@ -27,7 +27,7 @@
         INSERT INTO SIGUNGU(
             AREA_CODE,
             SIGUNGU_CODE,
-            SIGUNGU_NAME,
+            SIGUNGU_NAME
         ) VALUES(
             #{areaCode,jdbcType=NUMERIC},
             #{sigunguCode,jdbcType=NUMERIC},

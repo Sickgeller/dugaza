@@ -81,7 +81,7 @@ public class SecurityConfig {
 //                    .requestMatchers("/", "/member/login", "/member/register", "/member/registerUser").permitAll() // 인증 없이 접근 가능한 페이지
 //                    .requestMatchers("/views/common/**").permitAll() // 공통 페이지들(추후 추가)
 //                    .requestMatchers("/seller/login", "/seller/register").permitAll()
-//                    .requestMatchers("/seller/**").hasRole("SELLER") // 판매자 전용 페이지
+//                    .requestMatchers("/seller/**").hasRole("CAR", "HOUSE") // 판매자 전용 페이지
 //                    .requestMatchers("/admin/**").hasRole("ADMIN")// 관리자 전용 페이지
 //                    // API 제외한 나머지 요청은 인증 필요
 //                    .requestMatchers("/api/**").denyAll() // API는 별도 필터체인에서 처리
@@ -90,6 +90,7 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                     .loginPage("/member/login")
+                        .loginPage("/seller/login")
                     .loginProcessingUrl("/auth/login")
                     .usernameParameter("username")
                     .passwordParameter("password")

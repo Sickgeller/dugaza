@@ -3,12 +3,12 @@
 <mapper namespace="kr.spring.api.mapper.TourApiMapper">
     <insert id="insert">
         INSERT INTO TOUR_CONTENT (
-            id, content_id, content_type_id, title, addr1, addr2, zipcode, tel,
+            content_id, content_type_id, title, addr1, addr2, zipcode, tel,
             cat1, cat2, cat3, area_code, sigungu_code, map_x, map_y, mlevel,
             first_image, first_image2, cpyrht_div_cd,
             created_at, updated_at
         ) VALUES (
-            tour_content_seq.nextval, #{contentId}, #{contentTypeId}, #{title}, #{addr1}, #{addr2}, #{zipcode}, #{tel},
+            #{contentId}, #{contentTypeId}, #{title}, #{addr1}, #{addr2}, #{zipcode}, #{tel},
             #{cat1}, #{cat2}, #{cat3}, #{areaCode}, #{sigunguCode}, #{mapX}, #{mapY}, #{mlevel},
             #{firstImage}, #{firstImage2}, #{cpyrhtDivCd},
             #{createdAt}, #{updatedAt}
