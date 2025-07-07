@@ -1,42 +1,23 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>경복궁 - 드가자닷컴</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/tour-detail.css">
+    <title th:text="${info.title}"></title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+     <link rel="stylesheet" th:href="@{/assets/css/tour-detail.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <header class="main-header">
-        <div class="header-container">
-            <div class="logo">
-                <a href="../index.html">드가자닷컴</a>
-            </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="../index.html">홈</a></li>
-                    <li><a href="tour.html" class="active">관광지</a></li>
-                    <li><a href="restaurant.html">맛집</a></li>
-                    <li><a href="../seller/house/accommodation.html">숙소</a></li>
-                    <li><a href="community.html">커뮤니티</a></li>
-                </ul>
-            </nav>
-            <div class="user-menu">
-                <a href="login.html" class="login-btn">로그인</a>
-                <a href="register.html" class="register-btn">회원가입</a>
-            </div>
-        </div>
-    </header>
-
-    <main class="detail-main">
+    <main class="detail-main" layout:fragment="content">
         <div class="detail-container">
             <div class="detail-header">
                 <div class="detail-title">
-                    <h1>경복궁</h1>
+                    <h1 th:text="${info.title}"></h1>
                     <div class="detail-meta">
-                        <span class="location"><i class="fas fa-map-marker-alt"></i> 서울 종로구 사직로 161</span>
+                        <span class="location"><i class="fas fa-map-marker-alt" th:text="${info.addr1}"></i></span>
                         <span class="rating"><i class="fas fa-star"></i> 4.5</span>
                         <span class="reviews"><i class="fas fa-comment"></i> 리뷰 2,345개</span>
                     </div>
@@ -46,7 +27,8 @@
 
             <div class="detail-gallery">
                 <div class="main-image">
-                    <img src="../images/tour/gyeongbokgung-main.jpg" alt="경복궁 대표 이미지">
+                    <img th:src="${info.firstImage}" alt="경복궁 대표 이미지">
+                    
                 </div>
                 <div class="thumbnail-images">
                     <img src="../images/tour/gyeongbokgung-1.jpg" alt="경복궁 1">
@@ -155,26 +137,5 @@
             </div>
         </div>
     </main>
-
-    <footer class="main-footer">
-        <div class="footer-container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <h3>드가자닷컴</h3>
-                </div>
-                <div class="footer-links">
-                    <ul>
-                        <li><a href="#">회사소개</a></li>
-                        <li><a href="#">이용약관</a></li>
-                        <li><a href="#">개인정보처리방침</a></li>
-                        <li><a href="#">고객센터</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 드가자닷컴. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 </body>
 </html> 
