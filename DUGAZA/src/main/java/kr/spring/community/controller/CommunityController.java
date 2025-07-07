@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/community")
 public class CommunityController {
-	@GetMapping("/main")
-	public String communityMain() {
-		return new String("views/sample/community");
-	}
-	
+
+    @GetMapping({"", "/"})
+    public String communityMain() {
+        log.info("Community main page requested");
+        return "views/sample/community";
+    }
 }
+

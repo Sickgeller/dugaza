@@ -15,7 +15,7 @@ public class HouseVO extends TourVO{
     private String infoCenterLodging;        // 문의 및 안내
     private String parkingLodging;           // 주차 시설
     private String pickup;                   // 픽업 서비스
-    private Integer roomCount;               // 객실 수
+    private String roomCount;               // 객실 수
     private String reservationLodging;       // 예약 안내
     private String reservationUrl;           // 예약 안내 홈페이지
     private String roomType;                 // 객실 유형
