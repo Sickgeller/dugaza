@@ -29,77 +29,137 @@
                 <div class="main-image">
                     <img th:src="${info.firstImage}" alt="맛있는 삼겹살 대표 이미지">
                 </div>
-                <div class="thumbnail-images">
-                   <img th:src="${info.firstImage2}" alt="맛있는 삼겹살 대표 이미지">
-                </div>
             </div>
 
             <div class="detail-content">
-                <section class="info-section">
-                    <h2>상세 정보</h2>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <h3><i class="fas fa-clock"></i> 영업시간</h3>
-                            <p th:text="${info.openTimeFood}"></p>
-                        </div>
-                        <div class="info-item">
-                            <h3><i class="fas fa-phone"></i> 전화번호</h3>
-                            <th:block th:if="${info.tel != null}">
-	                            <p th:text="${info.tel}"></p>
-                            </th:block>
-                            <th:block th:if="${info.infoCenterFood != null}">
-                            	<p th:text="${info.infoCenterFood}"></p>
-                            </th:block>
-                        </div>           
-                        <div class="info-item">
-                            <h3><i class="fas fa-parking"></i> 주차</h3>
-                             <th:block th:if="${info.parkingFood != null || info.parkingFood != 0}">
-                            	<p th:text="${info.parkingFood}"></p>
-                            </th:block>
-                        </div>
+            <section class="info-section">
+                <h2>상세 정보</h2>
+                <div class="info-grid">
+                    <div class="info-item" th:if="${info.openTimeFood != null}">
+                        <h3><i class="fas fa-clock"></i> 영업시간</h3>
+                        <p th:text="${info.openTimeFood}"></p>
                     </div>
-                </section>
 
-                <section class="menu-section">
-                    <div class="menu-grid">
+                    <div class="info-item" th:if="${info.tel != null or info.infoCenterFood != null}">
+                        <h3><i class="fas fa-phone"></i> 전화번호</h3>
+                        <p th:if="${info.tel != null}" th:text="${info.tel}"></p>
+                        <p th:if="${info.infoCenterFood != null}" th:text="${info.infoCenterFood}"></p>
+                    </div>
+
+                    <div class="info-item" th:if="${info.parkingFood != null and info.parkingFood != '0'}">
+                        <h3><i class="fas fa-parking"></i> 주차</h3>
+                        <p th:text="${info.parkingFood}"></p>
+                    </div>
+
+                    <div class="info-item" th:if="${info.chkCreditCardFood != null and info.chkCreditCardFood == '1'}">
+                        <h3><i class="fas fa-credit-card"></i> 결제</h3>
+                        <p>신용카드 사용 가능</p>
+                    </div>
+
+                    <div class="info-item" th:if="${info.kidsFacility != null and info.kidsFacility == '1'}">
+                        <h3><i class="fas fa-child"></i> 어린이 놀이방</h3>
+                        <p>놀이방 있음</p>
+                    </div>
+
+                    <div class="info-item" th:if="${info.packing != null and info.packing == '1'}">
+                        <h3><i class="fas fa-box"></i> 포장</h3>
+                        <p>포장 가능</p>
+                    </div>
+
+                    <div class="info-item" th:if="${info.reservationFood != null}">
+                        <h3><i class="fas fa-calendar-check"></i> 예약</h3>
+                        <p th:text="${info.reservationFood}"></p>
+                    </div>
+
+                    <div class="info-item" th:if="${info.restDateFood != null}">
+                        <h3><i class="fas fa-ban"></i> 쉬는 날</h3>
+                        <p th:text="${info.restDateFood}"></p>
+                    </div>
+
+                    <div class="info-item" th:if="${info.openDateFood != null}">
+                        <h3><i class="fas fa-door-open"></i> 개업일</h3>
+                        <p th:text="${info.openDateFood}"></p>
+                    </div>
+
+                    <div class="info-item" th:if="${info.scaleFood != null}">
+                        <h3><i class="fas fa-store"></i> 규모</h3>
+                        <p th:text="${info.scaleFood}"></p>
+                    </div>
+
+                    <div class="info-item" th:if="${info.seat != null}">
+                        <h3><i class="fas fa-chair"></i> 좌석 수</h3>
+                        <p th:text="${info.seat} + '석'"></p>
+                    </div>
+
+                    <div class="info-item" th:if="${info.smoking != null}">
+                        <h3><i class="fas fa-smoking"></i> 흡연</h3>
+                        <p th:text="${info.smoking}"></p>
+                    </div>
+
+                    <div class="info-item" th:if="${info.discountInfoFood != null}">
+                        <h3><i class="fas fa-tags"></i> 할인정보</h3>
+                        <p th:text="${info.discountInfoFood}"></p>
+                    </div>
+
+                    <div class="info-item" th:if="${info.lcnsNo != null}">
+                        <h3><i class="fas fa-id-badge"></i> 인허가번호</h3>
+                        <p th:text="${info.lcnsNo}"></p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="menu-section">
+                <div class="menu-grid">
                     <th:block th:if="${info.firstMenu != null}">
-                    <h2>대표 메뉴</h2>
+                        <h2>대표 메뉴</h2>
                         <div class="menu-item">
                             <div class="menu-info">
                                 <h3 th:text="${info.firstMenu}"></h3>
                             </div>
                         </div>
                     </th:block>
-                   <th:block th:if="${info.treatMenu != null}">
+                    <th:block th:if="${info.treatMenu != null}">
                         <h2>기타 메뉴</h2>
                         <div class="menu-item">
                             <div class="menu-info">
                                 <h3 th:text="${info.treatMenu}"></h3>
                             </div>
                         </div>
-                   </th:block>
-                        <!-- <div class="menu-item">
-                            <img src="../images/restaurant/samgyeopsal.jpgs" alt="김치찌개">
-                            <div class="menu-info">
-                                <h3>김치찌개</h3>
-                                <p class="price">8,000원</p>
-                                <p class="description">묵은지로 끓인 시원한 찌개</p>
-                            </div>
-                        </div> -->
-                    </div>
-                </section>
+                    </th:block>
+                </div>
+            </section>
 
                 <section class="map-section">
                     <h2>위치</h2>
                     <div class="map-container">
                         <!-- 지도가 들어갈 자리 -->
-                        <div class="map-placeholder">
-                            지도 영역
-                        </div>
+                        <div class="map-placeholder" id="map"></div>
+                        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0004c4e85aaef62938a2afa572f9f526"></script>
+						<script th:inline="javascript">
+							var container = document.getElementById('map');
+							var options = {
+								center: new kakao.maps.LatLng(/*[[${info.mapY}]]*/, /*[[${info.mapX}]]*/),
+								level: 3
+							};
+					
+							var map = new kakao.maps.Map(container, options);
+							
+							// 마커가 표시될 위치입니다 
+							var markerPosition  = new kakao.maps.LatLng(/*[[${info.mapY}]]*/, /*[[${info.mapX}]]*/); 
+
+							// 마커를 생성합니다
+							var marker = new kakao.maps.Marker({
+							    position: markerPosition
+							});
+
+							// 마커가 지도 위에 표시되도록 설정합니다
+							marker.setMap(map);
+						</script>       
                     </div>
                     <div class="location-info">
                         <span th:if="${not #strings.isEmpty(info.addr1) or not #strings.isEmpty(info.addr2)}"
       				th:text="${#strings.defaultString(info.addr1, '') + ' ' + #strings.defaultString(info.addr2, '')}">
+      				</span>
                     </div>
                 </section>
 

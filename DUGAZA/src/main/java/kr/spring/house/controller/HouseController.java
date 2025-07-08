@@ -15,6 +15,7 @@ import kr.spring.house.service.HouseService;
 import kr.spring.util.PagingUtil;
 
 import kr.spring.house.vo.HouseVO;
+import kr.spring.restaurant.vo.RestaurantVO;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,9 +28,9 @@ public class HouseController {
 
 	@GetMapping("")
 	public String accommodationMain(@RequestParam(defaultValue="1") int pageNum,
-									@RequestParam(defaultValue = "") String keyword,
-									@RequestParam(defaultValue = "0") int tag,
-									Model model) {
+			@RequestParam(defaultValue = "") String keyword,
+			@RequestParam(defaultValue = "0") int tag,
+			Model model) {
 		int count = houseService.selectRowCount();
 
 		//페이지 처리
@@ -50,5 +51,15 @@ public class HouseController {
 		model.addAttribute("page", page.getPage());
 
 		return "views/sample/accommodation";
+	}
+
+	// 항목 자세히 보기
+	@GetMapping("/detail")
+	public String houseDetail(@RequestParam Long id, Model model) {
+		HouseVO vo = houseService.selectHouse(id);
+
+		model.addAttribute("info",vo);
+
+		return "views/seller/house/accommodation-detail";
 	}
 }

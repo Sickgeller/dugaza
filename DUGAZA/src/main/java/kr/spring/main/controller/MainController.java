@@ -42,15 +42,15 @@ public class MainController {
 	
 	@GetMapping("/terms")
 	public String termsPage() {
-	    return "views/common/terms";
+	    return "views/terms/terms";
 	}
     @GetMapping("/privacy")
     public String showPrivacyPage() {
-        return "views/common/privacy";  
+        return "views/privacy/privacy";  
     }
     @GetMapping("/about")
     public String showAboutPage() {
-        return "views/common/about"; 
+        return "views/about/about"; 
     }
 	
 	//관리자 페이지

@@ -33,25 +33,69 @@
 
             <div class="detail-content">
                 <section class="info-section">
-                    <h2>상세 정보</h2>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <h3><i class="fas fa-clock"></i> 운영시간</h3>
-                            <p th:text="${info.useSeason}"></p>
-                            <p th:text="${info.useTime}"></p>
-                            <p th:text="'휴무일: ' + (${info.restDate} != null ? ${info.restDate} : '없음')"></p>
-                        </div>
-                        <div class="info-item">
-                            <h3><i class="fas fa-won-sign"></i> 입장료</h3>
-                            <p th:text="${info.chkCreditCard != null and info.chkCreditCard != 0} ? '현장에서 신용카드 결제' : '무료'"></p>
-                        </div>
-                        <div class="info-item">
-                            <h3><i class="fas fa-phone"></i> 전화번호</h3>
-                            <p th:text="${info.tel}"></p>
-                            <p th:text="${info.infoCenter}"></p>
-                        </div>
-                    </div>
-                </section>
+    <h2>상세 정보</h2>
+    <div class="info-grid">
+
+        <div class="info-item" th:if="${info.useTime != null or info.useSeason != null or info.restDate != null}">
+            <h3><i class="fas fa-clock"></i> 운영시간</h3>
+            <p th:if="${info.useSeason != null}" th:text="'사용 가능 시즌: ' + ${info.useSeason}"></p>
+            <p th:if="${info.useTime != null}" th:text="'이용 시간: ' + ${info.useTime}"></p>
+            <p th:if="${info.restDate != null}" th:text="'휴무일: ' + ${info.restDate}"></p>
+        </div>
+
+        <div class="info-item" th:if="${info.openDate != null}">
+            <h3><i class="fas fa-door-open"></i> 개장일</h3>
+            <p th:text="${info.openDate}"></p>
+        </div>
+
+        <div class="info-item" th:if="${info.accomCount != null}">
+            <h3><i class="fas fa-users"></i> 수용 인원</h3>
+            <p th:text="${info.accomCount} + '명'"> </p>
+        </div>
+
+        <div class="info-item" th:if="${info.chkCreditCard != null}">
+            <h3><i class="fas fa-credit-card"></i> 결제 수단</h3>
+            <p th:text="${info.chkCreditCard == '1'} ? '신용카드 결제 가능' : '신용카드 결제 불가'"></p>
+        </div>
+
+        <div class="info-item" th:if="${info.chkBabyCarriage != null}">
+            <h3><i class="fas fa-baby-carriage"></i> 유모차</h3>
+            <p th:text="${info.chkBabyCarriage == '1'} ? '유모차 대여 가능' : '유모차 대여 불가'"></p>
+        </div>
+
+        <div class="info-item" th:if="${info.chkPet != null}">
+            <h3><i class="fas fa-dog"></i> 반려동물</h3>
+            <p th:text="${info.chkPet == '1'} ? '반려동물 동반 가능' : '불가'"></p>
+        </div>
+
+        <div class="info-item" th:if="${info.expageRange != null or info.expGuide != null}">
+            <h3><i class="fas fa-child"></i> 체험 정보</h3>
+            <p th:if="${info.expageRange != null}" th:text="'체험 가능 연령: ' + ${info.expageRange}"></p>
+            <p th:if="${info.expGuide != null}" th:text="'체험 안내: ' + ${info.expGuide}"></p>
+        </div>
+
+        <div class="info-item" th:if="!${info.heritage1 != null or info.heritage2 != null or info.heritage3 != null or 
+        info.heritage1 != 0 or info.heritage2 != 0 or info.heritage3 != 0}">
+            <h3><i class="fas fa-landmark"></i> 세계유산 여부</h3>
+            <ul>
+                <li th:if="${info.heritage1 == 1}">세계 문화 유산</li>
+                <li th:if="${info.heritage2 == 1}">세계 자연 유산</li>
+                <li th:if="${info.heritage3 == 1}">세계 기록 유산</li>
+            </ul>
+        </div>
+
+        <div class="info-item" th:if="${info.infoCenter != null}">
+            <h3><i class="fas fa-info-circle"></i> 안내 센터</h3>
+            <p th:text="${info.infoCenter}"></p>
+        </div>
+
+        <div class="info-item" th:if="${info.parking != null}">
+            <h3><i class="fas fa-parking"></i> 주차</h3>
+            <p th:text="${info.parking}"></p>
+        </div>
+
+    </div>
+</section>
 
                 <!-- <section class="description-section">
                     <h2>소개</h2>
@@ -68,14 +112,25 @@
                         <!-- 지도가 들어갈 자리 -->
                         <div class="map-placeholder" id="map"></div>
                         <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0004c4e85aaef62938a2afa572f9f526"></script>
-						<script>
+						<script th:inline="javascript">
 							var container = document.getElementById('map');
 							var options = {
-								center: new kakao.maps.LatLng(33.450701, 126.570667),
+								center: new kakao.maps.LatLng(/*[[${info.mapY}]]*/, /*[[${info.mapX}]]*/),
 								level: 3
 							};
 					
 							var map = new kakao.maps.Map(container, options);
+							
+							// 마커가 표시될 위치입니다 
+							var markerPosition  = new kakao.maps.LatLng(/*[[${info.mapY}]]*/, /*[[${info.mapX}]]*/); 
+
+							// 마커를 생성합니다
+							var marker = new kakao.maps.Marker({
+							    position: markerPosition
+							});
+
+							// 마커가 지도 위에 표시되도록 설정합니다
+							marker.setMap(map);
 						</script>
                     </div>
                 </section>
