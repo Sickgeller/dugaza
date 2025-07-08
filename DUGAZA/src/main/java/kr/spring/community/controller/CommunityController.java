@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.spring.community.service.CommunityService;
 import kr.spring.community.vo.CommunityPostVO;
@@ -22,19 +23,29 @@ public class CommunityController {
 
     private final CommunityService communityService;
 
-    // 메인
     @GetMapping({"", "/"})
-    public String communityMain(Model model) {
+    public String communityMain(
+        @RequestParam(required = false) String category,
+        @RequestParam(required = false) String order,
+        @RequestParam(required = false) String keyword,
+        Model model) {
+
         log.info("Community main page requested");
 
-        // 페이징/검색은 나중에… 지금은 전체 불러오기
         Map<String, Object> map = new HashMap<>();
-        map.put("start", 1);
-        map.put("end", 20);
+        map.put("category", category);
+        map.put("order", order);
+        map.put("keyword", keyword);
 
         List<CommunityPostVO> list = communityService.selectPostList(map);
+        log.info("list.size()={}", list.size());
+
         model.addAttribute("list", list);
+        model.addAttribute("category", category);
+        model.addAttribute("order", order);
+        model.addAttribute("keyword", keyword);
 
         return "views/sample/community";
     }
+
 }

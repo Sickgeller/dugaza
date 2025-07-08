@@ -51,7 +51,6 @@ public class CustomFailureHandler
 		
 		// 에러 메시지를 URL 인코딩
 		String encodedErrorMessage = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
-		
 		// 로그인 페이지로 리다이렉트 (에러 메시지 포함)
 		String failureUrl = "/member/login?error=true&exception=" + encodedErrorMessage;
 		

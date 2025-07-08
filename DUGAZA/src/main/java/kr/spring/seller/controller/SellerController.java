@@ -2,15 +2,16 @@ package kr.spring.seller.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import kr.spring.aop.LogExecutionTime;
 import kr.spring.common.SellerType;
 import kr.spring.auth.security.CustomUserDetails;
+import kr.spring.reservation.house.service.HouseReservationService;
+import kr.spring.review.house.service.HouseReviewService;
+import kr.spring.room.service.RoomService;
 import kr.spring.seller.service.SellerService;
 import kr.spring.seller.vo.SellerVO;
 import kr.spring.util.ValidationUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,13 +25,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @Slf4j
 @RequestMapping("/seller")
+@RequiredArgsConstructor
 public class SellerController {
 
-    @Autowired
-    private SellerService sellerService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final SellerService sellerService;
+    private final RoomService roomService;
+    private final HouseReservationService houseReservationService;
+    private final PasswordEncoder passwordEncoder;
+    private final HouseReviewService houseReviewService;
+    private final SellerHouseController sellerHouseController;
 
     @GetMapping("/register")
     public String registerForm(){
@@ -124,14 +127,50 @@ public class SellerController {
         }
     }
 
-    /**
-     * 판매자 대시보드 (기본 페이지)
-     * @return 기본 판매자 페이지
-     */
     @GetMapping("/dashboard")
-    public String sellerDashboard() {
-        return "views/seller/seller-dashboard";
+    public String myPage(Model model){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        SellerVO seller = null;
+        if(auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+            if(userDetails.isSeller()) {
+                seller = userDetails.getSeller();
+                model.addAttribute("seller", seller);
+                
+                // sellerType null 체크 추가
+                if(seller.getSellerType() == null) {
+                    log.error("판매자 타입이 null입니다. 사용자: {}, 판매자 정보: {}", userDetails.getUsername(), seller);
+                    model.addAttribute("error", "판매자 정보를 불러올 수 없습니다. 다시 로그인해주세요.");
+                    return "views/common/error";
+                }
+                
+                log.info("판매자 대시보드 접근 - 사용자: {}, 타입: {}", userDetails.getUsername(), seller.getSellerType());
+                
+                if(SellerType.CAR.getValue().equals(seller.getSellerType())) {
+                    return "views/seller/car/car-seller-main";
+                }else if(SellerType.HOUSE.getValue().equals(seller.getSellerType())) {
+                    return sellerHouseController.main(model, seller);
+                }else {
+                    log.warn("알 수 없는 판매자 타입: {} - 사용자: {}", seller.getSellerType(), userDetails.getUsername());
+                    model.addAttribute("error", "알 수 없는 판매자 타입입니다.");
+                    return "views/common/error";
+                }
+            }else{
+                return "/";
+            }
+        }
+        return login();
     }
+
+
+//    /**
+//     * 판매자 대시보드 (기본 페이지)
+//     * @return 기본 판매자 페이지
+//     */
+//    @GetMapping("/dashboard")
+//    public String sellerDashboard() {
+//        return "views/seller/seller-dashboard";
+//    }
 
     /**
      * 판매자 프로필 페이지

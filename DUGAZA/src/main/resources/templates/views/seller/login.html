@@ -15,12 +15,12 @@
                 <h1>드가자닷컴 파트너</h1>
                 <p>판매자 전용 로그인</p>
             </div>
-            <form class="login-form" th:action="@{/seller/login-process}" method="post">
+            <form class="login-form" th:action="@{/auth/login}" method="post">
                 <div class="form-group">
-                    <label for="id">사업자 아이디</label>
+                    <label for="username">사업자 아이디</label>
                     <div class="input-with-icon">
                         <i class="fas fa-building"></i>
-                        <input type="text" id="id" name="id" placeholder="사업자 아이디를 입력하세요" required>
+                        <input type="text" id="username" name="username" placeholder="사업자 아이디를 입력하세요" required>
                     </div>
                 </div>
                 <div class="form-group">

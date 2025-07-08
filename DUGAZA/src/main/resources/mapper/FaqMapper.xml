@@ -5,17 +5,17 @@
 
 <mapper namespace="kr.spring.faq.dao.FaqMapper">
   <select id="getFaqList" resultType="kr.spring.faq.vo.FaqVO">
-    SELECT 
-      FAQ_ID AS faqId,
-      CATEGORY,
-      QUESTION,
-      TO_CHAR(ANSWER) AS answer,
-      ORDER_NUM,
-      IS_ACTIVE,
-      CREATED_AT,
-      UPDATED_AT
-    FROM FTEAM02.FAQ
-    WHERE IS_ACTIVE = 'Y'
-    ORDER BY ORDER_NUM ASC
+	SELECT 
+	  FAQ_ID AS faqId,
+	  CATEGORY AS category,
+	  QUESTION AS question,
+	  TO_CHAR(ANSWER) AS answer,
+	  ORDER_NUM AS orderNum,
+	  IS_ACTIVE AS isActive,
+	  CREATED_AT AS createdAt,
+	  UPDATED_AT AS updatedAt
+	FROM FTEAM02.FAQ
+	WHERE IS_ACTIVE = 'Y'
+	ORDER BY ORDER_NUM ASC
   </select>
 </mapper>
