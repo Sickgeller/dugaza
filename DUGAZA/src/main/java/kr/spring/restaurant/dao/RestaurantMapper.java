@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import kr.spring.restaurant.vo.RestaurantVO;
 import kr.spring.tour.vo.TourVO;
 
 @Mapper
@@ -13,4 +14,5 @@ public interface RestaurantMapper {
 	public Integer selectRowCount();
 	// 음식점 목록
 	public List<TourVO> selectList(Map<String,Object> map);
+	public RestaurantVO selectRestaurant(Long id);
 }

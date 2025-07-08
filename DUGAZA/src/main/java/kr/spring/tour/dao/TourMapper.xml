@@ -8,7 +8,7 @@
 	    <result property="cat1" column="CAT1" />
 	    <result property="cat2" column="CAT2" />
 	    <result property="cat3" column="CAT3" />
-	    <result property="contentId" column="CONTENT_ID" />
+	    <result property="id" column="CONTENT_ID" />
 	    <result property="contentTypeId" column="CONTENT_TYPE_ID" />
 	    <result property="firstImage" column="FIRST_IMAGE" />
 	    <result property="firstImage2" column="FIRST_IMAGE2" />

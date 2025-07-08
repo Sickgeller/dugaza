@@ -27,4 +27,9 @@ public class TourServiceImpl implements TourService{
 		return tourMapper.selectList(map);
 	}
 
+	@Override
+	public Integer selectContentTypeId(Long id) {
+		return tourMapper.selectContentTypeId(id);
+	}
+
 }

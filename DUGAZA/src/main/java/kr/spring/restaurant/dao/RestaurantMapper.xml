@@ -3,22 +3,40 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
 <mapper namespace="kr.spring.restaurant.dao.RestaurantMapper">
-<resultMap id="contentMap" type="kr.spring.tour.vo.TourVO">
+<resultMap id="restaurantMap" type="kr.spring.restaurant.vo.RestaurantVO">
     <result property="areaCode" column="AREA_CODE" />
-    <result property="cat1" column="CAT1" />
-    <result property="cat2" column="CAT2" />
-    <result property="cat3" column="CAT3" />
-    <result property="contentId" column="CONTENT_ID" />
-    <result property="contentTypeId" column="CONTENT_TYPE_ID" />
-    <result property="firstImage" column="FIRST_IMAGE" />
-    <result property="firstImage2" column="FIRST_IMAGE2" />
-    <result property="cpyrhtDivCd" column="CPYRHT_DIV_CD" />
-    <result property="mapX" column="MAP_X" />
-    <result property="mapY" column="MAP_Y" />
-    <result property="sigunguCode" column="SIGUNGU_CODE" />
-    <result property="createdAt" column="CREATED_AT" />
-    <result property="updatedAt" column="UPDATED_AT" />
-    <result property="showFlag" column="SHOW_FLAG" />
+	<result property="cat1" column="CAT1" />
+	<result property="cat2" column="CAT2" />
+	<result property="cat3" column="CAT3" />
+	<result property="id" column="CONTENT_ID" />
+	<result property="contentId" column="CONTENT_TYPE_ID" />
+	<result property="firstImage" column="FIRST_IMAGE" />
+	<result property="firstImage2" column="FIRST_IMAGE2" />
+	<result property="cpyrhtDivCd" column="CPYRHT_DIV_CD" />
+	<result property="mapX" column="MAP_X" />
+	<result property="mapY" column="MAP_Y" />
+	<result property="sigunguCode" column="SIGUNGU_CODE" />
+	<result property="createdAt" column="CREATED_AT" />
+	<result property="updatedAt" column="UPDATED_AT" />
+	<result property="showFlag" column="SHOW_FLAG" />
+	<result property="title" column="TITLE"/>
+	<!-- tour_content(TourVO) 부분 -->
+	<result property="chkCreditCardFood" column="CHK_CREDIT_CARD_FOOD"/>
+	<result property="discountInfoFood" column="DISCOUNT_INFO_FOOD"/>
+	<result property="firstMenu" column="FIRST_MENU"/>
+	<result property="infoCenterFood" column="INFO_CENTER_FOOD"/>
+	<result property="kidsFacility" column="KIDS_FACILITY"/>
+	<result property="openDateFood" column="OPEN_DATE_FOOD"/>
+	<result property="openTimeFood" column="OPEN_TIME_FOOD"/>
+	<result property="packing" column="PACKING"/>
+	<result property="parkingFood" column="PARKING_FOOD"/>
+	<result property="reservationFood" column="RESERVATION_FOOD"/>
+	<result property="restDateFood" column="REST_DATE_FOOD"/>
+	<result property="scaleFood" column="SCALE_FOOD"/>
+	<result property="seat" column="SEAT"/>
+	<result property="smoking" column="SMOKING"/>
+	<result property="treatMenu" column="TREAT_MENU"/>
+	<result property="lcnsNo" column="LCNS_NO"/>
 </resultMap>
 	<sql id="restaurantSearch">
 			<if test="category != null and category != 0">
@@ -41,7 +59,7 @@
 	
 	<!-- 전체/검색 목록 -->
 	<select id="selectList" parameterType="map"
-	                        resultMap="contentMap">
+	                        resultMap="restaurantMap">
 		SELECT
 		  *
 		FROM (SELECT
@@ -57,6 +75,14 @@
 	]]>	             
 	</select>
 	
+	<!-- 레스토랑 항목 -->
+	<select id="selectRestaurant" parameterType="long" resultMap="restaurantMap">
+		SELECT
+			*
+		FROM restaurant_detail
+		JOIN tour_content USING(content_id)
+		WHERE content_id=#{id}
+	</select>
 </mapper>
 
 
