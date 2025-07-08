@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.spring.community.dao.CommunityMapper">
+
+	<!-- resultMap: DB 컬럼명 ↔ VO 필드명 정확히 매핑 -->
+	<resultMap id="communityPostMap"
+		type="kr.spring.community.vo.CommunityPostVO">
+		<id property="id" column="ID" />
+		<result property="category" column="CATEGORY" />
+		<result property="title" column="TITLE" />
+		<result property="content" column="CONTENT" />
+		<result property="writer" column="WRITER" />
+		<result property="filename" column="FILENAME" />
+		<result property="regdate" column="REGDATE" />
+		<result property="viewCount" column="VIEW_COUNT" />
+		<result property="likeCount" column="LIKE_COUNT" />
+		<result property="commentCount" column="COMMENT_COUNT" />
+	</resultMap>
+
+	<!-- 글 목록 -->
+	<select id="selectPostList" parameterType="map"
+		resultMap="communityPostMap">
+		SELECT *
+		FROM community_post
+		<where>
+			<if test="category != null and category != ''">
+				AND category = #{category}
+			</if>
+			<if test="keyword != null and keyword != ''">
+				AND (title LIKE '%' || #{keyword} || '%' OR content LIKE '%' ||
+				#{keyword} || '%')
+			</if>
+		</where>
+		<choose>
+			<when test="order == 'popular'">
+				ORDER BY like_count DESC
+			</when>
+			<when test="order == 'view'">
+				ORDER BY view_count DESC
+			</when>
+			<when test="order == 'comment'">
+				ORDER BY comment_count DESC
+			</when>
+			<otherwise>
+				ORDER BY id DESC
+			</otherwise>
+		</choose>
+	</select>
+
+
+	<!-- 글 등록 -->
+	<insert id="insertPost"
+		parameterType="kr.spring.community.vo.CommunityPostVO">
+		INSERT INTO community_post (
+		id, category, title, content, writer, filename
+		) VALUES (
+		community_seq.NEXTVAL,
+		#{category},
+		#{title},
+		#{content},
+		#{writer},
+		#{filename}
+		)
+	</insert>
+
+	<!-- 글 상세 -->
+	<select id="selectPost" parameterType="long"
+		resultMap="communityPostMap">
+		SELECT *
+		FROM community_post
+		WHERE id = #{id}
+	</select>
+
+	<!-- 글 수정 -->
+	<update id="updatePost"
+		parameterType="kr.spring.community.vo.CommunityPostVO">
+		UPDATE community_post
+		SET title = #{title},
+		content = #{content},
+		category = #{category},
+		filename = #{filename}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 글 삭제 -->
+	<delete id="deletePost" parameterType="long">
+		DELETE FROM community_post
+		WHERE id = #{id}
+	</delete>
+
+	<!-- 글 개수 -->
+	<select id="selectPostCount" resultType="int">
+		SELECT COUNT(*)
+		FROM community_post
+	</select>
+
+</mapper>

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @MapperScan(basePackages = {"kr.spring.api.mapper", "kr.spring.member.dao", "kr.spring.faq.dao", "kr.spring.house.dao",
 							"kr.spring.tour.dao","kr.spring.restaurant.dao", "kr.spring.seller.dao", "kr.spring.qnaQuestion.dao"})
 
+
 public class SpringPageApplication {
 
 	public static void main(String[] args) {
