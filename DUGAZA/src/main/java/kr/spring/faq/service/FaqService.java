@@ -1,8 +1,8 @@
-package kr.spring.house.faq.service;
+package kr.spring.faq.service;
 
 import java.util.List;
 
-import kr.spring.house.faq.vo.FaqVO;
+import kr.spring.faq.vo.FaqVO;
 
 public interface FaqService {
 	List<FaqVO> getFaqList();

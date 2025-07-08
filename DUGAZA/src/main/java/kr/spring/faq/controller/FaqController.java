@@ -1,4 +1,4 @@
-package kr.spring.house.faq.controller;
+package kr.spring.faq.controller;
 
 import java.util.List;
 
@@ -7,8 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import kr.spring.house.faq.service.FaqService;
-import kr.spring.house.faq.vo.FaqVO;
+import kr.spring.faq.service.FaqService;
+import kr.spring.faq.vo.FaqVO;
 
 @Controller
 public class FaqController {
