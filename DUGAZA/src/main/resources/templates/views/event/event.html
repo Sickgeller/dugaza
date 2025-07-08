@@ -26,17 +26,6 @@
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>카테고리</label>
-                    <select name="category">
-                        <option value="0" th:selected="${category == 0}">전체</option>
-                        <option value="12" th:selected="${category == 12}">관광지</option>
-                        <option value="14" th:selected="${category == 14}">문화시설</option>
-                        <option value="25" th:selected="${category == 25}">여행코스</option>
-                        <option value="28" th:selected="${category == 28}">레포츠</option>
-                        <option value="38" th:selected="${category == 38}">쇼핑</option>
-                    </select>
-                </div>
-                <div class="filter-group">
                     <label>정렬</label>
                     <select>
                         <option>추천순</option>
@@ -68,7 +57,7 @@
                         </div>
                         <!-- <p class="tour-description">조선시대 대표적인 궁궐로, 아름다운 전통 건축과 정원을 감상할 수 있습니다.</p> -->
                         <div class="tour-footer">
-                            <span class="category" th:text="${tour.contentTypeName}"></span>
+                            <!-- <span class="category" th:text="${tour.contentTypeName}"></span> -->
                             <a href="#" class="detail-btn">자세히 보기</a>
                         </div>
                     </div>
