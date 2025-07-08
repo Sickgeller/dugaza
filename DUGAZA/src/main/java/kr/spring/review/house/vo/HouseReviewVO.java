@@ -1,9 +1,11 @@
 package kr.spring.review.house.vo;
 
 import lombok.Builder;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 @Builder
 public class HouseReviewVO {
     private Long reviewId;
@@ -13,7 +15,9 @@ public class HouseReviewVO {
     private Long reservationId;
     private String reviewTitle;
     private String reviewContent;
-    private Double rating;             // 0.0 ~ 5.0
+    private Double rating;
     private LocalDateTime reviewDate;
     private int status;
+    
+
 }

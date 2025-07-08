@@ -9,10 +9,20 @@
         <result property="roomId" column="ROOM_ID" />
         <result property="reservationId" column="RESERVATION_ID" />
         <result property="reviewTitle" column="REVIEW_TITLE" />
-        <result property="reviewContent" column="REVIEW_CONTENT" />
         <result property="rating" column="RATING" />
-        <result property="reviewDate" column="REVIEW_DATE" />
+        <result property="reviewDate" column="REVIEW_DATE" jdbcType="TIMESTAMP" />
         <result property="status" column="STATUS" />
+        <result property="reviewContent" column="REVIEW_CONTENT" />
+    </resultMap>
+
+    <resultMap id="reviewStatisticsResultMap" type="kr.spring.review.house.dto.ReviewStatisticsDto">
+        <result property="averageRating" column="AVERAGERATING" />
+        <result property="totalCount" column="TOTALCOUNT" />
+        <result property="fiveStarCount" column="FIVESTARCOUNT" />
+        <result property="fourStarCount" column="FOURSTARCOUNT" />
+        <result property="threeStarCount" column="THREESTARCOUNT" />
+        <result property="twoStarCount" column="TWOSTARCOUNT" />
+        <result property="oneStarCount" column="ONESTARCOUNT" />
     </resultMap>
 
     <select id="findHouseReviewBySellerId" resultMap="houseReviewResultMap" parameterType="map">
@@ -26,10 +36,10 @@
                                        HR.ROOM_ID,
                                        HR.RESERVATION_ID,
                                        HR.REVIEW_TITLE,
-                                       HR.REVIEW_CONTENT,
                                        HR.RATING,
                                        HR.REVIEW_DATE,
-                                       HR.STATUS
+                                       HR.STATUS,
+                                       HR.REVIEW_CONTENT
                                    FROM HOUSE_REVIEW HR
                                    WHERE EXISTS (
                                        SELECT 1
@@ -44,6 +54,88 @@
         WHERE RN &gt;= #{startRow}
     </select>
 
-
+    <!-- 전체 리뷰 통계 조회 -->
+    <select id="getReviewStatistics" resultType="kr.spring.review.house.dto.ReviewStatisticsDto">
+        SELECT 
+            ROUND(AVG(rating), 2) as averageRating,
+            COUNT(*) as totalCount,
+            COUNT(CASE WHEN rating = 5 THEN 1 END) as fiveStarCount,
+            COUNT(CASE WHEN rating = 4 THEN 1 END) as fourStarCount,
+            COUNT(CASE WHEN rating = 3 THEN 1 END) as threeStarCount,
+            COUNT(CASE WHEN rating = 2 THEN 1 END) as twoStarCount,
+            COUNT(CASE WHEN rating = 1 THEN 1 END) as oneStarCount,
+            NULL as recentCount,
+            NULL as fiveStarRatio,
+            NULL as fourStarRatio,
+            NULL as threeStarRatio,
+            NULL as twoStarRatio,
+            NULL as oneStarRatio,
+            NULL as monthlyTrend
+        FROM house_review
+        WHERE status = 1
+    </select>
+    
+    <!-- 판매자별 리뷰 통계 조회 -->
+    <select id="getReviewStatisticsBySeller" resultType="kr.spring.review.house.dto.ReviewStatisticsDto">
+        SELECT 
+            ROUND(AVG(r.rating), 2) as averageRating,
+            COUNT(*) as totalCount,
+            COUNT(CASE WHEN r.rating = 5 THEN 1 END) as fiveStarCount,
+            COUNT(CASE WHEN r.rating = 4 THEN 1 END) as fourStarCount,
+            COUNT(CASE WHEN r.rating = 3 THEN 1 END) as threeStarCount,
+            COUNT(CASE WHEN r.rating = 2 THEN 1 END) as twoStarCount,
+            COUNT(CASE WHEN r.rating = 1 THEN 1 END) as oneStarCount,
+            NULL as recentCount,
+            NULL as fiveStarRatio,
+            NULL as fourStarRatio,
+            NULL as threeStarRatio,
+            NULL as twoStarRatio,
+            NULL as oneStarRatio,
+            NULL as monthlyTrend
+        FROM house_review r
+        INNER JOIN house_seller_detail h ON r.house_id = h.house_id
+        WHERE r.status = 1 AND h.seller_id = #{sellerId}
+    </select>
+    
+    <!-- 숙소별 리뷰 통계 조회 -->
+    <select id="getReviewStatisticsByHouse" resultType="kr.spring.review.house.dto.ReviewStatisticsDto">
+        SELECT 
+            ROUND(AVG(rating), 2) as averageRating,
+            COUNT(*) as totalCount,
+            COUNT(CASE WHEN rating = 5 THEN 1 END) as fiveStarCount,
+            COUNT(CASE WHEN rating = 4 THEN 1 END) as fourStarCount,
+            COUNT(CASE WHEN rating = 3 THEN 1 END) as threeStarCount,
+            COUNT(CASE WHEN rating = 2 THEN 1 END) as twoStarCount,
+            COUNT(CASE WHEN rating = 1 THEN 1 END) as oneStarCount,
+            NULL as recentCount,
+            NULL as fiveStarRatio,
+            NULL as fourStarRatio,
+            NULL as threeStarRatio,
+            NULL as twoStarRatio,
+            NULL as oneStarRatio,
+            NULL as monthlyTrend
+        FROM house_review
+        WHERE house_id = #{houseId} AND status = 1
+    </select>
+    
+    <!-- 월별 리뷰 트렌드 조회 (최근 6개월) -->
+    <select id="getMonthlyReviewTrend" resultType="java.util.Map">
+        SELECT 
+            TO_CHAR(review_date, 'YYYY-MM') as month,
+            COUNT(*) as count
+        FROM house_review
+        WHERE review_date >= ADD_MONTHS(SYSDATE, -6)
+        AND status = 1
+        GROUP BY TO_CHAR(review_date, 'YYYY-MM')
+        ORDER BY month DESC
+    </select>
+    
+    <!-- 최근 30일 리뷰 수 조회 -->
+    <select id="getRecentReviewCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM house_review
+        WHERE review_date >= SYSDATE - 30
+        AND status = 1
+    </select>
 
 </mapper>

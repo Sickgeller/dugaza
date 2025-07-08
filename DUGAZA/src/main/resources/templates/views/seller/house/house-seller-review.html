@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리뷰 관리 - 숙소 판매자</title>
+    <link rel="stylesheet" th:href="@{/assets/css/seller.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/assets/css/review-statistics.css}">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div th:replace="~{fragments/house_seller_sidebar :: houseSideBar}"></div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>리뷰 관리</h2>
+                </div>
+                <div class="user-info">
+                    <span th:text="${seller.name} +'님'"></span>
+                    <img th:src="@{/assets/images/users/profile1.jpg}" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 리뷰 통계 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>리뷰 통계</h3>
+                    <div class="period-selector">
+                        <button class="active">일간</button>
+                        <button>주간</button>
+                        <button>월간</button>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>평균 평점</h3>
+                            <p th:text="${statistics != null ? statistics.averageRating : '0.0'}">4.5</p>
+                            <span class="stat-change increase" th:if="${statistics != null and statistics.averageRating > 4.0}">좋음</span>
+                            <span class="stat-change" th:if="${statistics != null and statistics.averageRating <= 4.0 and statistics.averageRating > 3.0}">보통</span>
+                            <span class="stat-change warning" th:if="${statistics != null and statistics.averageRating <= 3.0}">개선 필요</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>전체 리뷰</h3>
+                            <p th:text="${statistics != null ? statistics.totalCount + '개' : '0개'}">128개</p>
+                            <span class="stat-change" th:if="${statistics != null and statistics.recentCount > 0}">
+                                최근 30일: <span th:text="${statistics.recentCount + '개'}"></span>
+                            </span>
+                            <span class="stat-change" th:if="${statistics == null or statistics.recentCount == 0}">누적</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>미답변 리뷰</h3>
+                            <p th:text="${unansweredReviews != null ? unansweredReviews + '개' : '0개'}">3개</p>
+                            <span class="stat-change warning" th:if="${unansweredReviews != null and unansweredReviews > 0}">답변 필요</span>
+                            <span class="stat-change" th:if="${unansweredReviews == null or unansweredReviews == 0}">모두 답변 완료</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>부정 리뷰</h3>
+                            <p th:text="${negativeReviews != null ? negativeReviews + '개' : '0개'}">2개</p>
+                            <span class="stat-change warning" th:if="${negativeReviews != null and negativeReviews > 0}">조치 필요</span>
+                            <span class="stat-change" th:if="${negativeReviews == null or negativeReviews == 0}">모두 긍정적</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 별점별 분포 차트 -->
+                <div class="rating-distribution" th:if="${statistics != null}">
+                    <h4>별점별 분포</h4>
+                    <div class="rating-bars">
+                        <div class="rating-bar">
+                            <span class="rating-label">5점</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" th:style="'width: ' + ${statistics.fiveStarRatio} + '%'"></div>
+                            </div>
+                            <span class="rating-count" th:text="${statistics.fiveStarCount + '개'}">0개</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span class="rating-label">4점</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" th:style="'width: ' + ${statistics.fourStarRatio} + '%'"></div>
+                            </div>
+                            <span class="rating-count" th:text="${statistics.fourStarCount + '개'}">0개</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span class="rating-label">3점</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" th:style="'width: ' + ${statistics.threeStarRatio} + '%'"></div>
+                            </div>
+                            <span class="rating-count" th:text="${statistics.threeStarCount + '개'}">0개</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span class="rating-label">2점</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" th:style="'width: ' + ${statistics.twoStarRatio} + '%'"></div>
+                            </div>
+                            <span class="rating-count" th:text="${statistics.twoStarCount + '개'}">0개</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span class="rating-label">1점</span>
+                            <div class="bar-container">
+                                <div class="bar-fill" th:style="'width: ' + ${statistics.oneStarRatio} + '%'"></div>
+                            </div>
+                            <span class="rating-count" th:text="${statistics.oneStarCount + '개'}">0개</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 리뷰 검색 및 필터 -->
+            <div class="content-section">
+                <div class="search-filter-container">
+                    <div class="search-box">
+                        <input type="text" placeholder="리뷰 내용, 작성자 검색">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="filter-options">
+                        <select>
+                            <option value="">평점</option>
+                            <option value="5">5점</option>
+                            <option value="4">4점</option>
+                            <option value="3">3점</option>
+                            <option value="2">2점</option>
+                            <option value="1">1점</option>
+                        </select>
+                        <select>
+                            <option value="">답변 상태</option>
+                            <option value="answered">답변 완료</option>
+                            <option value="waiting">미답변</option>
+                        </select>
+                        <select>
+                            <option value="">객실 유형</option>
+                            <option value="standard">스탠다드</option>
+                            <option value="deluxe">디럭스</option>
+                            <option value="suite">스위트</option>
+                            <option value="family">패밀리</option>
+                        </select>
+                        <input type="date" placeholder="시작일">
+                        <input type="date" placeholder="종료일">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 리뷰 목록 -->
+            <div class="content-section">
+                <div class="review-list" th:if="${reviews != null and !#lists.isEmpty(reviews)}">
+                    <!-- 실제 리뷰 데이터 -->
+                    <div class="review-card" th:each="review : ${reviews}">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <img th:src="@{/assets/images/users/default-profile.jpg}" alt="리뷰어 프로필">
+                                <div class="user-details">
+                                    <span class="user-name" th:text="'고객' + ${review.memberId}">고객</span>
+                                    <span class="review-date" th:text="${#temporals.format(review.reviewDate, 'yyyy-MM-dd')}">2024-02-15</span>
+                                </div>
+                            </div>
+                            <div class="review-rating">
+                                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                    <i class="fas fa-star" th:classappend="${i <= review.rating ? 'active' : ''}"></i>
+                                </th:block>
+                                <span th:text="${review.rating + '.0'}">5.0</span>
+                            </div>
+                        </div>
+                        <div class="review-content">
+                            <div class="room-info">
+                                <span class="room-type" th:text="'객실 ' + ${review.roomId}">객실</span>
+                                <span class="stay-date" th:text="'예약번호: ' + ${review.reservationId}">예약번호</span>
+                            </div>
+                            <h4 th:text="${review.reviewTitle}">리뷰 제목</h4>
+                            <p th:text="${review.reviewContent}">리뷰 내용</p>
+                        </div>
+                        <div class="review-actions">
+                            <button class="btn-primary" th:if="${review.status == 0}">답변하기</button>
+                            <button class="btn-secondary" th:if="${review.status == 1}">답변 수정</button>
+                            <button class="btn-secondary">신고하기</button>
+                            <button class="btn-icon" title="삭제"><i class="fas fa-trash-alt"></i></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 리뷰가 없을 때 -->
+                <div class="no-reviews" th:if="${reviews == null or #lists.isEmpty(reviews)}">
+                    <div class="empty-state">
+                        <i class="fas fa-comment-slash"></i>
+                        <h3>아직 리뷰가 없습니다</h3>
+                        <p>고객님들의 첫 번째 리뷰를 기다리고 있습니다.</p>
+                    </div>
+                </div>
+
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+                    <button class="btn-page"><i class="fas fa-angle-double-left"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-left"></i></button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page">2</button>
+                    <button class="btn-page">3</button>
+                    <button class="btn-page">4</button>
+                    <button class="btn-page">5</button>
+                    <button class="btn-page"><i class="fas fa-angle-right"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-double-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/js/admin.js}"></script>
+    <script th:src="@{/assets/js/review-statistics.js}"></script>
+</body>
+</html> 

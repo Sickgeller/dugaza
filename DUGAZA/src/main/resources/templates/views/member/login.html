@@ -17,9 +17,18 @@
                     <p>여행으로 드가자</p>
                 </div>
                 <form th:action="@{/auth/login}" method="post" class="login-form">
+                    <!-- 사용자 타입 구분을 위한 숨겨진 필드 -->
+                    <input type="hidden" name="userType" value="member">
+                    
                     <!-- 에러 메시지 표시 -->
                     <div th:if="${param.error}" class="alert alert-danger">
-                        <p>아이디 또는 비밀번호가 올바르지 않습니다.</p>
+                        <p th:if="${param.reason != null and param.reason[0] == 'invalid_user_type'}">
+                            일반 회원 로그인 페이지입니다. 판매자이신 경우 
+                            <a th:href="@{/seller/login}" class="alert-link">판매자 로그인</a>을 이용해주세요.
+                        </p>
+                        <p th:unless="${param.reason != null and param.reason[0] == 'invalid_user_type'}">
+                            아이디 또는 비밀번호가 올바르지 않습니다.
+                        </p>
                     </div>
                     <div th:if="${param.logout}" class="alert alert-success">
                         <p>로그아웃되었습니다.</p>

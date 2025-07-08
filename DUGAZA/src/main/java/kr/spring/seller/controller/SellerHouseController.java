@@ -7,6 +7,8 @@ import kr.spring.reservation.house.service.HouseReservationService;
 import kr.spring.reservation.house.vo.HouseReservationVO;
 import kr.spring.review.house.service.HouseReviewService;
 import kr.spring.review.house.vo.HouseReviewVO;
+import kr.spring.review.house.service.ReviewStatisticsService;
+import kr.spring.review.house.dto.ReviewStatisticsDto;
 import kr.spring.room.dto.RoomDetailVO;
 import kr.spring.room.service.RoomService;
 import kr.spring.seller.service.SellerService;
@@ -34,6 +36,7 @@ public class SellerHouseController {
     private final RoomService roomService;
     private final HouseReservationService houseReservationService;
     private final HouseReviewService houseReviewService;
+    private final ReviewStatisticsService reviewStatisticsService;
 
 
     @GetMapping("/")
@@ -138,16 +141,42 @@ public class SellerHouseController {
     }
 
     @GetMapping("/review")
-    public String review(Model model){
+    public String review(Model model,
+                         @RequestParam(name = "page", defaultValue = "1") int page,
+                         @RequestParam(name = "pageSize", defaultValue = "10") int pageSize){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
         SellerVO seller = userDetails.getSeller();
+
+        // 리뷰 통계 조회
+        ReviewStatisticsDto statistics = reviewStatisticsService.getReviewStatisticsBySeller(seller.getSellerId());
         
+        // 리뷰 목록 조회
+        List<HouseReviewVO> reviews = houseReviewService.getReviews(seller.getSellerId(), page, pageSize);
+        
+        // 미답변 리뷰 수 계산 (실제로는 별도 쿼리 필요)
+        long unansweredReviews = reviews.stream()
+            .filter(review -> review.getStatus() == 0) // 0: 미답변, 1: 답변완료
+            .count();
+        
+        // 부정 리뷰 수 계산 (3점 이하)
+        long negativeReviews = reviews.stream()
+            .filter(review -> review.getRating() <= 3.0)
+            .count();
+
         // 모델에 데이터 추가
         model.addAttribute("seller", seller);
         model.addAttribute("currentMenu", "review");
+        model.addAttribute("statistics", statistics);
+        model.addAttribute("reviews", reviews);
+        model.addAttribute("unansweredReviews", unansweredReviews);
+        model.addAttribute("negativeReviews", negativeReviews);
         
-        return null;
+        log.info("판매자 리뷰 페이지 - 판매자ID: {}, 평균평점: {}, 전체리뷰: {}, 미답변: {}, 부정리뷰: {}", 
+                seller.getSellerId(), statistics.getAverageRating(), statistics.getTotalCount(), 
+                unansweredReviews, negativeReviews);
+        
+        return "views/seller/house/house-seller-review";
     }
 
     @GetMapping("/promotion")

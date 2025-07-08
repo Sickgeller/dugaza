@@ -32,6 +32,21 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("로그인 성공: 사용자 = {}, 권한 = {}", 
                 userDetails.getUsername(), userDetails.getAuthorities());
         
+        // 요청한 사용자 타입 확인
+        String requestedUserType = request.getParameter("userType");
+        log.info("요청된 사용자 타입: {}", requestedUserType);
+        
+        // 사용자 타입과 실제 권한 검증
+        if (!validateUserTypeAndRole(requestedUserType, userDetails)) {
+            log.warn("사용자 타입 불일치: 요청타입 = {}, 실제권한 = {}", 
+                    requestedUserType, userDetails.getAuthorities());
+            
+            // 적절한 로그인 페이지로 리다이렉트 (에러 메시지와 함께)
+            String redirectUrl = getFailureRedirectUrl(requestedUserType);
+            redirectStrategy.sendRedirect(request, response, redirectUrl);
+            return;
+        }
+        
         // Remember-me 체크 여부 로깅
         String rememberMeParam = request.getParameter("remember-me");
         log.info("Remember-me 파라미터: {}", rememberMeParam);
@@ -46,6 +61,45 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         
         // Remember-me 처리를 위해 부모 클래스의 메서드 호출
         super.onAuthenticationSuccess(request, response, authentication);
+    }
+    
+    /**
+     * 요청된 사용자 타입과 실제 사용자 권한이 일치하는지 검증
+     */
+    private boolean validateUserTypeAndRole(String requestedUserType, CustomUserDetails userDetails) {
+        if (requestedUserType == null) {
+            // userType이 없으면 기본적으로 허용 (하위 호환성)
+            return true;
+        }
+        
+        switch (requestedUserType.toLowerCase()) {
+            case "member":
+                // 일반 회원은 ROLE_MEMBER 권한만 있어야 함 (SELLER나 ADMIN 권한 없음)
+                return userDetails.getAuthorities().stream()
+                        .anyMatch(auth -> auth.getAuthority().equals("ROLE_MEMBER")) &&
+                       !userDetails.isSeller() &&
+                       userDetails.getAuthorities().stream()
+                        .noneMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+                        
+            case "seller":
+                // 판매자는 ROLE_SELLER, ROLE_CAR, ROLE_HOUSE 중 하나 이상의 권한이 있어야 함
+                return userDetails.isSeller();
+                
+            default:
+                log.warn("알 수 없는 사용자 타입: {}", requestedUserType);
+                return false;
+        }
+    }
+    
+    /**
+     * 검증 실패 시 리다이렉트할 URL 결정
+     */
+    private String getFailureRedirectUrl(String requestedUserType) {
+        if ("seller".equals(requestedUserType)) {
+            return "/seller/login?error=true&reason=invalid_user_type";
+        } else {
+            return "/member/login?error=true&reason=invalid_user_type";
+        }
     }
     
     /**
