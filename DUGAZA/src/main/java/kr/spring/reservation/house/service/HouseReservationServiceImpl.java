@@ -24,4 +24,13 @@ public class HouseReservationServiceImpl implements HouseReservationService {
         }
         return result;
     }
+
+    @Override
+    public List<HouseReservationVO> getReservations(Long sellerId, int startRow, int endRow) {
+        List<HouseReservationVO> result = houseReservationMapper.findBySellerId(sellerId, startRow, endRow);
+        if(result.isEmpty()){
+            return new ArrayList<>();
+        }
+        return result;
+    }
 }

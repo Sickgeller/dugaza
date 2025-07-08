@@ -64,6 +64,9 @@ public class SellerHouseController {
                 List<HouseReviewVO> recentlyReviews = houseReviewService.getRecentlyReviews(seller.getSellerId());
                 model.addAttribute("recentReviews", recentlyReviews);
 
+                // 현재 메뉴 설정
+                model.addAttribute("currentMenu", "dashboard");
+
                 log.info("숙소 판매자 대시보드 - 총 객실: {}, 예약된 객실: {}, 예약률: {}%, 최근 예약: {}건",
                         totalRooms, reservatedRooms, reservedRate, reservationList.size());
 
@@ -102,18 +105,100 @@ public class SellerHouseController {
         model.addAttribute("availableRooms", availableRooms);
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("totalPages", (int)Math.ceil((double)totalRooms / pageSize));
+        model.addAttribute("currentMenu", "management");
         
         return "views/seller/house/house-seller-rooms";
     }
 
     @GetMapping("/reservation")
-    public String reservation(Model model){
-        return null;
+    public String reservation(Model model,
+                              @RequestParam(name = "page", defaultValue = "1") int page,
+                              @RequestParam(name = "pageSize", defaultValue = "10") int pageSize){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        SellerVO seller = userDetails.getSeller();
+
+        // 페이징 처리를 위한 설정
+        int startRow = (page - 1) * pageSize + 1;
+        int endRow = page * pageSize;
+
+        // 예약 목록 조회
+        List<HouseReservationVO> reservations = houseReservationService.getReservations(seller.getSellerId(), startRow, endRow);
+        
+        // 최근 예약 목록 조회 (메인 대시보드용)
+        List<HouseReservationVO> recentReservations = houseReservationService.getRecentlyReservations(seller.getSellerId());
+
+        // 모델에 데이터 추가
+        model.addAttribute("seller", seller);
+        model.addAttribute("reservations", reservations);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("currentMenu", "reservation");
+
+        return "views/seller/house/house-seller-reservation";
     }
 
     @GetMapping("/review")
     public String review(Model model){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        SellerVO seller = userDetails.getSeller();
+        
+        // 모델에 데이터 추가
+        model.addAttribute("seller", seller);
+        model.addAttribute("currentMenu", "review");
+        
         return null;
     }
 
+    @GetMapping("/promotion")
+    public String promotion(Model model){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        SellerVO seller = userDetails.getSeller();
+        
+        // 모델에 데이터 추가
+        model.addAttribute("seller", seller);
+        model.addAttribute("currentMenu", "promotion");
+        
+        return "views/seller/house/house-seller-promotion";
+    }
+
+    @GetMapping("/facility")
+    public String facility(Model model){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        SellerVO seller = userDetails.getSeller();
+        
+        // 모델에 데이터 추가
+        model.addAttribute("seller", seller);
+        model.addAttribute("currentMenu", "facility");
+        
+        return "views/seller/house/house-seller-facility";
+    }
+
+    @GetMapping("/sales")
+    public String sales(Model model){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        SellerVO seller = userDetails.getSeller();
+        
+        // 모델에 데이터 추가
+        model.addAttribute("seller", seller);
+        model.addAttribute("currentMenu", "sales");
+        
+        return "views/seller/house/house-seller-sales";
+    }
+
+    @GetMapping("/settings")
+    public String settings(Model model){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+        SellerVO seller = userDetails.getSeller();
+        
+        // 모델에 데이터 추가
+        model.addAttribute("seller", seller);
+        model.addAttribute("currentMenu", "settings");
+        
+        return "views/seller/house/house-seller-settings";
+    }
 }

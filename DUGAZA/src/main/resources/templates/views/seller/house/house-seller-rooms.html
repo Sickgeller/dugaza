@@ -10,24 +10,7 @@
 <body>
     <div class="admin-container">
         <!-- 사이드바 -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h1>숙소 관리자</h1>
-                <p>숙소 판매자 대시보드</p>
-            </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li><a th:href="@{/seller/house/}"><i class="fas fa-home"></i><span>대시보드</span></a></li>
-                    <li class="active"><a th:href="@{/seller/house/management}"><i class="fas fa-bed"></i><span>객실 관리</span></a></li>
-                    <li><a th:href="@{/seller/house/reservation}"><i class="fas fa-calendar-check"></i><span>예약 관리</span></a></li>
-                    <li><a th:href="@{/seller/house/review}"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
-                    <li><a th:href="@{/seller/house/promotion}"><i class="fas fa-tags"></i><span>프로모션 관리</span></a></li>
-                    <li><a th:href="@{/seller/house/facility}"><i class="fas fa-swimming-pool"></i><span>부대시설 관리</span></a></li>
-                    <li><a th:href="@{/seller/house/sales}"><i class="fas fa-chart-line"></i><span>매출 관리</span></a></li>
-                    <li><a th:href="@{/seller/house/settings}"><i class="fas fa-cog"></i><span>설정</span></a></li>
-                </ul>
-            </nav>
-        </div>
+        <div th:replace="~{fragments/house_seller_sidebar :: houseSideBar}"></div>
 
         <!-- 메인 콘텐츠 -->
         <div class="main-content">

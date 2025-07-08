@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- 사이드바 fragment -->
+    <div th:fragment="houseSideBar" class="sidebar">
+        <div class="sidebar-header">
+            <h1>숙소 관리자</h1>
+            <p>숙소 판매자 대시보드</p>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li th:class="${currentMenu == 'dashboard'} ? 'active'">
+                    <a th:href="@{/seller/dashboard}">
+                        <i class="fas fa-home"></i><span>대시보드</span>
+                    </a>
+                </li>
+                <li th:class="${currentMenu == 'management'} ? 'active'">
+                    <a th:href="@{/seller/house/management}">
+                        <i class="fas fa-bed"></i><span>객실 관리</span>
+                    </a>
+                </li>
+                <li th:class="${currentMenu == 'reservation'} ? 'active'">
+                    <a th:href="@{/seller/house/reservation}">
+                        <i class="fas fa-calendar-check"></i><span>예약 관리</span>
+                    </a>
+                </li>
+                <li th:class="${currentMenu == 'review'} ? 'active'">
+                    <a th:href="@{/seller/house/review}">
+                        <i class="fas fa-star"></i><span>리뷰 관리</span>
+                    </a>
+                </li>
+                <li th:class="${currentMenu == 'promotion'} ? 'active'">
+                    <a th:href="@{/seller/house/promotion}">
+                        <i class="fas fa-tags"></i><span>프로모션 관리</span>
+                    </a>
+                </li>
+                <li th:class="${currentMenu == 'facility'} ? 'active'">
+                    <a th:href="@{/seller/house/facility}">
+                        <i class="fas fa-swimming-pool"></i><span>부대시설 관리</span>
+                    </a>
+                </li>
+                <li th:class="${currentMenu == 'sales'} ? 'active'">
+                    <a th:href="@{/seller/house/sales}">
+                        <i class="fas fa-chart-line"></i><span>매출 관리</span>
+                    </a>
+                </li>
+                <li th:class="${currentMenu == 'settings'} ? 'active'">
+                    <a th:href="@{/seller/house/settings}">
+                        <i class="fas fa-cog"></i><span>설정</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <style>
+            /* 사이드바 스타일 */
+            .sidebar {
+                width: 250px;
+                height: 100vh;
+                background-color: #2c3e50;
+                color: #ecf0f1;
+                position: fixed;
+                left: 0;
+                top: 0;
+                overflow-y: auto;
+                transition: all 0.3s;
+                box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            }
+            
+            .sidebar-header {
+                padding: 20px;
+                text-align: center;
+                border-bottom: 1px solid #34495e;
+            }
+            
+            .sidebar-header h1 {
+                font-size: 1.5rem;
+                margin-bottom: 5px;
+            }
+            
+            .sidebar-header p {
+                font-size: 0.9rem;
+                opacity: 0.7;
+            }
+            
+            .sidebar-nav {
+                padding: 20px 0;
+            }
+            
+            .sidebar-nav ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .sidebar-nav li {
+                margin-bottom: 5px;
+            }
+            
+            .sidebar-nav a {
+                display: flex;
+                align-items: center;
+                padding: 10px 20px;
+                color: #ecf0f1;
+                text-decoration: none;
+                transition: all 0.3s;
+            }
+            
+            .sidebar-nav a:hover {
+                background-color: #34495e;
+            }
+            
+            .sidebar-nav li.active a {
+                background-color: #3498db;
+                color: white;
+            }
+            
+            .sidebar-nav i {
+                margin-right: 10px;
+                width: 20px;
+                text-align: center;
+            }
+        </style>
+    </div>
+</body>
+</html> 
