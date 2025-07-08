@@ -130,12 +130,12 @@ public class SellerController {
     @GetMapping("/dashboard")
     public String myPage(Model model){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        SellerVO seller = null;
         if(auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
             CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
             if(userDetails.isSeller()) {
-                seller = userDetails.getSeller();
+                SellerVO seller = userDetails.getSeller();
                 model.addAttribute("seller", seller);
+                model.addAttribute("currentMenu", "dashboard");
                 
                 // sellerType null 체크 추가
                 if(seller.getSellerType() == null) {
