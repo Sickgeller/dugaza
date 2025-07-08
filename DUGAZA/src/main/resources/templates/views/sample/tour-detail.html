@@ -29,9 +29,6 @@
                 <div class="main-image">
                     <img th:src="${info.firstImage}" alt="경복궁 대표 이미지">
                 </div>
-                <div class="thumbnail-images">
-                   <img th:src="${info.firstImage2}" alt="경복궁 대표 이미지2">  
-                </div>
             </div>
 
             <div class="detail-content">
@@ -69,9 +66,17 @@
 					</span>
                     <div class="map-container">
                         <!-- 지도가 들어갈 자리 -->
-                        <div class="map-placeholder">
-                            지도 영역
-                        </div>
+                        <div class="map-placeholder" id="map"></div>
+                        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0004c4e85aaef62938a2afa572f9f526"></script>
+						<script>
+							var container = document.getElementById('map');
+							var options = {
+								center: new kakao.maps.LatLng(33.450701, 126.570667),
+								level: 3
+							};
+					
+							var map = new kakao.maps.Map(container, options);
+						</script>
                     </div>
                 </section>
 
