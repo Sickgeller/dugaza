@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.spring.restaurant.service.RestaurantService;
+import kr.spring.restaurant.vo.RestaurantVO;
 import kr.spring.tour.vo.TourVO;
+import kr.spring.tour.vo.TouristAttractionVO;
 import kr.spring.util.PagingUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,14 +22,14 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequestMapping("/restaurant")
 public class RestaurantController {
-	
+
 	@Autowired
 	private RestaurantService restaurantService;
 	@GetMapping("")
 	public String restaurantMain(@RequestParam(defaultValue="1") int pageNum,
-								 @RequestParam(defaultValue = "") String keyword,
-								 Model model) {
-		
+			@RequestParam(defaultValue = "") String keyword,
+			Model model) {
+
 		int count = restaurantService.selectRowCount();
 
 		//페이지 처리
@@ -47,5 +49,15 @@ public class RestaurantController {
 		model.addAttribute("list", list);
 		model.addAttribute("page", page.getPage());
 		return "views/restaurant/restaurant";
+	}
+
+	// 항목 자세히 보기
+	@GetMapping("/detail")
+	public String restaurantDetail(@RequestParam Long id, Model model) {
+		RestaurantVO vo = restaurantService.selectRestaurant(id);
+
+		model.addAttribute("info",vo);
+
+		return "views/restaurant/restaurant-detail";
 	}
 }

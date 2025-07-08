@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import kr.spring.restaurant.dao.RestaurantMapper;
+import kr.spring.restaurant.vo.RestaurantVO;
 import kr.spring.tour.vo.TourVO;
 @Service
 @Transactional
@@ -24,6 +25,11 @@ public class RestaurantServiceImpl implements RestaurantService{
 	@Override
 	public List<TourVO> selectList(Map<String, Object> map) {
 		return restaurantMapper.selectList(map);
+	}
+
+	@Override
+	public RestaurantVO selectRestaurant(Long id) {
+		return restaurantMapper.selectRestaurant(id);
 	}
 
 }

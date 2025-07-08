@@ -28,7 +28,6 @@
             <div class="detail-gallery">
                 <div class="main-image">
                     <img th:src="${info.firstImage}" alt="경복궁 대표 이미지">
-                    
                 </div>
                 <div class="thumbnail-images">
                    <img th:src="${info.firstImage2}" alt="경복궁 대표 이미지2">  
@@ -57,14 +56,17 @@
                     </div>
                 </section>
 
-                <section class="description-section">
+                <!-- <section class="description-section">
                     <h2>소개</h2>
                     <p>경복궁은 조선시대 건립된 조선의 법궁(法宮)으로, 조선의 정치와 문화의 중심지였습니다. 1395년 태조 이성계가 창건하였고, 1592년 임진왜란으로 불타 없어졌다가, 1867년 흥선대원군의 주도로 중건되었습니다.</p>
                     <p>현재는 근정전, 경회루, 향원정 등 주요 전각들이 복원되어 있으며, 매일 정기적으로 수문장 교대의식이 진행되고 있습니다. 또한 야간 특별 관람도 운영되어 아름다운 야경을 감상할 수 있습니다.</p>
-                </section>
+                </section> -->
 
                 <section class="map-section">
                     <h2>위치</h2>
+                  	<span th:if="${not #strings.isEmpty(info.addr1) or not #strings.isEmpty(info.addr2)}"
+      				th:text="${#strings.defaultString(info.addr1, '') + ' ' + #strings.defaultString(info.addr2, '')}">
+					</span>
                     <div class="map-container">
                         <!-- 지도가 들어갈 자리 -->
                         <div class="map-placeholder">
