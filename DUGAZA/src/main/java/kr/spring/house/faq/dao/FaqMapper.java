@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import kr.spring.house.faq.vo.FaqVO;
 
-//@Mapper
+@Mapper
 public interface FaqMapper {
 	List<FaqVO> getFaqList();
 }

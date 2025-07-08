@@ -11,7 +11,7 @@
 	  QUESTION AS question,
 	  TO_CHAR(ANSWER) AS answer,
 	  ORDER_NUM AS orderNum,
-	  IS_ACTIVE AS isActive,         <!-- ★ 이거 추가! -->
+	  IS_ACTIVE AS isActive,       
 	  CREATED_AT AS createdAt,
 	  UPDATED_AT AS updatedAt
 	FROM FTEAM02.FAQ
