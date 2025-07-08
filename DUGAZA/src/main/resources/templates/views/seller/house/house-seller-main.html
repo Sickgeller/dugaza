@@ -4,30 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>숙소 판매자 대시보드</title>
-    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" th:href="@{/assets/css/seller.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <div class="admin-container">
         <!-- 사이드바 -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h1>숙소 관리자</h1>
-                <p>숙소 판매자 대시보드</p>
-            </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li class="active"><a href="accommodation-seller.html"><i class="fas fa-home"></i><span>대시보드</span></a></li>
-                    <li><a href="accommodation-rooms.html"><i class="fas fa-bed"></i><span>객실 관리</span></a></li>
-                    <li><a href="accommodation-reservations.html"><i class="fas fa-calendar-check"></i><span>예약 관리</span></a></li>
-                    <li><a href="accommodation-reviews.html"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
-                    <li><a href="accommodation-promotions.html"><i class="fas fa-tags"></i><span>프로모션 관리</span></a></li>
-                    <li><a href="accommodation-facilities.html"><i class="fas fa-swimming-pool"></i><span>부대시설 관리</span></a></li>
-                    <li><a href="accommodation-sales.html"><i class="fas fa-chart-line"></i><span>매출 관리</span></a></li>
-                    <li><a href="accommodation-settings.html"><i class="fas fa-cog"></i><span>설정</span></a></li>
-                </ul>
-            </nav>
-        </div>
+
+        <div th:replace="~{fragments/house_seller_sidebar :: houseSideBar}"></div>
 
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
@@ -38,8 +22,8 @@
                     <h2>숙소 대시보드</h2>
                 </div>
                 <div class="user-info">
-                    <span>홍길동님</span>
-                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
+                    <span th:text="${seller.name} + '님'">홍길동님</span>
+                    <img th:src="@{/assets/images/users/profile1.jpg}" alt="프로필 이미지">
                 </div>
             </div>
 
@@ -60,7 +44,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>총 객실</h3>
-                            <p>25개</p>
+                            <p th:text="${totalRooms} + '개'">25개</p>
                             <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
@@ -70,7 +54,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>예약 가능</h3>
-                            <p>12개</p>
+                            <p th:text="${availableRooms} + '개'">12개</p>
                             <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
@@ -79,9 +63,9 @@
                             <i class="fas fa-calendar-check"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>오늘 예약</h3>
-                            <p>8건</p>
-                            <span class="stat-change increase">+2건 (전일 대비)</span>
+                            <h3>예약된 객실</h3>
+                            <p th:text="${reservatedRooms} + '개'">8개</p>
+                            <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -90,8 +74,8 @@
                         </div>
                         <div class="stat-info">
                             <h3>객실 점유율</h3>
-                            <p>85%</p>
-                            <span class="stat-change increase">+5% (전월 대비)</span>
+                            <p th:text="${reservedRate} + '%'">85%</p>
+                            <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
                 </div>
@@ -119,30 +103,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>#A12345</td>
-                                <td>디럭스 더블</td>
-                                <td>김철수</td>
-                                <td>2024-02-15</td>
-                                <td>2024-02-17</td>
-                                <td>2명</td>
-                                <td>320,000원</td>
-                                <td><span class="status available">예약완료</span></td>
-                                <td>
-                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
-                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon" title="취소"><i class="fas fa-times"></i></button>
-                                </td>
+                            <tr th:if="${#lists.isEmpty(recentReservations)}">
+                                <td colspan="9" class="text-center">최근 예약이 없습니다.</td>
                             </tr>
-                            <tr>
-                                <td>#A12346</td>
-                                <td>스위트룸</td>
-                                <td>이영희</td>
-                                <td>2024-02-16</td>
-                                <td>2024-02-18</td>
-                                <td>3명</td>
-                                <td>480,000원</td>
-                                <td><span class="status rented">입실중</span></td>
+                            <tr th:each="reservation : ${recentReservations}">
+                                <td th:text="'#' + ${reservation.reservationId}"></td>
+                                <td th:text="${reservation.roomNo}">호</td>
+                                <td th:text="${reservation.memberId}">김철수</td>
+                                <td th:text="${#temporals.format(reservation.reservationStartDate, 'yyyy-MM-dd')}">2024-02-15</td>
+                                <td th:text="${#temporals.format(reservation.reservationEndDate, 'yyyy-MM-dd')}">2024-02-17</td>
+                                <td th:text="${reservation.reservationCount} + '명'">2명</td>
+                                <td th:text="${#numbers.formatInteger(reservation.price, 3, 'COMMA')} + '원'">320,000원</td>
+                                <td>
+                                    <span th:class="${reservation.status == 1 ? 'status available' : 'status rented'}" 
+                                          th:text="${reservation.status == 1 ? '예약완료' : '입실중'}">예약완료</span>
+                                </td>
                                 <td>
                                     <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
                                     <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
@@ -161,35 +136,38 @@
                     <button class="btn-primary">전체보기</button>
                 </div>
                 <div class="review-list">
-                    <div class="review-card">
+                    <!-- 리뷰가 없을 경우 -->
+                    <div th:if="${#lists.isEmpty(recentReviews)}" class="no-reviews">
+                        <p>최근 리뷰가 없습니다.</p>
+                    </div>
+                    
+                    <!-- 리뷰 목록 -->
+                    <div th:each="review : ${recentReviews}" class="review-card">
                         <div class="review-header">
                             <div class="reviewer-info">
-                                <img src="../images/users/profile2.jpg" alt="리뷰어 프로필">
+                                <img th:src="@{/assets/images/users/default-profile.jpg}" alt="리뷰어 프로필">
                                 <div class="user-details">
-                                    <span class="user-name">박지성</span>
-                                    <span class="review-date">2024-02-15</span>
+                                    <span class="user-name" th:text="${review.memberId}">사용자</span>
+                                    <span class="review-date" th:text="${#temporals.format(review.reviewDate, 'yyyy-MM-dd')}">2024-02-15</span>
                                 </div>
                             </div>
                             <div class="review-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <span>5.0</span>
+                                <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                    <i class="fas fa-star" th:classappend="${i <= review.rating} ? 'active' : ''"></i>
+                                </th:block>
+                                <span th:text="${review.rating + '.0'}">5.0</span>
                             </div>
                         </div>
                         <div class="review-content">
-                            <p>객실이 매우 청결하고 전망도 좋았습니다. 조식도 맛있었고 직원분들도 친절하셨어요!</p>
-                            <div class="review-images">
-                                <img src="../images/accommodation/room1.jpg" alt="리뷰 이미지 1">
-                                <img src="../images/accommodation/room2.jpg" alt="리뷰 이미지 2">
-                            </div>
+                            <h4 th:text="${review.reviewTitle}">리뷰 제목</h4>
+                            <p th:text="${review.reviewContent}">리뷰 내용</p>
                         </div>
                         <div class="review-actions">
                             <button class="btn-primary">답변하기</button>
                             <button class="btn-secondary">신고하기</button>
-                            <button class="btn-icon" title="삭제"><i class="fas fa-trash-alt"></i></button>
+                            <button class="btn-icon" title="삭제" th:if="${review.status != 'DELETED'}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </div>
                     </div>
                 </div>

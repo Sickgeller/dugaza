@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.seller.dao.SellerMapper">
+    
+    <resultMap type="kr.spring.seller.vo.SellerVO" id="sellerMap">
+        <id property="sellerId" column="SELLER_ID"/>
+        <result property="id" column="ID"/>
+        <result property="password" column="PASSWORD"/>
+        <result property="businessName" column="BUSINESS_NAME"/>
+        <result property="name" column="NAME"/>
+        <result property="phone" column="PHONE"/>
+        <result property="secondaryPhone" column="SECONDARY_PHONE" jdbcType="VARCHAR"/>
+        <result property="email" column="EMAIL"/>
+        <result property="address" column="ADDRESS"/>
+        <result property="sellerType" column="SELLER_TYPE"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+    </resultMap>
+    
+    <insert id="insertSeller" parameterType="kr.spring.seller.vo.SellerVO">
+        INSERT INTO SELLER (
+            SELLER_ID, PASSWORD, BUSINESS_NAME, NAME, PHONE, 
+            SECONDARY_PHONE, EMAIL, ADDRESS, SELLER_TYPE, CREATED_AT, UPDATED_AT
+        ) VALUES (
+            #{sellerId}, #{password}, #{businessName}, #{name}, #{phone}, 
+            #{secondaryPhone,jdbcType=VARCHAR}, #{email}, #{address}, #{sellerType}, 
+            SYSDATE, SYSDATE
+        )
+    </insert>
+    
+    <select id="selectSeller" parameterType="string" resultMap="sellerMap">
+        SELECT 
+            *
+        FROM SELLER 
+        WHERE ID = #{id}
+    </select>
+    
+    <select id="selectSellerByEmail" parameterType="string" resultMap="sellerMap">
+        SELECT 
+            *
+        FROM SELLER 
+        WHERE EMAIL = #{email}
+    </select>
+    
+    <update id="updateSeller" parameterType="kr.spring.seller.vo.SellerVO">
+        UPDATE SELLER SET
+            BUSINESS_NAME = #{businessName},
+            NAME = #{name},
+            PHONE = #{phone},
+            SECONDARY_PHONE = #{secondaryPhone,jdbcType=VARCHAR},
+            EMAIL = #{email},
+            ADDRESS = #{address},
+            UPDATED_AT = SYSDATE
+        WHERE SELLER_ID = #{sellerId}
+    </update>
+    
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

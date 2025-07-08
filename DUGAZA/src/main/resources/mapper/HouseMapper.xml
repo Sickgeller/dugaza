@@ -125,5 +125,14 @@
 		WHERE rnum >= #{start, jdbcType=INTEGER} AND rnum <= #{end, jdbcType=INTEGER}
 	]]>	             
 	</select>
+	
+	<!-- 숙소 항목 -->
+	<select id="selectHouse" parameterType="long" resultMap="houseMap">
+		SELECT
+			*
+		FROM house_detail
+		JOIN tour_content USING(content_id)
+		WHERE content_id=#{id}
+	</select>
 </mapper>
 

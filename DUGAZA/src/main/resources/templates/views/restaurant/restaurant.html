@@ -70,6 +70,7 @@
 
             <div class="restaurant-grid">
                 <article class="restaurant-card" th:each="restaurant : ${list}">
+                <a th:href="@{/restaurant/detail(id=${restaurant.id})}">
                     <div class="restaurant-image">
                         <img th:src="${restaurant.firstImage != null ? restaurant.firstImage : '/assets/images/house.png'}" alt="삼겹살">
                         <div class="restaurant-badge">한식</div>
@@ -91,6 +92,7 @@
                             <span>#특제소스</span>
                         </div>
                     </div>
+                    </a>
                 </article>
 
                 <!-- <article class="restaurant-card">

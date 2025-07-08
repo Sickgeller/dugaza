@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.room.dao.RoomMapper">
+
+    <resultMap id="RoomDetailResultMap" type="kr.spring.room.dto.RoomDetailVO">
+        <id property="roomId" column="ROOM_ID"/>
+        <result property="houseId" column="HOUSE_ID"/>
+        <result property="roomName" column="ROOM_NAME"/>
+        <result property="price" column="PRICE"/>
+        <result property="roomSize" column="ROOM_SIZE"/>
+        <result property="minimumCapacity" column="MINIMUM_CAPACITY"/>
+        <result property="maximumCapacity" column="MAXIMUM_CAPACITY"/>
+        <result property="bedInfo" column="BED_INFO"/>
+        <result property="wifi" column="WIFI"/>
+        <result property="tv" column="TV"/>
+        <result property="aircon" column="AIRCON"/>
+        <result property="bathroom" column="BATHROOM"/>
+        <result property="sofa" column="SOFA"/>
+        <result property="kitchen" column="KITCHEN"/>
+        <result property="pet" column="PET"/>
+        <result property="smokingRoom" column="SMOKING_ROOM"/>
+        <result property="image" column="IMAGE"/>
+        <result property="status" column="STATUS"/>
+    </resultMap>
+
+    <select id="getRoomsWithSellerId" parameterType="map" resultMap="RoomDetailResultMap">
+        SELECT * FROM (
+            SELECT ROWNUM AS RN, A.*
+            FROM (
+                SELECT HRI.*, HSD.SELLER_ID
+                FROM HOUSE_SELLER_DETAIL HSD
+                JOIN HOUSE_ROOM_INFO HRI ON HSD.HOUSE_ID = HRI.HOUSE_ID
+                WHERE SELLER_ID = #{sellerId}
+                ORDER BY HRI.ROOM_ID DESC
+            ) A
+            WHERE ROWNUM &lt;= #{endRow}
+        )
+        WHERE RN &gt;= #{startRow}
+    </select>
+
+    <select id="getTotalRoomCount" parameterType="Long" resultType="Integer">
+        SELECT COUNT(*)
+        FROM HOUSE_SELLER_DETAIL HSD
+        JOIN HOUSE_ROOM_INFO HRI ON HSD.HOUSE_ID = HRI.HOUSE_ID
+        WHERE SELLER_ID = #{sellerId}
+    </select>
+</mapper> 

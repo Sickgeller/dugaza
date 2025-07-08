@@ -26,4 +26,9 @@ public class HouseServiceImpl implements HouseService{
 		return houseMapper.selectRowCount();
 	}
 
+	@Override
+	public HouseVO selectHouse(Long id) {
+		return houseMapper.selectHouse(id);
+	}
+
 }

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>객실 관리 - 숙소 판매자</title>
+    <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div th:replace="~{fragments/house_seller_sidebar :: houseSideBar}"></div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>객실 관리</h2>
+                </div>
+                <div class="user-info">
+                    <span th:text="${seller.name} + '님'">홍길동님</span>
+                    <img th:src="@{/assets/images/users/profile1.jpg}" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 객실 통계 -->
+            <div class="content-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-bed"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>총 객실</h3>
+                            <p th:text="${totalRooms}">0개</p>
+                            <span class="stat-change">현재 기준</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>예약 가능</h3>
+                            <p th:text="${availableRooms}">0개</p>
+                            <span class="stat-change">현재 기준</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 객실 목록 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>객실 목록</h3>
+                    <button class="btn-primary" onclick="location.href='/seller/house/room/add'">
+                        <i class="fas fa-plus"></i> 새 객실 추가
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>객실 번호</th>
+                                <th>객실 유형</th>
+                                <th>가격</th>
+                                <th>상태</th>
+                                <th>최근 예약</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="room : ${rooms}">
+                                <td th:text="${room.roomNumber}">101</td>
+                                <td th:text="${room.roomType}">디럭스</td>
+                                <td th:text="${#numbers.formatCurrency(room.price)}">₩150,000</td>
+                                <td>
+                                    <span th:class="${room.status == 1 ? 'status-reserved' : 'status-available'}"
+                                          th:text="${room.status == 1 ? '예약중' : '예약가능'}">예약가능</span>
+                                </td>
+                                <td th:text="${room.lastReservation}">2024-03-15</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a th:href="@{/seller/house/room/edit/{id}(id=${room.id})}" class="btn-icon" title="수정">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button class="btn-icon delete-room" th:data-room-id="${room.id}" title="삭제">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(rooms)}">
+                                <td colspan="6" class="text-center">등록된 객실이 없습니다.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 페이징 -->
+                <div class="pagination" th:if="${totalPages > 1}">
+                    <a th:href="@{/seller/house/management(page=${currentPage - 1})}" 
+                       th:class="${currentPage == 1 ? 'disabled' : ''}">&laquo;</a>
+                    
+                    <th:block th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
+                        <a th:href="@{/seller/house/management(page=${pageNum})}"
+                           th:text="${pageNum}"
+                           th:class="${pageNum == currentPage ? 'active' : ''}">1</a>
+                    </th:block>
+                    
+                    <a th:href="@{/seller/house/management(page=${currentPage + 1})}"
+                       th:class="${currentPage == totalPages ? 'disabled' : ''}">&raquo;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <script>
+        // 메뉴 토글
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            document.querySelector('.admin-container').classList.toggle('sidebar-collapsed');
+        });
+
+        // 객실 삭제 확인
+        $('.delete-room').click(function() {
+            const roomId = $(this).data('room-id');
+            if (confirm('정말로 이 객실을 삭제하시겠습니까?')) {
+                $.ajax({
+                    url: '/seller/house/room/delete/' + roomId,
+                    method: 'POST',
+                    success: function(response) {
+                        alert('객실이 삭제되었습니다.');
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        alert('객실 삭제 중 오류가 발생했습니다.');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html> 
