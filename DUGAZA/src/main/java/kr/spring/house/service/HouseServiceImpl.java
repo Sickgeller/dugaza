@@ -22,8 +22,8 @@ public class HouseServiceImpl implements HouseService{
 	}
 
 	@Override
-	public Integer selectRowCount() {
-		return houseMapper.selectRowCount();
+	public Integer selectRowCount(Map<String, Object> map) {
+		return houseMapper.selectRowCount(map);
 	}
 
 	@Override
