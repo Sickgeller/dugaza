@@ -41,6 +41,33 @@ public class MemberUserController {
 		return new MemberVO();
 	}
 	
+	/**
+	 * 모든 컨트롤러 메서드에서 자동으로 실행되어 인증된 사용자 정보를 모델에 추가
+	 */
+	@ModelAttribute
+	public void addUserToModel(Model model) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		if (authentication != null && authentication.isAuthenticated() && 
+			authentication.getPrincipal() instanceof CustomUserDetails) {
+			
+			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+			
+			// 사용자 정보를 모델에 추가
+			model.addAttribute("userDetails", userDetails);
+			
+			// 회원인 경우
+			if (userDetails.isMember()) {
+				model.addAttribute("member", userDetails.getMember());
+			}
+			
+			// 판매자인 경우
+			if (userDetails.isSeller()) {
+				model.addAttribute("seller", userDetails.getSeller());
+			}
+		}
+	}
+	
 	//회원가입 폼 호출
 	@GetMapping("/register")
 	public String form() {
@@ -211,24 +238,10 @@ public class MemberUserController {
 	*/
 	@GetMapping("/mypage")
 	public String viewDetail(Model model) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		/*
-		 인증된 정보를 가져와서 넣어줌 이경우엔 member 정보
-		 getPrincipal() -> 인증된 경우에는 인증주체의 정보를 담음 이 경우엔 Member의 정보가되겠지 (CustomUserDetails 에 memberVO 사용중)
-		 getAuthentication() -> Principal()의 인증주체 정보 + 인증 관련 정보까지 포함돼서 나옴
-		*/
+		// @ModelAttribute에서 자동으로 추가된 사용자 정보 사용
+		// member나 seller 정보는 이미 모델에 추가되어 있음
 		
-		if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
-			CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-			// 잘 구워삶아서 member나 seller로 뽑아서 쓰는과정
-			if (userDetails.isMember()) {
-				MemberVO member = userDetails.getMember();
-				model.addAttribute("member", member);
-			} else if (userDetails.isSeller()) {
-				SellerVO seller = userDetails.getSeller();
-				model.addAttribute("seller", seller);
-			}
-		}
+		log.debug("사용자 상세 정보 페이지 접근");
 		return "views/member/detail";
 	}
 

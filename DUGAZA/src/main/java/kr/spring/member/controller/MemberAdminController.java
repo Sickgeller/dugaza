@@ -7,16 +7,21 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
+import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.member.service.MemberService;
 import kr.spring.member.vo.MemberVO;
+import kr.spring.seller.vo.SellerVO;
 import kr.spring.util.PagingUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,6 +33,33 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberAdminController {
 
 	private final MemberService memberService;
+
+	/**
+	 * 모든 컨트롤러 메서드에서 자동으로 실행되어 인증된 사용자 정보를 모델에 추가
+	 */
+	@ModelAttribute
+	public void addUserToModel(Model model) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+		if (authentication != null && authentication.isAuthenticated() && 
+			authentication.getPrincipal() instanceof CustomUserDetails) {
+			
+			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+			
+			// 사용자 정보를 모델에 추가
+			model.addAttribute("userDetails", userDetails);
+			
+			// 회원인 경우
+			if (userDetails.isMember()) {
+				model.addAttribute("member", userDetails.getMember());
+			}
+			
+			// 판매자인 경우
+			if (userDetails.isSeller()) {
+				model.addAttribute("seller", userDetails.getSeller());
+			}
+		}
+	}
 	
 	// 관리자 회원관리 페이지 이동
 //	@GetMapping("/admin_member")

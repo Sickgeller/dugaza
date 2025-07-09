@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -34,6 +35,23 @@ public class SellerController {
     private final PasswordEncoder passwordEncoder;
     private final HouseReviewService houseReviewService;
     private final SellerHouseController sellerHouseController;
+
+    /**
+     * 모든 컨트롤러 메서드에서 자동으로 실행되어 인증된 판매자 정보를 모델에 추가
+     */
+    @ModelAttribute
+    public void addSellerToModel(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() &&
+            authentication.getPrincipal() instanceof CustomUserDetails) {
+            
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            
+            if (userDetails.isSeller()) {
+                model.addAttribute("seller", userDetails.getSeller());
+            }
+        }
+    }
 
     @GetMapping("/register")
     public String registerForm(){
@@ -81,42 +99,30 @@ public class SellerController {
     @GetMapping("/main")
     public String sellerMain(Model model) {
         try {
-            // 현재 인증된 사용자 정보 가져오기
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            // @ModelAttribute에서 자동으로 추가된 seller 정보 사용
+            SellerVO seller = (SellerVO) model.getAttribute("seller");
             
-            if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails) {
-                CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            if (seller != null) {
+                String sellerType = seller.getSellerType();
+                CustomUserDetails userDetails = (CustomUserDetails) model.getAttribute("userDetails");
                 
-                if (userDetails.isSeller()) {
-                    SellerVO seller = userDetails.getSeller();
-                    String sellerType = seller.getSellerType();
-                    
-                    log.info("판매자 로그인 - 사용자: {}, 타입: {}", userDetails.getUsername(), sellerType);
-                    
-                    // 모델에 사용자 정보 추가
-                    model.addAttribute("userDetails", userDetails);
-                    model.addAttribute("seller", seller);
-                    
-                    // 판매자 타입에 따라 다른 페이지로 연결
-                    if (SellerType.CAR.getValue().equals(sellerType)) {
-                        log.info("렌터카 판매자 페이지로 연결 - 사용자: {}", userDetails.getUsername());
-                        return "views/seller/car-seller"; // 1번 HTML
-                    } else if (SellerType.HOUSE.getValue().equals(sellerType)) {
-                        log.info("숙소 판매자 페이지로 연결 - 사용자: {}", userDetails.getUsername());
-                        return "views/seller/house-seller"; // 2번 HTML
-                    } else {
-                        log.warn("알 수 없는 판매자 타입: {} - 사용자: {}", sellerType, userDetails.getUsername());
-                        model.addAttribute("error", "알 수 없는 판매자 타입입니다.");
-                        return "views/common/error";
-                    }
+                log.info("판매자 로그인 - 사용자: {}, 타입: {}", userDetails.getUsername(), sellerType);
+                
+                // 판매자 타입에 따라 다른 페이지로 연결
+                if (SellerType.CAR.getValue().equals(sellerType)) {
+                    log.info("렌터카 판매자 페이지로 연결 - 사용자: {}", userDetails.getUsername());
+                    return "views/seller/car-seller"; // 1번 HTML
+                } else if (SellerType.HOUSE.getValue().equals(sellerType)) {
+                    log.info("숙소 판매자 페이지로 연결 - 사용자: {}", userDetails.getUsername());
+                    return "views/seller/house-seller"; // 2번 HTML
                 } else {
-                    log.warn("판매자가 아닌 사용자가 접근했습니다.");
-                    model.addAttribute("error", "판매자만 접근할 수 있습니다.");
+                    log.warn("알 수 없는 판매자 타입: {} - 사용자: {}", sellerType, userDetails.getUsername());
+                    model.addAttribute("error", "알 수 없는 판매자 타입입니다.");
                     return "views/common/error";
                 }
             } else {
-                log.warn("인증된 판매자 정보를 찾을 수 없습니다.");
-                model.addAttribute("error", "판매자 정보를 찾을 수 없습니다.");
+                log.warn("판매자가 아닌 사용자가 접근했습니다.");
+                model.addAttribute("error", "판매자만 접근할 수 있습니다.");
                 return "views/common/error";
             }
             
@@ -129,37 +135,33 @@ public class SellerController {
 
     @GetMapping("/dashboard")
     public String myPage(Model model){
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof CustomUserDetails) {
-            CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-            if(userDetails.isSeller()) {
-                SellerVO seller = userDetails.getSeller();
-                model.addAttribute("seller", seller);
-                model.addAttribute("currentMenu", "dashboard");
-                
-                // sellerType null 체크 추가
-                if(seller.getSellerType() == null) {
-                    log.error("판매자 타입이 null입니다. 사용자: {}, 판매자 정보: {}", userDetails.getUsername(), seller);
-                    model.addAttribute("error", "판매자 정보를 불러올 수 없습니다. 다시 로그인해주세요.");
-                    return "views/common/error";
-                }
-                
-                log.info("판매자 대시보드 접근 - 사용자: {}, 타입: {}", userDetails.getUsername(), seller.getSellerType());
-                
-                if(SellerType.CAR.getValue().equals(seller.getSellerType())) {
-                    return "views/seller/car/car-seller-main";
-                }else if(SellerType.HOUSE.getValue().equals(seller.getSellerType())) {
-                    return sellerHouseController.main(model, seller);
-                }else {
-                    log.warn("알 수 없는 판매자 타입: {} - 사용자: {}", seller.getSellerType(), userDetails.getUsername());
-                    model.addAttribute("error", "알 수 없는 판매자 타입입니다.");
-                    return "views/common/error";
-                }
-            }else{
-                return "/";
+        // @ModelAttribute에서 자동으로 추가된 seller 정보 사용
+        SellerVO seller = (SellerVO) model.getAttribute("seller");
+
+        if(seller != null) {
+            model.addAttribute("currentMenu", "dashboard");
+            
+            // sellerType null 체크 추가
+            if(seller.getSellerType() == null) {
+                log.error("판매자 타입이 null입니다. 사용자: {}, 판매자 정보: {}", seller.getName(), seller);
+                model.addAttribute("error", "판매자 정보를 불러올 수 없습니다. 다시 로그인해주세요.");
+                return "views/common/error";
             }
+            
+            log.info("판매자 대시보드 접근 - 사용자: {}, 타입: {}", seller.getName(), seller.getSellerType());
+            
+            if(SellerType.CAR.getValue().equals(seller.getSellerType())) {
+                return "views/seller/car/car-seller-main";
+            }else if(SellerType.HOUSE.getValue().equals(seller.getSellerType())) {
+                return sellerHouseController.main(model, seller);
+            }else {
+                log.warn("알 수 없는 판매자 타입: {} - 사용자: {}", seller.getSellerType(), seller.getName());
+                model.addAttribute("error", "알 수 없는 판매자 타입입니다.");
+                return "views/common/error";
+            }
+        }else{
+            return login();
         }
-        return login();
     }
 
 

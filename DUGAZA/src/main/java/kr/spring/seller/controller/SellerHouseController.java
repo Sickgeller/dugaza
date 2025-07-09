@@ -19,10 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -40,6 +37,23 @@ public class SellerHouseController {
     private final HouseReviewService houseReviewService;
     private final ReviewStatisticsService reviewStatisticsService;
 
+    /**
+     * 모든 컨트롤러 메서드에서 자동으로 실행되어 인증된 판매자 정보를 모델에 추가
+     */
+    @ModelAttribute
+    public void addSellerToModel(Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() &&
+            authentication.getPrincipal() instanceof CustomUserDetails) {
+
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            if (userDetails.isSeller()) {
+                model.addAttribute("seller", userDetails.getSeller());
+            }
+        }
+    }
 
     @GetMapping("/")
     public String main(Model model, SellerVO seller){
@@ -57,9 +71,6 @@ public class SellerHouseController {
                 model.addAttribute("availableRooms", availableRooms);
                 model.addAttribute("reservatedRooms", reservatedRooms);
                 model.addAttribute("reservedRate", reservedRate);
-
-                // 판매자 정보
-                model.addAttribute("seller", seller);
 
                 // 최근 예약 정보 (최대 5개)
                 List<HouseReservationVO> reservationList = houseReservationService.getRecentlyReservations(seller.getSellerId());
@@ -90,8 +101,8 @@ public class SellerHouseController {
 
     @GetMapping("/management")
     public String rooms(Model model, @RequestParam(name = "page", defaultValue = "1") int page){
-        SellerVO seller = getSellerVO();
-
+        SellerVO seller = (SellerVO) model.getAttribute("seller");
+        
         // 페이징 처리를 위한 설정
         int pageSize = 10;
         int currentPage = Math.max(1, page);
@@ -117,7 +128,7 @@ public class SellerHouseController {
     public String reservation(Model model,
                               @RequestParam(name = "page", defaultValue = "1") int page,
                               @RequestParam(name = "pageSize", defaultValue = "10") int pageSize){
-        SellerVO seller = getSellerVO();
+        SellerVO seller = (SellerVO) model.getAttribute("seller");
 
         // 페이징 처리를 위한 설정
         int startRow = (page - 1) * pageSize + 1;
@@ -142,7 +153,7 @@ public class SellerHouseController {
     public String review(Model model,
                          @RequestParam(name = "page", defaultValue = "1") int page,
                          @RequestParam(name = "pageSize", defaultValue = "10") int pageSize){
-        SellerVO seller = getSellerVO();
+        SellerVO seller = (SellerVO) model.getAttribute("seller");
 
         // 리뷰 통계 조회
         ReviewStatisticsDto statistics = reviewStatisticsService.getReviewStatisticsBySeller(seller.getSellerId());
@@ -203,35 +214,26 @@ public class SellerHouseController {
 
     @GetMapping("/sales")
     public String sales(Model model){
-        SellerVO seller = getSellerVO();
-
-        // 모델에 데이터 추가
-        model.addAttribute("seller", seller);
         model.addAttribute("currentMenu", "sales");
-        
         return "views/seller/house/house-seller-sales";
     }
 
     @GetMapping("/settings")
     public String settings(Model model){
-        SellerVO seller = getSellerVO();
-
-        // 모델에 데이터 추가
-        model.addAttribute("seller", seller);
         model.addAttribute("currentMenu", "settings");
         
         return "views/seller/house/house-seller-settings";
     }
-    
+
     // 판매자 정보 업데이트
     @PostMapping("/update")
-    public String updateSellerInfo(SellerVO sellerVO, RedirectAttributes redirectAttributes) {
+    public String updateSellerInfo(Model model ,SellerVO sellerVO, RedirectAttributes redirectAttributes) {
         try {
-            SellerVO currentSeller = getSellerVO();
+            SellerVO currentSeller = (SellerVO) model.getAttribute("seller");
             sellerVO.setSellerId(currentSeller.getSellerId());
-            
+
             boolean success = sellerService.updateSellerInfo(sellerVO);
-            
+
             if (success) {
                 redirectAttributes.addFlashAttribute("message", "판매자 정보가 성공적으로 업데이트되었습니다.");
                 log.info("판매자 정보 업데이트 성공: sellerId = {}", currentSeller.getSellerId());
@@ -243,33 +245,34 @@ public class SellerHouseController {
             redirectAttributes.addFlashAttribute("error", "판매자 정보 업데이트 중 오류가 발생했습니다.");
             log.error("판매자 정보 업데이트 중 예외 발생", e);
         }
-        
+
         return "redirect:/seller/house/settings";
     }
-    
+
     // 비밀번호 변경
     @PostMapping("/change-password")
     public String changePassword(@RequestParam(name = "currentPassword") String currentPassword,
                                 @RequestParam(name = "newPassword") String newPassword,
                                 @RequestParam(name = "confirmPassword") String confirmPassword,
-                                RedirectAttributes redirectAttributes) {
+                                RedirectAttributes redirectAttributes,
+                                 Model model) {
         try {
-            SellerVO seller = getSellerVO();
-            
+            SellerVO seller = (SellerVO) model.getAttribute("seller");
+
             // 새 비밀번호 확인
             if (!newPassword.equals(confirmPassword)) {
                 redirectAttributes.addFlashAttribute("error", "새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
                 return "redirect:/seller/house/settings";
             }
-            
+
             // 비밀번호 길이 검증
             if (newPassword.length() < 6) {
                 redirectAttributes.addFlashAttribute("error", "새 비밀번호는 최소 6자 이상이어야 합니다.");
                 return "redirect:/seller/house/settings";
             }
-            
+
             boolean success = sellerService.changePassword(seller.getSellerId(), currentPassword, newPassword);
-            
+
             if (success) {
                 redirectAttributes.addFlashAttribute("message", "비밀번호가 성공적으로 변경되었습니다.");
                 log.info("비밀번호 변경 성공: sellerId = {}", seller.getSellerId());
@@ -281,10 +284,10 @@ public class SellerHouseController {
             redirectAttributes.addFlashAttribute("error", "비밀번호 변경 중 오류가 발생했습니다.");
             log.error("비밀번호 변경 중 예외 발생", e);
         }
-        
+
         return "redirect:/seller/house/settings";
     }
-    
+
     // 결제 설정 업데이트
     @PostMapping("/payment-settings")
     public String updatePaymentSettings(@RequestParam(name = "bank", required = false) String bank,
@@ -294,10 +297,11 @@ public class SellerHouseController {
                                        @RequestParam(name = "bankTransfer", required = false) String bankTransfer,
                                        @RequestParam(name = "kakaoPay", required = false) String kakaoPay,
                                        @RequestParam(name = "naverPay", required = false) String naverPay,
-                                       RedirectAttributes redirectAttributes) {
+                                       RedirectAttributes redirectAttributes,
+                                        Model model) {
         try {
-            SellerVO seller = getSellerVO();
-            
+            SellerVO seller = (SellerVO) model.getAttribute("seller");
+
             // 결제 설정 정보를 JSON 형태로 저장 (실제로는 별도 테이블 사용 권장)
             String paymentSettings = String.format(
                 "{\"bank\":\"%s\",\"accountNumber\":\"%s\",\"accountHolder\":\"%s\",\"creditCard\":\"%s\",\"bankTransfer\":\"%s\",\"kakaoPay\":\"%s\",\"naverPay\":\"%s\"}",
@@ -309,9 +313,9 @@ public class SellerHouseController {
                 kakaoPay != null ? "true" : "false",
                 naverPay != null ? "true" : "false"
             );
-            
+
             boolean success = sellerService.updatePaymentSettings(seller.getSellerId(), paymentSettings);
-            
+
             if (success) {
                 redirectAttributes.addFlashAttribute("message", "결제 설정이 성공적으로 업데이트되었습니다.");
                 log.info("결제 설정 업데이트 성공: sellerId = {}", seller.getSellerId());
@@ -323,14 +327,8 @@ public class SellerHouseController {
             redirectAttributes.addFlashAttribute("error", "결제 설정 업데이트 중 오류가 발생했습니다.");
             log.error("결제 설정 업데이트 중 예외 발생", e);
         }
-        
+
         return "redirect:/seller/house/settings";
     }
 
-    private static SellerVO getSellerVO() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        SellerVO seller = userDetails.getSeller();
-        return seller;
-    }
 }
