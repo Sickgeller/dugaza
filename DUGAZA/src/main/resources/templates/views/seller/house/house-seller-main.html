@@ -44,7 +44,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>총 객실</h3>
-                            <p th:text="${totalRooms} + '개'">25개</p>
+                            <p th:text="${totalRooms} + '개'"></p>
                             <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
@@ -54,7 +54,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>예약 가능</h3>
-                            <p th:text="${availableRooms} + '개'">12개</p>
+                            <p th:text="${availableRooms} + '개'"></p>
                             <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
@@ -64,7 +64,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>예약된 객실</h3>
-                            <p th:text="${reservatedRooms} + '개'">8개</p>
+                            <p th:text="${reservatedRooms} + '개'"></p>
                             <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
@@ -74,7 +74,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>객실 점유율</h3>
-                            <p th:text="${reservedRate} + '%'">85%</p>
+                            <p th:text="${reservedRate} + '%'"></p>
                             <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
@@ -85,7 +85,7 @@
             <div class="content-section">
                 <div class="section-header">
                     <h3>최근 예약</h3>
-                    <button class="btn-primary">전체보기</button>
+                    <button class="btn-primary" onclick="location.href='/seller/house/reservation'">전체보기</button>
                 </div>
                 <div class="table-container">
                     <table>
@@ -133,7 +133,7 @@
             <div class="content-section">
                 <div class="section-header">
                     <h3>최근 리뷰</h3>
-                    <button class="btn-primary">전체보기</button>
+                    <button class="btn-primary" onclick="location.href='/seller/house/review'">전체보기</button>
                 </div>
                 <div class="review-list">
                     <!-- 리뷰가 없을 경우 -->
@@ -155,7 +155,7 @@
                                 <th:block th:each="i : ${#numbers.sequence(1, 5)}">
                                     <i class="fas fa-star" th:classappend="${i <= review.rating} ? 'active' : ''"></i>
                                 </th:block>
-                                <span th:text="${review.rating + '.0'}">5.0</span>
+                                <span th:text="${review.rating}">5.0</span>
                             </div>
                         </div>
                         <div class="review-content">

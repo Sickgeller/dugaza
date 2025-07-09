@@ -27,9 +27,9 @@ public class TourController {
 
 	// 관광지 메인 화면 호출
 	@GetMapping("")
-	public String tourMain(@RequestParam(defaultValue="1") int pageNum,
-						   @RequestParam(defaultValue="0") int category,
-						   @RequestParam(defaultValue = "") String keyword,
+	public String tourMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
+						   @RequestParam(name = "category", defaultValue="0") int category,
+						   @RequestParam(name = "keyword", defaultValue = "") String keyword,
 						   Model model) {
 		int count = tourService.selectRowCount();
 
@@ -57,7 +57,7 @@ public class TourController {
 	
 	// 항목 자세히 보기
 	@GetMapping("/detail")
-	public String tourDetail(@RequestParam Long id, Model model) {
+	public String tourDetail(@RequestParam(name = "id") Long id, Model model) {
 	    int typeId = tourService.selectContentTypeId(id);
 	    ContentTypeAdd contentType = ContentTypeAdd.fromId(typeId);
 

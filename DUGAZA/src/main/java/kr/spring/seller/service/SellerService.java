@@ -7,4 +7,13 @@ public interface SellerService {
 
     void register(SellerVO sellerVO);
     SellerDetailVO getSellerDetail(SellerVO seller);
+    
+    // 판매자 정보 업데이트
+    boolean updateSellerInfo(SellerVO sellerVO);
+    
+    // 비밀번호 변경
+    boolean changePassword(Long sellerId, String currentPassword, String newPassword);
+    
+    // 결제 설정 업데이트 (향후 확장 가능)
+    boolean updatePaymentSettings(Long sellerId, String paymentSettings);
 }

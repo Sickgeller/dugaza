@@ -54,24 +54,18 @@ public class CustomFailureHandler
 		String encodedErrorMessage = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
 		
 		// 사용자 타입에 따라 적절한 로그인 페이지로 리다이렉트
-		String failureUrl = determineFailureUrl(userType, encodedErrorMessage);
+		String failureUrl;
+		if ("seller".equals(userType)) {
+			failureUrl = "/seller/login?error=true&exception=" + encodedErrorMessage;
+		} else {
+			// member이거나 null인 경우 일반 로그인 페이지로
+			failureUrl = "/member/login?error=true&exception=" + encodedErrorMessage;
+		}
 		
 		setDefaultFailureUrl(failureUrl);
 		
 		super.onAuthenticationFailure(
 				     request, response, exception);	
-	}
-	
-	/**
-	 * 사용자 타입에 따른 실패 URL 결정
-	 */
-	private String determineFailureUrl(String userType, String encodedErrorMessage) {
-		if ("seller".equals(userType)) {
-			return "/seller/login?error=true&exception=" + encodedErrorMessage;
-		} else {
-			// member이거나 null인 경우 일반 로그인 페이지로
-			return "/member/login?error=true&exception=" + encodedErrorMessage;
-		}
 	}
 	
 	/**

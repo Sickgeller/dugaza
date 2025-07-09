@@ -31,7 +31,7 @@ public class HouseAdminController {
 	@GetMapping("/admin_house")
 	public String form(@RequestParam(defaultValue="1") int pageNum,Model model) {
 		
-		int count = houseService.selectRowCount();
+		int count = houseService.selectRowCount(null);
 		
 		//페이지 처리
 		PagingUtil page = new PagingUtil(null,null,

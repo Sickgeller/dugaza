@@ -64,12 +64,12 @@ public class CustomUserDetails implements UserDetails {
                 authorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
             }
             
-            // 추가 역할들 처리 (다중 역할 지원)
-            if (member.getUserRoles() != null) {
-                for (RoleVO role : member.getUserRoles()) {
-                    authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
-                }
-            }
+            // 추가 역할들 처리 (다중 역할 지원) 나중에 추가할지 말지 고민좀 해봄
+//            if (member.getUserRoles() != null) {
+//                for (RoleVO role : member.getUserRoles()) {
+//                    authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
+//                }
+//            }
         }
         
         return authorities;

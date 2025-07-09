@@ -71,14 +71,16 @@
 </resultMap>
 	<sql id="houseSearch">
 			<if test="category != null and category != 0">
-				content_type_id = #{category}	
+				AND content_type_id = #{category}	
 			</if>
 			<if test="keyword != null and keyword != ''">
-					AND
-				(title LIKE '%' || #{keyword} || '%' OR
+				AND (title LIKE '%' || #{keyword} || '%' OR
 				addr1 LIKE '%' || #{keyword} || '%' OR
 				addr2 LIKE '%' || #{keyword} || '%') 
 			</if>
+            <if test="cat3 != null and cat3 != ''">
+                AND cat3 = #{cat3}
+            </if>
 	</sql>
 	<!-- 전체/검색 레코드수 (숙박:32번) -->
 	<select id="selectRowCount" resultType="integer">

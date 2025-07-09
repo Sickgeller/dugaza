@@ -34,35 +34,49 @@ public class HouseController {
 
 	@Autowired
 	private HouseService houseService;
+	
 	@Autowired
 	private HouseReviewService houseReviewService;
+	
 	@Autowired
 	private ReviewStatisticsService reviewStatisticsService;
 
 	@GetMapping("")
 	public String accommodationMain(@RequestParam(defaultValue="1") int pageNum,
 			@RequestParam(defaultValue = "") String keyword,
-			@RequestParam(defaultValue = "0") int tag,
+			@RequestParam(required = false) String cat3,
 			Model model) {
-		int count = houseService.selectRowCount();
+
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("keyword", keyword);
+		map.put("cat3", cat3);
+
+		int count = houseService.selectRowCount(map);
 
 		//페이지 처리
 		PagingUtil page = new PagingUtil(null,keyword,
 				pageNum,count,9,10,
 				"");
-		Map<String,Object> map = 
-				new HashMap<String,Object>();
+
+		// 페이지네이션 링크에 cat3 파라미터를 유지하도록 설정
+		String pageUrl = "/house";
+		if (cat3 != null && !cat3.isEmpty()) {
+			pageUrl += "?cat3=" + cat3;
+		}
+		// PagingUtil에 pageURL을 설정하는 메서드가 있다고 가정합니다.
+		// 실제 PagingUtil 클래스의 메서드명에 따라 수정이 필요할 수 있습니다.
+		// page.setPageURL(pageUrl);
+
 		List<HouseVO> list = null;
 		if(count > 0) {
 			map.put("start", page.getStartRow());
 			map.put("end", page.getEndRow());
-			map.put("keyword", keyword);
 			list = houseService.selectList(map);
 		}
 		model.addAttribute("count", count);
 		model.addAttribute("list", list);
 		model.addAttribute("page", page.getPage());
-
+		model.addAttribute("cat3", cat3); // 뷰에서 활성화된 버튼 표시를 위해 전달
 		return "views/sample/accommodation";
 	}
 
@@ -87,16 +101,16 @@ public class HouseController {
 	@PostMapping("/saveReview")
 	public String saveReview(@ModelAttribute HouseReviewVO reviewDTO, HttpSession session) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        MemberVO member = userDetails.getMember();
-        
-        CustomUserDetails user = (CustomUserDetails)session.getAttribute("user");
-        reviewDTO.setMemberId(user.getUserId());
-        reviewDTO.setStatus(1);
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		MemberVO member = userDetails.getMember();
+
+		CustomUserDetails user = (CustomUserDetails)session.getAttribute("user");
+		reviewDTO.setMemberId(user.getUserId());
+		reviewDTO.setStatus(1);
 
 		houseReviewService.writeReview(reviewDTO);
 		log.debug("<<리뷰 작성>> 사용자 id : {}", user.getUserId());
-		
+
 		return "redirect:/house/detail?id=" + reviewDTO.getHouseId();
 	}
 
