@@ -13,6 +13,7 @@
         <result property="reviewDate" column="REVIEW_DATE" jdbcType="TIMESTAMP" />
         <result property="status" column="STATUS" />
         <result property="reviewContent" column="REVIEW_CONTENT" />
+        <result property="id" column="ID"/>
     </resultMap>
 
     <resultMap id="reviewStatisticsResultMap" type="kr.spring.review.house.dto.ReviewStatisticsDto">
@@ -47,6 +48,33 @@
                                        WHERE HSD.HOUSE_ID = HR.HOUSE_ID
                                          AND HSD.SELLER_ID = #{sellerId}
                                    )
+                                   ORDER BY HR.REVIEW_DATE DESC, HR.REVIEW_ID DESC
+                               ) R
+                          WHERE ROWNUM &lt;= #{endRow}
+                      )
+        WHERE RN &gt;= #{startRow}
+    </select>
+    
+    <!-- 숙소 id로 리뷰 목록 구하기 -->
+    <select id="findHouseReviewByHouseId" resultMap="houseReviewResultMap" parameterType="map">
+        SELECT * FROM (
+                          SELECT ROWNUM AS RN, R.*
+                          FROM (
+                                   SELECT
+                                       HR.REVIEW_ID,
+                                       HR.MEMBER_ID,
+                                       HR.HOUSE_ID,
+                                       HR.ROOM_ID,
+                                       HR.RESERVATION_ID,
+                                       HR.REVIEW_TITLE,
+                                       HR.RATING,
+                                       HR.REVIEW_DATE,
+                                       HR.STATUS,
+                                       HR.REVIEW_CONTENT,
+                                       m.id
+                                   FROM HOUSE_REVIEW HR
+                                   JOIN MEMBER M ON M.MEMBER_ID = HR.MEMBER_ID
+                                   WHERE HR.HOUSE_ID = #{houseId}
                                    ORDER BY HR.REVIEW_DATE DESC, HR.REVIEW_ID DESC
                                ) R
                           WHERE ROWNUM &lt;= #{endRow}
@@ -138,4 +166,30 @@
         AND status = 1
     </select>
 
+	<!-- 리뷰 등록 -->
+	<insert id="writeReview" parameterType="kr.spring.review.house.vo.HouseReviewVO">
+		INSERT INTO house_review(
+			REVIEW_ID,
+			MEMBER_ID,
+			HOUSE_ID,
+			ROOM_ID,
+			RESERVATION_ID,
+			REVIEW_TITLE,
+			RATING,
+			REVIEW_DATE,
+			STATUS,
+			REVIEW_CONTENT)
+		VALUES(
+			house_review_seq.nextval,
+			#{memberId, jdbcType=NUMERIC},
+			#{houseId},
+			#{roomId, jdbcType=NUMERIC},
+			#{reservationId, jdbcType=NUMERIC},
+			#{reviewTitle, jdbcType=VARCHAR},
+			#{rating},
+			SYSDATE,
+			#{status, jdbcType=NUMERIC},
+			#{reviewContent}
+		)	
+	</insert>
 </mapper>

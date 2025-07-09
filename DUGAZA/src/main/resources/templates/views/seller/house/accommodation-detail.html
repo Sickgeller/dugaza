@@ -435,85 +435,159 @@
                 <section class="review-section">
                     <div class="review-header">
                         <h2>리뷰</h2>
-                        <button class="write-review-btn">리뷰 작성</button>
                     </div>
                     <div class="review-stats">
                         <div class="rating-average">
-                            <div class="rating-number">4.8</div>
-                            <div class="rating-stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
+                            <div class="rating-number" th:text="${status.averageRating}"></div>
+                            <div class="rating-stars" th:data-rating="${status.averageRating}">
+                               <!--  <i class="fas fa-star"></i>  -->                              
                             </div>
-                            <div class="rating-count">523개의 리뷰</div>
+							                         
+                            <div class="rating-count" th:text="${status.totalCount + '개의 리뷰'}"></div>
                         </div>
                         <div class="rating-bars">
                             <div class="rating-bar">
                                 <span class="stars">5점</span>
                                 <div class="bar-container">
-                                    <div class="bar" style="width: 85%"></div>
+                                    <div class="bar" th:style="'width:' + ${status.fiveStarRatio} + '%'"></div>
                                 </div>
-                                <span class="percentage">85%</span>
+                                <span class="percentage" th:text="${status.fiveStarRatio + '%'}">85%</span>
                             </div>
                             <div class="rating-bar">
                                 <span class="stars">4점</span>
                                 <div class="bar-container">
-                                    <div class="bar" style="width: 10%"></div>
+                                    <div class="bar" th:style="'width:' + ${status.fourStarRatio} + '%'"></div>
                                 </div>
-                                <span class="percentage">10%</span>
+                                <span class="percentage" th:text="${status.fourStarRatio + '%'}">10%</span>
                             </div>
                             <div class="rating-bar">
                                 <span class="stars">3점</span>
                                 <div class="bar-container">
-                                    <div class="bar" style="width: 3%"></div>
+                                    <div class="bar" th:style="'width:' + ${status.threeStarRatio} + '%'"></div>
                                 </div>
-                                <span class="percentage">3%</span>
+                                <span class="percentage" th:text="${status.threeStarRatio + '%'}">3%</span>
                             </div>
                             <div class="rating-bar">
                                 <span class="stars">2점</span>
                                 <div class="bar-container">
-                                    <div class="bar" style="width: 1%"></div>
+                                    <div class="bar" th:style="'width:' + ${status.twoStarRatio} + '%'"></div>
                                 </div>
-                                <span class="percentage">1%</span>
+                                <span class="percentage" th:text="${status.twoStarRatio + '%'}">1%</span>
                             </div>
                             <div class="rating-bar">
                                 <span class="stars">1점</span>
                                 <div class="bar-container">
-                                    <div class="bar" style="width: 1%"></div>
+                                    <div class="bar" th:style="'width:' + ${status.oneStarRatio} + '%'"></div>
                                 </div>
-                                <span class="percentage">1%</span>
+                                <span class="percentage" th:text="${status.oneStarRatio + '%'}">1%</span>
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="review-form-wrapper">
+					    <h3>리뷰 작성</h3>
+					    <form th:action="@{/house/saveReview}" method="post">
+					        <!-- 숨겨진 필드: 숙소 ID -->
+					        <input type="hidden" name="houseId" th:value="${info.contentId}" />
+					
+					        <!-- 별점 선택 -->
+					        <div class="form-group rating-input">
+					            <label>별점</label>
+					            <div class="star-rating-input">
+					                <input type="hidden" name="rating" id="rating-value" value="0" />
+					                <i class="far fa-star" data-value="1"></i>
+					                <i class="far fa-star" data-value="2"></i>
+					                <i class="far fa-star" data-value="3"></i>
+					                <i class="far fa-star" data-value="4"></i>
+					                <i class="far fa-star" data-value="5"></i>
+					            </div>
+					        </div>
+					
+					        <!-- 제목 (선택) -->
+					        <div class="form-group">
+					            <label for="title">제목 (선택)</label>
+					            <input type="text" name="title" id="title" class="form-control" placeholder="리뷰 제목을 입력하세요" />
+					        </div>
+					
+					        <!-- 내용 (필수) -->
+					        <div class="form-group">
+					            <label for="content">내용</label>
+					            <textarea name="reviewContent" id="content" class="form-control" required rows="5" placeholder="리뷰 내용을 작성하세요"></textarea>
+					        </div>
+					
+					        <!-- 제출 -->
+					        <div class="form-group">
+					            <button type="submit" class="submit-review-btn">리뷰 등록</button>
+					        </div>
+					    </form>
+					</div>
+					<script>
+					    const stars = document.querySelectorAll('.star-rating-input i');
+					    const ratingInput = document.getElementById('rating-value');
+					
+					    stars.forEach(star => {
+					        star.addEventListener('click', () => {
+					            const rating = parseInt(star.getAttribute('data-value'));
+					            ratingInput.value = rating;
+					
+					            stars.forEach(s => {
+					                s.classList.remove('fas');
+					                s.classList.add('far');
+					            });
+					
+					            for (let i = 0; i < rating; i++) {
+					                stars[i].classList.remove('far');
+					                stars[i].classList.add('fas');
+					            }
+					        });
+					    });
+					</script>				  
                     <div class="review-list">
-                        <div class="review-item">
+                        <div class="review-item" th:each="review : ${reviewList}">
                             <div class="review-user">
                                 <img src="../images/users/profile3.jpg" alt="사용자 프로필">
                                 <div class="user-info">
-                                    <h4>여행러버</h4>
-                                    <div class="review-rating">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
+                                    <h4 th:text="${review.id}"></h4>
+                                    <div class="rating-stars" th:data-rating="${review.rating}">
+                                       <!--  <i class="fas fa-star"></i> -->
                                     </div>
                                 </div>
-                                <span class="review-date">2024.01.15</span>
+                                <span class="review-date" th:text="${review.reviewDate}"></span>
                             </div>
-                            <p class="review-text">
-                                위치도 좋고 시설도 깨끗해서 매우 만족스러웠습니다. 특히 조식이 훌륭했고 직원분들도 친절하셨어요.
-                                다음에도 꼭 다시 방문하고 싶은 호텔입니다.
+                            <p class="review-text" th:text="${review.reviewContent}">
+                                
                             </p>
-                            <div class="review-images">
+                            <!-- <div class="review-images">
                                 <img src="../images/accommodation/hanok.jpg" alt="리뷰 이미지 1">
                                 <img src="../images/accommodation/hotel-main.jpg" alt="리뷰 이미지 2">
-                            </div>
+                            </div> -->
                         </div>
                         <!-- 추가 리뷰 아이템들 -->
                     </div>
+							<script>
+							document.querySelectorAll('.rating-stars').forEach(container => {
+						        const rating = parseFloat(container.dataset.rating);
+						        const fullStars = Math.floor(rating);
+						        const decimal = rating - fullStars;
+						        const halfStar = decimal >= 0.25 && decimal < 0.75 ? 1 : 0;
+						        const roundUp = decimal >= 0.75 ? 1 : 0;
+						        const emptyStars = 5 - fullStars - halfStar - roundUp;
+
+						        let starsHtml = '';
+
+						        for (let i = 0; i < fullStars + roundUp; i++) {
+						            starsHtml += '<i class="fas fa-star"></i>';
+						        }
+						        if (halfStar) {
+						            starsHtml += '<i class="fas fa-star-half-alt"></i>';
+						        }
+						        for (let i = 0; i < emptyStars; i++) {
+						            starsHtml += '<i class="far fa-star"></i>';
+						        }
+
+						        container.innerHTML = starsHtml;
+						    });
+							</script>   
                     <div class="review-pagination">
                         <div class="page-numbers">
                             <a href="#" class="active">1</a>
