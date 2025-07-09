@@ -20,7 +20,7 @@ public class CulturalCenterController {
 
 	// 항목 자세히 보기
 	@GetMapping("/detail")
-	public String culturalCenterDetail(@RequestParam Long id, Model model) {
+	public String culturalCenterDetail(@RequestParam(name = "id") Long id, Model model) {
 		CulturalCenterVO vo = culturalCenterService.selectCenter(id);
 		
 		return "views/sample/tour-detail";

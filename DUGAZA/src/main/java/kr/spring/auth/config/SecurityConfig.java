@@ -85,7 +85,7 @@ public class SecurityConfig {
 //                    .requestMatchers("/admin/**").hasRole("ADMIN")// 관리자 전용 페이지
 //                    // API 제외한 나머지 요청은 인증 필요
 //                    .requestMatchers("/api/**").denyAll() // API는 별도 필터체인에서 처리
-                    .anyRequest().authenticated()
+                    .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
                     .loginPage("/member/login")

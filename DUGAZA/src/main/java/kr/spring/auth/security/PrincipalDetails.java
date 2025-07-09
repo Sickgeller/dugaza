@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
  * Authentication 타입 책체가 생성되고 그 안에 User 정보가 
  * 담기게 되는데 있데 UserDetails 타입 객체가 User 정보를
  * 포함하게 됨.
+ * 이거 나중에 삭제할거임 (씹 구식방식)
  */
 @Data
 @Slf4j

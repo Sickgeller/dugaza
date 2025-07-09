@@ -18,7 +18,7 @@ public class TouristAttractionController {
 
 	// 항목 자세히 보기
 	@GetMapping("/detail")
-	public String touristAttarctionDetail(@RequestParam Long id, Model model) {
+	public String touristAttarctionDetail(@RequestParam(name = "id") Long id, Model model) {
 		TouristAttractionVO vo = touristAttractionService.selectAttraction(id);
 
 		model.addAttribute("info",vo);

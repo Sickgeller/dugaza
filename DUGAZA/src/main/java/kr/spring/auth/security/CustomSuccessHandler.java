@@ -24,13 +24,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, 
-                                      Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         
         // 사용자 정보 로깅
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        log.info("로그인 성공: 사용자 = {}, 권한 = {}", 
-                userDetails.getUsername(), userDetails.getAuthorities());
+        log.info("로그인 성공: 사용자 = {}, 권한 = {}", userDetails.getUsername(), userDetails.getAuthorities());
         
         // 요청한 사용자 타입 확인
         String requestedUserType = request.getParameter("userType");
@@ -74,15 +72,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         
         switch (requestedUserType.toLowerCase()) {
             case "member":
-                // 일반 회원은 ROLE_MEMBER 권한만 있어야 함 (SELLER나 ADMIN 권한 없음)
-                return userDetails.getAuthorities().stream()
-                        .anyMatch(auth -> auth.getAuthority().equals("ROLE_MEMBER")) &&
-                       !userDetails.isSeller() &&
-                       userDetails.getAuthorities().stream()
-                        .noneMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+                // 일반 회원은 isMember()가 true이고 isSeller()가 false여야 함
+                return userDetails.isMember() && !userDetails.isSeller();
                         
             case "seller":
-                // 판매자는 ROLE_SELLER, ROLE_CAR, ROLE_HOUSE 중 하나 이상의 권한이 있어야 함
+                // 판매자는 isSeller()가 true여야 함
                 return userDetails.isSeller();
                 
             default:
