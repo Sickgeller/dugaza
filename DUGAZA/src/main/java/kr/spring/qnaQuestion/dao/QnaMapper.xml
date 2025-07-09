@@ -4,10 +4,16 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
 <mapper namespace="kr.spring.qnaQuestion.dao.QnaMapper">
 	<insert id="insertQuestion" parameterType="kr.spring.qnaQuestion.vo.QnaQuestionVO">
-		INSERT INTO 
-		qna_question (question_id, category, title, content, member_id, created_at)
-	  	VALUES 
-	  	(qna_question_seq.NEXTVAL, #{category}, #{title}, #{content}, #{memberId}, SYSDATE)
+		INSERT INTO qna_question 
+    	(qna_id, category, title, content, member_id, created_at, is_answered)
+  				VALUES 
+			    (qna_question_seq.NEXTVAL, 
+			     #{category, jdbcType=VARCHAR},
+			     #{title, jdbcType=VARCHAR}, 
+			     #{content, jdbcType=CLOB}, 
+			     #{member_id, jdbcType=NUMERIC}, 
+			     SYSDATE,
+			     #{is_answered, jdbcType=CHAR})
 	</insert>
 
 </mapper>
