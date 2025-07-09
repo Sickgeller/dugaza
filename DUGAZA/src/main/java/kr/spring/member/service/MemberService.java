@@ -6,6 +6,7 @@ import java.util.Map;
 import kr.spring.member.vo.MemberVO;
 
 public interface MemberService {
+	Long getMemberIdByUsername(String username);
 	public void insertMember(MemberVO member);
 	public MemberVO selectIdCheck(String id);
 	public MemberVO selectCheckMember(String id);

@@ -26,4 +26,7 @@ public interface CommunityMapper {
 
     // 글 삭제
     void deletePost(Long id);
+    
+    //댓글 카운트
+    void updateCommentCount(Long postId, int amount);
 }

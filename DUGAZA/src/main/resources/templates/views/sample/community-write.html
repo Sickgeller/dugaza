@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>글쓰기 - 드가자닷컴</title>
+<link rel="stylesheet" th:href="@{/assets/css/style.css}">
+<link rel="stylesheet" th:href="@{/assets/css/community.css}">
+</head>
+
+<body>
+<main class="community-main" layout:fragment="content">
+	<div class="community-container">
+		<h1>글쓰기</h1>
+
+		<form method="post" action="/community/write" enctype="multipart/form-data">
+			<div class="form-group">
+				<label>카테고리</label>
+				<select name="category" required>
+					<option value="review">여행 후기</option>
+					<option value="plan">여행 계획</option>
+					<option value="mate">동행 찾기</option>
+					<option value="qna">질문/답변</option>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label>제목</label>
+				<input type="text" name="title" required style="width:100%;">
+			</div>
+
+			<div class="form-group">
+				<label>내용</label>
+				<textarea name="content" rows="10" style="width:100%;" required></textarea>
+			</div>
+
+			<div class="form-group">
+				<label>파일 첨부</label>
+				<input type="file" name="uploadFile">
+			</div>
+
+			<button type="submit" class="write-btn">작성</button>
+		</form>
+	</div>
+</main>
+</body>
+</html>

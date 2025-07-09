@@ -58,6 +58,12 @@
 	]]>	             
 	</select>
 	
+	<select id="findMemberIdByUsername" resultType="long">
+   		 SELECT MEMBER_ID
+   		 FROM MEMBER
+  	 	 WHERE ID = #{username}
+	</select>
+	
 </mapper>
 
 

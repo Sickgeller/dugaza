@@ -59,6 +59,8 @@ public interface MemberMapper {
 	// 휴면 회원 수
 	@Select("SELECT COUNT(*) FROM member WHERE role != 'ADMIN' AND status = 'HUMAN'")
 	public Integer selectHumanMemberCount();
+	
+	Long findMemberIdByUsername(String username);
 }
 
 

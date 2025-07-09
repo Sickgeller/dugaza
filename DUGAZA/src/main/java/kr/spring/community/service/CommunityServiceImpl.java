@@ -43,4 +43,5 @@ public class CommunityServiceImpl implements CommunityService {
     public void deletePost(Long id) {
         communityMapper.deletePost(id);
     }
+    
 }

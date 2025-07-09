@@ -5,14 +5,15 @@
 
 <mapper namespace="kr.spring.community.dao.CommunityMapper">
 
-	<!-- resultMap: DB 컬럼명 ↔ VO 필드명 정확히 매핑 -->
+	<!-- resultMap: DB 컬럼명 ↔ VO 필드명 -->
 	<resultMap id="communityPostMap"
 		type="kr.spring.community.vo.CommunityPostVO">
 		<id property="id" column="ID" />
 		<result property="category" column="CATEGORY" />
 		<result property="title" column="TITLE" />
 		<result property="content" column="CONTENT" />
-		<result property="writer" column="WRITER" />
+		<result property="memberId" column="MEMBER_ID" />
+		<result property="writer" column="WRITER" /> <!-- join한 member.ID -->
 		<result property="filename" column="FILENAME" />
 		<result property="regdate" column="REGDATE" />
 		<result property="viewCount" column="VIEW_COUNT" />
@@ -23,55 +24,55 @@
 	<!-- 글 목록 -->
 	<select id="selectPostList" parameterType="map"
 		resultMap="communityPostMap">
-		SELECT *
-		FROM community_post
+		SELECT p.*, m.ID AS WRITER
+		FROM community_post p
+		JOIN member m ON p.member_id = m.member_id
 		<where>
 			<if test="category != null and category != ''">
-				AND category = #{category}
+				AND p.category = #{category}
 			</if>
 			<if test="keyword != null and keyword != ''">
-				AND (title LIKE '%' || #{keyword} || '%' OR content LIKE '%' ||
-				#{keyword} || '%')
+				AND (p.title LIKE '%' || #{keyword} || '%' OR p.content LIKE '%' || #{keyword} || '%')
 			</if>
 		</where>
 		<choose>
 			<when test="order == 'popular'">
-				ORDER BY like_count DESC
+				ORDER BY p.like_count DESC
 			</when>
 			<when test="order == 'view'">
-				ORDER BY view_count DESC
+				ORDER BY p.view_count DESC
 			</when>
 			<when test="order == 'comment'">
-				ORDER BY comment_count DESC
+				ORDER BY p.comment_count DESC
 			</when>
 			<otherwise>
-				ORDER BY id DESC
+				ORDER BY p.id DESC
 			</otherwise>
 		</choose>
 	</select>
-
 
 	<!-- 글 등록 -->
 	<insert id="insertPost"
 		parameterType="kr.spring.community.vo.CommunityPostVO">
 		INSERT INTO community_post (
-		id, category, title, content, writer, filename
+			id, category, title, content, member_id, filename
 		) VALUES (
-		community_seq.NEXTVAL,
-		#{category},
-		#{title},
-		#{content},
-		#{writer},
-		#{filename}
+			community_seq.NEXTVAL,
+			#{category},
+			#{title},
+			#{content},
+			#{memberId},
+			#{filename, jdbcType=VARCHAR}
 		)
 	</insert>
 
 	<!-- 글 상세 -->
 	<select id="selectPost" parameterType="long"
 		resultMap="communityPostMap">
-		SELECT *
-		FROM community_post
-		WHERE id = #{id}
+		SELECT p.*, m.ID AS WRITER
+		FROM community_post p
+		JOIN member m ON p.member_id = m.member_id
+		WHERE p.id = #{id}
 	</select>
 
 	<!-- 글 수정 -->
@@ -79,9 +80,9 @@
 		parameterType="kr.spring.community.vo.CommunityPostVO">
 		UPDATE community_post
 		SET title = #{title},
-		content = #{content},
-		category = #{category},
-		filename = #{filename}
+			content = #{content},
+			category = #{category},
+			filename = #{filename}
 		WHERE id = #{id}
 	</update>
 
@@ -96,5 +97,12 @@
 		SELECT COUNT(*)
 		FROM community_post
 	</select>
+
+	<!-- 댓글수 업데이트 -->
+	<update id="updateCommentCount">
+		UPDATE community_post
+		SET comment_count = NVL(comment_count, 0) + #{amount}
+		WHERE id = #{postId}
+	</update>
 
 </mapper>

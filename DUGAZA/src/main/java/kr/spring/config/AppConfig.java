@@ -96,4 +96,11 @@ public class AppConfig implements WebMvcConfigurer, WebSocketConfigurer {
         
         return sessionFactory.getObject();
     }
+    //시발
+    @Override
+    public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
+    	// 업로드된 파일을 외부 디렉토리(C:/DUGAZA/upload)에서 제공하도록 매핑
+        registry.addResourceHandler("/upload/**")
+                .addResourceLocations("file:///C:/DUGAZA/upload/");
+    }
 }

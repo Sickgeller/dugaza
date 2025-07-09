@@ -89,7 +89,7 @@
 }
 
 .post-item:hover {
-    transform: translateY(-3px);
+    transform: translateY(-5px);
 }
 
 .post-image {

@@ -99,6 +99,11 @@ public class MemberServiceImpl implements MemberService{
 	public Integer selectHumanMemberCount() {
 		return memberMapper.selectHumanMemberCount();
 	}
+	
+    @Override
+    public Long getMemberIdByUsername(String username) {
+        return memberMapper.findMemberIdByUsername(username);
+    }
 
 }
 

@@ -119,3 +119,4 @@ api:
     base-url: ${data-config.api.kakao.base-url}
 
 
+
