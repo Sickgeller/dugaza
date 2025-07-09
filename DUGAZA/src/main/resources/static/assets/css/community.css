@@ -78,6 +78,18 @@
     gap: 20px;
 }
 
+.post-excerpt {
+    max-height: 3em; /* 두 줄 정도로 제한 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 최대 2줄 */
+    -webkit-box-orient: vertical;
+    line-height: 1.5em;
+    height: 3em;
+}
+
+
 .post-item {
     background: #fff;
     border-radius: 8px;
