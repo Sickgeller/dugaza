@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface HouseReviewService {
     public List<HouseReviewVO> getRecentlyReviews(Long sellerId);
-} 
+    public List<HouseReviewVO> getReviews(Long sellerId, int page, int pageSize);
+}

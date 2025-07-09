@@ -54,29 +54,13 @@
                     <button class="search-btn">검색</button>
                 </div>
                 <div class="filter-tags">
-                    <button class="tag active" value="0" name="tag" type="button">전체</button>
-                    <button class="tag" value="1" name="tag" type="button">호텔</button>
-                    <button class="tag" value="2" name="tag" type="button">펜션</button>
-                    <button class="tag" value="3" name="tag" type="button">리조트</button>
-                    <button class="tag" value="4" name="tag" type="button">게스트하우스</button>
-                    <button class="tag" value="5" name="tag" type="button">한옥</button>
+                    <a th:href="@{/house(keyword=${param.keyword})}" th:classappend="${cat3 == null || cat3 == ''} ? 'active'" class="tag">전체</a>
+                    <a th:href="@{/house(cat3='B02010100', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02010100')} ? 'active'" class="tag">호텔</a>
+                    <a th:href="@{/house(cat3='B02010700', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02010700')} ? 'active'" class="tag">펜션</a>
+                    <a th:href="@{/house(cat3='B02010500', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02010500')} ? 'active'" class="tag">콘도/리조트</a>
+                    <a th:href="@{/house(cat3='B02011100', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02011100')} ? 'active'" class="tag">게스트하우스</a>
+                    <a th:href="@{/house(cat3='B02011600', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02011600')} ? 'active'" class="tag">한옥</a>
                 </div>
-                <input type="hidden" name="tag" value="" id="tag">
-                <script type="text/javascript">
-                $(function() {
-                	  $('.tag').on('click', function(event) {
-                	    // 선택된 값 hidden input에 저장
-                	    $('#tag').val($(this).val());
-
-                	    // 모든 버튼에서 'active' 제거
-                	    $('.tag').removeClass('active');
-
-                	    // 클릭한 버튼에만 'active' 추가
-                	    $(this).addClass('active');
-                	  });
-                	});
-
-                </script>
             </div>
            </form>
         </section>

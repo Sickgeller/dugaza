@@ -26,8 +26,8 @@ public class RestaurantController {
 	@Autowired
 	private RestaurantService restaurantService;
 	@GetMapping("")
-	public String restaurantMain(@RequestParam(defaultValue="1") int pageNum,
-			@RequestParam(defaultValue = "") String keyword,
+	public String restaurantMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
+			@RequestParam(name = "keyword", defaultValue = "") String keyword,
 			Model model) {
 
 		int count = restaurantService.selectRowCount();
@@ -53,7 +53,7 @@ public class RestaurantController {
 
 	// 항목 자세히 보기
 	@GetMapping("/detail")
-	public String restaurantDetail(@RequestParam Long id, Model model) {
+	public String restaurantDetail(@RequestParam(name = "id") Long id, Model model) {
 		RestaurantVO vo = restaurantService.selectRestaurant(id);
 
 		model.addAttribute("info",vo);

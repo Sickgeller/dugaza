@@ -71,3 +71,12 @@ document.querySelectorAll(".category-tab").forEach(tab => {
     faqContainer.style.display = "block";
   });
 });
+
+function goToInquiry() {
+  document.getElementById("inquiryModal").style.display = "flex";
+}
+
+function closeInquiry() {
+  document.getElementById("inquiryModal").style.display = "none";
+}
+
