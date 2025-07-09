@@ -22,7 +22,7 @@ public interface MemberMapper {
 	public void insertMemberDetail(MemberVO member);
 	public MemberVO selectIdCheck(String id);
 	public MemberVO selectCheckMember(String id);
-	@Select("SELECT * FROM MEMBER WHERE ID=#{id}")
+//	@Select("SELECT * FROM MEMBER WHERE ID=#{id}")
 	public MemberVO selectMemberByUsername(String id);
 	@Select("SELECT * FROM MEMBER WHERE MEMBER_ID=#{memberId}")
 	public MemberVO selectMember(Long memberId);

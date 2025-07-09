@@ -32,6 +32,7 @@ public class HouseReviewServiceImpl implements HouseReviewService {
             return new ArrayList<>();
         }
     }
+    
     @Override
     public List<HouseReviewVO> getReviews(Long sellerId, int page, int pageSize) {
         List<HouseReviewVO> result = houseReviewMapper.findHouseReviewBySellerId(sellerId, (page - 1) * pageSize, page * pageSize);
@@ -40,4 +41,18 @@ public class HouseReviewServiceImpl implements HouseReviewService {
         }
         return result;
     }
+
+	@Override
+	public List<HouseReviewVO> getHouseReviews(Long houseId, int page, int pageSize) {
+		List<HouseReviewVO> result = houseReviewMapper.findHouseReviewByHouseId(houseId, (page - 1) * pageSize, page * pageSize);
+        if(result.isEmpty()){
+            return new ArrayList<>();
+        }
+        return result;
+	}
+
+	@Override
+	public void writeReview(HouseReviewVO vo) {
+		houseReviewMapper.writeReview(vo);
+	}
 } 

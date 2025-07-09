@@ -636,3 +636,23 @@ body.no-header-padding {
     background-color: #6c757d;
     color: #fff;
 } 
+/* 리뷰 작성 폼 */
+.star-rating-input i {
+    font-size: 1.5em;
+    color: #ffcc00;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.submit-review-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}

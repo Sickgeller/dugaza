@@ -17,7 +17,7 @@ public class HouseReviewVO {
     private String reviewContent;
     private Double rating;
     private LocalDateTime reviewDate;
-    private int status;
+    private Integer status;
     
-
+    private String id; // 조인한 멤버 아이디(이름)
 }

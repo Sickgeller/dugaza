@@ -28,7 +28,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         
         // 사용자 정보 로깅
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        log.info("로그인 성공: 사용자 = {}, 권한 = {}", userDetails.getUsername(), userDetails.getAuthorities());
+
+        log.info("로그인 성공: 사용자 = {}, 권한 = {} 아이디 = {} 사용자? = {}", 
+                userDetails.getUsername(), userDetails.getAuthorities(), userDetails.getUserId(), userDetails.getMember());
         
         // 요청한 사용자 타입 확인
         String requestedUserType = request.getParameter("userType");

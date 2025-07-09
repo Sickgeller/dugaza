@@ -8,7 +8,6 @@
     <title>FAQ</title>
     <link rel="stylesheet" th:href="@{/assets/css/faq.css}">
     <script type="text/javascript" th:src="@{/assets/js/faq.js}" defer></script>
-    <script type="text/javascript" th:src="@{/assets/js/faqSearch.js}" defer></script>
 </head>
 
 <body>
@@ -26,13 +25,13 @@
 			
 		  <!-- 카테고리 -->
           <div class="category-tabs">
-            <button class="category-tab" data-category="예약">예약</button>
-            <button class="category-tab" data-category="환불">환불</button>
-            <button class="category-tab" data-category="회원">회원</button>
-            <button class="category-tab" data-category="숙소">숙소</button>
-            <button class="category-tab" data-category="렌터카">렌터카</button>
-            <button class="category-tab" data-category="기차표">기차표</button>
-            <button class="category-tab" data-category="투어">투어</button>
+            <button type="button" class="category-tab" data-category="예약">예약</button>
+            <button type="button" class="category-tab" data-category="환불">환불</button>
+            <button type="button" class="category-tab" data-category="회원">회원</button>
+            <button type="button" class="category-tab" data-category="숙소">숙소</button>
+            <button type="button" class="category-tab" data-category="렌터카">렌터카</button>
+            <button type="button" class="category-tab" data-category="기차표">기차표</button>
+            <button type="button" class="category-tab" data-category="투어">투어</button>
           </div>
 		
 		  <!-- 자주 묻는 질문 루프 -->
@@ -73,7 +72,7 @@
 		  <div class="qna-content">
 		    <h2>1:1 문의하기</h2>
 		    <form id="qnaForm" th:action="@{/faq/qnaQuestion}" method="post">
-		      <select name="qnaCategory" required="required">
+		      <select name="Category" required="required">
 		      	<option value="예약">예약</option>
 		      	<option value="환불">환불</option>
 		      	<option value="회원">회원</option>
@@ -82,8 +81,13 @@
 		      	<option value="기차표">기차표</option>
 		      	<option value="투어">투어</option>
 		      </select>
-		      <input type="text" placeholder="제목을 입력하세요" required />
-		      <textarea placeholder="문의 내용을 입력하세요" required></textarea>
+		      <input type="text" name="title" placeholder="제목을 입력하세요" required />
+		      <textarea name="content" placeholder="문의 내용을 입력하세요" required></textarea>
+		      
+		      <th:block th:if="${_csrf != null}">
+				  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+			  </th:block>
+		      
 		      <div class="form-actions">
 		        <button type="submit">문의 보내기</button>
 		        <button type="button" onclick="closeInquiry()">취소</button>
