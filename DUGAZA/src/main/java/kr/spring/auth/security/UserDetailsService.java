@@ -51,7 +51,15 @@ public class UserDetailsService implements org.springframework.security.core.use
                 }
                 return new CustomUserDetails(member);
             }
-            log.warn("일반 회원을 찾을 수 없음: {}", username);
+            
+            // 일반 회원에서 찾지 못한 경우, 판매자에서도 확인
+            SellerVO seller = sellerMapper.selectSeller(username);
+            if (seller != null) {
+                log.debug("판매자로 자동 인식: {}", seller.getId());
+                return new CustomUserDetails(seller);
+            }
+            
+            log.warn("사용자를 찾을 수 없음: {}", username);
             throw new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username);
         }
     }

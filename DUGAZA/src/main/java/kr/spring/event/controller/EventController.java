@@ -26,7 +26,7 @@ public class EventController {
 	private EventService eventService;
 	
 	@GetMapping("")
-	public String eventtMain(@RequestParam(defaultValue="1") int pageNum,
+	public String eventtMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
 			@RequestParam(defaultValue = "") String keyword,
 			Model model) {
 

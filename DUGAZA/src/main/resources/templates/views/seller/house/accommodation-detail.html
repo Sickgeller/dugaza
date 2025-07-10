@@ -488,7 +488,7 @@
 					    <h3>리뷰 작성</h3>
 					    <form th:action="@{/house/saveReview}" method="post">
 					        <!-- 숨겨진 필드: 숙소 ID -->
-					        <input type="hidden" name="houseId" th:value="${info.contentId}" />
+					        <input type="hidden" name="contentId" th:value="${info.contentId}" />
 					
 					        <!-- 별점 선택 -->
 					        <div class="form-group rating-input">
@@ -503,16 +503,10 @@
 					            </div>
 					        </div>
 					
-					        <!-- 제목 (선택) -->
-					        <div class="form-group">
-					            <label for="title">제목 (선택)</label>
-					            <input type="text" name="title" id="title" class="form-control" placeholder="리뷰 제목을 입력하세요" />
-					        </div>
-					
 					        <!-- 내용 (필수) -->
 					        <div class="form-group">
 					            <label for="content">내용</label>
-					            <textarea name="reviewContent" id="content" class="form-control" required rows="5" placeholder="리뷰 내용을 작성하세요"></textarea>
+					            <textarea name="review" id="content" class="form-control" required rows="5" placeholder="리뷰 내용을 작성하세요"></textarea>
 					        </div>
 					
 					        <!-- 제출 -->
@@ -552,9 +546,9 @@
                                        <!--  <i class="fas fa-star"></i> -->
                                     </div>
                                 </div>
-                                <span class="review-date" th:text="${review.reviewDate}"></span>
+                                <span class="review-date" th:text="${review.createdAt}"></span>
                             </div>
-                            <p class="review-text" th:text="${review.reviewContent}">
+                            <p class="review-text" th:text="${review.review}">
                                 
                             </p>
                             <!-- <div class="review-images">

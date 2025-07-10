@@ -174,7 +174,7 @@
                                 <img th:src="@{/assets/images/users/default-profile.jpg}" alt="리뷰어 프로필">
                                 <div class="user-details">
                                     <span class="user-name" th:text="'고객' + ${review.memberId}">고객</span>
-                                    <span class="review-date" th:text="${#temporals.format(review.reviewDate, 'yyyy-MM-dd')}">2024-02-15</span>
+                                    <span class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">2024-02-15</span>
                                 </div>
                             </div>
                             <div class="review-rating">
@@ -186,11 +186,11 @@
                         </div>
                         <div class="review-content">
                             <div class="room-info">
-                                <span class="room-type" th:text="'객실 ' + ${review.roomId}">객실</span>
+                                <span class="room-type" th:text="'컨텐츠 ID: ' + ${review.contentId}">컨텐츠 ID</span>
                                 <span class="stay-date" th:text="'예약번호: ' + ${review.reservationId}">예약번호</span>
                             </div>
-                            <h4 th:text="${review.reviewTitle}">리뷰 제목</h4>
-                            <p th:text="${review.reviewContent}">리뷰 내용</p>
+                            <h4 th:text="'리뷰 #' + ${review.reviewId}">리뷰 제목</h4>
+                            <p th:text="${review.review != null ? review.review : '리뷰 내용이 없습니다.'}">리뷰 내용</p>
                         </div>
                         <div class="review-actions">
                             <button class="btn-primary" th:if="${review.status == 0}" onclick="">블라인드 해제</button>

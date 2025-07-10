@@ -1,7 +1,7 @@
-package kr.spring.review.house.service;
+package kr.spring.review.base.service;
 
-import kr.spring.review.house.dao.HouseReviewMapper;
-import kr.spring.review.house.vo.HouseReviewVO;
+import kr.spring.review.base.dao.BaseReviewMapper;
+import kr.spring.review.base.vo.BaseReviewVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,15 +14,15 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class HouseReviewServiceImpl implements HouseReviewService {
+public class BaseReviewServiceImpl implements BaseReviewService {
     
-    private final HouseReviewMapper houseReviewMapper;
+    private final BaseReviewMapper baseReviewMapper;
     
     @Override
-    public List<HouseReviewVO> getRecentlyReviews(Long sellerId) {
+    public List<BaseReviewVO> getRecentlyReviews(Long sellerId) {
         try {
             // 최근 5개의 리뷰만 가져오기
-            List<HouseReviewVO> result = houseReviewMapper.findHouseReviewBySellerId(sellerId, 1, 5);
+            List<BaseReviewVO> result = baseReviewMapper.findHouseReviewBySellerId(sellerId, 1, 5);
             if(result.isEmpty()){
                 return new ArrayList<>();
             }
@@ -34,8 +34,8 @@ public class HouseReviewServiceImpl implements HouseReviewService {
     }
     
     @Override
-    public List<HouseReviewVO> getReviews(Long sellerId, int page, int pageSize) {
-        List<HouseReviewVO> result = houseReviewMapper.findHouseReviewBySellerId(sellerId, (page - 1) * pageSize, page * pageSize);
+    public List<BaseReviewVO> getReviews(Long sellerId, int page, int pageSize) {
+        List<BaseReviewVO> result = baseReviewMapper.findHouseReviewBySellerId(sellerId, (page - 1) * pageSize, page * pageSize);
         if(result.isEmpty()){
             return new ArrayList<>();
         }
@@ -43,8 +43,8 @@ public class HouseReviewServiceImpl implements HouseReviewService {
     }
 
 	@Override
-	public List<HouseReviewVO> getHouseReviews(Long houseId, int page, int pageSize) {
-		List<HouseReviewVO> result = houseReviewMapper.findHouseReviewByHouseId(houseId, (page - 1) * pageSize, page * pageSize);
+	public List<BaseReviewVO> getHouseReviews(Long houseId, int page, int pageSize) {
+		List<BaseReviewVO> result = baseReviewMapper.findHouseReviewByHouseId(houseId, (page - 1) * pageSize, page * pageSize);
         if(result.isEmpty()){
             return new ArrayList<>();
         }
@@ -52,7 +52,7 @@ public class HouseReviewServiceImpl implements HouseReviewService {
 	}
 
 	@Override
-	public void writeReview(HouseReviewVO vo) {
-		houseReviewMapper.writeReview(vo);
+	public void writeReview(BaseReviewVO vo) {
+		baseReviewMapper.writeReview(vo);
 	}
 } 

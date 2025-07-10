@@ -5,7 +5,7 @@ import jakarta.validation.Valid;
 import kr.spring.common.SellerType;
 import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.reservation.house.service.HouseReservationService;
-import kr.spring.review.house.service.HouseReviewService;
+import kr.spring.review.base.service.BaseReviewService;
 import kr.spring.room.service.RoomService;
 import kr.spring.seller.service.SellerService;
 import kr.spring.seller.vo.SellerVO;
@@ -33,7 +33,7 @@ public class SellerController {
     private final RoomService roomService;
     private final HouseReservationService houseReservationService;
     private final PasswordEncoder passwordEncoder;
-    private final HouseReviewService houseReviewService;
+    private final BaseReviewService baseReviewService;
     private final SellerHouseController sellerHouseController;
 
     /**

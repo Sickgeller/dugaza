@@ -20,10 +20,10 @@ import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.house.service.HouseService;
 import kr.spring.house.vo.HouseVO;
 import kr.spring.member.vo.MemberVO;
-import kr.spring.review.house.dto.ReviewStatisticsDto;
-import kr.spring.review.house.service.HouseReviewService;
-import kr.spring.review.house.service.ReviewStatisticsService;
-import kr.spring.review.house.vo.HouseReviewVO;
+import kr.spring.review.base.vo.BaseReviewVO;
+import kr.spring.review.base.vo.ReviewStatisticsVO;
+import kr.spring.review.base.service.BaseReviewService;
+import kr.spring.review.base.service.ReviewStatisticsService;
 import kr.spring.util.PagingUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,15 +36,15 @@ public class HouseController {
 	private HouseService houseService;
 	
 	@Autowired
-	private HouseReviewService houseReviewService;
+	private BaseReviewService baseReviewService;
 	
 	@Autowired
 	private ReviewStatisticsService reviewStatisticsService;
 
 	@GetMapping("")
-	public String accommodationMain(@RequestParam(defaultValue="1") int pageNum,
-			@RequestParam(defaultValue = "") String keyword,
-			@RequestParam(required = false) String cat3,
+	public String accommodationMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
+			@RequestParam(name = "keyword", defaultValue = "") String keyword,
+			@RequestParam(required = false, name = "cat3") String cat3,
 			Model model) {
 
 		Map<String,Object> map = new HashMap<String,Object>();
@@ -82,13 +82,13 @@ public class HouseController {
 
 	// 항목 자세히 보기
 	@GetMapping("/detail")
-	public String houseDetail(@RequestParam Long id, Model model) {
+	public String houseDetail(@RequestParam(name = "contentId") Long contentId, Model model) {
 		// 숙소 정보
-		HouseVO vo = houseService.selectHouse(id);
+		HouseVO vo = houseService.selectHouse(contentId);
 		// 숙소별 리뷰 목록
-		List<HouseReviewVO> reviewList = houseReviewService.getHouseReviews(id, 1, 10);
+		List<BaseReviewVO> reviewList = baseReviewService.getHouseReviews(contentId, 1, 10);
 		// 숙소별 리뷰 통계
-		ReviewStatisticsDto status = reviewStatisticsService.getReviewStatisticsByHouse(id);
+		ReviewStatisticsVO status = reviewStatisticsService.getReviewStatisticsByHouse(contentId);
 
 		model.addAttribute("info",vo);
 		model.addAttribute("reviewList",reviewList);
@@ -99,7 +99,7 @@ public class HouseController {
 
 	// 리뷰 작성
 	@PostMapping("/saveReview")
-	public String saveReview(@ModelAttribute HouseReviewVO reviewDTO, HttpSession session) {
+	public String saveReview(@ModelAttribute BaseReviewVO reviewDTO, HttpSession session) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
 		MemberVO member = userDetails.getMember();
@@ -107,11 +107,12 @@ public class HouseController {
 		CustomUserDetails user = (CustomUserDetails)session.getAttribute("user");
 		reviewDTO.setMemberId(user.getUserId());
 		reviewDTO.setStatus(1);
+		reviewDTO.setContentTypeId(32L); // 숙소 타입 ID
 
-		houseReviewService.writeReview(reviewDTO);
+		baseReviewService.writeReview(reviewDTO);
 		log.debug("<<리뷰 작성>> 사용자 id : {}", user.getUserId());
 
-		return "redirect:/house/detail?id=" + reviewDTO.getHouseId();
+		return "redirect:/house/detail?contentId=" + reviewDTO.getContentId();
 	}
 
 }

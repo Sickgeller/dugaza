@@ -75,7 +75,7 @@ public class MemberAdminController {
 	//회원목록
 	@GetMapping("/admin_member")
 	public String getList(
-			@RequestParam(defaultValue="1") int pageNum,
+			@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
 			String keyfield,String keyword,Model model) {
 		
 		Map<String,Object> map = 

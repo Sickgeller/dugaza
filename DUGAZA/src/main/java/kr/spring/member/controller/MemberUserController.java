@@ -50,17 +50,13 @@ public class MemberUserController {
 		
 		if (authentication != null && authentication.isAuthenticated() && 
 			authentication.getPrincipal() instanceof CustomUserDetails) {
-			
 			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-			
 			// 사용자 정보를 모델에 추가
 			model.addAttribute("userDetails", userDetails);
-			
 			// 회원인 경우
 			if (userDetails.isMember()) {
 				model.addAttribute("member", userDetails.getMember());
 			}
-			
 			// 판매자인 경우
 			if (userDetails.isSeller()) {
 				model.addAttribute("seller", userDetails.getSeller());
