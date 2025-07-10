@@ -5,10 +5,10 @@ import kr.spring.common.SellerType;
 import kr.spring.house.service.HouseService;
 import kr.spring.reservation.house.service.HouseReservationService;
 import kr.spring.reservation.house.vo.HouseReservationVO;
-import kr.spring.review.house.service.HouseReviewService;
-import kr.spring.review.house.vo.HouseReviewVO;
-import kr.spring.review.house.service.ReviewStatisticsService;
-import kr.spring.review.house.dto.ReviewStatisticsDto;
+import kr.spring.review.base.service.BaseReviewService;
+import kr.spring.review.base.vo.BaseReviewVO;
+import kr.spring.review.base.vo.ReviewStatisticsVO;
+import kr.spring.review.base.service.ReviewStatisticsService;
 import kr.spring.room.dto.RoomDetailVO;
 import kr.spring.room.service.RoomService;
 import kr.spring.seller.service.SellerService;
@@ -34,7 +34,7 @@ public class SellerHouseController {
     private final HouseService houseService;
     private final RoomService roomService;
     private final HouseReservationService houseReservationService;
-    private final HouseReviewService houseReviewService;
+    private final BaseReviewService baseReviewService;
     private final ReviewStatisticsService reviewStatisticsService;
 
     /**
@@ -77,7 +77,7 @@ public class SellerHouseController {
                 model.addAttribute("recentReservations", reservationList);
 
                 // 최근 리뷰 정도 (최대 5개)
-                List<HouseReviewVO> recentlyReviews = houseReviewService.getRecentlyReviews(seller.getSellerId());
+                List<BaseReviewVO> recentlyReviews = baseReviewService.getRecentlyReviews(seller.getSellerId());
                 model.addAttribute("recentReviews", recentlyReviews);
 
                 // 현재 메뉴 설정
@@ -156,10 +156,10 @@ public class SellerHouseController {
         SellerVO seller = (SellerVO) model.getAttribute("seller");
 
         // 리뷰 통계 조회
-        ReviewStatisticsDto statistics = reviewStatisticsService.getReviewStatisticsBySeller(seller.getSellerId());
+        ReviewStatisticsVO statistics = reviewStatisticsService.getReviewStatisticsBySeller(seller.getSellerId());
         
         // 리뷰 목록 조회
-        List<HouseReviewVO> reviews = houseReviewService.getReviews(seller.getSellerId(), page, pageSize);
+        List<BaseReviewVO> reviews = baseReviewService.getReviews(seller.getSellerId(), page, pageSize);
         
         // 미답변 리뷰 수 계산 (실제로는 별도 쿼리 필요)
         long unansweredReviews = reviews.stream()

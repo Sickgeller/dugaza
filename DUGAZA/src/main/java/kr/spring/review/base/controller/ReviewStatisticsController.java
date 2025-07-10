@@ -1,7 +1,7 @@
-package kr.spring.review.house.controller;
+package kr.spring.review.base.controller;
 
-import kr.spring.review.house.dto.ReviewStatisticsDto;
-import kr.spring.review.house.service.ReviewStatisticsService;
+import kr.spring.review.base.vo.ReviewStatisticsVO;
+import kr.spring.review.base.service.ReviewStatisticsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +20,10 @@ public class ReviewStatisticsController {
      * 전체 리뷰 통계 조회
      */
     @GetMapping("/all")
-    public ResponseEntity<ReviewStatisticsDto> getAllReviewStatistics() {
+    public ResponseEntity<ReviewStatisticsVO> getAllReviewStatistics() {
         log.info("전체 리뷰 통계 API 호출");
         
-        ReviewStatisticsDto statistics = reviewStatisticsService.getReviewStatistics();
+        ReviewStatisticsVO statistics = reviewStatisticsService.getReviewStatistics();
         
         return ResponseEntity.ok(statistics);
     }
@@ -33,10 +33,10 @@ public class ReviewStatisticsController {
      */
     @GetMapping("/seller/{sellerId}")
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
-    public ResponseEntity<ReviewStatisticsDto> getSellerReviewStatistics(@PathVariable Long sellerId) {
+    public ResponseEntity<ReviewStatisticsVO> getSellerReviewStatistics(@PathVariable Long sellerId) {
         log.info("판매자별 리뷰 통계 API 호출: sellerId = {}", sellerId);
         
-        ReviewStatisticsDto statistics = reviewStatisticsService.getReviewStatisticsBySeller(sellerId);
+        ReviewStatisticsVO statistics = reviewStatisticsService.getReviewStatisticsBySeller(sellerId);
         if (statistics == null) {
             return ResponseEntity.notFound().build();
         }
@@ -47,10 +47,10 @@ public class ReviewStatisticsController {
      * 숙소별 리뷰 통계 조회
      */
     @GetMapping("/house/{houseId}")
-    public ResponseEntity<ReviewStatisticsDto> getHouseReviewStatistics(@PathVariable Long houseId) {
+    public ResponseEntity<ReviewStatisticsVO> getHouseReviewStatistics(@PathVariable Long houseId) {
         log.info("숙소별 리뷰 통계 API 호출: houseId = {}", houseId);
         
-        ReviewStatisticsDto statistics = reviewStatisticsService.getReviewStatisticsByHouse(houseId);
+        ReviewStatisticsVO statistics = reviewStatisticsService.getReviewStatisticsByHouse(houseId);
         
         if (statistics == null) {
             return ResponseEntity.notFound().build();

@@ -29,7 +29,7 @@ public class HouseAdminController {
 
 	// 관리자 숙소 페이지 이동
 	@GetMapping("/admin_house")
-	public String form(@RequestParam(defaultValue="1") int pageNum,Model model) {
+	public String form(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,Model model) {
 		
 		int count = houseService.selectRowCount(null);
 		

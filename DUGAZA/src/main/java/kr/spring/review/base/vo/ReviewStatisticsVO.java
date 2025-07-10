@@ -1,14 +1,17 @@
-package kr.spring.review.house.dto;
+package kr.spring.review.base.vo;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.Map;
 
 @Data
 @Builder
-public class ReviewStatisticsDto {
+@NoArgsConstructor
+@AllArgsConstructor
+public class ReviewStatisticsVO {
     // 기본 통계
     private Double averageRating;
     private Long totalCount;

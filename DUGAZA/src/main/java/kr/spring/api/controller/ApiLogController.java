@@ -27,7 +27,7 @@ public class ApiLogController {
     public List<ApiLogDto> getApiLogs(
             @RequestParam(required = false) String apiName,
             @RequestParam(required = false) Boolean isSuccess,
-            @RequestParam(defaultValue = "20") int limit) {
+            	@RequestParam(name = "limit", defaultValue = "20") int limit) {
         
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT * FROM API_LOG WHERE 1=1 ");
