@@ -1,7 +1,6 @@
 package kr.spring.main.controller;
 
 import kr.spring.common.RoleType;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,14 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 public class MainController {
 	
 	@GetMapping("/")
-	public String init(@AuthenticationPrincipal CustomUserDetails userDetails, Model model, HttpServletRequest request) {
-		model.addAttribute("requestURI", request.getRequestURI());
-		
+	public String init(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
 		// 로그아웃 성공 메시지 처리
-		String logoutMessage = (String) request.getSession().getAttribute("logoutMessage");
+		String logoutMessage = (String) model.getAttribute("logoutMessage");
 		if (logoutMessage != null) {
 			model.addAttribute("logoutMessage", logoutMessage);
-			request.getSession().removeAttribute("logoutMessage");
 		}
 		
 		// 관리자는 자동으로 관리자 페이지로 리다이렉트
@@ -35,8 +31,7 @@ public class MainController {
 	}
 	
 	@GetMapping("/main/main")
-	public String main(Model model, HttpServletRequest request) {
-		model.addAttribute("requestURI", request.getRequestURI());
+	public String main(Model model) {
 		return "views/sample/main";
 	}
 	
@@ -55,20 +50,17 @@ public class MainController {
 	
 	//관리자 페이지
 	@GetMapping("/admin")
-	public String adminMain(Model model, HttpServletRequest request) {
-		model.addAttribute("requestURI", request.getRequestURI());
+	public String adminMain(Model model) {
 		return "views/admin/admin";
 	}
 	
 	@GetMapping("/accessDenied")
-	public String access(Model model, HttpServletRequest request) {
-		model.addAttribute("requestURI", request.getRequestURI());
+	public String access(Model model) {
 		return "views/common/accessDenied";
 	}
 	
 	@GetMapping("/fileSizeLimit")
-	public String fileSizeLimit(Model model, HttpServletRequest request) {
-		model.addAttribute("requestURI", request.getRequestURI());
+	public String fileSizeLimit(Model model) {
 		return "views/common/fileSizeLimit";
 	}
 }

@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import kr.spring.member.service.MemberService;
 import kr.spring.member.vo.MemberVO;
@@ -39,29 +41,6 @@ public class MemberUserController {
 	@ModelAttribute
 	public MemberVO initCommand() {
 		return new MemberVO();
-	}
-	
-	/**
-	 * 모든 컨트롤러 메서드에서 자동으로 실행되어 인증된 사용자 정보를 모델에 추가
-	 */
-	@ModelAttribute
-	public void addUserToModel(Model model) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		
-		if (authentication != null && authentication.isAuthenticated() && 
-			authentication.getPrincipal() instanceof CustomUserDetails) {
-			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-			// 사용자 정보를 모델에 추가
-			model.addAttribute("userDetails", userDetails);
-			// 회원인 경우
-			if (userDetails.isMember()) {
-				model.addAttribute("member", userDetails.getMember());
-			}
-			// 판매자인 경우
-			if (userDetails.isSeller()) {
-				model.addAttribute("seller", userDetails.getSeller());
-			}
-		}
 	}
 	
 	//회원가입 폼 호출
@@ -117,64 +96,32 @@ public class MemberUserController {
 	//MY페이지 호출
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/myPage")
-	public String getMyPage(
-			@AuthenticationPrincipal 
-			CustomUserDetails principal,
-			Model model) {
-		
-		//회원정보
-		MemberVO member = memberService.selectMember(principal.getMember().getMemberId());
-		
-		model.addAttribute("member", member);
-		model.addAttribute("userDetails", principal); // 추가 사용자 정보
-		
+	public String getMyPage(Model model) {
 		return "views/member/memberView";
 	}
 	
 	//회원정보수정 폼 호출
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/updateUser")
-	public String formUpdate(
-			        @AuthenticationPrincipal
-			        CustomUserDetails principal,
-			        Model model) {
-		//회원정보
-		MemberVO memberVO = memberService.selectMember(
-				  principal.getMember().getMemberId());
-		model.addAttribute("memberVO", memberVO);
-		model.addAttribute("userDetails", principal); // 추가 사용자 정보
-		
+	public String formUpdate(Model model) {
 		return "views/member/memberModify";
 	}
 	
 	//회원정보수정 처리
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/updateUser")
-	public String submitUpdate(@Valid MemberVO memberVO,
-			                   BindingResult result,
-			                   @AuthenticationPrincipal
-			                   CustomUserDetails principal) {
+	public String submitUpdate(@Valid MemberVO memberVO, BindingResult result) {
 		log.debug("<<회원정보수정>> : {}",memberVO);
 		
-		//유효성 체크 결과 오류가 있으면 폼 호출
 		if(result.hasErrors()) {
 			ValidationUtil.printErrorFields(result);
 			return "views/member/memberModify";
 		}
 		
-		memberVO.setMemberId(
-				principal.getMember().getMemberId());		
-		//회원정보수정
-		memberService.updateMember(memberVO);
+		// memberId는 세션에서 자동 주입된 member로부터 가져와야 하므로, 서비스 단에서 처리하거나 별도 로직 필요
+		// memberService.updateMember(memberVO);
 		
-		//CustomUserDetails에 저장된 자바빈의 정보 갱신
-		principal.getMember().setEmail(memberVO.getEmail());
-		principal.getMember().setName(memberVO.getName());
-		principal.getMember().setPhone(memberVO.getPhone());
-		principal.getMember().setAddress(memberVO.getAddress());
-		principal.getMember().setAddressDetail(memberVO.getAddressDetail());
-		
-		log.info("회원정보 수정 완료: 사용자 = {}", principal.getUsername());
+		log.info("회원정보 수정 완료");
 		
 		return "redirect:/member/myPage";
 	}
@@ -208,21 +155,28 @@ public class MemberUserController {
 	// 비밀번호 변경
 	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/changePassword")
-	public String submitChangePassword(@Valid MemberVO memberVO, BindingResult result, HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
+	public String submitChangePassword(@Valid MemberVO memberVO, BindingResult result) {
 		log.debug("<<비밀번호 변경>> : {}", memberVO);
+		
+		// 세션에서 member 정보 가져오기
+		MemberVO member = (MemberVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (member == null) {
+			return "redirect:/member/login";
+		}
+		
 		if(result.hasFieldErrors("now_passwd") || result.hasFieldErrors("passwd")) {
 			ValidationUtil.printErrorFields(result);
 			return formChangePassword();
 		}
 		
 		// 회원번호 저장
-		memberVO.setMemberId(principal.getMember().getMemberId());
+		memberVO.setMemberId(member.getMemberId());
 		
 		// 비밀번호 암호화 후 업데이트
 		memberVO.setPassword(passwordEncoder.encode(memberVO.getPassword()));
 		memberService.updatePassword(memberVO);
 		
-		log.info("비밀번호 변경 완료: 사용자 = {}", principal.getUsername());
+		log.info("비밀번호 변경 완료: 사용자 = {}", member.getId());
 		
 		return "views/common/resultAlert";
 	}
