@@ -85,7 +85,7 @@
                 FROM REVIEWS R
                 JOIN MEMBER M ON M.MEMBER_ID = R.MEMBER_ID
                 WHERE R.CONTENT_ID = #{houseId}
-                AND R.CONTENT_TYPE_ID = 32
+                <!-- AND R.CONTENT_TYPE_ID = 32 -->
                 ORDER BY R.CREATED_AT DESC, R.REVIEW_ID DESC
             ) R
             WHERE ROWNUM &lt;= #{endRow}
@@ -200,7 +200,7 @@
             END as oneStarRatio
         FROM REVIEWS
         WHERE content_id = #{houseId} AND status = 1
-        AND content_type_id = 32
+        <!-- AND content_type_id = 32 -->
     </select>
     
     <!-- 월별 리뷰 트렌드 조회 (최근 6개월) -->

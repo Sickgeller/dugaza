@@ -81,7 +81,7 @@
 
             <div class="accommodation-grid">
                 <article class="accommodation-card" th:each="house : ${list}">
-                 <a th:href="@{/house/detail(id=${house.contentId})}">
+                 <a th:href="@{/house/detail(contentId=${house.contentId})}">
                     <div class="accommodation-image">
                         <img th:src="${house.firstImage != null ? house.firstImage : '/assets/images/house.png'}" alt="호텔">
                         <div class="accommodation-badge">호텔</div>
