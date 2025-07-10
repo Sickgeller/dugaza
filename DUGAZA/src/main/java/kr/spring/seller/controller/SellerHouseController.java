@@ -1,5 +1,7 @@
 package kr.spring.seller.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.common.SellerType;
 import kr.spring.house.service.HouseService;
@@ -37,28 +39,14 @@ public class SellerHouseController {
     private final BaseReviewService baseReviewService;
     private final ReviewStatisticsService reviewStatisticsService;
 
-    /**
-     * 모든 컨트롤러 메서드에서 자동으로 실행되어 인증된 판매자 정보를 모델에 추가
-     */
-    @ModelAttribute
-    public void addSellerToModel(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && authentication.isAuthenticated() &&
-            authentication.getPrincipal() instanceof CustomUserDetails) {
-
-            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-
-            if (userDetails.isSeller()) {
-                model.addAttribute("seller", userDetails.getSeller());
-            }
-        }
-    }
 
     @GetMapping("/")
-    public String main(Model model, SellerVO seller){
+    public String main(Model model) {
         try {
-            if(seller.getSellerType().equals(SellerType.HOUSE.getValue())) {
+
+            if(model.getAttribute("seller") != null && ((SellerVO)model.getAttribute("seller")).getSellerType().equals(SellerType.HOUSE.getValue())) {
+                SellerVO seller = (SellerVO)model.getAttribute("seller");
                 List<RoomDetailVO> roomList = roomService.getRoomsWithSeller(seller.getSellerId(),1,5);
 
                 int totalRooms = roomList.size();
@@ -88,7 +76,7 @@ public class SellerHouseController {
 
                 return "views/seller/house/house-seller-main";
             } else {
-                log.warn("잘못된 판매자 타입: {}", seller.getSellerType());
+                log.warn("잘못된 판매자 타입: {}", model.getAttribute("seller") != null ? ((SellerVO)model.getAttribute("seller")).getSellerType() : "null");
                 model.addAttribute("error", "숙소 판매자만 접근할 수 있습니다.");
                 return "views/common/error";
             }
@@ -100,8 +88,10 @@ public class SellerHouseController {
     }
 
     @GetMapping("/management")
-    public String rooms(Model model, @RequestParam(name = "page", defaultValue = "1") int page){
-        SellerVO seller = (SellerVO) model.getAttribute("seller");
+    public String rooms(Model model, @RequestParam(name = "page", defaultValue = "1") int page) {
+        SellerVO seller = (SellerVO)model.getAttribute("seller");
+        if(seller == null) return "redirect:/seller/login";
+        model.addAttribute("seller", seller);
         
         // 페이징 처리를 위한 설정
         int pageSize = 10;
@@ -113,7 +103,6 @@ public class SellerHouseController {
         int availableRooms = (int)rooms.stream().filter(room -> room.getStatus() == 0).count();
         
         // 모델에 데이터 추가
-        model.addAttribute("seller", seller);
         model.addAttribute("rooms", rooms);
         model.addAttribute("totalRooms", totalRooms);
         model.addAttribute("availableRooms", availableRooms);
@@ -128,7 +117,9 @@ public class SellerHouseController {
     public String reservation(Model model,
                               @RequestParam(name = "page", defaultValue = "1") int page,
                               @RequestParam(name = "pageSize", defaultValue = "10") int pageSize){
-        SellerVO seller = (SellerVO) model.getAttribute("seller");
+        SellerVO seller = (SellerVO)model.getAttribute("seller");
+        if(seller == null) return "redirect:/seller/login";
+        model.addAttribute("seller", seller);
 
         // 페이징 처리를 위한 설정
         int startRow = (page - 1) * pageSize + 1;
@@ -141,7 +132,6 @@ public class SellerHouseController {
         List<HouseReservationVO> recentReservations = houseReservationService.getRecentlyReservations(seller.getSellerId());
 
         // 모델에 데이터 추가
-        model.addAttribute("seller", seller);
         model.addAttribute("reservations", reservations);
         model.addAttribute("currentPage", page);
         model.addAttribute("currentMenu", "reservation");
@@ -153,8 +143,10 @@ public class SellerHouseController {
     public String review(Model model,
                          @RequestParam(name = "page", defaultValue = "1") int page,
                          @RequestParam(name = "pageSize", defaultValue = "10") int pageSize){
-        SellerVO seller = (SellerVO) model.getAttribute("seller");
-
+        SellerVO seller = (SellerVO)model.getAttribute("seller");
+        if(seller == null) return "redirect:/seller/login";
+        model.addAttribute("seller", seller);
+        
         // 리뷰 통계 조회
         ReviewStatisticsVO statistics = reviewStatisticsService.getReviewStatisticsBySeller(seller.getSellerId());
         
@@ -172,7 +164,6 @@ public class SellerHouseController {
             .count();
 
         // 모델에 데이터 추가
-        model.addAttribute("seller", seller);
         model.addAttribute("currentMenu", "review");
         model.addAttribute("statistics", statistics);
         model.addAttribute("reviews", reviews);
@@ -227,9 +218,14 @@ public class SellerHouseController {
 
     // 판매자 정보 업데이트
     @PostMapping("/update")
-    public String updateSellerInfo(Model model ,SellerVO sellerVO, RedirectAttributes redirectAttributes) {
+    public String updateSellerInfo(Model model, SellerVO sellerVO, RedirectAttributes redirectAttributes) {
         try {
             SellerVO currentSeller = (SellerVO) model.getAttribute("seller");
+            
+            if(currentSeller == null) {
+                return "redirect:/seller/login";
+            }
+            
             sellerVO.setSellerId(currentSeller.getSellerId());
 
             boolean success = sellerService.updateSellerInfo(sellerVO);
@@ -258,6 +254,10 @@ public class SellerHouseController {
                                  Model model) {
         try {
             SellerVO seller = (SellerVO) model.getAttribute("seller");
+            
+            if(seller == null) {
+                return "redirect:/seller/login";
+            }
 
             // 새 비밀번호 확인
             if (!newPassword.equals(confirmPassword)) {
@@ -301,6 +301,10 @@ public class SellerHouseController {
                                         Model model) {
         try {
             SellerVO seller = (SellerVO) model.getAttribute("seller");
+            
+            if(seller == null) {
+                return "redirect:/seller/login";
+            }
 
             // 결제 설정 정보를 JSON 형태로 저장 (실제로는 별도 테이블 사용 권장)
             String paymentSettings = String.format(

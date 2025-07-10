@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -153,14 +153,14 @@
                             </div>
                             <div class="review-rating">
                                 <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                                    <i class="fas fa-star" th:classappend="${i <= review.rating} ? 'active' : ''"></i>
+                                    <i class="fas fa-star" th:class="${i <= review.rating ? 'active' : ''}"></i>
                                 </th:block>
                                 <span th:text="${review.rating}">5.0</span>
                             </div>
                         </div>
                         <div class="review-content">
                             <h4 th:text="'리뷰 #' + ${review.reviewId}">리뷰 제목</h4>
-                            <p th:text="${review.review != null ? review.review : '리뷰 내용이 없습니다.'}">리뷰 내용</p>
+                            <p th:text="${review.review != null and review.review != '' ? review.review : '리뷰 내용이 없습니다.'}">리뷰 내용</p>
                         </div>
                         <div class="review-actions">
                             <button class="btn-primary">답변하기</button>

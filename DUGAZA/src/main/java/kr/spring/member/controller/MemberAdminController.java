@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import jakarta.servlet.http.HttpServletRequest;
 import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.member.service.MemberService;
 import kr.spring.member.vo.MemberVO;
@@ -34,32 +33,7 @@ public class MemberAdminController {
 
 	private final MemberService memberService;
 
-	/**
-	 * 모든 컨트롤러 메서드에서 자동으로 실행되어 인증된 사용자 정보를 모델에 추가
-	 */
-	@ModelAttribute
-	public void addUserToModel(Model model) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		
-		if (authentication != null && authentication.isAuthenticated() && 
-			authentication.getPrincipal() instanceof CustomUserDetails) {
-			
-			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-			
-			// 사용자 정보를 모델에 추가
-			model.addAttribute("userDetails", userDetails);
-			
-			// 회원인 경우
-			if (userDetails.isMember()) {
-				model.addAttribute("member", userDetails.getMember());
-			}
-			
-			// 판매자인 경우
-			if (userDetails.isSeller()) {
-				model.addAttribute("seller", userDetails.getSeller());
-			}
-		}
-	}
+
 	
 	// 관리자 회원관리 페이지 이동
 //	@GetMapping("/admin_member")
@@ -136,8 +110,7 @@ public class MemberAdminController {
 	//회원권한 수정 
 	@PostMapping("/admin_update")
 	public String submit(MemberVO memberVO,
-			             Model model,
-			             HttpServletRequest request) {
+			             Model model) {
 		log.debug("<<회원권한 수정>> : {}",memberVO);
 		
 		//회원권한 수정
@@ -147,7 +120,7 @@ public class MemberAdminController {
 		model.addAttribute("accessTitle", "회원권한 수정");
 		model.addAttribute("accessMsg", "회원권한 수정 완료!!");
 		model.addAttribute("accessUrl", 
-				request.getContextPath()+"/member/admin_update?memberId="+memberVO.getMemberId());
+				"/member/admin_update?memberId="+memberVO.getMemberId());
 		model.addAttribute("accessBtn", "이동");
 		 
 		return "views/common/resultView";

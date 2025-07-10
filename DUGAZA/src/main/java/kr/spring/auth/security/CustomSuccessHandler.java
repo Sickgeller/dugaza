@@ -54,6 +54,12 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // 세션에 사용자 정보 저장
         HttpSession session = request.getSession();
         session.setAttribute("user", userDetails);
+
+        if(userDetails.isSeller()) {
+            session.setAttribute("seller", userDetails.getSeller());
+        }else if(userDetails.isMember()) {
+            session.setAttribute("member", userDetails.getMember());
+        }
         
         // 기본 리다이렉트 URL 설정
         String defaultUrl = determineDefaultUrl(userDetails);
