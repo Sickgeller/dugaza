@@ -25,6 +25,8 @@ public class RestaurantController {
 
 	@Autowired
 	private RestaurantService restaurantService;
+	
+	
 	@GetMapping("")
 	public String restaurantMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword,
