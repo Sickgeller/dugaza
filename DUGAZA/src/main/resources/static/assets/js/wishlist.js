@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     contentType: contentType
                 })
             })
-            .then(response => response.json())
+            .then(response => response.json()) 
 			.then(data => {
 			    const icon = button.querySelector('i');
 			    const textSpan = button.querySelector('span');
