@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.api.mapper.HouseDetailApiMapper">
+    <insert id="insert" parameterType="kr.spring.api.dto.HouseDetailApiDto">
+
+        INSERT INTO HOUSE_DETAIL (
+            CONTENT_ID,
+            CONTENT_TYPE_ID,
+            ACCOM_COUNT_LODGING,
+            CHECK_IN_TIME,
+            CHECK_OUT_TIME,
+            CHK_COOKING,
+            FOOD_PLACE,
+            INFO_CENTER_LODGING,
+            PARKING_LODGING,
+            PICKUP,
+            ROOM_COUNT,
+            RESERVATION_LODGING,
+            RESERVATION_URL,
+            ROOM_TYPE,
+            SCALE_LODGING,
+            SUB_FACILITY,
+            BARBECUE,
+            BEAUTY,
+            BEVERAGE,
+            BICYCLE,
+            CAMPFIRE,
+            FITNESS,
+            KARAOKE,
+            PUBLIC_BATH,
+            PUBLIC_PC,
+            SAUNA,
+            SEMINAR,
+            SPORTS,
+            REFUND_REGULATION
+        ) VALUES (
+                     #{contentId},
+                     #{contentTypeId},
+                     #{accomCountLodging},
+                     #{checkInTime},
+                     #{checkOutTime},
+                     #{chkCooking},
+                     #{foodPlace},
+                     #{infoCenterLodging},
+                     #{parkingLodging},
+                     #{pickup},
+                     #{roomCount},
+                     #{reservationLodging},
+                     #{reservationUrl},
+                     #{roomType},
+                     #{scaleLodging},
+                     #{subFacility},
+                     #{barbecue},
+                     #{beauty},
+                     #{beverage},
+                     #{bicycle},
+                     #{campfire},
+                     #{fitness},
+                     #{karaoke},
+                     #{publicBath},
+                     #{publicPC},
+                     #{sauna},
+                     #{seminar},
+                     #{sports},
+                     #{refundRegulation}
+                 )
+    </insert>
+
+    <update id="update" parameterType="kr.spring.api.dto.HouseDetailApiDto">
+    UPDATE HOUSE_DETAIL
+    SET
+    CONTENT_TYPE_ID = #{contentTypeId},
+    ACCOM_COUNT_LODGING = #{accomCountLodging},
+    CHECK_IN_TIME = #{checkInTime},
+    CHECK_OUT_TIME = #{checkOutTime},
+    CHK_COOKING = #{chkCooking},
+    FOOD_PLACE = #{foodPlace},
+    INFO_CENTER_LODGING = #{infoCenterLodging},
+    PARKING_LODGING = #{parkingLodging},
+    PICKUP = #{pickup},
+    ROOM_COUNT = #{roomCount},
+    RESERVATION_LODGING = #{reservationLodging},
+    RESERVATION_URL = #{reservationUrl},
+    ROOM_TYPE = #{roomType},
+    SCALE_LODGING = #{scaleLodging},
+    SUB_FACILITY = #{subFacility},
+    BARBECUE = #{barbecue},
+    BEAUTY = #{beauty},
+    BEVERAGE = #{beverage},
+    BICYCLE = #{bicycle},
+    CAMPFIRE = #{campfire},
+    FITNESS = #{fitness},
+    KARAOKE = #{karaoke},
+    PUBLIC_BATH = #{publicBath},
+    PUBLIC_PC = #{publicPC},
+    SAUNA = #{sauna},
+    SEMINAR = #{seminar},
+    SPORTS = #{sports},
+    REFUND_REGULATION = #{refundRegulation}
+    WHERE CONTENT_ID = #{contentId}
+</update>
+
+</mapper>

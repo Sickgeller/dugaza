@@ -115,7 +115,13 @@ public class HouseController {
 	@GetMapping("/detail")
 	public String houseDetail(@RequestParam(name = "contentId") Long contentId, Model model) {
 		// 숙소 정보
-		HouseVO vo = houseService.selectHouse(contentId);
+		HouseVO vo = null;
+			vo = houseService.selectHouse(contentId);
+			if(vo == null) {
+				houseService.insertWithApi(contentId);
+				vo = houseService.selectHouse(contentId);
+			}
+
 		// 숙소별 리뷰 목록
 		List<BaseReviewVO> reviewList = baseReviewService.getHouseReviews(contentId, 1, 10);
 		// 숙소별 리뷰 통계

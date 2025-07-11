@@ -12,4 +12,5 @@ public interface HouseService {
 	public List<HouseVO> selectList(Map<String, Object> map);
 	public HouseVO selectHouse(Long id);
 	public HouseVO selectHouseWithSellerId(Long contentId);
+	void insertWithApi(Long contentId);
 }
