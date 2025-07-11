@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CommunityServiceImpl implements CommunityService {
+
     private final CommunityMapper communityMapper;
 
     @Override
@@ -43,5 +44,30 @@ public class CommunityServiceImpl implements CommunityService {
     public void deletePost(Long id) {
         communityMapper.deletePost(id);
     }
-    
+
+    @Override
+    public void incrementViewCount(Long id) {
+        communityMapper.incrementViewCount(id);
+    }
+
+    @Override
+    public boolean toggleLike(Long postId, Long memberId) {
+        boolean liked = communityMapper.isLiked(postId, memberId) > 0;
+
+        if (liked) {
+            communityMapper.deleteLike(postId, memberId);
+            communityMapper.decrementLikeCount(postId);
+            return false; // 취소
+        } else {
+            communityMapper.insertLike(postId, memberId);
+            communityMapper.incrementLikeCount(postId);
+            return true; // 좋아요
+        }
+    }
+
+    @Override
+    public boolean isLiked(Long postId, Long memberId) {
+        return communityMapper.isLiked(postId, memberId) > 0;
+    }
+
 }

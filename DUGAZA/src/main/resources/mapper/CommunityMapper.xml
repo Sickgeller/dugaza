@@ -21,48 +21,46 @@
 		<result property="commentCount" column="COMMENT_COUNT" />
 	</resultMap>
 
-	<!-- 글 목록 -->
+	<!-- 게시글 목록 -->
 	<select id="selectPostList" parameterType="map"
 		resultMap="communityPostMap">
-		SELECT p.*, m.ID AS WRITER
-		FROM community_post p
-		JOIN member m ON p.member_id = m.member_id
+		SELECT *
+		FROM (
+		SELECT ROWNUM rnum, A.*
+		FROM (
+		SELECT cp.*, m.id AS writer
+		FROM community_post cp
+		JOIN member m ON cp.member_id = m.member_id
 		<where>
 			<if test="category != null and category != ''">
-				AND p.category = #{category}
+				AND cp.category = #{category}
 			</if>
 			<if test="keyword != null and keyword != ''">
-				AND (p.title LIKE '%' || #{keyword} || '%' OR p.content LIKE '%' || #{keyword} || '%')
+				AND cp.title LIKE '%' || #{keyword} || '%'
 			</if>
 		</where>
-		<choose>
-			<when test="order == 'popular'">
-				ORDER BY p.like_count DESC
-			</when>
-			<when test="order == 'view'">
-				ORDER BY p.view_count DESC
-			</when>
-			<when test="order == 'comment'">
-				ORDER BY p.comment_count DESC
-			</when>
-			<otherwise>
-				ORDER BY p.id DESC
-			</otherwise>
-		</choose>
+		ORDER BY cp.regdate DESC
+		) A
+		)
+		WHERE rnum BETWEEN #{start} AND #{end}
 	</select>
+
+
 
 	<!-- 글 등록 -->
 	<insert id="insertPost"
 		parameterType="kr.spring.community.vo.CommunityPostVO">
 		INSERT INTO community_post (
-			id, category, title, content, member_id, filename
+		id, category, title,
+		content, member_id, filename
 		) VALUES (
-			community_seq.NEXTVAL,
-			#{category},
-			#{title},
-			#{content},
-			#{memberId},
-			#{filename, jdbcType=VARCHAR}
+		community_seq.NEXTVAL,
+		#{category},
+		#{title},
+		#{content},
+		#{memberId},
+		#{filename,
+		jdbcType=VARCHAR}
 		)
 	</insert>
 
@@ -71,7 +69,8 @@
 		resultMap="communityPostMap">
 		SELECT p.*, m.ID AS WRITER
 		FROM community_post p
-		JOIN member m ON p.member_id = m.member_id
+		JOIN member m
+		ON p.member_id = m.member_id
 		WHERE p.id = #{id}
 	</select>
 
@@ -80,10 +79,12 @@
 		parameterType="kr.spring.community.vo.CommunityPostVO">
 		UPDATE community_post
 		SET title = #{title},
-			content = #{content},
-			category = #{category},
-			filename = #{filename}
-		WHERE id = #{id}
+		content =
+		#{content},
+		category = #{category},
+		filename = #{filename}
+		WHERE id =
+		#{id}
 	</update>
 
 	<!-- 글 삭제 -->
@@ -92,17 +93,72 @@
 		WHERE id = #{id}
 	</delete>
 
+
 	<!-- 글 개수 -->
-	<select id="selectPostCount" resultType="int">
+	<select id="selectPostCount" parameterType="map"
+		resultType="int">
 		SELECT COUNT(*)
-		FROM community_post
+		FROM community_post cp
+		<where>
+			<if test="category != null and category != ''">
+				AND cp.category = #{category}
+			</if>
+			<if test="keyword != null and keyword != ''">
+				AND cp.title LIKE '%' || #{keyword} || '%'
+			</if>
+		</where>
 	</select>
+
 
 	<!-- 댓글수 업데이트 -->
 	<update id="updateCommentCount">
 		UPDATE community_post
-		SET comment_count = NVL(comment_count, 0) + #{amount}
+		SET comment_count =
+		NVL(comment_count, 0) + #{amount}
 		WHERE id = #{postId}
 	</update>
+
+	<!-- 조회수 증가 -->
+	<update id="incrementViewCount">
+		UPDATE community_post
+		SET view_count = view_count + 1
+		WHERE id = #{id}
+	</update>
+
+	<!-- 좋아요 여부 확인 -->
+	<select id="isLiked" resultType="int">
+		SELECT COUNT(*)
+		FROM
+		community_post_like
+		WHERE post_id = #{postId} AND member_id =
+		#{memberId}
+	</select>
+
+	<!-- 좋아요 등록 -->
+	<insert id="insertLike">
+		INSERT INTO community_post_like (post_id, member_id)
+		VALUES (#{postId}, #{memberId})
+	</insert>
+
+	<!-- 좋아요 취소 -->
+	<delete id="deleteLike">
+		DELETE FROM community_post_like
+		WHERE post_id =
+		#{postId} AND member_id = #{memberId}
+	</delete>
+
+	<!-- 게시글 좋아요 카운트 업데이트 -->
+	<update id="incrementLikeCount">
+		UPDATE community_post
+		SET like_count = like_count + 1
+		WHERE id = #{postId}
+	</update>
+	<update id="decrementLikeCount">
+		UPDATE community_post
+		SET like_count = like_count - 1
+		WHERE id = #{postId}
+	</update>
+
+
 
 </mapper>

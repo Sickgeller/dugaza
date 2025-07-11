@@ -1,4 +1,134 @@
-/* 댓글 섹션 */
+.action-btn {
+    display: inline-block;
+    padding: 2px 6px; /* 기존: 4px 10px → 더 작게 */
+    margin-left: 4px;
+    font-size: 13px;  /* 기존: 14px → 더 작게 */
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 3px; /* 살짝 더 둥글게 */
+    background: transparent;
+    text-decoration: none;
+    line-height: 1.2;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    border-color: #2681ff;
+    color: #2681ff;
+}
+
+
+
+/* ===== 공통 컨테이너 ===== */
+.community-container {
+    width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .community-container {
+        margin: 20px;
+        padding: 15px;
+    }
+}
+
+/* ===== 제목 섹션 ===== */
+.post-title-section {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.post-title-section h1 {
+    font-size: 26px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 8px;
+}
+
+.post-title-section .post-meta {
+    font-size: 14px;
+    color: #888;
+}
+
+.post-title-section .post-meta span {
+    margin-right: 10px;
+}
+
+/* ===== 본문 섹션 ===== */
+.post-stats {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #555;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.post-stats button {
+    all: unset;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #555;
+    font-size: 14px;
+}
+
+.post-stats span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #555;
+    font-size: 14px;
+}
+
+.post-stats i {
+    font-size: 14px;
+    color: #555;
+}
+
+.post-stats strong {
+    font-weight: 500;
+    color: #222;
+}
+
+/* ===== 좋아요 버튼 ===== */
+#likeBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;      
+    color: #555;        
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+}
+
+#likeBtn:focus {
+    outline: none;
+}
+
+#likeBtn i {
+    font-size: 14px;         
+    color: #555;
+}
+
+#likeBtn strong {
+    font-weight: 500;         
+    color: #222;                
+}
+
+
+/* ===== 댓글 섹션 ===== */
 .post-comments-section {
     margin-top: 40px;
 }
@@ -11,7 +141,6 @@
     padding-bottom: 5px;
 }
 
-/* 댓글 아이템 */
 .comment-item {
     background: #fafafa;
     border: 1px solid #eee;
@@ -36,62 +165,15 @@
     line-height: 1.6;
 }
 
-
-/* ===== 상세글 페이지 ===== */
-.community-container {
-    width: 1200px;
-    margin: 40px auto;
-    padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.post-title-section {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
-}
-
-.post-title-section h1 {
-    font-size: 26px;
-    font-weight: 600;
-    color: #222;
-    margin-bottom: 8px;
-}
-
-.post-title-section .post-meta {
-    font-size: 14px;
-    color: #888;
-}
-
-.post-title-section .post-meta span {
-    margin-right: 10px;
-}
-
-.post-content-section {
-    margin-top: 20px;
-    line-height: 1.8;
-    font-size: 15px;
-    color: #444;
-    min-height: 150px;
-}
-
-.post-stats {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #666;
-    background: #f9f9f9;
-    padding: 10px;
-    border-radius: 4px;
-}
-
-.post-stats span {
-    margin-right: 15px;
+/* ===== 댓글 작성 ===== */
+.reply-actions {
+    text-align: right;
+    margin-top: 10px;
 }
 
 .post-reply-section {
     margin-top: 40px;
+    
 }
 
 .post-reply-section h3 {
@@ -139,15 +221,4 @@
 .login-notice a {
     color: #2681ff;
     text-decoration: underline;
-}
-
-@media (max-width: 768px) {
-    .community-container {
-        margin: 20px;
-        padding: 15px;
-    }
-
-    .post-title-section h1 {
-        font-size: 22px;
-    }
 }

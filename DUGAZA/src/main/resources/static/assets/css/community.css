@@ -19,6 +19,10 @@
     margin-bottom: 30px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width:1200px;
+    margin: 0 auto;
+    
+    
 }
 
 .filter-container {
@@ -29,7 +33,9 @@
 }
 
 .filter-group {
-    flex: 1;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
 }
 
 .filter-group label {
@@ -39,21 +45,48 @@
     font-weight: 500;
 }
 
-.filter-group select{
+.filter-group input,
+.filter-group select {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 16px;
+    font-weight: 400;
     color: #333;
+    box-sizing: border-box;
+    height: 42px; /* 강제 고정 */
+    line-height: normal;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+
+.filter-group button {
+	margin-top: 0px;
+	background-color: #2681ff;
+	color: #fff;
+	border: none;
+	border-radius: 4px;
+	padding: 10px 12px;
+	cursor: pointer;
+	 margin-left: 6px;
+	 height:42px;
+}
+
+.filter-group button:hover {
+	background-color: #1a73e8;
 }
 
 
 
 /* Write Post */
 .write-post {
+	
     text-align: right;
-    margin-bottom: 20px;
+    margin-bottom: 35px;
+    margin-right: 333px;
 }
 
 .write-btn {

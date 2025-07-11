@@ -1,0 +1,130 @@
+.form-group.horizontal {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+}
+
+.form-group.horizontal .title-container {
+    flex: 1;
+}
+
+.form-group.horizontal .title-container input {
+    width: 100%;
+}
+
+.form-group.horizontal .category-container {
+    flex-shrink: 0;
+}
+
+.form-group.horizontal .category-container select {
+    width: 150px;
+}
+
+
+.community-write-container {
+    max-width: 1000px;
+    width: 100%; /* or auto */
+    margin: 50px auto;
+    padding: 40px;
+    background: #f9fafb;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+
+.community-write-container h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 8px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.form-group input[type="text"],
+.form-group select,
+.form-group textarea,
+.form-group input[type="file"] {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.form-group input[type="file"]:focus {
+    border-color: #3b82f6;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group textarea {
+    min-height: 200px;
+    resize: vertical;
+}
+
+.form-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px; 
+   
+    
+}
+
+.form-actions button {
+    padding: 10px 20px;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-size: 14px;
+}
+
+.form-actions button:hover {
+    background: linear-gradient(90deg, #2563eb, #1d4ed8);
+}
+
+.form-actions .btn-cancel {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #e5e7eb;
+    color: #374151;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-size: 14px;
+}
+
+.form-actions .btn-cancel:hover {
+    background: #d1d5db;
+}
+
+img {
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
