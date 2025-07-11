@@ -31,10 +31,10 @@ public class WishListController {
         MemberVO member = (MemberVO) model.getAttribute("member");
         Long memberId = member.getMemberId();
 
-		
+		boolean liked = wishListService.toggleLike(memberId, dto.getContentType(), dto.getContentId());
 
 		Map<String, Object> response = new HashMap<>();
-		
+		response.put("liked", liked);
 
 		return ResponseEntity.ok(response);
 	}

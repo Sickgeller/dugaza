@@ -8,5 +8,5 @@ public interface WishListService {
 	public void insertWishList(WishListVO vo);
 	public void deleteList(WishListVO vo);
 	public WishListVO selectWishList(WishListVO vo);
-	public void toggleLike(Long memberId, Long contentType, Long contentId);
+	public boolean toggleLike(Long memberId, Long contentType, Long contentId);
 }

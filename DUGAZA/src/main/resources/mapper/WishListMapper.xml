@@ -11,8 +11,8 @@
 
 	<insert id="insertWishList" parameterType="kr.spring.wishlist.vo.WishListVO">
 		INSERT INTO WISHLIST(
-			WISTHLIST_ID,
-			MEMBER_ID
+			WISHLIST_ID,
+			MEMBER_ID,
 			CONTENT_TYPE,
 			CONTENT_ID,
 			CREATED_AT
@@ -25,12 +25,12 @@
 		)
 	</insert>
 	
-	<delete id="deleteWishList" parameterType="kr.spring.wishlist.vo.WishListVO">
+	<delete id="deleteList" parameterType="kr.spring.wishlist.vo.WishListVO">
 		DELETE FROM WISHLIST
 		WHERE MEMBER_ID = #{memberId} AND CONTENT_ID = #{contentId}
 	</delete>
 	
-	<select id="selectWistList" parameterType="kr.spring.wishlist.vo.WishListVO">
+	<select id="selectWishList" parameterType="kr.spring.wishlist.vo.WishListVO" resultMap="wishListMap">
 		SELECT 
 			*
 		FROM WISHLIST
