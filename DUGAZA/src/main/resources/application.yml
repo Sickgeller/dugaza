@@ -72,7 +72,7 @@ mybatis: #mybatis 설정
     default-fetch-size: 100
     default-statement-timeout: 30
     call-setters-on-nulls: true
-    jdbc-type-for-null: NULL
+    jdbc-type-for-null: VARCHAR
   type-aliases-package: kr.spring.api.dto,kr.spring.member.vo,kr.spring.faq.vo,kr.spring.room.dto
 
 logging: #로그 지정

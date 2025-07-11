@@ -1,4 +1,4 @@
-package kr.spring.room.dto;
+package kr.spring.room.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +26,9 @@ public class RoomDetailVO {
     private Integer kitchen;
     private Integer pet;
     private Integer smokingRoom;
-    private String image;
+    private String image1;
+    private String image2;
+    private String image3;
     private Integer status;
+    private String description;
 }

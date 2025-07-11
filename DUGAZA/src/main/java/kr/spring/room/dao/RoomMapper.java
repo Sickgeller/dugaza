@@ -1,6 +1,6 @@
 package kr.spring.room.dao;
 
-import kr.spring.room.dto.RoomDetailVO;
+import kr.spring.room.vo.RoomDetailVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -27,4 +27,25 @@ public interface RoomMapper {
      * @return 셀러가 관리(판매)중인 총 객실 수
      */
     int getTotalRoomCount(@Param("sellerId") Long sellerId);
+
+    /**
+     * @param roomDetailVO 등록할 방 정보
+     */
+    void insertRoom(RoomDetailVO roomDetailVO);
+    
+    /**
+     * @param roomDetailVO 수정할 방 정보
+     */
+    void updateRoom(RoomDetailVO roomDetailVO);
+    
+    /**
+     * @param roomId 삭제할 방의 ID
+     */
+    void deleteRoom(@Param("roomId") Long roomId);
+    
+    /**
+     * @param roomId 조회할 방의 ID
+     * @return 방 상세 정보
+     */
+    RoomDetailVO getRoomById(@Param("roomId") Long roomId);
 }

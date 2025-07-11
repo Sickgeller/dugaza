@@ -65,7 +65,6 @@ public class MemberAdminController {
 		
 		// 탈퇴 회원 수
 		int withdrawnCount = memberService.selectWithdrawnMemberCount();
-		
 		// 휴면 회원 수
 		int humanCount = memberService.selectHumanMemberCount();
 		

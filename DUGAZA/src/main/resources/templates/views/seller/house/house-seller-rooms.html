@@ -8,10 +8,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
+    <!-- 메시지 표시 -->
+    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
     <div class="admin-container">
         <!-- 사이드바 -->
         <div th:replace="~{fragments/house_seller_sidebar :: houseSideBar}"></div>
-
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
             <!-- 헤더 -->
@@ -21,11 +23,10 @@
                     <h2>객실 관리</h2>
                 </div>
                 <div class="user-info">
-                    <span th:text="${seller.name} + '님'">홍길동님</span>
+                    <span th:text="${seller != null ? seller.name + '님' : '판매자'}">홍길동님</span>
                     <img th:src="@{/assets/images/users/profile1.jpg}" alt="프로필 이미지">
                 </div>
             </div>
-
             <!-- 객실 통계 -->
             <div class="content-section">
                 <div class="stats-grid">
@@ -35,7 +36,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>총 객실</h3>
-                            <p th:text="${totalRooms}">0개</p>
+                            <p th:text="${totalRooms != null ? totalRooms : 0}">0개</p>
                             <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
@@ -45,28 +46,26 @@
                         </div>
                         <div class="stat-info">
                             <h3>예약 가능</h3>
-                            <p th:text="${availableRooms}">0개</p>
+                            <p th:text="${availableRooms != null ? availableRooms : 0}">0개</p>
                             <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
                 </div>
             </div>
-
             <!-- 객실 목록 -->
             <div class="content-section">
                 <div class="section-header">
                     <h3>객실 목록</h3>
-                    <button class="btn-primary" onclick="location.href='/seller/house/room/add'">
+                    <button class="btn-primary" type="button" id="openRoomAddModal">
                         <i class="fas fa-plus"></i> 새 객실 추가
                     </button>
                 </div>
-
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
                                 <th>객실 번호</th>
-                                <th>객실 유형</th>
+                                <th>객실명</th>
                                 <th>가격</th>
                                 <th>상태</th>
                                 <th>최근 예약</th>
@@ -75,20 +74,20 @@
                         </thead>
                         <tbody>
                             <tr th:each="room : ${rooms}">
-                                <td th:text="${room.roomNumber}">101</td>
-                                <td th:text="${room.roomType}">디럭스</td>
-                                <td th:text="${#numbers.formatCurrency(room.price)}">₩150,000</td>
+                                <td th:text="${room.roomId}">101</td>
+                                <td th:text="${room.roomName}">디럭스</td>
+                                <td th:text="${room.price != null ? #numbers.formatInteger(room.price, 0, 'COMMA') : '-'}">₩150,000</td>
                                 <td>
                                     <span th:class="${room.status == 1 ? 'status-reserved' : 'status-available'}"
                                           th:text="${room.status == 1 ? '예약중' : '예약가능'}">예약가능</span>
                                 </td>
-                                <td th:text="${room.lastReservation}">2024-03-15</td>
+                                <td>-</td>
                                 <td>
                                     <div class="action-buttons">
-                                        <a th:href="@{/seller/house/room/edit/{id}(id=${room.id})}" class="btn-icon" title="수정">
+                                        <a th:href="@{/seller/house/room/edit(roomId=${room.roomId})}" class="btn-icon" title="수정">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <button class="btn-icon delete-room" th:data-room-id="${room.id}" title="삭제">
+                                        <button class="btn-icon delete-room" th:data-room-id="${room.roomId}" title="삭제">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -100,49 +99,272 @@
                         </tbody>
                     </table>
                 </div>
-
                 <!-- 페이징 -->
                 <div class="pagination" th:if="${totalPages > 1}">
-                    <a th:href="@{/seller/house/management(page=${currentPage - 1})}" 
+                    <a th:href="@{/seller/house/management(page=${currentPage - 1})}"
                        th:class="${currentPage == 1 ? 'disabled' : ''}">&laquo;</a>
-                    
                     <th:block th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
                         <a th:href="@{/seller/house/management(page=${pageNum})}"
                            th:text="${pageNum}"
                            th:class="${pageNum == currentPage ? 'active' : ''}">1</a>
                     </th:block>
-                    
                     <a th:href="@{/seller/house/management(page=${currentPage + 1})}"
                        th:class="${currentPage == totalPages ? 'disabled' : ''}">&raquo;</a>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- JavaScript -->
-    <script th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <!-- 객실 추가 모달 -->
+    <div id="roomAddModal" class="modal-bg" th:if="${house != null}">
+        <div class="modal-card">
+            <button type="button" id="closeRoomAddModal" class="modal-close">&times;</button>
+            <div class="room-add-title">객실 추가</div>
+            <form class="room-add-form" th:action="@{/seller/house/room/insert}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="contentId" th:value="${house != null ? house.contentId : ''}">
+                <div class="form-group">
+                    <label for="roomName">객실명</label>
+                    <input type="text" id="roomName" name="roomName" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">가격(1박 기준)</label>
+                    <input type="number" id="price" name="price" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="roomSize">객실 크기(㎡)</label>
+                    <input type="text" id="roomSize" name="roomSize" placeholder="예: 25㎡" required>
+                </div>
+                <div class="form-group">
+                    <label for="minimumCapacity">최소 인원</label>
+                    <input type="number" id="minimumCapacity" name="minimumCapacity" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="maximumCapacity">최대 인원</label>
+                    <input type="number" id="maximumCapacity" name="maximumCapacity" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="bedInfo">침대 정보</label>
+                    <input type="text" id="bedInfo" name="bedInfo" placeholder="예: 더블 1, 싱글 2" required>
+                </div>
+                <div class="form-group facility-group">
+                    <label><input type="checkbox" name="wifi" value="1" class="facility-checkbox"> 와이파이</label>
+                    <input type="hidden" name="wifi" value="0" class="facility-hidden">
+                    <label><input type="checkbox" name="tv" value="1" class="facility-checkbox"> TV</label>
+                    <input type="hidden" name="tv" value="0" class="facility-hidden">
+                    <label><input type="checkbox" name="aircon" value="1" class="facility-checkbox"> 에어컨</label>
+                    <input type="hidden" name="aircon" value="0" class="facility-hidden">
+                    <label><input type="checkbox" name="bathroom" value="1" class="facility-checkbox"> 욕실</label>
+                    <input type="hidden" name="bathroom" value="0" class="facility-hidden">
+                    <label><input type="checkbox" name="sofa" value="1" class="facility-checkbox"> 소파</label>
+                    <input type="hidden" name="sofa" value="0" class="facility-hidden">
+                    <label><input type="checkbox" name="kitchen" value="1" class="facility-checkbox"> 주방</label>
+                    <input type="hidden" name="kitchen" value="0" class="facility-hidden">
+                    <label><input type="checkbox" name="pet" value="1" class="facility-checkbox"> 반려동물 가능</label>
+                    <input type="hidden" name="pet" value="0" class="facility-hidden">
+                    <label><input type="checkbox" name="smokingRoom" value="1" class="facility-checkbox"> 흡연실</label>
+                    <input type="hidden" name="smokingRoom" value="0" class="facility-hidden">
+                </div>
+                <div class="form-group">
+                    <label for="image1File">객실 사진1</label>
+                    <input type="file" id="image1File" name="image1File" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label for="image2File">객실 사진2</label>
+                    <input type="file" id="image2File" name="image2File" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label for="image3File">객실 사진3</label>
+                    <input type="file" id="image3File" name="image3File" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label for="description">객실 설명</label>
+                    <textarea id="description" name="description" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn-primary modal-submit">객실 등록</button>
+            </form>
+        </div>
+    </div>
+    <style>
+    /* 모달 배경 */
+    .modal-bg {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; width: 100vw; min-height: 100vh;
+        background: rgba(0,0,0,0.35);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+        overflow-y: auto;
+    }
+    .modal-bg[style*="display: flex"] { display: flex !important; }
+    /* 모달 카드 */
+    .modal-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        max-width: 480px;
+        width: 95vw;
+        padding: 36px 32px 28px 32px;
+        position: relative;
+        animation: modalFadeIn 0.25s;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(40px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .modal-close {
+        position: absolute;
+        top: 18px; right: 18px;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: #888;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .modal-close:hover { color: #2563eb; }
+    .room-add-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2563eb;
+        text-align: center;
+        margin-bottom: 24px;
+        letter-spacing: -1px;
+    }
+    .room-add-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+    .form-group label {
+        font-size: 15px;
+        color: #444;
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group input[type="file"],
+    .form-group textarea {
+        padding: 10px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 1rem;
+        background: #f9fafb;
+        transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+        border-color: #2563eb;
+        outline: none;
+        background: #fff;
+    }
+    .form-group textarea {
+        resize: vertical;
+        min-height: 60px;
+    }
+    .facility-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px 18px;
+        margin-bottom: 10px;
+        padding: 8px 0 0 0;
+    }
+    .facility-group label {
+        font-size: 14px;
+        color: #555;
+        font-weight: 400;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 0;
+    }
+    .facility-group input[type="checkbox"] {
+        accent-color: #2563eb;
+        width: 16px;
+        height: 16px;
+        margin-right: 2px;
+    }
+    .modal-submit {
+        margin-top: 10px;
+        width: 100%;
+        background: #2563eb;
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 6px;
+        padding: 13px 0;
+        cursor: pointer;
+        transition: background 0.2s;
+        box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    }
+    .modal-submit:hover {
+        background: #1746a2;
+    }
+    @media (max-width: 600px) {
+        .modal-card {
+            padding: 18px 8px 16px 8px;
+            max-width: 98vw;
+        }
+        .room-add-title {
+            font-size: 1.1rem;
+        }
+    }
+    </style>
     <script>
         // 메뉴 토글
         document.querySelector('.menu-toggle').addEventListener('click', function() {
             document.querySelector('.admin-container').classList.toggle('sidebar-collapsed');
         });
-
         // 객실 삭제 확인
-        $('.delete-room').click(function() {
-            const roomId = $(this).data('room-id');
-            if (confirm('정말로 이 객실을 삭제하시겠습니까?')) {
-                $.ajax({
-                    url: '/seller/house/room/delete/' + roomId,
-                    method: 'POST',
-                    success: function(response) {
-                        alert('객실이 삭제되었습니다.');
-                        location.reload();
-                    },
-                    error: function(xhr, status, error) {
-                        alert('객실 삭제 중 오류가 발생했습니다.');
-                    }
-                });
-            }
+        if(window.jQuery) {
+            $('.delete-room').click(function() {
+                const roomId = $(this).data('room-id');
+                if (confirm('정말로 이 객실을 삭제하시겠습니까?')) {
+                    $.ajax({
+                        url: '/seller/house/room/delete',
+                        method: 'POST',
+                        data: { roomId: roomId },
+                        success: function(response) {
+                            alert('객실이 삭제되었습니다.');
+                            location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            alert('객실 삭제 중 오류가 발생했습니다.');
+                        }
+                    });
+                }
+            });
+        }
+        // 모달 열기/닫기
+        document.getElementById('openRoomAddModal').onclick = function() {
+            document.getElementById('roomAddModal').style.display = 'flex';
+        };
+        document.getElementById('closeRoomAddModal').onclick = function() {
+            document.getElementById('roomAddModal').style.display = 'none';
+        };
+        // 모달 바깥 클릭 시 닫기
+        document.getElementById('roomAddModal').onclick = function(e) {
+            if(e.target === this) this.style.display = 'none';
+        };
+        
+        // 체크박스 상태에 따라 hidden 필드 값 업데이트
+        document.querySelectorAll('.facility-checkbox').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                const name = this.name;
+                const hiddenField = document.querySelector('input[name="' + name + '"].facility-hidden');
+                if (hiddenField) {
+                    hiddenField.value = this.checked ? '1' : '0';
+                }
+            });
         });
     </script>
 </body>

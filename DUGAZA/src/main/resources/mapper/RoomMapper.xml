@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.spring.room.dao.RoomMapper">
 
-    <resultMap id="RoomDetailResultMap" type="kr.spring.room.dto.RoomDetailVO">
+    <resultMap id="RoomDetailResultMap" type="kr.spring.room.vo.RoomDetailVO">
         <id property="roomId" column="ROOM_ID"/>
         <result property="houseId" column="HOUSE_ID"/>
         <result property="roomName" column="ROOM_NAME"/>
@@ -19,7 +19,9 @@
         <result property="kitchen" column="KITCHEN"/>
         <result property="pet" column="PET"/>
         <result property="smokingRoom" column="SMOKING_ROOM"/>
-        <result property="image" column="IMAGE"/>
+        <result property="image1" column="IMAGE"/>
+        <result property="image2" column="IMAGE"/>
+        <result property="image3" column="IMAGE"/>
         <result property="status" column="STATUS"/>
     </resultMap>
 
@@ -43,5 +45,88 @@
         FROM HOUSE_SELLER_DETAIL HSD
         JOIN HOUSE_ROOM_INFO HRI ON HSD.HOUSE_ID = HRI.HOUSE_ID
         WHERE SELLER_ID = #{sellerId}
+    </select>
+
+    <insert id="insertRoom" parameterType="kr.spring.room.vo.RoomDetailVO">
+        INSERT INTO HOUSE_ROOM_INFO (
+            ROOM_ID,
+            HOUSE_ID,
+            ROOM_NAME,
+            PRICE,
+            ROOM_SIZE,
+            MINIMUM_CAPACITY,
+            MAXIMUM_CAPACITY,
+            BED_INFO,
+            WIFI,
+            TV,
+            AIRCON,
+            BATHROOM,
+            SOFA,
+            KITCHEN,
+            PET,
+            SMOKING_ROOM,
+            IMAGE1,
+            IMAGE2,
+            IMAGE3,
+            STATUS,
+            DESCRIPTION
+        )
+        VALUES (
+                   ROOM_SEQ.NEXTVAL,
+                   #{houseId},
+                   #{roomName},
+                   #{price},
+                   #{roomSize},
+                   #{minimumCapacity},
+                   #{maximumCapacity},
+                   #{bedInfo},
+                   NVL(#{wifi}, 0),
+                   NVL(#{tv}, 0),
+                   NVL(#{aircon}, 0),
+                   NVL(#{bathroom}, 0),
+                   NVL(#{sofa}, 0),
+                   NVL(#{kitchen}, 0),
+                   NVL(#{pet}, 0),
+                   NVL(#{smokingRoom}, 0),
+                   #{image1,jdbcType=VARCHAR},
+                   #{image2,jdbcType=VARCHAR},
+                   #{image3,jdbcType=VARCHAR},
+                   #{status},
+                   #{description,jdbcType=VARCHAR}
+               )
+    </insert>
+    
+    <!-- 객실 수정 -->
+    <update id="updateRoom" parameterType="kr.spring.room.vo.RoomDetailVO">
+        UPDATE HOUSE_ROOM_INFO SET
+            ROOM_NAME = #{roomName},
+            PRICE = #{price},
+            ROOM_SIZE = #{roomSize},
+            MINIMUM_CAPACITY = #{minimumCapacity},
+            MAXIMUM_CAPACITY = #{maximumCapacity},
+            BED_INFO = #{bedInfo},
+            WIFI = #{wifi},
+            TV = #{tv},
+            AIRCON = #{aircon},
+            BATHROOM = #{bathroom},
+            SOFA = #{sofa},
+            KITCHEN = #{kitchen},
+            PET = #{pet},
+            SMOKING_ROOM = #{smokingRoom},
+            IMAGE1 = #{image1,jdbcType=VARCHAR},
+            IMAGE2 = #{image2,jdbcType=VARCHAR},
+            IMAGE3 = #{image3,jdbcType=VARCHAR},
+            DESCRIPTION = #{description,jdbcType=VARCHAR}
+        WHERE ROOM_ID = #{roomId}
+    </update>
+    
+    <!-- 객실 삭제 -->
+    <delete id="deleteRoom" parameterType="Long">
+        DELETE FROM HOUSE_ROOM_INFO WHERE ROOM_ID = #{roomId}
+    </delete>
+    
+    <!-- 객실 상세 조회 -->
+    <select id="getRoomById" parameterType="Long" resultMap="RoomDetailResultMap">
+        SELECT * FROM HOUSE_ROOM_INFO WHERE ROOM_ID = #{roomId}
     </select>
 </mapper> 

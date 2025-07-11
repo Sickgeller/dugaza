@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>객실 수정 - 숙소 판매자</title>
+    <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- 메시지 표시 -->
+    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div th:replace="~{fragments/house_seller_sidebar :: houseSideBar}"></div>
+        
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>객실 수정</h2>
+                </div>
+                <div class="user-info">
+                    <span th:text="${seller != null ? seller.name + '님' : '판매자'}">홍길동님</span>
+                    <img th:src="@{/assets/images/users/profile1.jpg}" alt="프로필 이미지">
+                </div>
+            </div>
+            
+            <!-- 객실 수정 폼 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>객실 정보 수정</h3>
+                    <a th:href="@{/seller/house/management}" class="btn-secondary">
+                        <i class="fas fa-arrow-left"></i> 목록으로
+                    </a>
+                </div>
+                
+                <form class="room-edit-form" th:action="@{/seller/house/room/update}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="roomId" th:value="${room.roomId}">
+                    <input type="hidden" name="houseId" th:value="${room.houseId}">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="roomName">객실명</label>
+                            <input type="text" id="roomName" name="roomName" th:value="${room.roomName}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">가격(1박 기준)</label>
+                            <input type="number" id="price" name="price" th:value="${room.price}" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="roomSize">객실 크기(㎡)</label>
+                            <input type="text" id="roomSize" name="roomSize" th:value="${room.roomSize}" placeholder="예: 25㎡" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="minimumCapacity">최소 인원</label>
+                            <input type="number" id="minimumCapacity" name="minimumCapacity" th:value="${room.minimumCapacity}" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="maximumCapacity">최대 인원</label>
+                            <input type="number" id="maximumCapacity" name="maximumCapacity" th:value="${room.maximumCapacity}" min="1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bedInfo">침대 정보</label>
+                        <input type="text" id="bedInfo" name="bedInfo" th:value="${room.bedInfo}" placeholder="예: 더블 1, 싱글 2" required>
+                    </div>
+                    
+                    <div class="form-group facility-group">
+                        <label>시설 정보</label>
+                        <div class="facility-checkboxes">
+                            <label><input type="checkbox" name="wifi" value="1" class="facility-checkbox" th:checked="${room.wifi == 1}"> 와이파이</label>
+                            <input type="hidden" name="wifi" value="0" class="facility-hidden">
+                            <label><input type="checkbox" name="tv" value="1" class="facility-checkbox" th:checked="${room.tv == 1}"> TV</label>
+                            <input type="hidden" name="tv" value="0" class="facility-hidden">
+                            <label><input type="checkbox" name="aircon" value="1" class="facility-checkbox" th:checked="${room.aircon == 1}"> 에어컨</label>
+                            <input type="hidden" name="aircon" value="0" class="facility-hidden">
+                            <label><input type="checkbox" name="bathroom" value="1" class="facility-checkbox" th:checked="${room.bathroom == 1}"> 욕실</label>
+                            <input type="hidden" name="bathroom" value="0" class="facility-hidden">
+                            <label><input type="checkbox" name="sofa" value="1" class="facility-checkbox" th:checked="${room.sofa == 1}"> 소파</label>
+                            <input type="hidden" name="sofa" value="0" class="facility-hidden">
+                            <label><input type="checkbox" name="kitchen" value="1" class="facility-checkbox" th:checked="${room.kitchen == 1}"> 주방</label>
+                            <input type="hidden" name="kitchen" value="0" class="facility-hidden">
+                            <label><input type="checkbox" name="pet" value="1" class="facility-checkbox" th:checked="${room.pet == 1}"> 반려동물 가능</label>
+                            <input type="hidden" name="pet" value="0" class="facility-hidden">
+                            <label><input type="checkbox" name="smokingRoom" value="1" class="facility-checkbox" th:checked="${room.smokingRoom == 1}"> 흡연실</label>
+                            <input type="hidden" name="smokingRoom" value="0" class="facility-hidden">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">객실 설명</label>
+                        <textarea id="description" name="description" rows="4" required th:text="${room.description}"></textarea>
+                    </div>
+                    
+                    <!-- 현재 이미지 표시 -->
+                    <div class="form-group">
+                        <label>현재 이미지</label>
+                        <div class="current-images">
+                            <div class="image-item" th:if="${room.image1 != null and room.image1 != ''}">
+                                <img th:src="@{/assets/upload/{filename}(filename=${room.image1})}" alt="객실 이미지 1">
+                                <span>이미지 1</span>
+                            </div>
+                            <div class="image-item" th:if="${room.image2 != null and room.image2 != ''}">
+                                <img th:src="@{/assets/upload/{filename}(filename=${room.image2})}" alt="객실 이미지 2">
+                                <span>이미지 2</span>
+                            </div>
+                            <div class="image-item" th:if="${room.image3 != null and room.image3 != ''}">
+                                <img th:src="@{/assets/upload/{filename}(filename=${room.image3})}" alt="객실 이미지 3">
+                                <span>이미지 3</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 새 이미지 업로드 -->
+                    <div class="form-group">
+                        <label for="image1File">새 이미지 1 (선택사항)</label>
+                        <input type="file" id="image1File" name="image1File" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label for="image2File">새 이미지 2 (선택사항)</label>
+                        <input type="file" id="image2File" name="image2File" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label for="image3File">새 이미지 3 (선택사항)</label>
+                        <input type="file" id="image3File" name="image3File" accept="image/*">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">객실 수정</button>
+                        <a th:href="@{/seller/house/management}" class="btn-secondary">취소</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+    .room-edit-form {
+        max-width: 800px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group input[type="file"],
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus {
+        border-color: #2563eb;
+        outline: none;
+    }
+    
+    .facility-checkboxes {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .facility-checkboxes label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: normal;
+        cursor: pointer;
+    }
+    
+    .facility-checkboxes input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+    }
+    
+    .current-images {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 10px;
+    }
+    
+    .image-item {
+        text-align: center;
+    }
+    
+    .image-item img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+    
+    .image-item span {
+        display: block;
+        margin-top: 5px;
+        font-size: 12px;
+        color: #666;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    
+    .btn-primary, .btn-secondary {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+    }
+    
+    .btn-primary {
+        background: #2563eb;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #1d4ed8;
+    }
+    
+    .btn-secondary {
+        background: #6b7280;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #4b5563;
+    }
+    </style>
+    
+    <script>
+        // 메뉴 토글
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            document.querySelector('.admin-container').classList.toggle('sidebar-collapsed');
+        });
+        
+        // 체크박스 상태에 따라 hidden 필드 값 업데이트
+        document.querySelectorAll('.facility-checkbox').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                const name = this.name;
+                const hiddenField = document.querySelector('input[name="' + name + '"].facility-hidden');
+                if (hiddenField) {
+                    hiddenField.value = this.checked ? '1' : '0';
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
