@@ -20,8 +20,11 @@
 					<div class="detail-meta">
 						<span class="location"><i class="fas fa-map-marker-alt"
 							th:text="${info.addr1}"></i></span> <span class="rating"><i
-							class="fas fa-star"></i> 4.5</span> <span class="reviews"><i
-							class="fas fa-comment"></i> 리뷰 2,345개</span>
+							class="fas fa-star"
+							th:text="${#numbers.formatDecimal(status.averageRating, 0, 1)}"></i></span>
+						<span class="reviews"
+							th:text="${'(리뷰 ' + status.totalCount + ')'}">(리뷰 523)</span>
+
 					</div>
 				</div>
 				<button class="like-btn">
@@ -75,61 +78,210 @@
 				</section>
 
 				<section class="review-section">
-					<h2>리뷰</h2>
-					<div class="review-item">
-						<div class="review-header">
-							<img src="../images/users/profile1.jpg" alt="사용자 프로필">
-							<div class="user-info">
-								<h3>김여행</h3>
-								<div class="rating">
-									<i class="fas fa-star"></i> <i class="fas fa-star"></i> <i
-										class="fas fa-star"></i> <i class="fas fa-star"></i> <i
-										class="fas fa-star-half-alt"></i>
+					<div class="review-header">
+						<h2>리뷰</h2>
+					</div>
+					<div class="review-stats">
+						<div class="rating-average">
+							<div class="rating-number"
+								th:text="${#numbers.formatDecimal(status.averageRating, 0, 1)}"></div>
+							<div class="rating-stars"
+								th:data-rating="${status.averageRating}">
+								<!--  <i class="fas fa-star"></i>  -->
+							</div>
+
+							<div class="rating-count"
+								th:text="${status.totalCount + '개의 리뷰'}"></div>
+						</div>
+						<div class="rating-bars">
+							<div class="rating-bar">
+								<span class="stars">5점</span>
+								<div class="bar-container">
+									<div class="bar"
+										th:style="'width:' + ${status.fiveStarRatio} + '%'"></div>
+								</div>
+								<span class="percentage"
+									th:text="${#numbers.formatDecimal(status.fiveStarRatio, 0, 1) + '%'}">85%</span>
+							</div>
+							<div class="rating-bar">
+								<span class="stars">4점</span>
+								<div class="bar-container">
+									<div class="bar"
+										th:style="'width:' + ${status.fourStarRatio} + '%'"></div>
+								</div>
+								<span class="percentage"
+									th:text="${#numbers.formatDecimal(status.fourStarRatio, 0, 1) + '%'}">10%</span>
+							</div>
+							<div class="rating-bar">
+								<span class="stars">3점</span>
+								<div class="bar-container">
+									<div class="bar"
+										th:style="'width:' + ${status.threeStarRatio} + '%'"></div>
+								</div>
+								<span class="percentage"
+									th:text="${#numbers.formatDecimal(status.threeStarRatio, 0, 1) + '%'}">3%</span>
+							</div>
+							<div class="rating-bar">
+								<span class="stars">2점</span>
+								<div class="bar-container">
+									<div class="bar"
+										th:style="'width:' + ${status.twoStarRatio} + '%'"></div>
+								</div>
+								<span class="percentage"
+									th:text="${#numbers.formatDecimal(status.twoStarRatio, 0, 1) + '%'}">1%</span>
+							</div>
+							<div class="rating-bar">
+								<span class="stars">1점</span>
+								<div class="bar-container">
+									<div class="bar"
+										th:style="'width:' + ${status.oneStarRatio} + '%'"></div>
+								</div>
+								<span class="percentage"
+									th:text="${#numbers.formatDecimal(status.oneStarRatio, 0, 1) + '%'}">1%</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="review-form-wrapper">
+						<h3>리뷰 작성</h3>
+						<form th:action="@{/restaurant/saveReview}" method="post">
+							<!-- 숨겨진 필드: 숙소 ID -->
+							<input type="hidden" name="contentId"
+								th:value="${info.contentId}" />
+
+							<!-- 별점 선택 -->
+							<div class="form-group rating-input">
+								<label>별점</label>
+								<div class="star-rating-input">
+									<input type="hidden" name="rating" id="rating-value" value="0" />
+									<i class="far fa-star" data-value="1"></i> <i
+										class="far fa-star" data-value="2"></i> <i class="far fa-star"
+										data-value="3"></i> <i class="far fa-star" data-value="4"></i>
+									<i class="far fa-star" data-value="5"></i>
 								</div>
 							</div>
-							<span class="review-date">2024.03.15</span>
-						</div>
-						<p>정말 아름다운 곳이에요! 특히 야경이 멋졌습니다.</p>
-						<div class="review-images">
-							<img src="../images/tour/gyeongbokgung-1.jpg" alt="리뷰 이미지 1">
-							<img src="../images/tour/gyeongbokgung-2.jpg" alt="리뷰 이미지 2">
-							<img src="../images/tour/gyeongbokgung-3.jpg" alt="리뷰 이미지 3">
-						</div>
-					</div>
-					<div class="review-item">
-						<div class="review-header">
-							<img src="../images/users/profile2.jpg" alt="사용자 프로필">
-							<div class="user-info">
-								<h3>박관광</h3>
-								<div class="rating">
-									<i class="fas fa-star"></i> <i class="fas fa-star"></i> <i
-										class="fas fa-star"></i> <i class="fas fa-star"></i> <i
-										class="fas fa-star"></i>
-								</div>
+
+							<!-- 내용 (필수) -->
+							<div class="form-group">
+								<label for="content">내용</label>
+								<textarea name="review" id="content" class="form-control"
+									required rows="5" placeholder="리뷰 내용을 작성하세요"></textarea>
 							</div>
-							<span class="review-date">2024.03.14</span>
+
+							<!-- 제출 -->
+							<div class="form-group">
+								<button type="submit" class="submit-review-btn">리뷰 등록</button>
+							</div>
+						</form>
+					</div>
+					<script>
+					    const stars = document.querySelectorAll('.star-rating-input i');
+					    const ratingInput = document.getElementById('rating-value');
+					
+					    stars.forEach(star => {
+					        star.addEventListener('click', () => {
+					            const rating = parseInt(star.getAttribute('data-value'));
+					            ratingInput.value = rating;
+					
+					            stars.forEach(s => {
+					                s.classList.remove('fas');
+					                s.classList.add('far');
+					            });
+					
+					            for (let i = 0; i < rating; i++) {
+					                stars[i].classList.remove('far');
+					                stars[i].classList.add('fas');
+					            }
+					        });
+					    });
+					</script>
+					<div class="review-list">
+						<div class="review-item" th:each="review : ${reviewList}">
+							<div class="review-user">
+								<img src="../images/users/profile3.jpg" alt="사용자 프로필">
+								<div class="user-info">
+									<h4 th:text="${review.id}"></h4>
+									<div class="rating-stars" th:data-rating="${review.rating}">
+										<!--  <i class="fas fa-star"></i> -->
+									</div>
+								</div>
+								<span class="review-date" th:text="${review.createdAt}"></span>
+							</div>
+							<p class="review-text" th:text="${review.review}"></p>
+							<!-- <div class="review-images">
+                                <img src="../images/accommodation/hanok.jpg" alt="리뷰 이미지 1">
+                                <img src="../images/accommodation/hotel-main.jpg" alt="리뷰 이미지 2">
+                            </div> -->
 						</div>
-						<p>가이드분이 친절하시고 설명도 자세히 해주셔서 좋았어요.</p>
-						<div class="review-images">
-							<img src="../images/tour/gyeongbokgung-4.jpg" alt="리뷰 이미지 1">
-							<img src="../images/tour/gyeongbokgung-2.jpg" alt="리뷰 이미지 2">
+						<!-- 추가 리뷰 아이템들 -->
+					</div>
+					<script>
+							document.querySelectorAll('.rating-stars').forEach(container => {
+						        const rating = parseFloat(container.dataset.rating);
+						        const fullStars = Math.floor(rating);
+						        const decimal = rating - fullStars;
+						        const halfStar = decimal >= 0.25 && decimal < 0.75 ? 1 : 0;
+						        const roundUp = decimal >= 0.75 ? 1 : 0;
+						        const emptyStars = 5 - fullStars - halfStar - roundUp;
+
+						        let starsHtml = '';
+
+						        for (let i = 0; i < fullStars + roundUp; i++) {
+						            starsHtml += '<i class="fas fa-star"></i>';
+						        }
+						        if (halfStar) {
+						            starsHtml += '<i class="fas fa-star-half-alt"></i>';
+						        }
+						        for (let i = 0; i < emptyStars; i++) {
+						            starsHtml += '<i class="far fa-star"></i>';
+						        }
+
+						        container.innerHTML = starsHtml;
+						    });
+							</script>
+					<div class="review-pagination">
+						<div class="page-numbers">
+							<a href="#" class="active">1</a> <a href="#">2</a> <a href="#">3</a>
+							<a href="#">4</a> <a href="#">5</a>
 						</div>
 					</div>
-					<div class="pagination">
-						<button>
-							<i class="fas fa-chevron-left"></i>
-						</button>
-						<div class="numbers">
-							<button class="active">1</button>
-							<button>2</button>
-							<button>3</button>
-							<button>4</button>
-							<button>5</button>
-						</div>
-						<button>
-							<i class="fas fa-chevron-right"></i>
-						</button>
+					<!-- 예약 -->
+					<div class="reservation-form-wrapper">
+						<h3>예약하기</h3>
+						<form th:action="@{/event/reserve}" method="post">
+							<!-- 숨겨진 필드: 이벤트 ID와 사용자 ID -->
+							<input type="hidden" name="eventId" th:value="${info.contentId}" />
+						
+							<!-- 예약 날짜 -->
+							<div class="form-group">
+								<label for="visitDate">예약 날짜</label> <input type="date"
+									id="visitDate" name="visitDate" required />
+							</div>
+
+							<!-- 인원 수 -->
+							<div class="form-group">
+								<label for="guestCount">인원 수</label> <input type="number"
+									id="guestCount" name="guestCount" min="1" max="100" required />
+							</div>
+
+							<!-- 총 가격 (자동 계산) -->
+							<div class="form-group">
+								<label for="totalPrice">총 가격</label> <input type="text"
+									id="totalPrice" name="totalPrice" readonly
+									placeholder="인원 수 입력 시 자동 계산됩니다." />
+							</div>
+
+							<!-- 결제 상태 (초기값: '결제 대기') -->
+							<input type="hidden" name="paymentStatus" value="결제 대기" />
+
+							<!-- 예약 버튼 -->
+							<div class="form-group">
+								<button type="submit" class="submit-review-btn">예약하기</button>
+							</div>
+						</form>
 					</div>
+
+
 				</section>
 			</div>
 		</div>

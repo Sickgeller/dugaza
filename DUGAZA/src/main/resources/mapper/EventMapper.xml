@@ -82,7 +82,7 @@
 			*
 		FROM event_detail
 		JOIN tour_content USING(content_id)
-		WHERE content_id=#{id}
+		WHERE content_id=#{contentId}
 	</select>
 </mapper>
 

@@ -27,7 +27,8 @@
                     <i class="fas fa-calendar-check"></i>
                     <span>예약하기</span>
                 </a>
-                <button class="small-like-btn">
+                <button class="small-like-btn" th:data-content-id="${info.contentId}" 
+        th:data-content-type="${info.contentTypeId}">>
                     <i class="fas fa-heart"></i>
                     <span>찜하기</span>
                 </button>

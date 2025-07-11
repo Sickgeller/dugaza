@@ -8,11 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.servlet.http.HttpSession;
 import kr.spring.event.service.EventService;
 import kr.spring.event.vo.EventVO;
+import kr.spring.member.vo.MemberVO;
+import kr.spring.review.base.service.BaseReviewService;
+import kr.spring.review.base.service.ReviewStatisticsService;
+import kr.spring.review.base.vo.BaseReviewVO;
+import kr.spring.review.base.vo.ReviewStatisticsVO;
 import kr.spring.tour.vo.TourVO;
 import kr.spring.util.PagingUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +29,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequestMapping("/event")
 public class EventController {
-	
+
 	@Autowired
 	private EventService eventService;
-	
+
+	@Autowired
+	private BaseReviewService baseReviewService;
+
+	@Autowired
+	private ReviewStatisticsService reviewStatisticsService;
+
 	@GetMapping("")
 	public String eventtMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
 			@RequestParam(defaultValue = "") String keyword,
@@ -53,11 +67,34 @@ public class EventController {
 
 	// 항목 자세히 보기
 	@GetMapping("/detail")
-	public String eventtDetail(@RequestParam Long id, Model model) {
-		EventVO vo = eventService.selectEvent(id);
+	public String eventtDetail(@RequestParam(name = "contentId") Long contentId, Model model) {
+		EventVO vo = eventService.selectEvent(contentId);
+		// 행사별 리뷰 목록
+		List<BaseReviewVO> reviewList = baseReviewService.getHouseReviews(contentId, 1, 10);
+		// 행사별 리뷰 통계
+		ReviewStatisticsVO status = reviewStatisticsService.getReviewStatisticsByHouse(contentId);
+
+		model.addAttribute("info",vo);
+		model.addAttribute("reviewList",reviewList);
+		model.addAttribute("status", status);
 
 		model.addAttribute("info",vo);
 
 		return "views/event/event-detail";
+	}
+
+	// 리뷰 작성
+	@PostMapping("/saveReview")
+	public String saveReview(@ModelAttribute BaseReviewVO reviewDTO, HttpSession session) {
+
+		MemberVO member = (MemberVO) session.getAttribute("member");
+		reviewDTO.setMemberId(member.getMemberId());
+		reviewDTO.setStatus(1);
+		reviewDTO.setContentTypeId(15L); // 음식점 타입 ID
+
+		baseReviewService.writeReview(reviewDTO);
+		log.debug("<<리뷰 작성>> 사용자 id : {}", member.getMemberId());
+
+		return "redirect:/event/detail?contentId=" + reviewDTO.getContentId();
 	}
 }

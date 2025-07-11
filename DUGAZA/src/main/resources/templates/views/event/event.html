@@ -44,7 +44,7 @@
         <section class="tour-list">
             <div class="tour-grid">
                 <article class="tour-card" th:each="tour : ${list}">
-                <a th:href="@{/tour/detail(contentId=${tour.id})}">
+                <a th:href="@{/event/detail(contentId=${tour.contentId})}">
                     <div class="tour-image">
                         <img th:src="${tour.firstImage != null ? tour.firstImage : '/assets/images/tour-icon.png'}" alt="경복궁">
                         <button class="like-btn"><i class="fas fa-heart"></i></button>

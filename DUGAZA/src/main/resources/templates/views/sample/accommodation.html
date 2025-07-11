@@ -85,7 +85,8 @@
                     <div class="accommodation-image">
                         <img th:src="${house.firstImage != null ? house.firstImage : '/assets/images/house.png'}" alt="호텔">
                         <div class="accommodation-badge">호텔</div>
-                        <button class="like-btn"><i class="fas fa-heart"></i></button>
+                        <button class="like-btn" th:data-content-id="${house.contentId}" 
+        th:data-content-type="${house.contentTypeId}"><i class="fas fa-heart"></i></button>
                     </div>
                     <div class="accommodation-content">
                         <h3 th:text="${house.title}"></h3>
