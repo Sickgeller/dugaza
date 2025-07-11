@@ -1,6 +1,6 @@
 package kr.spring.room.service;
 
-import kr.spring.room.dto.RoomDetailVO;
+import kr.spring.room.vo.RoomDetailVO;
 import kr.spring.room.dao.RoomMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,5 +28,39 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public int getTotalRoomCount(Long sellerId) {
         return roomMapper.getTotalRoomCount(sellerId);
+    }
+
+    @Override
+    public void insertRoom(RoomDetailVO roomDetailVO) {
+        roomMapper.insertRoom(roomDetailVO);
+    }
+    
+    @Override
+    public void updateRoom(RoomDetailVO roomDetailVO) {
+        roomMapper.updateRoom(roomDetailVO);
+    }
+    
+    @Override
+    public void deleteRoom(Long roomId) {
+        roomMapper.deleteRoom(roomId);
+    }
+    
+    @Override
+    public RoomDetailVO getRoomById(Long roomId) {
+        return roomMapper.getRoomById(roomId);
+    }
+
+    @Override
+    public List<RoomDetailVO> getRoomsWithHouseId(Long contentId) {
+        return roomMapper.getRoomByHouseId(contentId);
+    }
+
+    @Override
+    public List<RoomDetailVO> getAvailableRooms(Long contentId, String checkInDate, String checkOutDate, int guestCount) {
+        List<RoomDetailVO> result = roomMapper.getAvailableRooms(contentId, checkInDate, checkOutDate, guestCount);
+        if(result.isEmpty()){
+            return new ArrayList<>();
+        }
+        return result;
     }
 }

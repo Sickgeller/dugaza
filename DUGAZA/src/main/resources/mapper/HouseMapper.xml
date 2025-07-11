@@ -129,12 +129,21 @@
 	</select>
 	
 	<!-- 숙소 항목 -->
-	<select id="selectHouse" parameterType="long" resultMap="houseMap">
+    <select id="selectHouse" parameterType="long" resultMap="houseMap">
+        SELECT
+            *
+        FROM house_detail
+                 JOIN tour_content USING(content_id)
+        WHERE content_id=#{id}
+    </select>
+
+	<select id="selectHouseWithSellerId" parameterType="long" resultMap="houseMap">
 		SELECT
 			*
-		FROM house_detail
-		JOIN tour_content USING(content_id)
-		WHERE content_id=#{id}
+		FROM house_detail hd
+        join house_seller_detail hsd
+		on hd.content_id = hsd.house_id
+		WHERE hsd.seller_id = ${id}
 	</select>
 </mapper>
 

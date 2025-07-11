@@ -1,30 +1,31 @@
 package kr.spring.seller.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.common.SellerType;
 import kr.spring.house.service.HouseService;
-import kr.spring.reservation.house.service.HouseReservationService;
-import kr.spring.reservation.house.vo.HouseReservationVO;
+import kr.spring.house.vo.HouseVO;
+import kr.spring.reservation.service.HouseReservationService;
+import kr.spring.reservation.vo.HouseReservationVO;
 import kr.spring.review.base.service.BaseReviewService;
 import kr.spring.review.base.vo.BaseReviewVO;
 import kr.spring.review.base.vo.ReviewStatisticsVO;
 import kr.spring.review.base.service.ReviewStatisticsService;
-import kr.spring.room.dto.RoomDetailVO;
+import kr.spring.room.vo.RoomDetailVO;
 import kr.spring.room.service.RoomService;
 import kr.spring.seller.service.SellerService;
 import kr.spring.seller.vo.SellerVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @RequestMapping("/seller/house")
 @Controller
@@ -92,16 +93,21 @@ public class SellerHouseController {
         SellerVO seller = (SellerVO)model.getAttribute("seller");
         if(seller == null) return "redirect:/seller/login";
         model.addAttribute("seller", seller);
-        
+
+        // sellerId를 houseId로 사용하여 house 조회 및 model에 추가
+        Long id = seller.getSellerId();
+        HouseVO house = houseService.selectHouseWithSellerId(id);
+        model.addAttribute("house", house);
+
         // 페이징 처리를 위한 설정
         int pageSize = 10;
         int currentPage = Math.max(1, page);
-        
+
         // 객실 목록 조회
         List<RoomDetailVO> rooms = roomService.getRoomsWithSeller(seller.getSellerId(), currentPage, pageSize);
         int totalRooms = roomService.getTotalRoomCount(seller.getSellerId());
         int availableRooms = (int)rooms.stream().filter(room -> room.getStatus() == 0).count();
-        
+
         // 모델에 데이터 추가
         model.addAttribute("rooms", rooms);
         model.addAttribute("totalRooms", totalRooms);
@@ -109,7 +115,7 @@ public class SellerHouseController {
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("totalPages", (int)Math.ceil((double)totalRooms / pageSize));
         model.addAttribute("currentMenu", "management");
-        
+
         return "views/seller/house/house-seller-rooms";
     }
 
@@ -334,5 +340,149 @@ public class SellerHouseController {
 
         return "redirect:/seller/house/settings";
     }
+
+    @GetMapping("/room/add")
+    public String addRoom(
+            Model model,
+            @RequestParam(name = "contentId", required = true) Long contentId
+    ) {
+        HouseVO house = houseService.selectHouseWithSellerId(contentId);
+        model.addAttribute("house", house);
+        return "views/seller/house-seller-room-add";
+    }
+
+    @PostMapping("/room/insert")
+    public String insertRoom(
+            @ModelAttribute RoomDetailVO roomDetailVO,
+            @RequestParam(name = "image1File", required = false) MultipartFile image1File,
+            @RequestParam(name = "image2File", required = false) MultipartFile image2File,
+            @RequestParam(name = "image3File", required = false) MultipartFile image3File,
+            @RequestParam(name = "contentId", required = true) Long contentId,
+            Model model,
+            RedirectAttributes redirectAttributes,
+            jakarta.servlet.http.HttpServletRequest request
+    ) {
+        try {
+            // houseId를 contentId로 명확히 세팅
+            roomDetailVO.setHouseId(contentId);
+            // 이미지 파일 저장 및 파일명 세팅
+            if (image1File != null && !image1File.isEmpty()) {
+                String filename = kr.spring.util.FileUtil.createFile(request, image1File);
+                roomDetailVO.setImage1(filename);
+            }
+            if (image2File != null && !image2File.isEmpty()) {
+                String filename = kr.spring.util.FileUtil.createFile(request, image2File);
+                roomDetailVO.setImage2(filename);
+            }
+            if (image3File != null && !image3File.isEmpty()) {
+                String filename = kr.spring.util.FileUtil.createFile(request, image3File);
+                roomDetailVO.setImage3(filename);
+            }
+            // 상태 기본값(0: 사용가능)
+            roomDetailVO.setStatus(0);
+            // DB 저장
+            roomService.insertRoom(roomDetailVO);
+            redirectAttributes.addFlashAttribute("message", "객실이 성공적으로 등록되었습니다.");
+        } catch (Exception e) {
+            log.error("객실 등록 중 오류 발생", e);
+            redirectAttributes.addFlashAttribute("error", "객실 등록 중 오류가 발생했습니다.");
+        }
+        // 등록 후 객실 목록으로 이동
+        return "redirect:/seller/house/management";
+    }
+    
+    // 객실 수정 페이지
+    @GetMapping("/room/edit")
+    public String editRoom(@RequestParam("roomId") Long roomId, Model model) {
+        try {
+            RoomDetailVO room = roomService.getRoomById(roomId);
+            if (room == null) {
+                return "redirect:/seller/house/management";
+            }
+            model.addAttribute("room", room);
+            return "views/seller/house/house-seller-room-edit";
+        } catch (Exception e) {
+            log.error("객실 수정 페이지 로드 중 오류 발생", e);
+            return "redirect:/seller/house/management";
+        }
+    }
+    
+    // 객실 수정 처리
+    @PostMapping("/room/update")
+    public String updateRoom(
+            @ModelAttribute RoomDetailVO roomDetailVO,
+            @RequestParam(name = "image1File", required = false) MultipartFile image1File,
+            @RequestParam(name = "image2File", required = false) MultipartFile image2File,
+            @RequestParam(name = "image3File", required = false) MultipartFile image3File,
+            RedirectAttributes redirectAttributes,
+            jakarta.servlet.http.HttpServletRequest request
+    ) {
+        try {
+            // 체크박스 필드들이 NULL일 때 0으로 설정
+            if (roomDetailVO.getWifi() == null) roomDetailVO.setWifi(0);
+            if (roomDetailVO.getTv() == null) roomDetailVO.setTv(0);
+            if (roomDetailVO.getAircon() == null) roomDetailVO.setAircon(0);
+            if (roomDetailVO.getBathroom() == null) roomDetailVO.setBathroom(0);
+            if (roomDetailVO.getSofa() == null) roomDetailVO.setSofa(0);
+            if (roomDetailVO.getKitchen() == null) roomDetailVO.setKitchen(0);
+            if (roomDetailVO.getPet() == null) roomDetailVO.setPet(0);
+            if (roomDetailVO.getSmokingRoom() == null) roomDetailVO.setSmokingRoom(0);
+            
+            // 기존 객실 정보 조회
+            RoomDetailVO existingRoom = roomService.getRoomById(roomDetailVO.getRoomId());
+            if (existingRoom == null) {
+                redirectAttributes.addFlashAttribute("error", "객실을 찾을 수 없습니다.");
+                return "redirect:/seller/house/management";
+            }
+            
+            // 이미지 파일이 업로드된 경우에만 새로 저장
+            if (image1File != null && !image1File.isEmpty()) {
+                String filename = kr.spring.util.FileUtil.createFile(request, image1File);
+                roomDetailVO.setImage1(filename);
+            } else {
+                roomDetailVO.setImage1(existingRoom.getImage1());
+            }
+            
+            if (image2File != null && !image2File.isEmpty()) {
+                String filename = kr.spring.util.FileUtil.createFile(request, image2File);
+                roomDetailVO.setImage2(filename);
+            } else {
+                roomDetailVO.setImage2(existingRoom.getImage2());
+            }
+            
+            if (image3File != null && !image3File.isEmpty()) {
+                String filename = kr.spring.util.FileUtil.createFile(request, image3File);
+                roomDetailVO.setImage3(filename);
+            } else {
+                roomDetailVO.setImage3(existingRoom.getImage3());
+            }
+            
+            // DB 업데이트
+            roomService.updateRoom(roomDetailVO);
+            redirectAttributes.addFlashAttribute("message", "객실이 성공적으로 수정되었습니다.");
+        } catch (Exception e) {
+            log.error("객실 수정 중 오류 발생", e);
+            redirectAttributes.addFlashAttribute("error", "객실 수정 중 오류가 발생했습니다.");
+        }
+        return "redirect:/seller/house/management";
+    }
+    
+    // 객실 삭제
+    @PostMapping("/room/delete")
+    @ResponseBody
+    public Map<String, Object> deleteRoom(@RequestParam("roomId") Long roomId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            roomService.deleteRoom(roomId);
+            response.put("success", true);
+            response.put("message", "객실이 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            log.error("객실 삭제 중 오류 발생", e);
+            response.put("success", false);
+            response.put("message", "객실 삭제 중 오류가 발생했습니다.");
+        }
+        return response;
+    }
+
 
 }

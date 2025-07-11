@@ -14,4 +14,5 @@ public interface HouseMapper {
 	// 숙소 목록
 	public List<HouseVO> selectList(Map<String,Object> map);
 	public HouseVO selectHouse(Long id);
+    HouseVO selectHouseWithSellerId(Long sellerId);
 }
