@@ -18,7 +18,7 @@ public class PagingUtil {
 	 * keyword : 검색어
 	 * currentPage : 현재페이지
 	 * count : 전체 게시물 수
-	 * rowCount : 한 페이지의  게시물의 수
+	 * rowCount : 한 페이지의  게시물의 수 
 	 * pageCount : 한 화면에 보여줄 페이지 수
 	 * pageUrl : 호출 페이지 url
 	 * addKey : 부가적인 key ("&num=23"형식으로 전달할 것)

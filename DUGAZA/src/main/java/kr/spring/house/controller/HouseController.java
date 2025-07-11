@@ -59,7 +59,7 @@ public class HouseController {
 				"");
 
 		// 페이지네이션 링크에 cat3 파라미터를 유지하도록 설정
-		String pageUrl = "/house";
+		String pageUrl = "/house"; 
 		if (cat3 != null && !cat3.isEmpty()) {
 			pageUrl += "?cat3=" + cat3;
 		}
