@@ -346,7 +346,7 @@ public class SellerHouseController {
             Model model,
             @RequestParam(name = "contentId", required = true) Long contentId
     ) {
-        HouseVO house = houseService.selectHouse(contentId);
+        HouseVO house = houseService.selectHouseWithSellerId(contentId);
         model.addAttribute("house", house);
         return "views/seller/house-seller-room-add";
     }

@@ -31,4 +31,9 @@ public class HouseServiceImpl implements HouseService{
 		return houseMapper.selectHouse(id);
 	}
 
+	@Override
+	public HouseVO selectHouseWithSellerId(Long sellerId) {
+		return houseMapper.selectHouseWithSellerId(sellerId);
+	}
+
 }
