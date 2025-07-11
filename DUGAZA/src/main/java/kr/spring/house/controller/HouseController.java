@@ -75,9 +75,40 @@ public class HouseController {
 		}
 		model.addAttribute("count", count);
 		model.addAttribute("list", list);
-		model.addAttribute("page", page.getPage());
+		model.addAttribute("page", page);
 		model.addAttribute("cat3", cat3); // 뷰에서 활성화된 버튼 표시를 위해 전달
 		return "views/sample/accommodation";
+	}
+
+	@GetMapping("/list")
+	public String accommodationList(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
+			@RequestParam(name = "keyword", defaultValue = "") String keyword,
+			@RequestParam(required = false, name = "cat3") String cat3,
+			Model model) {
+
+		Map<String,Object> map = new HashMap<String,Object>();
+		map.put("keyword", keyword);
+		map.put("cat3", cat3);
+
+		int count = houseService.selectRowCount(map);
+
+		//페이지 처리
+		PagingUtil page = new PagingUtil(null,keyword,
+				pageNum,count,9,10,
+				"");
+
+		List<HouseVO> list = null;
+		if(count > 0) {
+			map.put("start", page.getStartRow());
+			map.put("end", page.getEndRow());
+			list = houseService.selectList(map);
+		}
+		model.addAttribute("count", count);
+		model.addAttribute("list", list);
+		model.addAttribute("page", page);
+		model.addAttribute("cat3", cat3); 
+
+		return "views/sample/accommodation :: #accommodation-list";
 	}
 
 	// 항목 자세히 보기
