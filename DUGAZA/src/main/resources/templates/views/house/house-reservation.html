@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숙소 예약 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/accommodation-detail.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .reservation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .reservation-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .reservation-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .reservation-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+        
+        .reservation-form {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        
+        .date-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .room-options {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .room-option {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .room-option:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .room-option.selected {
+            background-color: #e3f2fd;
+            border-left: 4px solid #007bff;
+        }
+        
+        .room-option:last-child {
+            border-bottom: none;
+        }
+        
+        .room-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .room-details h4 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        
+        .room-details p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .room-price {
+            text-align: right;
+        }
+        
+        .room-price .price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .room-price .per-night {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .reservation-summary {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+        }
+        
+        .summary-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .summary-header h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .house-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .house-image {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+        
+        .house-details h4 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        
+        .house-details p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .price-breakdown {
+            margin-bottom: 20px;
+        }
+        
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+        
+        .price-item.total {
+            border-top: 2px solid #ddd;
+            padding-top: 15px;
+            font-weight: bold;
+            font-size: 18px;
+            color: #007bff;
+        }
+        
+        .reservation-btn {
+            width: 100%;
+            padding: 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .reservation-btn:hover {
+            background: #0056b3;
+        }
+        
+        .reservation-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .guest-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        
+        .guest-info h4 {
+            margin: 0 0 15px 0;
+            color: #333;
+        }
+        
+        .guest-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .special-requests {
+            margin-top: 20px;
+        }
+        
+        .special-requests textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .room-option.checking {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .room-option.available {
+            border-left: 4px solid #28a745;
+        }
+        
+        .room-option.unavailable {
+            opacity: 0.6;
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+            position: relative;
+        }
+        
+        .room-option.unavailable::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .room-option.unavailable .room-info {
+            pointer-events: none;
+        }
+        
+        .room-option.unavailable:hover {
+            background-color: #f8f9fa;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .room-option .availability-status {
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .room-option.available .availability-status {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .room-option.unavailable .availability-status {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .selected-room-info {
+            margin: 15px 0;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 5px;
+        }
+        
+        .selected-room-info h4 {
+            margin: 0 0 10px 0;
+            color: #1976d2;
+        }
+        
+        .selected-room-info p {
+            margin: 5px 0;
+            color: #333;
+        }
+        
+        /* 객실 타입 버튼 스타일 */
+        .room-type-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .room-type-btn {
+            padding: 10px 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .room-type-btn:hover {
+            border-color: #007bff;
+            color: #007bff;
+        }
+        
+        .room-type-btn.active {
+            background: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+        
+        .room-type-btn .room-count {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        
+        .room-type-btn:not(.active) .room-count {
+            background: #f8f9fa;
+            color: #666;
+        }
+        
+        .room-type-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f8f9fa;
+            border-color: #ddd;
+            color: #999;
+        }
+        
+        .room-type-btn.disabled:hover {
+            border-color: #ddd;
+            color: #999;
+        }
+        
+        /* 객실 그룹 스타일 */
+        .room-group {
+            display: none;
+        }
+        
+        .room-group.active {
+            display: block;
+        }
+        
+        .room-group-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 0;
+        }
+        
+        .room-group-header h4 {
+            margin: 0;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .room-group-header p {
+            margin: 5px 0 0 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .reservation-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .date-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .guest-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="reservation-container">
+        <div class="reservation-header">
+            <h1>숙소 예약</h1>
+            <p>편안한 숙박을 위한 예약을 진행해주세요</p>
+        </div>
+        
+        <div class="reservation-content">
+            <!-- 예약 폼 -->
+            <div class="reservation-form">
+                <form id="reservationForm" th:action="@{/reservation/house/book}" method="post">
+                    <input type="hidden" name="houseId" th:value="${contentId}" />
+                    <input type="hidden" name="roomId" id="selectedRoomId" />
+                    <input type="hidden" name="reservationStart" id="reservationStart" />
+                    <input type="hidden" name="reservationEnd" id="reservationEnd" />
+                    <input type="hidden" name="reservationCount" id="reservationCount" />
+                    <input type="hidden" name="price" id="reservationPrice" />
+                    <input type="hidden" name="status" value="0" />
+                    
+                    <!-- 날짜 선택 -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-calendar"></i> 날짜 선택</h3>
+                        <div class="date-inputs">
+                            <div class="form-group">
+                                <label for="checkInDate">체크인</label>
+                                <input type="date" id="checkInDate" name="checkInDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="checkOutDate">체크아웃</label>
+                                <input type="date" id="checkOutDate" name="checkOutDate" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                 
+                    
+                    <!-- 객실 선택 -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-bed"></i> 객실 선택</h3>
+                        
+                        <!-- 객실 타입 선택 -->
+                        <div class="room-type-selection" style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #555;">객실 타입 선택</label>
+                            <div class="room-type-buttons" id="roomTypeButtons">
+                                <!-- 객실 타입 버튼들이 동적으로 생성됨 -->
+                            </div>
+                        </div>
+                        
+                        <!-- 선택된 타입의 객실 목록 -->
+                        <div class="room-options" id="roomOptions">
+                            <!-- 객실이 없을 경우 -->
+                            <div th:if="${#lists.isEmpty(roomList)}" class="no-rooms">
+                                <p>등록된 객실이 없습니다.</p>
+                            </div>
+                            
+                            <!-- 기존 객실 목록 (JavaScript에서 동적으로 처리됨) -->
+                            <div class="room-option" th:each="room : ${roomList}" 
+                                 th:data-room-id="${room.roomId}" 
+                                 th:data-price="${room.price}"
+                                 th:data-room-name="${room.roomName}"
+                                 th:data-room-type="${room.roomType}"
+                                 th:data-room-size="${room.roomSize}"
+                                 th:data-min-capacity="${room.minimumCapacity}"
+                                 th:data-max-capacity="${room.maximumCapacity}"
+                                 th:data-bed-info="${room.bedInfo}"
+                                 th:data-description="${room.description}"
+                                 style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                       <!-- 인원 선택 -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-users"></i> 인원 선택</h3>
+                        <div class="form-group">
+                            <label for="guestCount">투숙 인원</label>
+                            <select id="guestCount" name="guestCount" required>
+                                <option value="">객실을 먼저 선택해주세요</option>
+                            </select>
+                            <small class="capacity-info" id="capacityInfo" style="display: none; color: #666; margin-top: 5px;">
+                                <!-- 수용 인원 정보가 여기에 표시됨 -->
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- 투숙객 정보 -->
+                    <!-- <div class="form-section">
+                        <h3><i class="fas fa-user"></i> 투숙객 정보</h3>
+                        <div class="guest-info">
+                            <h4>대표 투숙객 정보</h4>
+                            <div class="guest-fields">
+                                <div class="form-group">
+                                    <label for="guestName">이름</label>
+                                    <input type="text" id="guestName" name="guestName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guestPhone">연락처</label>
+                                    <input type="tel" id="guestPhone" name="guestPhone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guestEmail">이메일</label>
+                                    <input type="email" id="guestEmail" name="guestEmail" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="guestIdCard">주민등록번호</label>
+                                    <input type="text" id="guestIdCard" name="guestIdCard" placeholder="000000-0000000" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     -->
+                    <!-- 특별 요청사항 -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-comment"></i> 특별 요청사항</h3>
+                        <div class="special-requests">
+                            <textarea name="specialRequests" placeholder="특별한 요청사항이 있으시면 입력해주세요. (선택사항)"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- 예약 요약 -->
+            <div class="reservation-summary">
+                <div class="summary-header">
+                    <h3>예약 요약</h3>
+                </div>
+                
+                <!-- 숙소 정보 -->
+                <div class="house-info">
+                    <img th:src="${houseInfo.firstImage}" alt="숙소 이미지" class="house-image">
+                    <div class="house-details">
+                        <h4 th:text="${houseInfo.title}">숙소명</h4>
+                        <p th:text="${houseInfo.addr1}">주소</p>
+                    </div>
+                </div>
+                
+                <!-- 가격 내역 -->
+                <div class="price-breakdown">
+                    <div class="price-item">
+                        <span>객실 요금</span>
+                        <span id="roomPrice">-</span>
+                    </div>
+                    <div class="price-item">
+                        <span>숙박일수</span>
+                        <span id="nights">-</span>
+                    </div>
+                    <div class="price-item">
+                        <span>세금 및 수수료</span>
+                        <span id="taxFee">-</span>
+                    </div>
+                    <div class="price-item total">
+                        <span>총 결제금액</span>
+                        <span id="totalPrice">-</span>
+                    </div>
+                </div>
+                
+                <!-- 예약 버튼 -->
+                <button type="button" id="reservationBtn" class="reservation-btn" disabled>
+                    예약하기
+                </button>
+                
+                <!-- 예약 안내 -->
+                <div style="margin-top: 20px; font-size: 12px; color: #666;">
+                    <p><i class="fas fa-info-circle"></i> 예약 완료 후 결제가 진행됩니다.</p>
+                    <p><i class="fas fa-clock"></i> 체크인 3일 전까지 무료 취소 가능합니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 예약 확인 모달 -->
+    <div id="confirmModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>예약 확인</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>입력하신 정보로 예약을 진행하시겠습니까?</p>
+                <div id="confirmDetails"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel">취소</button>
+                <button type="button" class="btn-confirm">예약 확정</button>
+            </div>
+        </div>
+    </div>
+    
+    <script th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <script th:inline="javascript">
+        // Thymeleaf에서 houseInfo 데이터 가져오기
+        const houseInfo = /*[[${houseInfo}]]*/ {};
+        
+        $(document).ready(function() {
+            const checkInDate = $('#checkInDate');
+            const checkOutDate = $('#checkOutDate');
+            const guestCount = $('#guestCount');
+            const roomOptions = $('#roomOptions');
+            const roomTypeButtons = $('#roomTypeButtons');
+            const reservationBtn = $('#reservationBtn');
+            
+            // 객실 데이터를 타입별로 그룹화
+            let roomData = [];
+            let selectedRoomType = null;
+            let selectedRoom = null;
+            
+            // 페이지 로드 시 객실 데이터 초기화
+            function initializeRoomData() {
+                roomData = [];
+                $('.room-option').each(function() {
+                    const room = {
+                        roomId: $(this).data('room-id'),
+                        roomName: $(this).data('room-name'),
+                        roomType: $(this).data('room-type') || '기본',
+                        price: $(this).data('price'),
+                        roomSize: $(this).data('room-size'),
+                        minimumCapacity: $(this).data('min-capacity') || 1,
+                        maximumCapacity: $(this).data('max-capacity'),
+                        bedInfo: $(this).data('bed-info'),
+                        description: $(this).data('description'),
+                        element: $(this)
+                    };
+                    roomData.push(room);
+                });
+                
+                // 객실 타입별로 그룹화
+                const roomTypes = {};
+                roomData.forEach(room => {
+                    if (!roomTypes[room.roomType]) {
+                        roomTypes[room.roomType] = [];
+                    }
+                    roomTypes[room.roomType].push(room);
+                });
+                
+                // 객실 타입 버튼 생성
+                createRoomTypeButtons(roomTypes);
+                
+                // 첫 번째 타입을 기본 선택
+                const firstType = Object.keys(roomTypes)[0];
+                if (firstType) {
+                    selectRoomType(firstType);
+                }
+            }
+            
+            // 객실 타입 버튼 생성
+            function createRoomTypeButtons(roomTypes) {
+                roomTypeButtons.empty();
+                
+                Object.keys(roomTypes).forEach(type => {
+                    const count = roomTypes[type].length;
+                    const button = $(`
+                        <button class="room-type-btn" data-type="${type}">
+                            ${type}
+                            <span class="room-count">${count}개</span>
+                        </button>
+                    `);
+                    
+                    button.on('click', function() {
+                        selectRoomType(type);
+                    });
+                    
+                    roomTypeButtons.append(button);
+                });
+            }
+            
+            // 객실 타입 선택
+            function selectRoomType(type) {
+                selectedRoomType = type;
+                
+                // 버튼 활성화 상태 변경
+                $('.room-type-btn').removeClass('active');
+                $(`.room-type-btn[data-type="${type}"]`).addClass('active');
+                
+                // 객실 목록 업데이트
+                updateRoomList(type);
+            }
+            
+            // 선택된 타입의 객실 목록 표시
+            function updateRoomList(type) {
+                roomOptions.empty();
+                
+                const roomsOfType = roomData.filter(room => room.roomType === type);
+                
+                if (roomsOfType.length === 0) {
+                    roomOptions.html('<div class="no-rooms"><p>해당 타입의 객실이 없습니다.</p></div>');
+                    return;
+                }
+                
+                // 객실 그룹 헤더
+                const groupHeader = $(`
+                    <div class="room-group-header">
+                        <h4>${type}</h4>
+                        <p>${roomsOfType.length}개의 객실 중 선택하세요</p>
+                    </div>
+                `);
+                roomOptions.append(groupHeader);
+                
+                // 객실 목록
+                const roomGroup = $('<div class="room-group active"></div>');
+                
+                roomsOfType.forEach(room => {
+                    const roomElement = $(`
+                        <div class="room-option" 
+                             data-room-id="${room.roomId}" 
+                             data-price="${room.price}"
+                             data-room-name="${room.roomName}"
+                             data-room-type="${room.roomType}"
+                             data-room-size="${room.roomSize}"
+                             data-min-capacity="${room.minimumCapacity}"
+                             data-max-capacity="${room.maximumCapacity}"
+                             data-bed-info="${room.bedInfo}"
+                             data-description="${room.description}">
+                            <div class="room-info">
+                                <div class="room-details">
+                                    <h4>${room.roomName}</h4>
+                                    <p>최소 ${room.minimumCapacity}명 ~ 최대 ${room.maximumCapacity}명 / ${room.roomSize}㎡</p>
+                                    <p>${room.bedInfo}</p>
+                                    ${room.description ? `<p>${room.description}</p>` : ''}
+                                </div>
+                                <div class="room-price">
+                                    <div class="price">${room.price.toLocaleString()}원</div>
+                                    <div class="per-night">1박 기준</div>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                    roomGroup.append(roomElement);
+                });
+                
+                roomOptions.append(roomGroup);
+            }
+            
+            // 최소 체크인 날짜를 오늘로 설정
+            const today = new Date().toISOString().split('T')[0];
+            checkInDate.attr('min', today);
+            
+            // 페이지 로드 시 객실 데이터 초기화
+            initializeRoomData();
+            
+            // 날짜 변경 시 예약 가능 여부 확인
+            checkInDate.on('change', function() {
+                if (checkInDate.val() && checkOutDate.val() && guestCount.val()) {
+                    checkRoomAvailability();
+                }
+                calculatePrice();
+            });
+            
+            checkOutDate.on('change', function() {
+                if (checkInDate.val() && checkOutDate.val() && guestCount.val()) {
+                    checkRoomAvailability();
+                }
+                calculatePrice();
+            });
+            
+            // 인원 변경 시 예약 가능 여부 확인
+            guestCount.on('change', function() {
+                if (checkInDate.val() && checkOutDate.val() && guestCount.val()) {
+                    checkRoomAvailability();
+                }
+                calculatePrice();
+            });
+            
+            // 객실 선택 이벤트
+            $(document).on('click', '.room-option', function() {
+                console.log('객실 클릭됨:', $(this).data('room-name'));
+                console.log('예약 불가능 여부:', $(this).hasClass('unavailable'));
+                
+                // 예약 불가능한 객실은 선택 불가
+                if ($(this).hasClass('unavailable')) {
+                    console.log('예약 불가능한 객실 클릭됨');
+                    alert('해당 객실은 선택할 수 없습니다. 다른 객실을 선택해주세요.');
+                    return false; // 이벤트 전파 중단
+                }
+                
+                console.log('예약 가능한 객실 선택됨');
+                
+                // 기존 선택 해제
+                $('.room-option').removeClass('selected');
+                
+                // 현재 객실 선택
+                $(this).addClass('selected');
+                
+                // 선택된 객실 정보 저장
+                selectedRoom = {
+                    roomId: $(this).data('room-id'),
+                    roomName: $(this).data('room-name'),
+                    roomType: $(this).data('room-type'),
+                    price: $(this).data('price'),
+                    roomSize: $(this).data('room-size'),
+                    minimumCapacity: $(this).data('min-capacity') || 1,
+                    maximumCapacity: $(this).data('max-capacity'),
+                    bedInfo: $(this).data('bed-info'),
+                    description: $(this).data('description')
+                };
+                
+                // 인원 선택 옵션 업데이트
+                updateGuestCountOptions();
+                
+                calculatePrice();
+                updateRoomInfo();
+            });
+            
+            // 인원 선택 옵션 업데이트
+            function updateGuestCountOptions() {
+                if (!selectedRoom) {
+                    guestCount.html('<option value="">객실을 먼저 선택해주세요</option>');
+                    $('#capacityInfo').hide();
+                    return;
+                }
+                
+                const minCapacity = selectedRoom.minimumCapacity;
+                const maxCapacity = selectedRoom.maximumCapacity;
+                
+                // 기존 옵션 제거
+                guestCount.empty();
+                
+                // 기본 옵션 추가
+                guestCount.append('<option value="">인원을 선택하세요</option>');
+                
+                // 최소 인원부터 최대 인원까지 옵션 생성
+                for (let i = minCapacity; i <= maxCapacity; i++) {
+                    guestCount.append(`<option value="${i}">${i}명</option>`);
+                }
+                
+                // 수용 인원 정보 표시
+                const capacityInfo = `수용 가능 인원: ${minCapacity}명 ~ ${maxCapacity}명`;
+                $('#capacityInfo').text(capacityInfo).show();
+                
+                // 기존 선택값 초기화
+                guestCount.val('');
+            }
+            
+            // 예약 가능 여부 확인
+            function checkRoomAvailability() {
+                const contentId = $('input[name="houseId"]').val();
+                const checkIn = checkInDate.val();
+                const checkOut = checkOutDate.val();
+                const guests = guestCount.val();
+                
+                console.log('예약 가능 여부 확인:', { contentId, checkIn, checkOut, guests });
+                
+                if (!contentId || !checkIn || !checkOut || !guests) {
+                    console.log('필수 정보 누락으로 예약 가능 여부 확인 건너뜀');
+                    return;
+                }
+                
+                // 모든 객실에 로딩 표시
+                $('.room-option').addClass('checking');
+                
+                // AJAX로 예약 가능한 객실 확인
+                $.ajax({
+                    url: '/api/rooms/available',
+                    method: 'GET',
+                    data: {
+                        contentId: contentId,
+                        checkIn: checkIn,
+                        checkOut: checkOut,
+                        guestCount: guests
+                    },
+                    success: function(response) {
+                        console.log('예약 가능한 객실 응답:', response);
+                        
+                        if (response.success) {
+                            const availableRoomIds = response.rooms.map(room => room.roomId);
+                            console.log('예약 가능한 객실 ID들:', availableRoomIds);
+                            
+                            // 각 객실의 예약 가능 여부 업데이트
+                            $('.room-option').each(function() {
+                                const roomId = $(this).data('room-id');
+                                const roomName = $(this).data('room-name');
+                                const isAvailable = availableRoomIds.includes(roomId);
+                                
+                                console.log(`객실 ${roomName} (ID: ${roomId}) - 예약 가능: ${isAvailable}`);
+                                
+                                $(this).removeClass('checking');
+                                
+                                if (isAvailable) {
+                                    $(this).removeClass('unavailable').addClass('available');
+                                    $(this).find('.availability-status').remove();
+                                    $(this).append('<div class="availability-status available">예약 가능</div>');
+                                } else {
+                                    $(this).removeClass('available').addClass('unavailable');
+                                    $(this).find('.availability-status').remove();
+                                    $(this).append('<div class="availability-status unavailable">예약 불가</div>');
+                                }
+                            });
+                            
+                            // 객실 타입 버튼의 예약 가능 개수 업데이트
+                            updateRoomTypeAvailability(availableRoomIds);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('예약 가능 여부 확인 실패:', error);
+                        $('.room-option').removeClass('checking');
+                        alert('예약 가능 여부를 확인하는데 실패했습니다.');
+                    }
+                });
+            }
+            
+            // 객실 타입별 예약 가능 개수 업데이트
+            function updateRoomTypeAvailability(availableRoomIds) {
+                $('.room-type-btn').each(function() {
+                    const type = $(this).data('type');
+                    const roomsOfType = roomData.filter(room => room.roomType === type);
+                    const availableCount = roomsOfType.filter(room => 
+                        availableRoomIds.includes(room.roomId)
+                    ).length;
+                    
+                    const countElement = $(this).find('.room-count');
+                    countElement.text(`${availableCount}/${roomsOfType.length}`);
+                    
+                    // 예약 가능한 객실이 없으면 버튼 비활성화
+                    if (availableCount === 0) {
+                        $(this).addClass('disabled').prop('disabled', true);
+                    } else {
+                        $(this).removeClass('disabled').prop('disabled', false);
+                    }
+                });
+            }
+            
+            // 가격 계산
+            function calculatePrice() {
+                const selectedRoom = $('.room-option.selected');
+                if (selectedRoom.length === 0) {
+                    $('#roomPrice').text('-');
+                    $('#nights').text('-');
+                    $('#taxFee').text('-');
+                    $('#totalPrice').text('-');
+                    reservationBtn.prop('disabled', true);
+                    return;
+                }
+                
+                const roomPrice = parseInt(selectedRoom.data('price'));
+                const nights = calculateNights();
+                const totalRoomPrice = roomPrice * nights;
+                const taxFee = Math.round(totalRoomPrice * 0.1); // 10% 세금
+                const totalPrice = totalRoomPrice + taxFee;
+                
+                $('#roomPrice').text(totalRoomPrice.toLocaleString() + '원');
+                $('#nights').text(nights + '박');
+                $('#taxFee').text(taxFee.toLocaleString() + '원');
+                $('#totalPrice').text(totalPrice.toLocaleString() + '원');
+                
+                reservationBtn.prop('disabled', false);
+            }
+            
+            // 선택된 객실 정보 업데이트
+            function updateRoomInfo() {
+                const selectedRoom = $('.room-option.selected');
+                if (selectedRoom.length === 0) {
+                    return;
+                }
+                
+                const roomName = selectedRoom.data('room-name');
+                const roomSize = selectedRoom.data('room-size');
+                const maxCapacity = selectedRoom.data('max-capacity');
+                const bedInfo = selectedRoom.data('bed-info');
+                const description = selectedRoom.data('description');
+                
+                // 기존 선택된 객실 정보 제거
+                $('.selected-room-info').remove();
+                
+                // 예약 요약에 선택된 객실 정보 표시
+                $('.house-info').after(`
+                    <div class="selected-room-info">
+                        <h4>선택된 객실</h4>
+                        <p><strong>객실명:</strong> ${roomName}</p>
+                        <p><strong>크기:</strong> ${roomSize}㎡</p>
+                        <p><strong>최대 인원:</strong> ${maxCapacity}명</p>
+                        <p><strong>침대:</strong> ${bedInfo}</p>
+                        ${description ? `<p><strong>설명:</strong> ${description}</p>` : ''}
+                    </div>
+                `);
+            }
+            
+            // 숙박 일수 계산
+            function calculateNights() {
+                if (!checkInDate.val() || !checkOutDate.val()) return 0;
+                
+                const checkIn = new Date(checkInDate.val());
+                const checkOut = new Date(checkOutDate.val());
+                const diffTime = checkOut - checkIn;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                return diffDays;
+            }
+            
+            // 예약 버튼 클릭
+            reservationBtn.on('click', function() {
+                if (!validateForm()) {
+                    return;
+                }
+                
+                showConfirmModal();
+            });
+            
+            // 폼 검증
+            function validateForm() {
+                if (!checkInDate.val()) {
+                    alert('체크인 날짜를 선택해주세요.');
+                    return false;
+                }
+                if (!checkOutDate.val()) {
+                    alert('체크아웃 날짜를 선택해주세요.');
+                    return false;
+                }
+                if (!guestCount.val()) {
+                    alert('투숙 인원을 선택해주세요.');
+                    return false;
+                }
+                if ($('.room-option.selected').length === 0) {
+                    alert('객실을 선택해주세요.');
+                    return false;
+                }
+                
+                // 선택된 인원이 객실 수용 범위 내에 있는지 확인
+                if (selectedRoom) {
+                    const selectedGuestCount = parseInt(guestCount.val());
+                    const minCapacity = selectedRoom.minimumCapacity;
+                    const maxCapacity = selectedRoom.maximumCapacity;
+                    
+                    if (selectedGuestCount < minCapacity || selectedGuestCount > maxCapacity) {
+                        alert(`선택하신 객실은 ${minCapacity}명 ~ ${maxCapacity}명까지 수용 가능합니다.`);
+                        return false;
+                    }
+                }
+                return true;
+            }
+            
+            // 확인 모달 표시
+            function showConfirmModal() {
+                const selectedRoom = $('.room-option.selected');
+                const roomName = selectedRoom.data('room-name');
+                const totalPrice = $('#totalPrice').text();
+                
+                const checkInTime = houseInfo.checkInTime || '15:00';
+                const checkOutTime = houseInfo.checkOutTime || '11:00';
+                
+                const confirmDetails = `
+                    <div style="margin: 20px 0;">
+                        <p><strong>숙소:</strong> ${$('.house-details h4').text()}</p>
+                        <p><strong>객실:</strong> ${roomName}</p>
+                        <p><strong>체크인:</strong> ${checkInDate.val()} ${checkInTime}</p>
+                        <p><strong>체크아웃:</strong> ${checkOutDate.val()} ${checkOutTime}</p>
+                        <p><strong>투숙 인원:</strong> ${guestCount.val()}명</p>
+                        <p><strong>총 결제금액:</strong> ${totalPrice}</p>
+                    </div>
+                `;
+                
+                $('#confirmDetails').html(confirmDetails);
+                $('#confirmModal').show();
+            }
+            
+            // 모달 닫기
+            $('.close-modal, .btn-cancel').on('click', function() {
+                $('#confirmModal').hide();
+            });
+            
+            // 예약 확정
+            $('.btn-confirm').on('click', function() {
+                // hidden 필드들 설정
+                const selectedRoom = $('.room-option.selected');
+                if (selectedRoom.length > 0) {
+                    $('#selectedRoomId').val(selectedRoom.data('room-id'));
+                }
+                
+                // 날짜와 시간을 합쳐서 LocalDateTime 형식으로 설정
+                const checkInDateStr = checkInDate.val();
+                const checkOutDateStr = checkOutDate.val();
+                const checkInTime = houseInfo.checkInTime || '15:00'; // 기본값 15:00
+                const checkOutTime = houseInfo.checkOutTime || '11:00'; // 기본값 11:00
+                
+                $('#reservationStart').val(checkInDateStr + 'T' + checkInTime + ':00');
+                $('#reservationEnd').val(checkOutDateStr + 'T' + checkOutTime + ':00');
+                
+                // 인원 수 설정
+                $('#reservationCount').val(guestCount.val());
+                
+                // 가격 설정 (세금 포함)
+                const totalPrice = $('#totalPrice').text().replace(/[^\d]/g, '');
+                $('#reservationPrice').val(totalPrice);
+                
+                const formData = new FormData($('#reservationForm')[0]);
+                
+                $.ajax({
+                    url: '/reservation/house/book',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success) {
+                            alert('예약이 성공적으로 완료되었습니다!');
+                            window.location.href = '/member/mypage';
+                        } else {
+                            alert(response.message || '예약 처리 중 오류가 발생했습니다.');
+                        }
+                    },
+                    error: function() {
+                        alert('예약 처리 중 오류가 발생했습니다.');
+                    }
+                });
+            });
+        });
+    </script>
+</main>
+</body>
+</html>

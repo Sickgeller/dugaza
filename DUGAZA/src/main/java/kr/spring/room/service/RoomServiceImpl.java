@@ -49,4 +49,18 @@ public class RoomServiceImpl implements RoomService {
     public RoomDetailVO getRoomById(Long roomId) {
         return roomMapper.getRoomById(roomId);
     }
+
+    @Override
+    public List<RoomDetailVO> getRoomsWithHouseId(Long contentId) {
+        return roomMapper.getRoomByHouseId(contentId);
+    }
+
+    @Override
+    public List<RoomDetailVO> getAvailableRooms(Long contentId, String checkInDate, String checkOutDate, int guestCount) {
+        List<RoomDetailVO> result = roomMapper.getAvailableRooms(contentId, checkInDate, checkOutDate, guestCount);
+        if(result.isEmpty()){
+            return new ArrayList<>();
+        }
+        return result;
+    }
 }

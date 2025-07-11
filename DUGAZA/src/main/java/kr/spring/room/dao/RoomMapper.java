@@ -48,4 +48,21 @@ public interface RoomMapper {
      * @return 방 상세 정보
      */
     RoomDetailVO getRoomById(@Param("roomId") Long roomId);
+
+    /**
+     * @param contentId
+     */
+    List<RoomDetailVO> getRoomByHouseId(Long contentId);
+    
+    /**
+     * @param contentId 숙소 ID
+     * @param checkInDate 체크인 날짜
+     * @param checkOutDate 체크아웃 날짜
+     * @param guestCount 투숙 인원
+     * @return 예약 가능한 객실 목록
+     */
+    List<RoomDetailVO> getAvailableRooms(@Param("contentId") Long contentId,
+                                        @Param("checkInDate") String checkInDate,
+                                        @Param("checkOutDate") String checkOutDate,
+                                        @Param("guestCount") int guestCount);
 }

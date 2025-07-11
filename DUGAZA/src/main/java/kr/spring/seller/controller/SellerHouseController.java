@@ -3,8 +3,8 @@ package kr.spring.seller.controller;
 import kr.spring.common.SellerType;
 import kr.spring.house.service.HouseService;
 import kr.spring.house.vo.HouseVO;
-import kr.spring.reservation.house.service.HouseReservationService;
-import kr.spring.reservation.house.vo.HouseReservationVO;
+import kr.spring.reservation.service.HouseReservationService;
+import kr.spring.reservation.vo.HouseReservationVO;
 import kr.spring.review.base.service.BaseReviewService;
 import kr.spring.review.base.vo.BaseReviewVO;
 import kr.spring.review.base.vo.ReviewStatisticsVO;
@@ -24,7 +24,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @RequestMapping("/seller/house")
@@ -95,8 +95,8 @@ public class SellerHouseController {
         model.addAttribute("seller", seller);
 
         // sellerId를 houseId로 사용하여 house 조회 및 model에 추가
-        Long houseId = seller.getSellerId();
-        HouseVO house = houseService.selectHouse(houseId);
+        Long id = seller.getSellerId();
+        HouseVO house = houseService.selectHouseWithSellerId(id);
         model.addAttribute("house", house);
 
         // 페이징 처리를 위한 설정

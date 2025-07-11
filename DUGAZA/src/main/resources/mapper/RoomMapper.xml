@@ -6,6 +6,7 @@
         <id property="roomId" column="ROOM_ID"/>
         <result property="houseId" column="HOUSE_ID"/>
         <result property="roomName" column="ROOM_NAME"/>
+        <result property="roomType" column="ROOM_TYPE"/>
         <result property="price" column="PRICE"/>
         <result property="roomSize" column="ROOM_SIZE"/>
         <result property="minimumCapacity" column="MINIMUM_CAPACITY"/>
@@ -19,10 +20,11 @@
         <result property="kitchen" column="KITCHEN"/>
         <result property="pet" column="PET"/>
         <result property="smokingRoom" column="SMOKING_ROOM"/>
-        <result property="image1" column="IMAGE"/>
-        <result property="image2" column="IMAGE"/>
-        <result property="image3" column="IMAGE"/>
+        <result property="image1" column="IMAGE1"/>
+        <result property="image2" column="IMAGE2"/>
+        <result property="image3" column="IMAGE3"/>
         <result property="status" column="STATUS"/>
+        <result property="description" column="DESCRIPTION"/>
     </resultMap>
 
     <select id="getRoomsWithSellerId" parameterType="map" resultMap="RoomDetailResultMap">
@@ -52,6 +54,7 @@
             ROOM_ID,
             HOUSE_ID,
             ROOM_NAME,
+            ROOM_TYPE,
             PRICE,
             ROOM_SIZE,
             MINIMUM_CAPACITY,
@@ -75,6 +78,7 @@
                    ROOM_SEQ.NEXTVAL,
                    #{houseId},
                    #{roomName},
+                   #{roomType},
                    #{price},
                    #{roomSize},
                    #{minimumCapacity},
@@ -100,6 +104,7 @@
     <update id="updateRoom" parameterType="kr.spring.room.vo.RoomDetailVO">
         UPDATE HOUSE_ROOM_INFO SET
             ROOM_NAME = #{roomName},
+            ROOM_TYPE = #{roomType},
             PRICE = #{price},
             ROOM_SIZE = #{roomSize},
             MINIMUM_CAPACITY = #{minimumCapacity},
@@ -129,4 +134,34 @@
     <select id="getRoomById" parameterType="Long" resultMap="RoomDetailResultMap">
         SELECT * FROM HOUSE_ROOM_INFO WHERE ROOM_ID = #{roomId}
     </select>
+
+    <select id="getRoomByHouseId" parameterType="Long" resultMap="RoomDetailResultMap">
+        SELECT *
+        FROM HOUSE_ROOM_INFO
+        WHERE HOUSE_ID = ${contentId}
+    </select>
+
+    <!-- 예약 가능한 객실 조회 -->
+    <select id="getAvailableRooms" resultMap="RoomDetailResultMap">
+        SELECT DISTINCT HRI.*
+        FROM HOUSE_ROOM_INFO HRI
+        WHERE HRI.HOUSE_ID = #{contentId}
+        AND HRI.STATUS = 0 <!-- 0: 예약 가능 -->
+        AND HRI.MAXIMUM_CAPACITY >= #{guestCount} <!-- 인원 수 제한 확인 -->
+        AND HRI.ROOM_ID NOT IN (
+            SELECT DISTINCT HR.ROOM_ID
+            FROM HOUSE_RESERVATION HR
+            WHERE HR.STATUS IN (0, 1) <!-- 0: 예약 대기, 1: 투숙중 -->
+            AND (
+                (HR.RESERVATION_START &lt;= TO_TIMESTAMP(#{checkOutDate} || ' 11:00:00', 'YYYY-MM-DD HH24:MI:SS') 
+                 AND HR.RESERVATION_END &gt;= TO_TIMESTAMP(#{checkInDate} || ' 15:00:00', 'YYYY-MM-DD HH24:MI:SS'))
+                OR (HR.RESERVATION_START &gt;= TO_TIMESTAMP(#{checkInDate} || ' 15:00:00', 'YYYY-MM-DD HH24:MI:SS') 
+                    AND HR.RESERVATION_START &lt; TO_TIMESTAMP(#{checkOutDate} || ' 11:00:00', 'YYYY-MM-DD HH24:MI:SS'))
+                OR (HR.RESERVATION_END &gt; TO_TIMESTAMP(#{checkInDate} || ' 15:00:00', 'YYYY-MM-DD HH24:MI:SS') 
+                    AND HR.RESERVATION_END &lt;= TO_TIMESTAMP(#{checkOutDate} || ' 11:00:00', 'YYYY-MM-DD HH24:MI:SS'))
+            )
+        )
+        ORDER BY HRI.PRICE ASC
+    </select>
+
 </mapper> 

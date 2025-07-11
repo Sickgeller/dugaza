@@ -184,10 +184,15 @@
     cursor: pointer;
     margin-top: 20px;
     transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
 }
 
 .booking-btn:hover {
     background-color: #1a73e8;
+    color: white;
+    text-decoration: none;
 }
 
 /* Info Section */

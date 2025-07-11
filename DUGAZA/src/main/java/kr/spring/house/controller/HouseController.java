@@ -94,7 +94,7 @@ public class HouseController {
 		model.addAttribute("reviewList",reviewList);
 		model.addAttribute("status", status);
 
-		return "views/seller/house/accommodation-detail";
+		return "views/house/house-detail";
 	}
 
 	// 리뷰 작성

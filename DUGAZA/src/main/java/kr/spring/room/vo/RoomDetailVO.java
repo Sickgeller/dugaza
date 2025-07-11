@@ -11,10 +11,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RoomDetailVO {
     private Long roomId;
-    private Long houseId;
-    private String roomName;
-    private Long price;
-    private String roomSize;
+    private Long houseId; // contentId
+    private String roomName; //호실이나 방 이름
+    private String roomType; // 스위트룸, 뭐시기룸 기타등등
+    private Long price; // 
+    private String roomSize; // 평이든 m제곱이든 자유
     private Integer minimumCapacity;
     private Integer maximumCapacity;
     private String bedInfo;

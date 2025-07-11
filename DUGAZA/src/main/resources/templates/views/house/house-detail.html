@@ -86,7 +86,7 @@
                             <span>198,000원</span>
                         </div>
                     </div>
-                    <button class="booking-btn">예약하기</button>
+                    <a th:href="@{/house/reservation(contentId=${info.contentId})}" class="booking-btn">예약하기</a>
                 </div>
             </section>
 
@@ -390,7 +390,7 @@
                                 <li><i class="fas fa-won-sign"></i> 1일 대여료: 50,000원</li>
                                 <li><i class="fas fa-tag"></i> 할인가: 45,000원</li>
                             </ul>
-                            <a href="../car/car-rental.html" class="book-transport-btn">예약하기</a>
+                            <a href="../seller/car/car-rental.html" class="book-transport-btn">예약하기</a>
                         </div>
                     </div>
                 </div>

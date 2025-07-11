@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="kr.spring.reservation.house.dao.HouseReservationMapper">
+<mapper namespace="kr.spring.reservation.dao.HouseReservationMapper">
 
-    <resultMap id="houseReservationResultMap" type="kr.spring.reservation.house.vo.HouseReservationVO">
-        <id property="reservationId" column="RESERVATION_ID"/>
+    <resultMap id="houseReservationResultMap" type="kr.spring.reservation.vo.HouseReservationVO">
+        <id property="houseReservationId" column="RESERVATION_ID"/>
         <result property="memberId" column="MEMBER_ID"/>
         <result property="houseId" column="HOUSE_ID"/>
         <result property="roomId" column="ROOM_ID"/>
-        <result property="roomName" column="ROOM_NAME"/>
-        <result property="roomPrice" column="ROOM_PRICE"/>
-        <result property="reservationStartDate" column="RESERVATION_START"/>
-        <result property="reservationEndDate" column="RESERVATION_END"/>
+        <result property="reservationStart" column="RESERVATION_START"/>
+        <result property="reservationEnd" column="RESERVATION_END"/>
         <result property="reservationCount" column="RESERVATION_COUNT"/>
         <result property="price" column="RESERVATION_PRICE"/>
         <result property="status" column="RESERVATION_STATUS"/>
@@ -45,6 +43,46 @@
                           WHERE ROWNUM &lt;= #{endRow}
                       )
         WHERE RN &gt;= #{startRow}
+    </select>
+
+    <insert id="insertReservation" parameterType="kr.spring.reservation.vo.HouseReservationVO">
+        INSERT INTO HOUSE_RESERVATION (
+            RESERVATION_ID,
+            MEMBER_ID,
+            HOUSE_ID,
+            ROOM_ID,
+            RESERVATION_START,
+            RESERVATION_END,
+            RESERVATION_COUNT,
+            PRICE,
+            STATUS
+        ) VALUES (
+                     HOUSE_RESERVATION_SEQ.nextval,
+                     #{memberId},
+                     #{houseId},
+                     #{roomId},
+                     #{reservationStart},
+                     #{reservationEnd},
+                     #{reservationCount},
+                     #{price},
+                     #{status}
+                 )
+    </insert>
+
+    <!-- 예약 중복 체크 -->
+    <select id="checkReservationConflict" resultType="int">
+        SELECT COUNT(*)
+        FROM HOUSE_RESERVATION
+        WHERE ROOM_ID = #{roomId}
+        AND STATUS IN (0, 1) <!-- 0: 예약 대기, 1: 투숙중 -->
+        AND (
+            (RESERVATION_START &lt;= TO_TIMESTAMP(#{reservationEnd}, 'YYYY-MM-DD"T"HH24:MI:SS') 
+             AND RESERVATION_END &gt;= TO_TIMESTAMP(#{reservationStart}, 'YYYY-MM-DD"T"HH24:MI:SS'))
+            OR (RESERVATION_START &gt;= TO_TIMESTAMP(#{reservationStart}, 'YYYY-MM-DD"T"HH24:MI:SS') 
+                AND RESERVATION_START &lt; TO_TIMESTAMP(#{reservationEnd}, 'YYYY-MM-DD"T"HH24:MI:SS'))
+            OR (RESERVATION_END &gt; TO_TIMESTAMP(#{reservationStart}, 'YYYY-MM-DD"T"HH24:MI:SS') 
+                AND RESERVATION_END &lt;= TO_TIMESTAMP(#{reservationEnd}, 'YYYY-MM-DD"T"HH24:MI:SS'))
+        )
     </select>
 
 </mapper>

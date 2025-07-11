@@ -1,11 +1,9 @@
 package kr.spring.seller.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import kr.spring.common.SellerType;
-import kr.spring.auth.security.CustomUserDetails;
-import kr.spring.reservation.house.service.HouseReservationService;
+import kr.spring.reservation.service.HouseReservationService;
 import kr.spring.review.base.service.BaseReviewService;
 import kr.spring.room.service.RoomService;
 import kr.spring.seller.service.SellerService;
@@ -13,14 +11,11 @@ import kr.spring.seller.vo.SellerVO;
 import kr.spring.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
