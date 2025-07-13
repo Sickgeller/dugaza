@@ -9,7 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
-import java.time.LocalDateTime;
+import java.util.List;
+
 
 @RequiredArgsConstructor
 @Component
@@ -20,19 +21,15 @@ public class TouristAttractionApiClient {
     
     public TouristAttrationDetailApiDto getTouristAttrationDetailData(Long contentId) {
         URI uri = baseApiClient.makeTourUri("/detailIntro2","contentId", String.valueOf(contentId), "contentTypeId", String.valueOf(12));
-        return baseApiClient.callApi(uri, this::createTouristAttrationDetailApiDto).get(0);
+        List<TouristAttrationDetailApiDto> dtoList = baseApiClient.callApi(uri, this::createTouristAttrationDetailApiDto);
+        if(!dtoList.isEmpty()){
+            return dtoList.get(0);
+        }
+        return null;
     }
 
     private TouristAttrationDetailApiDto createTouristAttrationDetailApiDto(JsonNode item, String type) {
-        String openDateStr = item.path("opendate").asText();
-        LocalDateTime openDate = null;
-        if (!openDateStr.isEmpty()) {
-            try {
-                openDate = LocalDateTime.parse(openDateStr); // 또는 적절한 포맷으로 변환
-            } catch (Exception e) {
-                // 예외 처리
-            }
-        }
+        String openDate = item.path("opendate").asText();
         return TouristAttrationDetailApiDto.builder()
                 .contentId(item.path("contentid").asLong())  // 콘텐츠ID
                 .contentTypeId(item.path("contenttypeid").asLong())  // 관광타입 ID (12 고정)

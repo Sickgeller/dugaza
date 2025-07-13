@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" ?>  
-<!DOCTYPE mapper   
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="kr.spring.restaurant.dao.RestaurantMapper">
 <resultMap id="restaurantMap" type="kr.spring.restaurant.vo.RestaurantVO">
     <result property="areaCode" column="AREA_CODE" />
@@ -38,6 +39,33 @@
 	<result property="treatMenu" column="TREAT_MENU"/>
 	<result property="lcnsNo" column="LCNS_NO"/>
 </resultMap>
+
+<!-- TourVO 매핑 -->
+<resultMap id="tourMap" type="kr.spring.tour.vo.TourVO">
+	<id property="id" column="ID"/>
+	<result property="addr1" column="ADDR1"/>
+	<result property="addr2" column="ADDR2"/>
+	<result property="areaCode" column="AREA_CODE"/>
+	<result property="cat1" column="CAT1"/>
+	<result property="cat2" column="CAT2"/>
+	<result property="cat3" column="CAT3"/>
+	<result property="contentId" column="CONTENT_ID"/>
+	<result property="contentTypeId" column="CONTENT_TYPE_ID"/>
+	<result property="firstImage" column="FIRST_IMAGE"/>
+	<result property="firstImage2" column="FIRST_IMAGE2"/>
+	<result property="cpyrhtDivCd" column="CPYRHT_DIV_CD"/>
+	<result property="mapX" column="MAP_X"/>
+	<result property="mapY" column="MAP_Y"/>
+	<result property="mlevel" column="MLEVEL"/>
+	<result property="sigunguCode" column="SIGUNGU_CODE"/>
+	<result property="tel" column="TEL"/>
+	<result property="title" column="TITLE"/>
+	<result property="zipcode" column="ZIPCODE"/>
+	<result property="createdAt" column="CREATED_AT"/>
+	<result property="updatedAt" column="UPDATED_AT"/>
+	<result property="showFlag" column="SHOW_FLAG"/>
+</resultMap>
+
 	<sql id="restaurantSearch">
 			<if test="category != null and category != 0">
 				content_type_id = #{category}	
@@ -83,6 +111,8 @@
 		JOIN tour_content USING(content_id)
 		WHERE content_id=#{id}
 	</select>
+
+
 </mapper>
 
 

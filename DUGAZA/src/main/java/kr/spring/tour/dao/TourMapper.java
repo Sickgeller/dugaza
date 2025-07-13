@@ -12,7 +12,6 @@ import kr.spring.tour.vo.TourVO;
 public interface TourMapper {
 	public Integer selectRowCount();
 	public List<TourVO> selectList(Map<String, Object> map);
-	// 아이디로부터 컨텐츠 타입을 읽어와 해당 카테고리로 처리 넘기기 위함
-	@Select("SELECT content_type_id FROM tour_content WHERE content_id=#{id}")
-	public Integer selectContentTypeId(Long id);
+	// tour_content에서 기본 정보만 가져오기
+	TourVO selectTourContent(Long contentId);
 }

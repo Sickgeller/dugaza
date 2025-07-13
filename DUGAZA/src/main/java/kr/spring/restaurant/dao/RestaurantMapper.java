@@ -3,6 +3,7 @@ package kr.spring.restaurant.dao;
 import java.util.List;
 import java.util.Map;
 
+import kr.spring.api.dto.RestaurantDetailApiDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import kr.spring.restaurant.vo.RestaurantVO;

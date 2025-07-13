@@ -25,6 +25,7 @@ import kr.spring.review.base.service.BaseReviewService;
 import kr.spring.review.base.service.ReviewStatisticsService;
 import kr.spring.review.base.vo.BaseReviewVO;
 import kr.spring.review.base.vo.ReviewStatisticsVO;
+import kr.spring.tour.service.TourService;
 import kr.spring.tour.vo.TourVO;
 import kr.spring.tour.vo.TouristAttractionVO;
 import kr.spring.util.PagingUtil;
@@ -43,6 +44,9 @@ public class RestaurantController {
 
 	@Autowired
 	private ReviewStatisticsService reviewStatisticsService;
+
+	@Autowired
+	private TourService tourService;
 
 	@GetMapping("")
 	public String restaurantMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
@@ -75,6 +79,12 @@ public class RestaurantController {
 	public String restaurantDetail(@RequestParam(name = "contentId") Long contentId, Model model) {
 		// 식당 정보
 		RestaurantVO vo = restaurantService.selectRestaurant(contentId);
+
+		// api 정보 insert하고 select 하는 부분
+		if(vo == null){
+			vo = restaurantService.selectRestaurantWithApi(contentId);
+		}
+
 		// 식당별 리뷰 목록
 		List<BaseReviewVO> reviewList = baseReviewService.getHouseReviews(contentId, 1, 10);
 		// 식당별 리뷰 통계
@@ -83,6 +93,21 @@ public class RestaurantController {
 		model.addAttribute("info",vo);
 		model.addAttribute("reviewList",reviewList);
 		model.addAttribute("status", status);
+
+		//api에서 정보를 뱉지않을때
+		if(vo == null){
+			// tour_content에서 기본 정보만 가져오기
+			TourVO tourInfo = tourService.selectTourContent(contentId);
+			if(tourInfo != null) {
+				model.addAttribute("info", tourInfo);
+				model.addAttribute("contentTypeName", "음식점");
+				model.addAttribute("reviewActionUrl", "/restaurant/saveReview");
+				// 기본 정보만 있을 때는 status와 reviewList를 null로 설정
+				model.addAttribute("status", null);
+				model.addAttribute("reviewList", null);
+				return "views/common/content-detail-basic";
+			}
+		}
 
 		return "views/restaurant/restaurant-detail";
 	}

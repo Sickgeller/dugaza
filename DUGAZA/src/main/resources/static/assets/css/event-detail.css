@@ -1,4 +1,4 @@
-/* Restaurant Detail Page Styles */
+/* Event Detail Page Styles */
 .detail-main {
     margin-top: 70px;
     padding: 20px;
@@ -29,7 +29,7 @@
 }
 
 .detail-meta .category {
-    background-color: #ff4757;
+    background-color: #ff6b35;
     color: white;
     padding: 4px 12px;
     border-radius: 20px;
@@ -46,7 +46,7 @@
 }
 
 .like-btn {
-    background-color: #ff4757;
+    background-color: #ff6b35;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -57,7 +57,7 @@
 }
 
 .like-btn:hover {
-    background-color: #ff6b81;
+    background-color: #ff8c5a;
 }
 
 .like-btn i {
@@ -82,8 +82,8 @@
     object-fit: cover;
 }
 
-/* Restaurant Info Section */
-.info-section {
+/* Event Info Section */
+.event-info-section {
     background: white;
     padding: 30px;
     border-radius: 8px;
@@ -91,9 +91,9 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.info-section h2 {
+.event-info-section h2 {
     margin-bottom: 20px;
-    color: #ff4757;
+    color: #ff6b35;
     font-size: 24px;
 }
 
@@ -110,7 +110,7 @@
 }
 
 .info-item i {
-    color: #ff4757;
+    color: #ff6b35;
     margin-right: 8px;
 }
 
@@ -128,8 +128,8 @@
     text-decoration: underline;
 }
 
-/* Menu Section */
-.menu-section {
+/* Program Section */
+.program-section {
     background: white;
     padding: 30px;
     border-radius: 8px;
@@ -137,54 +137,103 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.menu-section h2 {
+.program-section h2 {
     margin-bottom: 20px;
-    color: #ff4757;
+    color: #ff6b35;
     font-size: 24px;
 }
 
-.menu-grid {
+.program-content p {
+    color: #666;
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+/* Sub Event Section */
+.sub-event-section {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sub-event-section h2 {
+    margin-bottom: 20px;
+    color: #ff6b35;
+    font-size: 24px;
+}
+
+.sub-event-content p {
+    color: #666;
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+/* Place Info Section */
+.place-info-section {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.place-info-section h2 {
+    margin-bottom: 20px;
+    color: #ff6b35;
+    font-size: 24px;
+}
+
+.place-info-content p {
+    color: #666;
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+/* Sponsor Section */
+.sponsor-section {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.sponsor-section h2 {
+    margin-bottom: 20px;
+    color: #ff6b35;
+    font-size: 24px;
+}
+
+.sponsor-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
 }
 
-.menu-item {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 15px;
-    border-bottom: 1px solid #eee;
-}
-
-.menu-item img {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 8px;
-}
-
-.menu-info {
+.sponsor-item {
     padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background: #f9f9f9;
 }
 
-.menu-info h3 {
-    font-size: 20px;
+.sponsor-item h3 {
+    font-size: 18px;
     margin-bottom: 10px;
     color: #333;
 }
 
-.menu-info .price {
-    font-size: 18px;
-    font-weight: bold;
-    color: #ff4757;
-    margin-bottom: 8px;
+.sponsor-item h3 i {
+    color: #ff6b35;
+    margin-right: 8px;
 }
 
-.menu-info .description {
+.sponsor-item p {
     color: #666;
-    font-size: 14px;
     line-height: 1.6;
+    margin-bottom: 5px;
 }
 
 /* Basic Info Section */
@@ -302,7 +351,7 @@
 }
 
 .write-review-btn {
-    background-color: #ff4757;
+    background-color: #ff6b35;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -313,7 +362,7 @@
 }
 
 .write-review-btn:hover {
-    background-color: #ff6b81;
+    background-color: #ff8c5a;
 }
 
 .review-stats {
@@ -332,7 +381,7 @@
 .rating-number {
     font-size: 36px;
     font-weight: bold;
-    color: #ff4757;
+    color: #ff6b35;
     margin-bottom: 5px;
 }
 
@@ -377,7 +426,7 @@
 
 .bar {
     height: 100%;
-    background: #ff4757;
+    background: #ff6b35;
     transition: width 0.3s ease;
 }
 
@@ -422,8 +471,8 @@
 
 .form-control:focus {
     outline: none;
-    border-color: #ff4757;
-    box-shadow: 0 0 0 2px rgba(255, 71, 87, 0.2);
+    border-color: #ff6b35;
+    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
 }
 
 .rating-input {
@@ -448,7 +497,7 @@
 }
 
 .submit-review-btn {
-    background-color: #ff4757;
+    background-color: #ff6b35;
     color: white;
     border: none;
     padding: 12px 24px;
@@ -459,7 +508,7 @@
 }
 
 .submit-review-btn:hover {
-    background-color: #ff6b81;
+    background-color: #ff8c5a;
 }
 
 /* Review List */
@@ -527,37 +576,9 @@
 
 .page-numbers a:hover,
 .page-numbers a.active {
-    background-color: #ff4757;
+    background-color: #ff6b35;
     color: white;
-    border-color: #ff4757;
-}
-
-/* No Detail Notice */
-.no-detail-notice {
-    background: #fff3cd;
-    border: 1px solid #ffeaa7;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 30px;
-    text-align: center;
-}
-
-.notice-content i {
-    font-size: 48px;
-    color: #f39c12;
-    margin-bottom: 15px;
-}
-
-.notice-content h2 {
-    color: #856404;
-    margin-bottom: 10px;
-    font-size: 20px;
-}
-
-.notice-content p {
-    color: #856404;
-    margin: 0;
-    line-height: 1.6;
+    border-color: #ff6b35;
 }
 
 /* Responsive Design */
@@ -577,7 +598,7 @@
         grid-template-columns: 1fr;
     }
 
-    .menu-grid {
+    .sponsor-grid {
         grid-template-columns: 1fr;
     }
 
@@ -608,8 +629,11 @@
         font-size: 24px;
     }
 
-    .info-section,
-    .menu-section,
+    .event-info-section,
+    .program-section,
+    .sub-event-section,
+    .place-info-section,
+    .sponsor-section,
     .basic-info-section,
     .map-section,
     .review-section {
@@ -626,17 +650,5 @@
 
     .basic-info-section .info-item p {
         font-size: 13px;
-    }
-
-    .no-detail-notice {
-        padding: 15px;
-    }
-
-    .notice-content i {
-        font-size: 36px;
-    }
-
-    .notice-content h2 {
-        font-size: 18px;
     }
 } 

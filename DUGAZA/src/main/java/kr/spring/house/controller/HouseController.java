@@ -144,6 +144,18 @@ public class HouseController {
 		model.addAttribute("status", status);
 		model.addAttribute("wish", db_wish);
 
+		// API에서 정보를 제공하지 않을 때 공통 템플릿 사용
+		if(vo == null) {
+			// tour_content에서 기본 정보만 가져오기 (HouseService에 selectTourContent 메서드가 있다고 가정)
+			// TourVO tourInfo = houseService.selectTourContent(contentId);
+			// if(tourInfo != null) {
+			//     model.addAttribute("info", tourInfo);
+			//     model.addAttribute("contentTypeName", "숙소");
+			//     model.addAttribute("reviewActionUrl", "/house/saveReview");
+			//     return "views/common/content-detail-basic";
+			// }
+		}
+
 		return "views/house/house-detail";
 	}
 

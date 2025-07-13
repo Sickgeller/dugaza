@@ -12,4 +12,5 @@ public interface RestaurantService {
 	// 음식점 목록
 	public List<TourVO> selectList(Map<String,Object> map);
 	public RestaurantVO selectRestaurant(Long id);
+	RestaurantVO selectRestaurantWithApi(Long contentId);
 }

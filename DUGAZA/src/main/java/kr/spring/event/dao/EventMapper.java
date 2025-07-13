@@ -15,4 +15,6 @@ public interface EventMapper {
 	// 행사 목록
 	public List<TourVO> selectList(Map<String,Object> map);
 	public EventVO selectEvent(Long id);
+	// tour_content에서 기본 정보만 가져오기
+	TourVO selectTourContent(Long contentId);
 }

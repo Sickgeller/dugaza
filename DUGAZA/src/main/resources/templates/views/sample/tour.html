@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관광지 - 드가자닷컴</title>
+    <title>여행명소 - 드가자닷컴</title>
     <link rel="stylesheet" th:href="@{/assets/css/style.css}">
     <link rel="stylesheet" th:href="@{/assets/css/tour.css}">
     <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
@@ -13,51 +13,40 @@
 </head>
 <body>
     <main class="tour-main" layout:fragment="content">
-    <form id="searchForm" method="get" action="/tour">
-        <section class="filter-section">
-            <div class="filter-container">
-                <div class="filter-group">
-                    <label>지역</label>
-                    <select>
-                        <option>전체</option>
-                        <option>서울</option>
-                        <option>부산</option>
-                        <option>제주</option>
-                    </select>
+    <form id="searchForm" method="get" action="/touristAttraction">
+            <section class="filter-section">
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <label>지역</label>
+                        <select>
+                            <option>전체</option>
+                            <option>서울</option>
+                            <option>부산</option>
+                            <option>제주</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>정렬</label>
+                        <select>
+                            <option>추천순</option>
+                            <option>평점순</option>
+                            <option>리뷰순</option>
+                        </select>
+                    </div>
+                    <div class="search-box" style="display: contents;">
+                    	<input type="text" placeholder="통합 검색" name="keyword">	
+    	                <button><i class="fas fa-search"></i></button>
+                    </div>
                 </div>
-                <div class="filter-group">
-                    <label>카테고리</label>
-                    <select name="category">
-                        <option value="0" th:selected="${category == 0}">전체</option>
-                        <option value="12" th:selected="${category == 12}">관광지</option>
-                        <option value="14" th:selected="${category == 14}">문화시설</option>
-                        <option value="25" th:selected="${category == 25}">여행코스</option>
-                        <option value="28" th:selected="${category == 28}">레포츠</option>
-                        <option value="38" th:selected="${category == 38}">쇼핑</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>정렬</label>
-                    <select>
-                        <option>추천순</option>
-                        <option>평점순</option>
-                        <option>리뷰순</option>
-                    </select>
-                </div>
-                <div class="search-box" style="display: contents;">
-                	<input type="text" placeholder="통합 검색" name="keyword">	
-	                <button><i class="fas fa-search"></i></button>
-                </div>
-            </div>
-        </section>
-        </form>
+            </section>
+            </form>
 
-        <section class="tour-list">
+                    <section class="tour-list">
             <div class="tour-grid">
                 <article class="tour-card" th:each="tour : ${list}">
-                <a th:href="@{/tour/detail(id=${tour.id})}">
+                <a th:href="@{/touristAttraction/detail(contentId=${tour.contentId})}">
                     <div class="tour-image">
-                        <img th:src="${tour.firstImage != null ? tour.firstImage : '/assets/images/tour-icon.png'}" alt="경복궁">
+                        <img th:src="${tour.firstImage != null ? tour.firstImage : '/assets/images/tour-icon.png'}" alt="여행명소">
                         <button class="like-btn"><i class="fas fa-heart"></i></button>
                     </div>
                     <div class="tour-content">
@@ -68,7 +57,7 @@
                         </div>
                         <!-- <p class="tour-description">조선시대 대표적인 궁궐로, 아름다운 전통 건축과 정원을 감상할 수 있습니다.</p> -->
                         <div class="tour-footer">
-                            <span class="category" th:text="${tour.contentTypeName}"></span>
+                            <!-- <span class="category" th:text="${tour.contentTypeName}"></span> -->
                             <a href="#" class="detail-btn">자세히 보기</a>
                         </div>
                     </div>

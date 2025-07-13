@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kr.spring.auth.security.CustomUserDetails;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,16 +32,12 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @Slf4j
 @RequestMapping("/event")
+@RequiredArgsConstructor
 public class EventController {
 
-	@Autowired
-	private EventService eventService;
-
-	@Autowired
-	private BaseReviewService baseReviewService;
-
-	@Autowired
-	private ReviewStatisticsService reviewStatisticsService;
+	private final EventService eventService;
+	private final BaseReviewService baseReviewService;
+	private final ReviewStatisticsService reviewStatisticsService;
 
 	@GetMapping("")
 	public String eventtMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
@@ -67,8 +67,15 @@ public class EventController {
 
 	// 항목 자세히 보기
 	@GetMapping("/detail")
-	public String eventtDetail(@RequestParam(name = "contentId") Long contentId, Model model) {
+	public String eventDetail(@RequestParam(name = "contentId") Long contentId, Model model) {
+		// 행사 정보
 		EventVO vo = eventService.selectEvent(contentId);
+
+		// api 정보 insert하고 select 하는 부분
+		if(vo == null){
+			vo = eventService.selectEventWithApi(contentId);
+		}
+
 		// 행사별 리뷰 목록
 		List<BaseReviewVO> reviewList = baseReviewService.getHouseReviews(contentId, 1, 10);
 		// 행사별 리뷰 통계
@@ -78,16 +85,30 @@ public class EventController {
 		model.addAttribute("reviewList",reviewList);
 		model.addAttribute("status", status);
 
-		model.addAttribute("info",vo);
+		//api에서 정보를 뱉지않을때
+		if(vo.getContentId() == null){
+			// tour_content에서 기본 정보만 가져오기
+			TourVO tourInfo = eventService.selectTourContent(contentId);
+			if(tourInfo != null) {
+				model.addAttribute("info", tourInfo);
+				model.addAttribute("contentTypeName", "행사");
+				model.addAttribute("reviewActionUrl", "/event/saveReview");
+				// 기본 정보만 있을 때는 status와 reviewList를 null로 설정
+				model.addAttribute("status", null);
+				model.addAttribute("reviewList", null);
+				return "views/common/content-detail-basic";
+			}
+		}
 
 		return "views/event/event-detail";
 	}
 
 	// 리뷰 작성
 	@PostMapping("/saveReview")
-	public String saveReview(@ModelAttribute BaseReviewVO reviewDTO, HttpSession session) {
-
-		MemberVO member = (MemberVO) session.getAttribute("member");
+	public String saveReview(
+			@ModelAttribute BaseReviewVO reviewDTO,
+			@AuthenticationPrincipal CustomUserDetails userDetails) {
+		MemberVO member = userDetails.getMember();
 		reviewDTO.setMemberId(member.getMemberId());
 		reviewDTO.setStatus(1);
 		reviewDTO.setContentTypeId(15L); // 음식점 타입 ID

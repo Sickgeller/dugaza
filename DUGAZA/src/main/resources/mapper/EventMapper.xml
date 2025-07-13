@@ -41,6 +41,32 @@
     <result property="useTimeFestival" column="USE_TIME_FESTIVAL"/>
 </resultMap>
 
+<!-- TourVO 매핑 -->
+<resultMap id="tourMap" type="kr.spring.tour.vo.TourVO">
+	<id property="id" column="ID"/>
+	<result property="addr1" column="ADDR1"/>
+	<result property="addr2" column="ADDR2"/>
+	<result property="areaCode" column="AREA_CODE"/>
+	<result property="cat1" column="CAT1"/>
+	<result property="cat2" column="CAT2"/>
+	<result property="cat3" column="CAT3"/>
+	<result property="contentId" column="CONTENT_ID"/>
+	<result property="contentTypeId" column="CONTENT_TYPE_ID"/>
+	<result property="firstImage" column="FIRST_IMAGE"/>
+	<result property="firstImage2" column="FIRST_IMAGE2"/>
+	<result property="cpyrhtDivCd" column="CPYRHT_DIV_CD"/>
+	<result property="mapX" column="MAP_X"/>
+	<result property="mapY" column="MAP_Y"/>
+	<result property="mlevel" column="MLEVEL"/>
+	<result property="sigunguCode" column="SIGUNGU_CODE"/>
+	<result property="tel" column="TEL"/>
+	<result property="title" column="TITLE"/>
+	<result property="zipcode" column="ZIPCODE"/>
+	<result property="createdAt" column="CREATED_AT"/>
+	<result property="updatedAt" column="UPDATED_AT"/>
+	<result property="showFlag" column="SHOW_FLAG"/>
+</resultMap>
+
 	<sql id="eventSearch">
 		<if test="keyword != null and keyword != ''">
 				AND
@@ -83,6 +109,15 @@
 		FROM event_detail
 		JOIN tour_content USING(content_id)
 		WHERE content_id=#{contentId}
+	</select>
+
+	<!-- tour_content에서 기본 정보만 가져오기 -->
+	<select id="selectTourContent" parameterType="long" resultMap="tourMap">
+		SELECT
+			*
+		FROM tour_content
+		WHERE content_id = #{contentId}
+		AND content_type_id = 15
 	</select>
 </mapper>
 

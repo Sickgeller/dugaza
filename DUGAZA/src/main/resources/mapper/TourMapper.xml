@@ -9,6 +9,7 @@
 	    <result property="cat2" column="CAT2" />
 	    <result property="cat3" column="CAT3" />
 	    <result property="id" column="CONTENT_ID" />
+	    <result property="contentId" column="CONTENT_ID" />
 	    <result property="contentTypeId" column="CONTENT_TYPE_ID" />
 	    <result property="firstImage" column="FIRST_IMAGE" />
 	    <result property="firstImage2" column="FIRST_IMAGE2" />
@@ -23,13 +24,7 @@
 
 	<sql id="tourSearch">
 		<where>
-			<if test="category != null and category != 0">
-				content_type_id = #{category}	
-			</if>
 			<if test="keyword != null and keyword != ''">
-				<if test="category != null and category != 0">
-					AND
-				</if>
 				(title LIKE '%' || #{keyword} || '%' OR
 				addr1 LIKE '%' || #{keyword} || '%' OR
 				addr2 LIKE '%' || #{keyword} || '%') 
@@ -61,6 +56,14 @@
 	<![CDATA[
 		WHERE rnum >= #{start, jdbcType=INTEGER} AND rnum <= #{end, jdbcType=INTEGER}
 	]]>	             
+	</select>
+
+	<!-- tour_content에서 기본 정보만 가져오기 -->
+	<select id="selectTourContent" parameterType="long" resultMap="contentMap">
+		SELECT
+			*
+		FROM tour_content
+		WHERE content_id = #{contentId}
 	</select>
 	
 </mapper>

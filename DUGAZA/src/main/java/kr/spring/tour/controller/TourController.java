@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.spring.tour.service.TourService;
-import kr.spring.tour.vo.ContentTypeAdd;
 import kr.spring.tour.vo.TourVO;
 import kr.spring.util.PagingUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -55,13 +54,15 @@ public class TourController {
 		return "views/sample/tour";
 	}
 	
-	// 항목 자세히 보기
+	// 항목 자세히 보기 - TouristAttractionController로 직접 연결하도록 변경
+	/*
 	@GetMapping("/detail")
-	public String tourDetail(@RequestParam(name = "id") Long id, Model model) {
-	    int typeId = tourService.selectContentTypeId(id);
+	public String tourDetail(@RequestParam(name = "contentId") Long contentId, Model model) {
+	    int typeId = tourService.selectContentTypeId(contentId);
 	    ContentTypeAdd contentType = ContentTypeAdd.fromId(typeId);
 
-	    return "redirect:/" + contentType.getName() + "/detail?id=" + id;
+	    return "redirect:/" + contentType.getName() + "/detail?contentId=" + contentId;
 	}
+	*/
 
 }

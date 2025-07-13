@@ -28,8 +28,8 @@ public class TourServiceImpl implements TourService{
 	}
 
 	@Override
-	public Integer selectContentTypeId(Long id) {
-		return tourMapper.selectContentTypeId(id);
+	public TourVO selectTourContent(Long contentId) {
+		return tourMapper.selectTourContent(contentId);
 	}
 
 }
