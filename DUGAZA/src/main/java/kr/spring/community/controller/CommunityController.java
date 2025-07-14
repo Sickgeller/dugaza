@@ -37,9 +37,9 @@ public class CommunityController {
     private final MemberService memberService;
 
     private static final String UPLOAD_DIR =
-    	    CommunityController.class.getClassLoader()
-    	        .getResource("static/assets/upload")
-    	        .getPath() + "/";
+    	    System.getProperty("user.dir") + "/src/main/resources/static/assets/upload/";
+    
+    
 
 
 
@@ -142,6 +142,7 @@ public class CommunityController {
 
         Long memberId = memberService.getMemberIdByUsername(principal.getName());
         postVO.setMemberId(memberId);
+        
 
         if (!file.isEmpty()) {
             String filename = file.getOriginalFilename();
