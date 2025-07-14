@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>알림</title>
+</head>
+<body>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var message = /*[[${message}]]*/ '';
+        var redirectUrl = /*[[${redirectUrl}]]*/ '';
+        
+        if (message) {
+            alert(message);
+        }
+        
+        if (redirectUrl) {
+            window.location.href = redirectUrl;
+        }
+        /*]]>*/
+    </script>
+</body>
+</html>

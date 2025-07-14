@@ -68,15 +68,19 @@
         <section class="accommodation-list" id="accommodation-list">
             <div class="list-header">
                 <h2>추천 숙소</h2>
-                <div class="sort-options">
-                    <select>
-                        <option>추천순</option>
-                        <option>가격 낮은순</option>
-                        <option>가격 높은순</option>
-                        <option>평점순</option>
-                        <option>리뷰순</option>
-                    </select>
-                </div>
+                <form id="sortForm" method="get" action="/house">
+                    <input type="hidden" name="keyword" th:value="${param.keyword}">
+                    <input type="hidden" name="cat3" th:value="${param.cat3}">
+                    <div class="sort-options">
+                        <select name="sort" onchange="this.form.submit()">
+                            <option value="latest" th:selected="${sort == 'latest'}">추천순</option>
+                            <option value="price_asc" th:selected="${sort == 'price_asc'}">가격 낮은순</option>
+                            <option value="price_desc" th:selected="${sort == 'price_desc'}">가격 높은순</option>
+                            <option value="rating" th:selected="${sort == 'rating'}">평점순</option>
+                            <option value="reviews" th:selected="${sort == 'reviews'}">리뷰순</option>
+                        </select>
+                    </div>
+                </form>
             </div>
 
             <div class="accommodation-grid">
@@ -84,14 +88,15 @@
                  <a th:href="@{/house/detail(contentId=${house.contentId})}">
                     <div class="accommodation-image">
                         <img th:src="${house.firstImage != null ? house.firstImage : '/assets/images/house.png'}" alt="호텔">
-                        <div class="accommodation-badge">호텔</div>
                         <button class="like-btn"><i class="fas fa-heart"></i></button>
                     </div>
                     <div class="accommodation-content">
                         <h3 th:text="${house.title}"></h3>
+                        <div class="accommodation-meta" style="margin-bottom: 0;">
+                            <span class="rating"><i class="fas fa-star"></i> <span th:text="${#numbers.formatDecimal(house.review_avg, 1, 1)}"></span></span>
+                            <span class="reviews">(리뷰 <span th:text="${house.review_count}"></span>)</span>
+                        </div>
                         <div class="accommodation-meta">
-                            <span class="rating"><i class="fas fa-star"></i> 4.8</span>
-                            <span class="reviews">(리뷰 523)</span>
                             <span class="location" th:text="${house.addr1}"></span>
                         </div>
                         <p class="accommodation-description">
@@ -109,7 +114,7 @@
                             <span th:if="${house.sports == '1'}"><i class="fas fa-volleyball-ball"></i> 스포츠 시설</span>
                         </div>
                         <div class="accommodation-price">
-                            <span class="price">180,000원</span>
+                            <span class="price" th:text="${house.price != null ? #numbers.formatInteger(house.price, 1, 'COMMA') + '원' : '가격 정보 없음'}"></span>
                             <span class="unit">/ 1박</span>
                         </div>
                     </div>

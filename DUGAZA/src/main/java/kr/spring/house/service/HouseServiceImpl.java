@@ -51,7 +51,9 @@ public class HouseServiceImpl implements HouseService{
 	@Override
 	public void insertWithApi(Long contentId) {
 		HouseDetailApiDto houseDetailApiDto = houseApiClient.getHouseDetailData(contentId);
-		commonDataSyncSupportService.insertOrUpdate(houseDetailApiMapper, houseDetailApiDto);
+		if (houseDetailApiDto != null) {
+			commonDataSyncSupportService.insertOrUpdate(houseDetailApiMapper, houseDetailApiDto);
+		}
 	}
 
 }

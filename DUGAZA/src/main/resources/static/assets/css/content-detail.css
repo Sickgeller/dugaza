@@ -70,6 +70,25 @@
     margin-right: 5px;
 }
 
+.primary-btn {
+    background-color: #2681ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.primary-btn:hover {
+    background-color: #1a73e8;
+}
+
+.primary-btn i {
+    margin-right: 5px;
+}
+
 /* Gallery */
 .detail-gallery {
     margin-bottom: 40px;

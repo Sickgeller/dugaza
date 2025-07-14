@@ -29,7 +29,11 @@ public class HouseApiClient{
 
     public HouseDetailApiDto getHouseDetailData(Long contentId) {
         URI uri = baseApiClient.makeTourUri("/detailIntro2","contentId", String.valueOf(contentId), "contentTypeId", String.valueOf(32));
-        return baseApiClient.callApi(uri, this::createHouseDetailApiDto).get(0);
+        List<HouseDetailApiDto> result = baseApiClient.callApi(uri, this::createHouseDetailApiDto);
+        if (result == null || result.isEmpty()) {
+            return null;
+        }
+        return result.get(0);
     }
 
     private HouseDetailApiDto createHouseDetailApiDto(JsonNode item, String type) {

@@ -50,11 +50,13 @@ public class HouseController {
 	public String accommodationMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword,
 			@RequestParam(required = false, name = "cat3") String cat3,
+			@RequestParam(name = "sort", defaultValue = "latest") String sort,
 			Model model) {
 
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("keyword", keyword);
 		map.put("cat3", cat3);
+		map.put("sort", sort);
 
 		int count = houseService.selectRowCount(map);
 
@@ -82,6 +84,7 @@ public class HouseController {
 		model.addAttribute("list", list);
 		model.addAttribute("page", page);
 		model.addAttribute("cat3", cat3); // 뷰에서 활성화된 버튼 표시를 위해 전달
+		model.addAttribute("sort", sort);
 		return "views/sample/accommodation";
 	}
 
@@ -89,11 +92,13 @@ public class HouseController {
 	public String accommodationList(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword,
 			@RequestParam(required = false, name = "cat3") String cat3,
+			@RequestParam(name = "sort", defaultValue = "latest") String sort,
 			Model model) {
 
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("keyword", keyword);
 		map.put("cat3", cat3);
+		map.put("sort", sort);
 
 		int count = houseService.selectRowCount(map);
 
@@ -112,6 +117,7 @@ public class HouseController {
 		model.addAttribute("list", list);
 		model.addAttribute("page", page);
 		model.addAttribute("cat3", cat3); 
+		model.addAttribute("sort", sort);
 
 		return "views/sample/accommodation :: #accommodation-list";
 	}
@@ -126,6 +132,12 @@ public class HouseController {
 				houseService.insertWithApi(contentId);
 				vo = houseService.selectHouse(contentId);
 			}
+
+		if (vo == null) {
+			model.addAttribute("message", "정보를 가져올 수 없는 숙소입니다.");
+			model.addAttribute("redirectUrl", "/house");
+			return "views/common/message";
+		}
 
 		// 숙소별 리뷰 목록
 		List<BaseReviewVO> reviewList = baseReviewService.getHouseReviews(contentId, 1, 10);
