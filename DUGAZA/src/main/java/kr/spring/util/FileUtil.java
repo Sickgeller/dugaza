@@ -21,9 +21,7 @@ public class FileUtil {
 			MultipartFile file)
 			throws IllegalStateException, IOException {
 		// 컨텍스트 경로상의 절대경로 구하기
-		String path = request.getSession()
-				.getServletContext()
-				.getRealPath(UPLOAD_PATH);
+		String path = new File("src/main/resources/static/assets/upload").getAbsolutePath();
 		File uploadDir = new File(path);
 		if (!uploadDir.exists()) {
 			uploadDir.mkdirs(); // 폴더가 없으면 생성

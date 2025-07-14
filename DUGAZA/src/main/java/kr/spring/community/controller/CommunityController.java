@@ -36,7 +36,9 @@ public class CommunityController {
     private final CommunityReplyService replyService;
     private final MemberService memberService;
 
-    private static final String UPLOAD_DIR = "C:/DUGAZA/upload/";
+    private static final String UPLOAD_DIR =
+    	    new File("src/main/resources/static/assets/upload/").getAbsolutePath() + File.separator;
+
 
  // 📄 커뮤니티 메인
     @GetMapping({"", "/"})
