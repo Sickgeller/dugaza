@@ -1,23 +1,40 @@
+.edited-label {
+    color: #555;
+    font-size: 13px;
+    margin-left: 3px;
+    font-weight:400;
+}
+
+
+/* 기본: 링크형 버튼 */
 .action-btn {
     display: inline-block;
-    padding: 2px 6px; /* 기존: 4px 10px → 더 작게 */
+    padding: 0; 
     margin-left: 4px;
-    font-size: 13px;  /* 기존: 14px → 더 작게 */
-    color: #333;
-    border: 1px solid #ccc;
-    border-radius: 3px; /* 살짝 더 둥글게 */
-    background: transparent;
+    font-size: 13px;  
+    color: #555;  
+    background: none;
+    border: none;
+    border-radius: 0; 
     text-decoration: none;
     line-height: 1.2;
-    transition: all 0.2s ease;
+    cursor: pointer;
+    transition: color 0.2s ease;
 }
 
 .action-btn:hover {
-    border-color: #2681ff;
-    color: #2681ff;
+    text-decoration: underline;
+    color: #2681ff;  /* 수정 버튼 hover 시 파란색 */
 }
 
+/* 삭제 버튼 전용: hover 시 빨간색 */
+.action-btn.delete-btn:hover {
+    color: #d9534f;
+}
 
+.action-btn.delete-btn:hover {
+    text-decoration: underline;
+}
 
 /* ===== 공통 컨테이너 ===== */
 .community-container {
@@ -146,7 +163,7 @@
     border: 1px solid #eee;
     border-radius: 6px;
     padding: 12px 15px;
-    margin-bottom: 10px;
+    margin-bottom: 13px;
 }
 
 .comment-meta {
@@ -184,7 +201,8 @@
     padding-bottom: 5px;
 }
 
-.post-reply-section textarea {
+.post-reply-section textarea,
+.comment-item textarea {
     width: 100%;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -222,3 +240,4 @@
     color: #2681ff;
     text-decoration: underline;
 }
+

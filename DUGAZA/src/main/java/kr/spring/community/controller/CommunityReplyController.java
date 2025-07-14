@@ -40,18 +40,20 @@ public class CommunityReplyController {
      * 댓글 삭제
      */
     @PostMapping("/reply/delete")
-    public String deleteReply(Long replyId, Long postId, Principal principal) {
+    public String deleteReply(Long replyId, Principal principal) {
         if (principal == null) {
             throw new AccessDeniedException("로그인 후 삭제 가능합니다.");
         }
 
         Long memberId = memberService.getMemberIdByUsername(principal.getName());
         CommunityReplyVO reply = replyService.getReply(replyId);
+
         if (!reply.getMemberId().equals(memberId)) {
             throw new AccessDeniedException("본인만 삭제할 수 있습니다.");
         }
-        replyService.deleteReply(replyId, postId);
-        return "redirect:/community/detail?id=" + postId;
+
+        replyService.deleteReply(replyId);
+        return "redirect:/community/detail?id=" + reply.getPostId();
     }
 
     /**
@@ -65,9 +67,11 @@ public class CommunityReplyController {
 
         Long memberId = memberService.getMemberIdByUsername(principal.getName());
         CommunityReplyVO original = replyService.getReply(reply.getReplyId());
+
         if (!original.getMemberId().equals(memberId)) {
             throw new AccessDeniedException("본인만 수정할 수 있습니다.");
         }
+
         replyService.updateReply(reply);
         return "redirect:/community/detail?id=" + reply.getPostId();
     }

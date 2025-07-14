@@ -22,12 +22,12 @@
 	</resultMap>
 
 	<!-- 게시글 목록 -->
-	<select id="selectPostList" parameterType="map"
-		resultMap="communityPostMap">
-		SELECT *
-		FROM (
-		SELECT ROWNUM rnum, A.*
-		FROM (
+<select id="selectPostList" parameterType="map"
+	resultMap="communityPostMap">
+SELECT *
+FROM (
+	SELECT ROWNUM rnum, A.*
+	FROM (
 		SELECT cp.*, m.id AS writer
 		FROM community_post cp
 		JOIN member m ON cp.member_id = m.member_id
@@ -36,14 +36,29 @@
 				AND cp.category = #{category}
 			</if>
 			<if test="keyword != null and keyword != ''">
-				AND cp.title LIKE '%' || #{keyword} || '%'
+				AND (cp.title LIKE '%' || #{keyword} || '%' OR cp.content LIKE '%' || #{keyword} || '%')
 			</if>
 		</where>
-		ORDER BY cp.regdate DESC
-		) A
-		)
-		WHERE rnum BETWEEN #{start} AND #{end}
-	</select>
+		ORDER BY
+		<choose>
+			<when test="order == 'popular'">
+				cp.like_count DESC
+			</when>
+			<when test="order == 'view'">
+				cp.view_count DESC
+			</when>
+			<when test="order == 'comment'">
+				cp.comment_count DESC
+			</when>
+			<otherwise>
+				cp.regdate DESC
+			</otherwise>
+		</choose>
+	) A
+)
+WHERE rnum BETWEEN #{start} AND #{end}
+</select>
+
 
 
 

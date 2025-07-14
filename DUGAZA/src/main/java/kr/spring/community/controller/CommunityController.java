@@ -103,11 +103,14 @@ public class CommunityController {
         if (principal != null) {
             Long memberId = memberService.getMemberIdByUsername(principal.getName());
             isOwner = post.getMemberId().equals(memberId);
-            liked = communityService.isLiked(id, memberId); // 여기 추가!
+            liked = communityService.isLiked(id, memberId);
+
+            // ✅ 현재 로그인 사용자 ID를 모델에 추가
+            model.addAttribute("currentUserId", memberId);
         }
 
         model.addAttribute("isOwner", isOwner);
-        model.addAttribute("liked", liked); // 좋아요 상태 전달
+        model.addAttribute("liked", liked);
 
         return "views/sample/community-detail";
     }

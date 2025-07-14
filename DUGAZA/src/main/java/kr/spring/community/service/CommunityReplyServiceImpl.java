@@ -33,13 +33,19 @@ public class CommunityReplyServiceImpl implements CommunityReplyService {
     }
 
     @Override
-    public void deleteReply(Long replyId, Long postId) {
+    public void deleteReply(Long replyId) {
+        CommunityReplyVO reply = replyMapper.getReply(replyId);
+        Long postId = reply.getPostId();
+
         replyMapper.deleteReply(replyId);
-        postMapper.updateCommentCount(postId, -1); // 댓글 수 -1
+        postMapper.updateCommentCount(postId, -1);
     }
+
 
     @Override
     public void updateReply(CommunityReplyVO reply) {
+        reply.setIsModified(1); // 수정됨 표시
         replyMapper.updateReply(reply);
     }
+
 }

@@ -31,10 +31,12 @@
 					<!-- 오른쪽 끝에 수정/삭제 -->
 					<span style="float: right;" sec:authorize="isAuthenticated()"
 						th:if="${isOwner}"> <a
-						th:href="@{/community/edit(id=${post.id})}" class="edit-btn">수정</a>
+						th:href="@{/community/edit(id=${post.id})}" class="action-btn">수정</a>
 						<a th:href="@{/community/delete(id=${post.id})}"
-						class="delete-btn" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+						class="action-btn delete-btn"
+						onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
 					</span>
+
 				</div>
 
 			</div>
@@ -84,12 +86,49 @@
 				</div>
 
 				<div th:each="reply : ${replyList}" class="comment-item">
-					<div class="comment-meta">
-						<strong th:text="${post.writer}">작성자</strong> <span>・</span> <span
-							th:text="${#dates.format(reply.regdate, 'yyyy.MM.dd HH:mm')}">작성일</span>
+					<div class="comment-meta"
+						style="display: flex; justify-content: space-between; align-items: center;">
+						<div>
+							<strong th:text="${reply.writer}">작성자</strong> <span>・</span> <span
+								th:text="${#dates.format(reply.regdate, 'yyyy.MM.dd HH:mm')}">작성일</span>
+							<span th:if="${reply.isModified == 1}" class="edited-label">(수정됨)</span>
+						</div>
+
+						<div th:if="${reply.memberId == currentUserId}">
+							<button type="button" class="action-btn edit-toggle-btn"
+								th:attr="data-reply-id=${reply.replyId}">수정</button>
+
+							<form th:action="@{/community/reply/delete}" method="post"
+								style="display: inline;">
+								<input type="hidden" name="replyId" th:value="${reply.replyId}">
+								<button type="submit" class="action-btn delete-btn"
+									onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+							</form>
+						</div>
 					</div>
-					<div class="comment-content" th:text="${reply.content}">댓글 내용</div>
+
+					<!-- 댓글 내용 -->
+					<div class="comment-content" th:text="${reply.content}"
+						th:id="'content-'+${reply.replyId}">댓글 내용</div>
+
+					<!-- 숨겨진 수정폼 -->
+					<form th:action="@{/community/reply/update}" method="post"
+						th:id="'edit-form-'+${reply.replyId}"
+						style="display: none; margin-top: 5px;">
+						<input type="hidden" name="replyId" th:value="${reply.replyId}">
+						<input type="hidden" name="postId" th:value="${post.id}">
+						<textarea name="content" style="width: 100%; height: 60px;"
+							th:text="${reply.content}"></textarea>
+						<div style="margin-top: 5px;">
+							<!--  text-align:right; -->
+							<button type="submit" class="action-btn">저장</button>
+							<button type="button" class="action-btn cancel-btn"
+								th:attr="data-reply-id=${reply.replyId}">취소</button>
+
+						</div>
+					</form>
 				</div>
+
 			</div>
 
 			<hr>
@@ -99,14 +138,16 @@
 				<h3>댓글 달기</h3>
 
 				<div sec:authorize="isAuthenticated()">
-					<form method="post" action="/community/reply">
+					<form method="post" action="/community/reply"
+						onsubmit="return validateReplyWrite();">
 						<input type="hidden" name="postId" th:value="${post.id}">
-						<textarea name="content" rows="4" placeholder="댓글을 입력하세요"
-							style="width: 100%;"></textarea>
+						<textarea id="writeContent" name="content" rows="4"
+							placeholder="댓글을 입력하세요" style="width: 100%;"></textarea>
 						<div class="reply-actions">
 							<button type="submit" class="reply-btn">댓글 작성</button>
 						</div>
 					</form>
+
 				</div>
 
 				<div sec:authorize="isAnonymous()">
@@ -119,6 +160,7 @@
 		</div>
 
 		<script>
+		
 const postId = [[${post.id}]];
 
 // 로그인 상태
@@ -154,6 +196,56 @@ if (likeBtnGuest) {
     });
 }
 </script>
+
+		<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			// 댓글 수정 폼 열기
+			document.querySelectorAll('.edit-toggle-btn').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const id = btn.getAttribute('data-reply-id');
+
+			// 모든 폼/본문 초기화
+			document.querySelectorAll('.comment-content').forEach(el => el.style.display = 'block');
+			document.querySelectorAll('form[id^="edit-form-"]').forEach(form => form.style.display = 'none');
+
+			// 선택한 폼만 열기
+			document.getElementById(`content-${id}`).style.display = 'none';
+			document.getElementById(`edit-form-${id}`).style.display = 'block';
+				});
+			});
+
+			// 수정 취소
+			document.querySelectorAll('.cancel-btn').forEach(btn => {
+				btn.addEventListener('click', () => {
+					const id = btn.getAttribute('data-reply-id');
+					const contentEl = document.getElementById(`content-${id}`);
+					const formEl = document.getElementById(`edit-form-${id}`);
+					const textarea = formEl.querySelector('textarea');
+
+					// 원래 내용으로 되돌림
+					textarea.value = contentEl.textContent.trim();
+
+					formEl.style.display = 'none';
+					contentEl.style.display = 'block';
+				});
+			});
+		});
+
+
+</script>
+		<script>
+		function validateReplyWrite() {
+		    const content = document.getElementById('writeContent').value.trim();
+		    if (!content) {
+		        alert('댓글 내용을 입력하세요.');
+		        return false;
+		    }
+		    return true;
+		}
+</script>
+
+
+
 
 
 	</main>

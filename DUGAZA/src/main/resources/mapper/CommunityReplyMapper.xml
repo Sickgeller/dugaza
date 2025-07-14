@@ -12,43 +12,66 @@
 		<result property="memberId" column="member_id" />
 		<result property="content" column="content" />
 		<result property="regdate" column="regdate" />
+		<result property="writer" column="writer" /> <!-- 작성자 아이디 -->
+		<result property="isModified" column="is_modified" />
+		
 	</resultMap>
 
+	<!-- 댓글 목록 (작성자 아이디 포함) -->
 	<select id="selectReplyList" parameterType="long"
 		resultMap="replyMap">
-		SELECT *
-		FROM COMMUNITY_REPLY
-		WHERE POST_ID = #{postId}
-		ORDER BY REGDATE ASC
+		SELECT r.*, m.id AS writer
+		FROM COMMUNITY_REPLY r
+		JOIN MEMBER
+		m ON r.MEMBER_ID = m.MEMBER_ID
+		WHERE r.POST_ID = #{postId}
+		ORDER BY
+		r.REGDATE ASC
 	</select>
-	
-	<select id="getReply" parameterType="long" resultMap="replyMap">
-        SELECT * FROM COMMUNITY_REPLY WHERE REPLY_ID = #{replyId}
-    </select>
 
+	<!-- 댓글 단건 조회 -->
+	<select id="getReply" parameterType="long" resultMap="replyMap">
+		SELECT r.*,
+		m.id AS writer
+		FROM COMMUNITY_REPLY r
+		JOIN MEMBER m ON r.MEMBER_ID =
+		m.MEMBER_ID
+		WHERE r.REPLY_ID = #{value}
+	</select>
+
+	<!-- 댓글 작성 -->
 	<insert id="insertReply"
 		parameterType="kr.spring.community.vo.CommunityReplyVO">
 		INSERT INTO COMMUNITY_REPLY (
-		REPLY_ID, POST_ID, MEMBER_ID, CONTENT
+		REPLY_ID, POST_ID,
+		MEMBER_ID, CONTENT
 		) VALUES (
-		COMMUNITY_REPLY_SEQ.NEXTVAL, #{postId}, #{memberId}, #{content}
+		COMMUNITY_REPLY_SEQ.NEXTVAL, #{postId},
+		#{memberId}, #{content}
 		)
 	</insert>
 
+	<!-- 댓글 삭제 -->
 	<delete id="deleteReply" parameterType="long">
-		DELETE FROM COMMUNITY_REPLY WHERE REPLY_ID = #{replyId}
+		DELETE FROM
+		COMMUNITY_REPLY WHERE REPLY_ID = #{replyId}
 	</delete>
-	
-	<update id="updateReply" parameterType="kr.spring.community.vo.CommunityReplyVO">
-    	UPDATE COMMUNITY_REPLY
-    	SET CONTENT = #{content}
-    	WHERE REPLY_ID = #{replyId}
+
+	<!-- 댓글 수정 -->
+	<update id="updateReply"
+		parameterType="kr.spring.community.vo.CommunityReplyVO">
+		UPDATE COMMUNITY_REPLY
+		SET CONTENT = #{content},
+		IS_MODIFIED = #{isModified}
+		WHERE REPLY_ID = #{replyId}
 	</update>
-	
+
+	<!-- 게시글의 댓글 수 갱신 -->
 	<update id="updateCommentCount">
-	    UPDATE COMMUNITY_POST
-	    SET COMMENT_COUNT = NVL(COMMENT_COUNT, 0) + #{amount}
-	    WHERE ID = #{postId}
+		UPDATE COMMUNITY_POST
+		SET COMMENT_COUNT =
+		NVL(COMMENT_COUNT, 0) + #{amount}
+		WHERE ID = #{postId}
 	</update>
 
 </mapper>
