@@ -2,11 +2,14 @@ package kr.spring.config;
 
 import java.util.Properties;
 
+import javax.sql.DataSource;
+
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,15 +17,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import kr.spring.websocket.SocketHandler;
 import kr.spring.api.config.ApiConfig;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-
-import javax.sql.DataSource;
+import kr.spring.websocket.SocketHandler;
 
 /**
  * 애플리케이션 전체 설정을 관리하는 설정 클래스
@@ -97,10 +98,11 @@ public class AppConfig implements WebMvcConfigurer, WebSocketConfigurer {
         return sessionFactory.getObject();
     }
     //시발
+    
     @Override
-    public void addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
-    	// 업로드된 파일을 외부 디렉토리(C:/DUGAZA/upload)에서 제공하도록 매핑
-        registry.addResourceHandler("/upload/**")
-                .addResourceLocations("file:///C:/DUGAZA/upload/");
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/assets/upload/**")
+                .addResourceLocations("classpath:/static/assets/upload/");
     }
+
 }

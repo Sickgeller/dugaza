@@ -45,7 +45,7 @@
 
 			<!-- 본문 -->
 			<div class="post-content-section">
-				<img th:src="@{'/upload/' + ${post.filename}}" alt="여행 사진">
+				<img th:src="@{'/assets/upload/' + ${post.filename}}" alt="여행 사진" class="post-image-fixed">			
 				<div class="post-content" th:text="${post.content}">내용</div>
 				<div class="post-stats">
 

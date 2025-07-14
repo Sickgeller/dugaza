@@ -37,7 +37,13 @@ public class CommunityController {
     private final MemberService memberService;
 
     private static final String UPLOAD_DIR =
-    	    new File("src/main/resources/static/assets/upload/").getAbsolutePath() + File.separator;
+    	    CommunityController.class.getClassLoader()
+    	        .getResource("static/assets/upload")
+    	        .getPath() + "/";
+
+
+
+
 
 
  // 📄 커뮤니티 메인

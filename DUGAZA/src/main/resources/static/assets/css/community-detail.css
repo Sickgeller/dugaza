@@ -77,6 +77,15 @@
 }
 
 /* ===== 본문 섹션 ===== */
+.post-image-fixed {
+    max-width: 100%;
+    width: 600px; /* 원하는 고정 너비 */
+    height: auto; /* 비율 유지 */
+    display: block;
+    margin: 0 auto; /* 가운데 정렬하고 싶다면 */
+}
+
+
 .post-stats {
     margin-top: 20px;
     font-size: 14px;
