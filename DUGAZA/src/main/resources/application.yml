@@ -103,6 +103,9 @@ server:
   session:
     persistent: false # 세션 영속화 비활성화(톰캣 재시작 시 세션 파일 복원 안함)
     timeout: 3600 # 세션 타임아웃(초)
+  # HTTPS 리다이렉트 설정 (선택사항)
+  ssl:
+    enabled: false
 
 # rememberMeKey 명확하게 지정
 # (이미 data-config.yml에 hayden으로 지정되어 있음)
@@ -120,6 +123,7 @@ api:
     base-url: ${data-config.api.express-bus.base-url}
   kakao:
     base-url: ${data-config.api.kakao.base-url}
-
+    rest-api-key: ${data-config.api.kakao.rest-api-key}
+    client-secret: ${data-config.api.kakao.client-secret}
 
 

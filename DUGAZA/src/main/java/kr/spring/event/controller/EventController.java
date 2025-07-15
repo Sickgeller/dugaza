@@ -41,7 +41,7 @@ public class EventController {
 
 	@GetMapping("")
 	public String eventtMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
-			@RequestParam(defaultValue = "") String keyword,
+			@RequestParam(name = "keyword", defaultValue = "") String keyword,
 			Model model) {
 
 		int count = eventService.selectRowCount();

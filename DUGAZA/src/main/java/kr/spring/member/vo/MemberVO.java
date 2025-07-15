@@ -23,7 +23,10 @@ public class MemberVO {
 	private Date createdAt;
 	private Date updatedAt;
 	private String profileImage;
-		
+	
+	// 카카오 로그인 관련 필드
+	private Long kakaoId; // 카카오 고유 ID (NULL이면 이메일 가입자, 있으면 카카오 가입자)
+	private String nickname; // 닉네임
 	
 	// 사용자가 가진 역할들 (다중 역할 지원)
 	private List<RoleVO> userRoles;

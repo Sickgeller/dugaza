@@ -27,6 +27,18 @@ public interface MemberService {
 	public Integer selectNewMemberCount();
 	public Integer selectWithdrawnMemberCount();
 	public Integer selectHumanMemberCount();
+	
+	// 카카오 로그인 관련
+	public MemberVO findByEmail(String email);
+	public MemberVO findByKakaoId(Long kakaoId);
+	public void registerMember(MemberVO member);
+	
+	// 계정 통합 관련
+	public boolean isAccountLinked(Long memberId);
+	public void unlinkKakaoAccount(Long memberId);
+	
+	// 카카오 회원 등록
+	public void registerKakaoMember(MemberVO member);
 }
 
 

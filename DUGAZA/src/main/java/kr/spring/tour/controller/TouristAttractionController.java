@@ -33,7 +33,7 @@ public class TouristAttractionController {
 	// 여행명소 메인 화면 호출
 	@GetMapping("")
 	public String touristAttractionMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
-						   @RequestParam(defaultValue = "") String keyword,
+						   @RequestParam(name = "keyword", defaultValue = "") String keyword,
 						   Model model) {
 		int count = tourService.selectRowCount();
 
