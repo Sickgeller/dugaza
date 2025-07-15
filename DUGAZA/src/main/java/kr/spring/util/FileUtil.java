@@ -38,6 +38,29 @@ public class FileUtil {
 		}
 		return filename;
 	}
+	
+	//파일 업로드 처리 (HttpServletRequest 없이)
+	public static String uploadFile(MultipartFile file, String subDirectory) 
+			throws IllegalStateException, IOException {
+		// 업로드 경로 설정
+		String basePath = new File("target/classes/static/assets/upload").getAbsolutePath();
+		String uploadPath = basePath + "/" + subDirectory;
+		
+		File uploadDir = new File(uploadPath);
+		if (!uploadDir.exists()) {
+			uploadDir.mkdirs(); // 폴더가 없으면 생성
+		}
+		
+		String filename = null;
+		if(file != null && !file.isEmpty()) {
+			// 파일명이 중복되지 않도록 파일명 변경
+			filename = UUID.randomUUID().toString() + 
+					file.getOriginalFilename().substring(
+							file.getOriginalFilename().lastIndexOf("."));
+			file.transferTo(new File(uploadPath + "/" + filename));
+		}
+		return filename;
+	}
 	//파일 삭제
 	public static void removeFile(
 			                HttpServletRequest request,

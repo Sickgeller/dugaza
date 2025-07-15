@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 완료 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .complete-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        
+        .complete-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .complete-message {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .payment-info {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            font-weight: bold;
+            font-size: 18px;
+            color: #28a745;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .info-value {
+            color: #333;
+        }
+        
+        .action-buttons {
+            margin-top: 40px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            margin: 0 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        
+        .notice-box {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .notice-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .notice-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .notice-list li {
+            margin-bottom: 5px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .notice-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <main layout:fragment="content">
+        <div class="complete-container">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <h1 class="complete-title">결제가 완료되었습니다!</h1>
+            <p class="complete-message">모든 예약이 성공적으로 처리되었습니다.</p>
+            
+            <div class="payment-info">
+                <div class="info-item">
+                    <span class="info-label">결제 번호:</span>
+                    <span class="info-value" th:text="${paymentId}">PAY_1234567890ABCD</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">거래 번호:</span>
+                    <span class="info-value" th:text="${transactionId}">TXN_1731658000000</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">결제 일시:</span>
+                    <span class="info-value" th:text="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd HH:mm:ss')}">2025-07-16 16:30:00</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">결제 방법:</span>
+                    <span class="info-value">신용카드</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">총 결제 금액:</span>
+                    <span class="info-value" th:text="${totalAmount != null ? #numbers.formatInteger(totalAmount, 3, 'COMMA') + '원' : '150,000원'}">150,000원</span>
+                </div>
+            </div>
+            
+            <div class="notice-box">
+                <div class="notice-title">
+                    <i class="fas fa-info-circle"></i> 예약 확인 안내
+                </div>
+                <ul class="notice-list">
+                    <li>예약 확인서가 이메일로 발송되었습니다.</li>
+                    <li>숙소 예약은 체크인 24시간 전까지 취소 가능합니다.</li>
+                    <li>차량 예약은 수령 24시간 전까지 취소 가능합니다.</li>
+                    <li>문의사항이 있으시면 고객센터로 연락해주세요.</li>
+                </ul>
+            </div>
+            
+            <div class="action-buttons">
+                <a th:href="@{/member/my-reservations}" class="btn btn-primary">
+                    <i class="fas fa-list"></i> 예약 목록 보기
+                </a>
+                <a th:href="@{/house/list}" class="btn btn-secondary">
+                    <i class="fas fa-bed"></i> 숙소 더 보기
+                </a>
+                <a th:href="@{/car/search}" class="btn btn-success">
+                    <i class="fas fa-car"></i> 차량 더 보기
+                </a>
+            </div>
+        </div>
+    </main>
+</body>
+</html> 

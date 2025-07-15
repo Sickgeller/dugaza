@@ -100,4 +100,38 @@ public class ReservationController {
         
         return response;
     }
+
+    /**
+     * 숙소 예약 완료 페이지
+     */
+    @GetMapping("/house/complete")
+    public String reservationComplete(Model model) {
+        // FlashAttribute에서 예약 정보 가져오기
+        String reservationId = (String) model.getAttribute("reservationId");
+        if (reservationId == null) {
+            // FlashAttribute가 없는 경우 기본값 설정
+            reservationId = "H" + System.currentTimeMillis();
+        }
+        
+        model.addAttribute("reservationId", reservationId);
+        
+        // 예시 데이터 (실제로는 예약 정보를 DB에서 조회)
+        HouseReservationVO reservation = new HouseReservationVO();
+        reservation.setHouseReservationId(Long.valueOf(reservationId.substring(1))); // "H" 제거하고 Long으로 변환
+        reservation.setReservationStart(java.time.LocalDateTime.now().plusDays(1));
+        reservation.setReservationEnd(java.time.LocalDateTime.now().plusDays(3));
+        reservation.setReservationCount(2);
+        reservation.setPrice(150000.0);
+        
+        HouseVO house = new HouseVO();
+        house.setTitle("그랜드 호텔");
+        house.setAddr1("서울 강남구");
+        house.setCat1("숙박");
+        house.setReview_avg(4.5);
+        
+        model.addAttribute("reservation", reservation);
+        model.addAttribute("house", house);
+        
+        return "views/house/house-reservation-complete";
+    }
 } 

@@ -57,12 +57,14 @@ public class SellerRestController {
         
         sellerService.register(newSeller);
 
-        model.addAttribute("accessTitle", "회원가입");
+        model.addAttribute("accessTitle", "사업자 회원가입 완료");
         model.addAttribute("accessMsg",
-                "회원가입이 완료되었습니다.");
-        model.addAttribute("accessBtn", "홈으로");
-        model.addAttribute("accessUrl",
-                request.getContextPath()+"/");
+                "축하합니다! 사업자 회원가입이 성공적으로 완료되었습니다.\n\n" +
+                "이제 차량을 등록하고 예약을 받을 수 있습니다.\n" +
+                "사업자 대시보드에서 차량 관리, 예약 관리, 리뷰 관리 등을 할 수 있습니다.");
+        model.addAttribute("accessBtn", "메인으로");
+        model.addAttribute("accessUrl", request.getContextPath()+"/");
+        model.addAttribute("isSeller", true);
         return "views/common/resultView";
     }
 

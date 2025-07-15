@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>렌터카 검색 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/car-search.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <main layout:fragment="content">
+        <div class="search-container">
+            <div class="search-header">
+                <h1><i class="fas fa-car"></i> 렌터카 검색</h1>
+                <p>원하는 조건으로 렌터카를 검색해보세요</p>
+            </div>
+
+            <form th:action="@{/car/search}" method="post" class="search-form">
+                <div class="form-section">
+                    <h3><i class="fas fa-map-marker-alt"></i> 수령 장소</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pickupLocationCode">수령 장소</label>
+                            <select id="pickupLocationCode" name="pickupLocationCode" required>
+                                <option value="">수령 장소를 선택하세요</option>
+                                <option th:each="location : ${locationCodes}" 
+                                        th:value="${location.locationCode}" 
+                                        th:text="${location.locationDetail}">
+                                    서울 (강남역)
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-calendar"></i> 대여 기간</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pickupDate">수령 날짜</label>
+                            <input type="date" id="pickupDate" name="pickupDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="returnDate">반납 날짜</label>
+                            <input type="date" id="returnDate" name="returnDate" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-filter"></i> 차량 조건</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="carType">차량 종류</label>
+                            <select id="carType" name="carType">
+                                <option value="">전체</option>
+                                <option value="경차">경차</option>
+                                <option value="소형차">소형차</option>
+                                <option value="중형차">중형차</option>
+                                <option value="대형차">대형차</option>
+                                <option value="SUV">SUV</option>
+                                <option value="승합차">승합차</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="minSeats">최소 좌석 수</label>
+                            <select id="minSeats" name="minSeats">
+                                <option value="">전체</option>
+                                <option value="2">2인승</option>
+                                <option value="4">4인승</option>
+                                <option value="5">5인승</option>
+                                <option value="7">7인승</option>
+                                <option value="9">9인승</option>
+                                <option value="12">12인승</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fuelType">연료 종류</label>
+                            <select id="fuelType" name="fuelType">
+                                <option value="">전체</option>
+                                <option value="휘발유">휘발유</option>
+                                <option value="경유">경유</option>
+                                <option value="LPG">LPG</option>
+                                <option value="전기">전기</option>
+                                <option value="하이브리드">하이브리드</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="maxPrice">최대 일일 요금</label>
+                            <select id="maxPrice" name="maxPrice">
+                                <option value="">전체</option>
+                                <option value="30000">30,000원 이하</option>
+                                <option value="50000">50,000원 이하</option>
+                                <option value="70000">70,000원 이하</option>
+                                <option value="100000">100,000원 이하</option>
+                                <option value="150000">150,000원 이하</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i> 차량 검색
+                    </button>
+                    <button type="reset" class="reset-btn">
+                        <i class="fas fa-undo"></i> 초기화
+                    </button>
+                </div>
+            </form>
+
+            <!-- 검색 결과 요약 -->
+            <div th:if="${cars != null}" class="search-summary">
+                <h3>검색 결과</h3>
+                <div class="summary-info">
+                    <span th:if="${searchDTO.pickupLocationName}">
+                        <i class="fas fa-map-marker-alt"></i> 수령: <span th:text="${searchDTO.pickupLocationName}">서울 (강남역)</span>
+                    </span>
+                    <span th:if="${searchDTO.pickupDate}">
+                        <i class="fas fa-calendar"></i> 기간: <span th:text="${#temporals.format(searchDTO.pickupDate, 'MM/dd')}">07/16</span> - 
+                        <span th:text="${#temporals.format(searchDTO.returnDate, 'MM/dd')}">07/17</span>
+                    </span>
+                    <span>
+                        <i class="fas fa-car"></i> 총 <span th:text="${cars.size()}">0</span>대
+                    </span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 최소 날짜 설정
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('pickupDate').min = today;
+        document.getElementById('returnDate').min = today;
+
+        // 수령일 변경 시 반납일 최소값 설정
+        document.getElementById('pickupDate').addEventListener('change', function() {
+            const pickupDate = this.value;
+            const returnDateInput = document.getElementById('returnDate');
+            returnDateInput.min = pickupDate;
+            
+            if (returnDateInput.value && returnDateInput.value <= pickupDate) {
+                returnDateInput.value = '';
+            }
+        });
+
+        // 폼 검증
+        document.querySelector('.search-form').addEventListener('submit', function(e) {
+            const pickupLocation = document.getElementById('pickupLocationCode').value;
+            const pickupDate = document.getElementById('pickupDate').value;
+            const returnDate = document.getElementById('returnDate').value;
+
+            if (!pickupLocation || !pickupDate || !returnDate) {
+                e.preventDefault();
+                alert('필수 항목을 모두 입력해주세요.');
+                return false;
+            }
+
+            if (pickupDate >= returnDate) {
+                e.preventDefault();
+                alert('반납 날짜는 수령 날짜보다 늦어야 합니다.');
+                return false;
+            }
+        });
+    </script>
+</body>
+</html> 

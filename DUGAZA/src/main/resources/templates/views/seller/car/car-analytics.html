@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>분석</title>
+    <link rel="stylesheet" th:href="@{/assets/css/seller.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div th:replace="~{fragments/car_seller_sidebar :: carSideBar}"></div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>분석</h2>
+                </div>
+                <div class="user-info">
+                    <span th:text="${seller.name} + '님'">홍길동님</span>
+                    <img th:src="@{/assets/images/users/profile1.jpg}" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 분석 통계 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>핵심 지표</h3>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>고객 만족도</h3>
+                            <p th:text="${analyticsData.customerSatisfaction} + '점'">4.3점</p>
+                            <span class="stat-change increase">+0.1점</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>인기 차량</h3>
+                            <p th:text="${analyticsData.popularCars[0]}">아반떼</p>
+                            <span class="stat-change">가장 인기</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>피크 시간</h3>
+                            <p th:text="${analyticsData.peakHours[0]}">09:00</p>
+                            <span class="stat-change">예약 집중</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>신규 고객</h3>
+                            <p>23명</p>
+                            <span class="stat-change increase">+15%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 차트 섹션 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>차량별 인기도</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="popularityChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- 시간대별 분석 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>시간대별 예약 분석</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="timeChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- 고객 분석 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>고객 분석</h3>
+                </div>
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h4>연령대별 분포</h4>
+                        <div class="analytics-content">
+                            <div class="age-group">
+                                <span>20대</span>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: 35%"></div>
+                                </div>
+                                <span>35%</span>
+                            </div>
+                            <div class="age-group">
+                                <span>30대</span>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: 45%"></div>
+                                </div>
+                                <span>45%</span>
+                            </div>
+                            <div class="age-group">
+                                <span>40대</span>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: 15%"></div>
+                                </div>
+                                <span>15%</span>
+                            </div>
+                            <div class="age-group">
+                                <span>50대+</span>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: 5%"></div>
+                                </div>
+                                <span>5%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h4>예약 목적</h4>
+                        <div class="analytics-content">
+                            <div class="purpose-item">
+                                <span>관광</span>
+                                <span>60%</span>
+                            </div>
+                            <div class="purpose-item">
+                                <span>출장</span>
+                                <span>25%</span>
+                            </div>
+                            <div class="purpose-item">
+                                <span>개인용</span>
+                                <span>10%</span>
+                            </div>
+                            <div class="purpose-item">
+                                <span>기타</span>
+                                <span>5%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/assets/js/customjs.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 차량별 인기도 차트
+        const popularityCtx = document.getElementById('popularityChart').getContext('2d');
+        const popularityChart = new Chart(popularityCtx, {
+            type: 'bar',
+            data: {
+                labels: ['아반떼', '쏘나타', '그랜저', '투싼', '팰리세이드'],
+                datasets: [{
+                    label: '예약 횟수',
+                    data: [25, 18, 12, 15, 8],
+                    backgroundColor: [
+                        '#3498db',
+                        '#e74c3c',
+                        '#f39c12',
+                        '#9b59b6',
+                        '#1abc9c'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: '차량별 예약 횟수'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // 시간대별 분석 차트
+        const timeCtx = document.getElementById('timeChart').getContext('2d');
+        const timeChart = new Chart(timeCtx, {
+            type: 'line',
+            data: {
+                labels: ['00:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00'],
+                datasets: [{
+                    label: '예약 건수',
+                    data: [2, 5, 15, 8, 12, 18, 6],
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: '시간대별 예약 분포'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

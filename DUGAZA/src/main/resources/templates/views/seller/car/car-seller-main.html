@@ -1,34 +1,16 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>렌터카 판매자 대시보드</title>
-    <link rel="stylesheet" href="../css/admin.css">
+    <title>차량 판매자 대시보드</title>
+    <link rel="stylesheet" th:href="@{/assets/css/seller.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <div class="admin-container">
         <!-- 사이드바 -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h1>렌터카 관리자</h1>
-                <p>렌터카 판매자 대시보드</p>
-            </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li class="active"><a href="car-seller.html"><i class="fas fa-home"></i><span>대시보드</span></a></li>
-                    <li><a href="car-management.html"><i class="fas fa-car"></i><span>차량 관리</span></a></li>
-                    <li><a href="car-reservations.html"><i class="fas fa-calendar-check"></i><span>예약 관리</span></a></li>
-                    <li><a href="car-review.html"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
-                    <li><a href="car-maintenance.html"><i class="fas fa-tools"></i><span>차량 정비</span></a></li>
-                    <li><a href="car-insurance.html"><i class="fas fa-shield-alt"></i><span>보험 관리</span></a></li>
-                    <li><a href="car-promotions.html"><i class="fas fa-tags"></i><span>프로모션 관리</span></a></li>
-                    <li><a href="car-sales.html"><i class="fas fa-chart-line"></i><span>매출 관리</span></a></li>
-                    <li><a href="../../sample/car-settings.html"><i class="fas fa-cog"></i><span>설정</span></a></li>
-                </ul>
-            </nav>
-        </div>
+        <div th:replace="~{fragments/car_seller_sidebar :: carSideBar}"></div>
 
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
@@ -36,11 +18,11 @@
             <div class="content-header">
                 <div class="header-left">
                     <button class="menu-toggle"><i class="fas fa-bars"></i></button>
-                    <h2>렌터카 대시보드</h2>
+                    <h2>차량 대시보드</h2>
                 </div>
                 <div class="user-info">
-                    <span>제주렌트카님</span>
-                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
+                    <span th:text="${seller.name} + '님'">홍길동님</span>
+                    <img th:src="@{/assets/images/users/profile1.jpg}" alt="프로필 이미지">
                 </div>
             </div>
 
@@ -60,29 +42,29 @@
                             <i class="fas fa-car"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>총 보유 차량</h3>
-                            <p>45대</p>
+                            <h3>총 차량</h3>
+                            <p th:text="${totalCars} + '대'"></p>
                             <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">
-                            <i class="fas fa-key"></i>
+                            <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="stat-info">
                             <h3>대여 가능</h3>
-                            <p>28대</p>
+                            <p th:text="${availableCars} + '대'"></p>
                             <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">
-                            <i class="fas fa-calendar-check"></i>
+                            <i class="fas fa-clock"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>오늘 예약</h3>
-                            <p>12건</p>
-                            <span class="stat-change increase">+3건 (전일 대비)</span>
+                            <h3>대여 중</h3>
+                            <p th:text="${rentedCars} + '대'"></p>
+                            <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -90,9 +72,9 @@
                             <i class="fas fa-chart-line"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>차량 가동률</h3>
-                            <p>78%</p>
-                            <span class="stat-change increase">+5% (전월 대비)</span>
+                            <h3>대여률</h3>
+                            <p th:text="${rentalRate} + '%'"></p>
+                            <span class="stat-change">현재 기준</span>
                         </div>
                     </div>
                 </div>
@@ -102,62 +84,39 @@
             <div class="content-section">
                 <div class="section-header">
                     <h3>최근 예약</h3>
-                    <button class="btn-primary">전체보기</button>
+                    <button class="btn-primary" onclick="location.href='/seller/car/reservations'">전체보기</button>
                 </div>
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
                                 <th>예약번호</th>
-                                <th>차량</th>
+                                <th>차량명</th>
                                 <th>고객명</th>
-                                <th>대여일</th>
-                                <th>반납일</th>
-                                <th>대여지점</th>
-                                <th>결제금액</th>
+                                <th>대여시작</th>
+                                <th>대여종료</th>
                                 <th>상태</th>
                                 <th>관리</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>#R12345</td>
+                            <tr th:if="${#lists.isEmpty(recentReservations)}">
+                                <td colspan="7" class="text-center">최근 예약이 없습니다.</td>
+                            </tr>
+                            <tr th:each="reservation : ${recentReservations}">
+                                <td th:text="'#' + ${reservation.reservationId}"></td>
+                                <td th:text="${reservation.carName}">차량명</td>
+                                <td th:text="${reservation.memberId}">김철수</td>
+                                <td th:text="${#temporals.format(reservation.startDate, 'yyyy-MM-dd')}">2024-02-15</td>
+                                <td th:text="${#temporals.format(reservation.endDate, 'yyyy-MM-dd')}">2024-02-17</td>
                                 <td>
-                                    <div class="seller-info">
-                                        <img src="../images/cars/avante.jpg" alt="아반떼 CN7">
-                                        <span>아반떼 CN7</span>
-                                    </div>
+                                    <span th:class="${reservation.status == 'RESERVED' ? 'status available' : 'status rented'}" 
+                                          th:text="${reservation.status == 'RESERVED' ? '예약완료' : '대여중'}">예약완료</span>
                                 </td>
-                                <td>김철수</td>
-                                <td>2024-02-15</td>
-                                <td>2024-02-17</td>
-                                <td>제주공항점</td>
-                                <td>180,000원</td>
-                                <td><span class="status available">예약완료</span></td>
                                 <td>
                                     <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
                                     <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
                                     <button class="btn-icon" title="취소"><i class="fas fa-times"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>#R12346</td>
-                                <td>
-                                    <div class="seller-info">
-                                        <img src="../images/cars/tucson.jpg" alt="투싼 NX4">
-                                        <span>투싼 NX4</span>
-                                    </div>
-                                </td>
-                                <td>이영희</td>
-                                <td>2024-02-16</td>
-                                <td>2024-02-18</td>
-                                <td>서귀포점</td>
-                                <td>240,000원</td>
-                                <td><span class="status rented">대여중</span></td>
-                                <td>
-                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
-                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon" title="반납"><i class="fas fa-undo-alt"></i></button>
                                 </td>
                             </tr>
                         </tbody>
@@ -165,41 +124,38 @@
                 </div>
             </div>
 
-            <!-- 차량 정비 현황 -->
+            <!-- 빠른 액션 -->
             <div class="content-section">
                 <div class="section-header">
-                    <h3>차량 정비 현황</h3>
-                    <button class="btn-primary">전체보기</button>
+                    <h3>빠른 액션</h3>
                 </div>
-                <div class="maintenance-list">
-                    <div class="maintenance-card">
-                        <div class="maintenance-header">
-                            <div class="car-info">
-                                <img src="../images/cars/morning.jpg" alt="모닝 JA">
-                                <div class="car-details">
-                                    <h4>모닝 JA</h4>
-                                    <span class="car-number">123가4567</span>
-                                </div>
-                            </div>
-                            <span class="status warning">정비중</span>
-                        </div>
-                        <div class="maintenance-content">
-                            <p>정기 점검 및 엔진오일 교체</p>
-                            <div class="maintenance-info">
-                                <span><i class="fas fa-calendar"></i> 2024-02-15 ~ 2024-02-16</span>
-                                <span><i class="fas fa-tools"></i> 제주중앙정비소</span>
-                            </div>
-                        </div>
-                        <div class="maintenance-actions">
-                            <button class="btn-primary">상세보기</button>
-                            <button class="btn-secondary">완료처리</button>
-                        </div>
-                    </div>
+                <div class="quick-actions">
+                    <a href="/seller/car/register" class="action-card">
+                        <i class="fas fa-plus-circle"></i>
+                        <h4>차량 등록</h4>
+                        <p>새로운 차량을 등록하세요</p>
+                    </a>
+                    <a href="/seller/car/management" class="action-card">
+                        <i class="fas fa-cog"></i>
+                        <h4>차량 관리</h4>
+                        <p>등록된 차량을 관리하세요</p>
+                    </a>
+                    <a href="/seller/car/reservations" class="action-card">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h4>예약 관리</h4>
+                        <p>예약 현황을 확인하세요</p>
+                    </a>
+                    <a href="/seller/car/reviews" class="action-card">
+                        <i class="fas fa-star"></i>
+                        <h4>리뷰 관리</h4>
+                        <p>고객 리뷰를 확인하세요</p>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="../js/admin.js"></script>
+    <script th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/assets/js/customjs.js}"></script>
 </body>
 </html> 

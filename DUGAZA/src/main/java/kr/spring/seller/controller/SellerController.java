@@ -119,7 +119,7 @@ public class SellerController {
             }
             log.info("판매자 대시보드 접근 - 사용자: {}, 타입: {}", seller.getName(), seller.getSellerType());
             if(SellerType.CAR.getValue().equals(seller.getSellerType())) {
-                return "views/seller/car/car-seller-main";
+                return "redirect:/seller/car/dashboard";
             }else if(SellerType.HOUSE.getValue().equals(seller.getSellerType())) {
                 return sellerHouseController.main(model);
             }else {

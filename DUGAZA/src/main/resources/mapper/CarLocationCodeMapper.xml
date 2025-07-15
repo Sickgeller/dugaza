@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.car.dao.CarLocationCodeMapper">
+    <resultMap id="locationCodeMap" type="kr.spring.car.vo.CarLocationCodeVO">
+        <id property="locationCode" column="LOCATION_CODE"/>
+        <result property="locationName" column="LOCATION_NAME"/>
+        <result property="locationDetail" column="LOCATION_DETAIL"/>
+        <result property="isActive" column="IS_ACTIVE"/>
+        <result property="createdAt" column="CREATED_AT"/>
+    </resultMap>
+
+    <!-- 모든 활성화된 위치 코드 조회 -->
+    <select id="selectAllActiveLocationCodes" resultMap="locationCodeMap">
+        SELECT * FROM CAR_LOCATION_CODE 
+        WHERE IS_ACTIVE = 'Y' 
+        ORDER BY LOCATION_CODE
+    </select>
+
+    <!-- 특정 위치 코드 조회 -->
+    <select id="selectLocationCode" parameterType="int" resultMap="locationCodeMap">
+        SELECT * FROM CAR_LOCATION_CODE 
+        WHERE LOCATION_CODE = #{locationCode}
+    </select>
+
+    <!-- 위치명으로 코드 조회 -->
+    <select id="selectLocationCodeByName" parameterType="string" resultMap="locationCodeMap">
+        SELECT * FROM CAR_LOCATION_CODE 
+        WHERE LOCATION_NAME = #{locationName}
+        AND IS_ACTIVE = 'Y'
+    </select>
+</mapper> 

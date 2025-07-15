@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숙소 예약 완료 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/house-reservation-complete.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <main layout:fragment="content">
+        <div class="reservation-complete-container">
+            <div class="complete-card">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                
+                <h1>숙소 예약이 완료되었습니다!</h1>
+                <p class="reservation-id">예약번호: <span th:text="${reservationId}">H123456789</span></p>
+                
+                <div class="reservation-summary">
+                    <h2>예약 정보</h2>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <i class="fas fa-bed"></i>
+                            <div class="item-content">
+                                <span class="label">숙소명</span>
+                                <span class="value" th:text="${house?.title}">그랜드 호텔</span>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <i class="fas fa-calendar"></i>
+                            <div class="item-content">
+                                <span class="label">체크인</span>
+                                <span class="value" th:text="${#temporals.format(reservation?.reservationStart, 'yyyy년 MM월 dd일')}">2024년 12월 01일</span>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <i class="fas fa-calendar"></i>
+                            <div class="item-content">
+                                <span class="label">체크아웃</span>
+                                <span class="value" th:text="${#temporals.format(reservation?.reservationEnd, 'yyyy년 MM월 dd일')}">2024년 12월 03일</span>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div class="item-content">
+                                <span class="label">위치</span>
+                                <span class="value" th:text="${house?.addr1}">서울 강남구</span>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <i class="fas fa-users"></i>
+                            <div class="item-content">
+                                <span class="label">투숙객</span>
+                                <span class="value" th:text="${reservation?.reservationCount} + '명'">2명</span>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <i class="fas fa-user"></i>
+                            <div class="item-content">
+                                <span class="label">예약자</span>
+                                <span class="value" th:text="${reservation?.guestName}">홍길동</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="important-notices">
+                    <h3><i class="fas fa-exclamation-triangle"></i> 중요 안내사항</h3>
+                    <ul>
+                        <li>체크인 시 신분증을 지참해주세요</li>
+                        <li>체크인 시간: 오후 3시, 체크아웃 시간: 오전 11시</li>
+                        <li>흡연 및 반려동물 동반은 사전 문의가 필요합니다</li>
+                        <li>예약 변경이나 취소는 체크인 24시간 전까지 가능합니다</li>
+                    </ul>
+                </div>
+
+                <!-- 추가 서비스 추천 섹션 -->
+                <div class="additional-services">
+                    <h3><i class="fas fa-plus-circle"></i> 추가로 필요한 서비스가 있으신가요?</h3>
+                    <p>완벽한 여행을 위해 추가 서비스를 이용해보세요</p>
+                    
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <div class="service-icon">
+                                <i class="fas fa-car"></i>
+                            </div>
+                            <h4>렌터카 예약</h4>
+                            <p>숙소 근처에서 편리하게 차량을 렌트하세요</p>
+                            <div class="service-benefits">
+                                <span><i class="fas fa-check"></i> 숙소 근처 수령/반납</span>
+                                <span><i class="fas fa-check"></i> 특별 할인 혜택</span>
+                                <span><i class="fas fa-check"></i> 다양한 차량 선택</span>
+                            </div>
+                            <a th:href="@{/car/search?pickupLocation={location}&returnLocation={location}(location=${house?.addr1})}" class="service-btn">
+                                <i class="fas fa-search"></i> 차량 찾기
+                            </a>
+                        </div>
+                        
+                        <div class="service-card">
+                            <div class="service-icon">
+                                <i class="fas fa-train"></i>
+                            </div>
+                            <h4>기차 노선 조회</h4>
+                            <p>목적지까지의 기차 노선과 시간을 확인하세요</p>
+                            <div class="service-benefits">
+                                <span><i class="fas fa-check"></i> 실시간 노선 정보</span>
+                                <span><i class="fas fa-check"></i> 소요시간 및 요금</span>
+                                <span><i class="fas fa-check"></i> KTX, ITX, 무궁화호</span>
+                            </div>
+                            <a th:href="@{/transportation/train}" class="service-btn">
+                                <i class="fas fa-search"></i> 기차 조회
+                            </a>
+                        </div>
+                        
+                        <div class="service-card">
+                            <div class="service-icon">
+                                <i class="fas fa-bus"></i>
+                            </div>
+                            <h4>버스 노선 조회</h4>
+                            <p>고속버스, 시외버스 노선과 시간을 확인하세요</p>
+                            <div class="service-benefits">
+                                <span><i class="fas fa-check"></i> 고속/시외버스 정보</span>
+                                <span><i class="fas fa-check"></i> 실시간 운행 정보</span>
+                                <span><i class="fas fa-check"></i> 요금 및 소요시간</span>
+                            </div>
+                            <a th:href="@{/transportation/bus}" class="service-btn">
+                                <i class="fas fa-search"></i> 버스 조회
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <a th:href="@{/house/my-reservations}" class="btn btn-primary">
+                        <i class="fas fa-list"></i> 예약 목록 보기
+                    </a>
+                    <a th:href="@{/house/search}" class="btn btn-secondary">
+                        <i class="fas fa-search"></i> 다른 숙소 검색
+                    </a>
+                    <a th:href="@{/}" class="btn btn-outline">
+                        <i class="fas fa-home"></i> 홈으로 돌아가기
+                    </a>
+                </div>
+                
+                <div class="contact-info">
+                    <h3><i class="fas fa-phone"></i> 문의사항</h3>
+                    <p>예약 관련 문의사항이 있으시면 아래로 연락해주세요</p>
+                    <div class="contact-details">
+                        <span><i class="fas fa-phone"></i> 1588-1234</span>
+                        <span><i class="fas fa-envelope"></i> support@dugaza.com</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html> 

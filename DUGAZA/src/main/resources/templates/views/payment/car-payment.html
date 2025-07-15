@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차량 결제 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .payment-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .payment-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .payment-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .payment-subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .payment-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        
+        .reservation-summary {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        
+        .summary-title {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .summary-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            font-weight: bold;
+            font-size: 18px;
+            color: #007bff;
+        }
+        
+        .payment-form {
+            padding: 30px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        
+        .form-title {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        
+        .card-info {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-top: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .security-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .payment-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .card-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main layout:fragment="content">
+        <div class="payment-container">
+            <div class="payment-header">
+                <h1 class="payment-title">
+                    <i class="fas fa-credit-card"></i> 차량 결제
+                </h1>
+                <p class="payment-subtitle">안전하고 편리한 결제 서비스를 이용해주세요</p>
+            </div>
+            
+            <div class="payment-content">
+                <!-- 예약 요약 -->
+                <div class="reservation-summary">
+                    <h2 class="summary-title">
+                        <i class="fas fa-receipt"></i> 예약 요약
+                    </h2>
+                    
+                    <div class="summary-item">
+                        <span>예약 번호:</span>
+                        <span th:text="${reservation.reservationId}">C123456789</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>차량명:</span>
+                        <span th:text="${car.carName}">현대 아반떼</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>차량 종류:</span>
+                        <span th:text="${car.carType}">중형차</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>수령일:</span>
+                        <span th:text="${#temporals.format(reservation.pickupDate, 'yyyy-MM-dd')}">2025-07-17</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>반납일:</span>
+                        <span th:text="${#temporals.format(reservation.returnDate, 'yyyy-MM-dd')}">2025-07-18</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>대여 기간:</span>
+                        <span th:text="${rentalDays + '일'}">1일</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>일일 요금:</span>
+                        <span th:text="${#numbers.formatInteger(car.carPrice, 3, 'COMMA') + '원'}">50,000원</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>총 결제 금액:</span>
+                        <span th:text="${#numbers.formatInteger(totalPrice, 3, 'COMMA') + '원'}">50,000원</span>
+                    </div>
+                </div>
+                
+                <!-- 결제 폼 -->
+                <div class="payment-form">
+                    <h2 class="form-title">
+                        <i class="fas fa-lock"></i> 결제 정보 입력
+                    </h2>
+                    
+                    <form th:action="@{/payment/car/{reservationId}(reservationId=${reservation.reservationId})}" method="post">
+                        <div class="form-group">
+                            <label class="form-label">카드 번호</label>
+                            <input type="text" class="form-input" name="cardNumber" 
+                                   placeholder="1234-5678-9012-3456" maxlength="19" required>
+                        </div>
+                        
+                        <div class="card-info">
+                            <div class="form-group">
+                                <label class="form-label">유효기간</label>
+                                <input type="text" class="form-input" name="expiryDate" 
+                                       placeholder="MM/YY" maxlength="5" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">CVC</label>
+                                <input type="text" class="form-input" name="cvc" 
+                                       placeholder="123" maxlength="3" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">카드 소유자명</label>
+                            <input type="text" class="form-input" name="cardHolder" 
+                                   placeholder="홍길동" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">생년월일</label>
+                            <input type="text" class="form-input" name="birthDate" 
+                                   placeholder="YYYYMMDD" maxlength="8" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-credit-card"></i> 
+                            <span th:text="${#numbers.formatInteger(totalPrice, 3, 'COMMA') + '원'}">50,000원</span> 결제하기
+                        </button>
+                        
+                        <a th:href="@{/car/my-reservations}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> 예약 목록으로 돌아가기
+                        </a>
+                    </form>
+                    
+                    <div class="security-notice">
+                        <i class="fas fa-shield-alt"></i>
+                        <strong>보안 안내:</strong> 모든 결제 정보는 SSL 암호화를 통해 안전하게 전송됩니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // 카드 번호 자동 하이픈 추가
+            document.querySelector('input[name="cardNumber"]').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                value = value.replace(/(\d{4})(?=\d)/g, '$1-');
+                e.target.value = value;
+            });
+            
+            // 유효기간 자동 슬래시 추가
+            document.querySelector('input[name="expiryDate"]').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2);
+                }
+                e.target.value = value;
+            });
+            
+            // CVC 숫자만 입력
+            document.querySelector('input[name="cvc"]').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+            
+            // 생년월일 숫자만 입력
+            document.querySelector('input[name="birthDate"]').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+        </script>
+    </main>
+</body>
+</html> 

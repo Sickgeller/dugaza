@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제하기 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .checkout-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .checkout-title {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .checkout-subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .checkout-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+        
+        .order-summary {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .summary-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .summary-title {
+            font-size: 20px;
+            color: #333;
+            margin: 0;
+        }
+        
+        .order-items {
+            padding: 0;
+        }
+        
+        .order-item {
+            display: grid;
+            grid-template-columns: 80px 1fr auto;
+            gap: 15px;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            align-items: center;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-image {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        
+        .item-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .item-details {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .item-dates {
+            color: #007bff;
+            font-size: 12px;
+        }
+        
+        .item-price {
+            text-align: right;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .payment-form {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding: 30px;
+            height: fit-content;
+        }
+        
+        .form-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        
+        .card-info {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .total-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .total-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .total-item:last-child {
+            margin-bottom: 0;
+            font-weight: bold;
+            font-size: 18px;
+            color: #007bff;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-top: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        
+        .security-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .checkout-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .order-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .item-image {
+                width: 100%;
+                height: 150px;
+            }
+            
+            .card-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main layout:fragment="content">
+        <div class="checkout-container">
+            <div class="checkout-header">
+                <h1 class="checkout-title">
+                    <i class="fas fa-credit-card"></i> 결제하기
+                </h1>
+                <p class="checkout-subtitle">주문 정보를 확인하고 결제를 완료하세요</p>
+            </div>
+            
+            <div class="checkout-content">
+                <!-- 주문 요약 -->
+                <div class="order-summary">
+                    <div class="summary-header">
+                        <h2 class="summary-title">
+                            <i class="fas fa-receipt"></i> 주문 요약
+                        </h2>
+                    </div>
+                    
+                    <div class="order-items">
+                        <!-- 숙소 아이템들 -->
+                        <div th:each="item : ${houseItems}" class="order-item">
+                            <img th:src="${item.itemImage != null ? item.itemImage : '/assets/images/house-default.jpg'}" 
+                                 alt="숙소 이미지" class="item-image">
+                            <div class="item-info">
+                                <div class="item-name" th:text="${item.itemName}">숙소명</div>
+                                <div class="item-details">
+                                    <span th:text="${item.roomType}">객실 타입</span> | 
+                                    <span th:text="${item.quantity + '명'}">2명</span>
+                                </div>
+                                <div class="item-dates">
+                                    <span th:text="${#temporals.format(item.startDate, 'yyyy-MM-dd')}">2025-07-17</span> ~ 
+                                    <span th:text="${#temporals.format(item.endDate, 'yyyy-MM-dd')}">2025-07-18</span>
+                                </div>
+                            </div>
+                            <div class="item-price" th:text="${#numbers.formatInteger(item.totalPrice, 3, 'COMMA') + '원'}">100,000원</div>
+                        </div>
+                        
+                        <!-- 차량 아이템들 -->
+                        <div th:each="item : ${carItems}" class="order-item">
+                            <img th:src="${item.itemImage != null ? item.itemImage : '/assets/images/car-default.jpg'}" 
+                                 alt="차량 이미지" class="item-image">
+                            <div class="item-info">
+                                <div class="item-name" th:text="${item.itemName}">차량명</div>
+                                <div class="item-details">
+                                    <span th:text="${item.itemTypeName}">차량 타입</span> | 
+                                    <span th:text="${item.pickupLocation}">수령 장소</span>
+                                </div>
+                                <div class="item-dates">
+                                    <span th:text="${#temporals.format(item.startDate, 'yyyy-MM-dd')}">2025-07-17</span> ~ 
+                                    <span th:text="${#temporals.format(item.endDate, 'yyyy-MM-dd')}">2025-07-18</span>
+                                </div>
+                            </div>
+                            <div class="item-price" th:text="${#numbers.formatInteger(item.totalPrice, 3, 'COMMA') + '원'}">50,000원</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 결제 폼 -->
+                <div class="payment-form">
+                    <h2 class="form-title">
+                        <i class="fas fa-lock"></i> 결제 정보
+                    </h2>
+                    
+                    <form th:action="@{/payment/process}" method="post">
+                        <div class="form-group">
+                            <label class="form-label">카드 번호</label>
+                            <input type="text" class="form-input" name="cardNumber" 
+                                   placeholder="1234-5678-9012-3456" maxlength="19" required>
+                        </div>
+                        
+                        <div class="card-info">
+                            <div class="form-group">
+                                <label class="form-label">유효기간</label>
+                                <input type="text" class="form-input" name="expiryDate" 
+                                       placeholder="MM/YY" maxlength="5" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">CVC</label>
+                                <input type="text" class="form-input" name="cvc" 
+                                       placeholder="123" maxlength="3" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">카드 소유자명</label>
+                            <input type="text" class="form-input" name="cardHolder" 
+                                   placeholder="홍길동" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">생년월일</label>
+                            <input type="text" class="form-input" name="birthDate" 
+                                   placeholder="YYYYMMDD" maxlength="8" required>
+                        </div>
+                        
+                        <!-- 총액 요약 -->
+                        <div class="total-summary">
+                            <div class="total-item">
+                                <span>상품 수:</span>
+                                <span th:text="${cart.itemCount + '개'}">2개</span>
+                            </div>
+                            <div class="total-item">
+                                <span>총 결제 금액:</span>
+                                <span th:text="${#numbers.formatInteger(cart.totalAmount, 3, 'COMMA') + '원'}">150,000원</span>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-credit-card"></i> 
+                            <span th:text="${#numbers.formatInteger(cart.totalAmount, 3, 'COMMA') + '원'}">150,000원</span> 결제하기
+                        </button>
+                        
+                        <a href="/payment/cart" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> 장바구니로 돌아가기
+                        </a>
+                    </form>
+                    
+                    <div class="security-notice">
+                        <i class="fas fa-shield-alt"></i>
+                        <strong>보안 안내:</strong> 모든 결제 정보는 SSL 암호화를 통해 안전하게 전송됩니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // 카드 번호 자동 하이픈 추가
+            document.querySelector('input[name="cardNumber"]').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                value = value.replace(/(\d{4})(?=\d)/g, '$1-');
+                e.target.value = value;
+            });
+            
+            // 유효기간 자동 슬래시 추가
+            document.querySelector('input[name="expiryDate"]').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2);
+                }
+                e.target.value = value;
+            });
+            
+            // CVC 숫자만 입력
+            document.querySelector('input[name="cvc"]').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+            
+            // 생년월일 숫자만 입력
+            document.querySelector('input[name="birthDate"]').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+        </script>
+    </main>
+</body>
+</html> 

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+
+<head>
+    <title>내 예약 목록</title>
+    <style>
+        .reservation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 2em;
+        }
+        
+        .reservation-list {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .reservation-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .reservation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .reservation-id {
+            font-weight: bold;
+            color: #007bff;
+            font-size: 1.1em;
+        }
+        
+        .reservation-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        
+        .status-confirmed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-completed {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .car-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .car-image {
+            width: 120px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .car-details {
+            flex: 1;
+        }
+        
+        .car-name {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+        
+        .car-specs {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .reservation-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            color: #333;
+        }
+        
+        .reservation-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .no-reservations {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="reservation-container">
+            <a href="/car/list" class="back-link">← 차량 목록으로 돌아가기</a>
+            
+            <h1 class="page-title">내 예약 목록</h1>
+            
+            <div th:if="${#lists.isEmpty(reservations)}" class="no-reservations">
+                <h3>예약 내역이 없습니다.</h3>
+                <p>차량을 예약해보세요!</p>
+                <a href="/car/list" class="btn btn-primary">차량 목록 보기</a>
+            </div>
+            
+            <div th:if="${!#lists.isEmpty(reservations)}" class="reservation-list">
+                <div th:each="reservation : ${reservations}" class="reservation-card">
+                    <div class="reservation-header">
+                        <span class="reservation-id">예약번호: [[${reservation.reservationId}]]</span>
+                        <span th:class="${'reservation-status ' + 
+                            (reservation.status == 'CONFIRMED' ? 'status-confirmed' : 
+                             reservation.status == 'COMPLETED' ? 'status-completed' : 'status-cancelled')}"
+                              th:text="${reservation.status == 'CONFIRMED' ? '확정' : 
+                                       reservation.status == 'COMPLETED' ? '완료' : '취소'}">
+                        </span>
+                    </div>
+                    
+                    <div class="car-info">
+                        <img th:src="${reservation.carImage != null ? '/car/image/' + reservation.carId : '/assets/images/car-default.jpg'}" 
+                             alt="차량 이미지" class="car-image">
+                        <div class="car-details">
+                            <div class="car-name" th:text="${reservation.carName}">차량명</div>
+                            <div class="car-specs">
+                                <span th:text="${reservation.carType}">차종</span> | 
+                                <span th:text="${reservation.fuelType}">연료</span> | 
+                                <span th:text="${reservation.transmission}">변속</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="reservation-details">
+                        <div class="detail-item">
+                            <span class="detail-label">예약일</span>
+                            <span class="detail-value" th:text="${#temporals.format(reservation.reservationDate, 'yyyy-MM-dd')}">예약일</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">대여 시작일</span>
+                            <span class="detail-value" th:text="${#temporals.format(reservation.startDate, 'yyyy-MM-dd')}">시작일</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">대여 종료일</span>
+                            <span class="detail-value" th:text="${#temporals.format(reservation.endDate, 'yyyy-MM-dd')}">종료일</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">대여 기간</span>
+                            <span class="detail-value" th:text="${reservation.rentalDays + '일'}">기간</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">수령 장소</span>
+                            <span class="detail-value" th:text="${reservation.locationName}">장소</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">총 요금</span>
+                            <span class="detail-value" th:text="${#numbers.formatInteger(reservation.totalPrice, 3, 'COMMA') + '원'}">요금</span>
+                        </div>
+                    </div>
+                    
+                    <div class="reservation-actions">
+                        <a th:href="@{/car/reservation/detail/{id}(id=${reservation.reservationId})}" 
+                           class="btn btn-primary">상세보기</a>
+                        <a th:if="${reservation.status == 'CONFIRMED'}" 
+                           th:href="@{/car/reservation/cancel/{id}(id=${reservation.reservationId})}" 
+                           class="btn btn-danger"
+                           onclick="return confirm('정말로 예약을 취소하시겠습니까?')">취소</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

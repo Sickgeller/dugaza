@@ -22,12 +22,15 @@
     </resultMap>
     
     <insert id="insertSeller" parameterType="kr.spring.seller.vo.SellerVO">
+        <selectKey keyProperty="sellerId" resultType="long" order="BEFORE">
+            SELECT SELLER_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
         INSERT INTO SELLER (
             SELLER_ID, ID, PASSWORD, BUSINESS_NAME, NAME, PHONE, 
             SECONDARY_PHONE, EMAIL, ADDRESS, ADDRESS_DETAIL, LICENSE,
             SELLER_TYPE, STATUS, ROLE, CREATED_AT, UPDATED_AT
         ) VALUES (
-            #{sellerId}, #{id}, #{password}, #{businessName}, #{name}, #{phone}, 
+            #{sellerId,jdbcType=NUMERIC}, #{id}, #{password}, #{businessName}, #{name}, #{phone}, 
             #{secondaryPhone,jdbcType=VARCHAR}, #{email}, #{address}, #{addressDetail}, #{license},
             #{sellerType}, #{status}, #{role}, SYSDATE, SYSDATE
         )
