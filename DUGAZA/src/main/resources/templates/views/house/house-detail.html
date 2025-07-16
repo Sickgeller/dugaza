@@ -15,20 +15,19 @@
     <div class="detail-container">
         <div class="detail-header">
             <div class="detail-title">
-                <h1 th:text=${info.title}></h1>
+                <h1 th:text="${info.title}"></h1>
                 <div class="detail-meta">
-                    <span class="rating"><i class="fas fa-star" th:text="${#numbers.formatDecimal(status.averageRating, 0, 1)}"></i></span>
-                    <span class="reviews" th:text="${'(리뷰 ' + status.totalCount + ')'}">(리뷰 523)</span>
-                    <span class="location"><i class="fas fa-map-marker-alt" th:text="${info.addr1}"></i></span>
+                    <span class="rating"><i class="fas fa-star"></i> [[${#numbers.formatDecimal(status.averageRating, 0, 1)}]]</span>
+                    <span class="reviews" th:text="'리뷰 (' + ${status.totalCount} + ')'">(리뷰 523)</span>
+                    <span class="location"><i class="fas fa-map-marker-alt"></i> [[${info.addr1}]]</span>
                 </div>
             </div>
             <div class="header-actions">
                 <a th:href="@{/reservation/house(contentId=${info.contentId})}" class="primary-btn">
                     <i class="fas fa-calendar-check"></i> 예약하기
                 </a>
-                <button class="like-btn" th:data-content-id="${info.contentId}" 
-        th:data-content-type="${info.contentTypeId}">
-                     <i th:class="${wish != null} ? 'fas fa-heart' : 'far fa-heart'"></i> 
+                <button class="like-btn" th:data-content-id="${info.contentId}" th:data-content-type="${info.contentTypeId}">
+                     <i th:class="${wish != null ? 'fas fa-heart' : 'far fa-heart'}" th:style="${wish != null ? 'color: red;' : ''}"></i> 
                      <span th:text="${wish != null} ? '찜 취소' : '찜하기'"></span>
                 </button>
             </div>

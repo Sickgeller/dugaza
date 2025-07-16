@@ -88,7 +88,7 @@
                  <a th:href="@{/house/detail(contentId=${house.contentId})}">
                     <div class="accommodation-image">
                         <img th:src="${house.firstImage != null ? house.firstImage : '/assets/images/house.png'}" alt="호텔">
-                        <button class="like-btn"><i class="fas fa-heart"></i></button>
+                        <button class="like-btn" th:data-content-id="${house.contentId}" th:data-content-type="${house.contentTypeId}"><i th:class="${house.wished} ? 'fas fa-heart' : 'far fa-heart'" th:style="${house.wished} ? 'color: red;'"></i></button>
                     </div>
                     <div class="accommodation-content">
                         <h3 th:text="${house.title}"></h3>
@@ -134,6 +134,34 @@
         </section>
 
         <script>
+            $(document).on('click', '.like-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var contentId = $(this).data("content-id");
+                var contentTypeId = $(this).data("content-type");
+                var heartIcon = $(this).find("i");
+
+                $.ajax({
+                    type: "POST",
+                    url: "/wishlist/toggle",
+                    data: {
+                        contentId: contentId,
+                        contentTypeId: contentTypeId
+                    },
+                    success: function(response) {
+                        if (response.wished) {
+                            heartIcon.removeClass("far").addClass("fas").css("color", "red");
+                        } else {
+                            heartIcon.removeClass("fas").addClass("far").css("color", "");
+                        }
+                    },
+                    error: function() {
+                        alert("찜 상태를 변경하는 데 실패했습니다.");
+                    }
+                });
+            });
+
             $(document).on('click', '.pagination a', function(e) {
                 e.preventDefault();
                 var url = $(this).attr('href');

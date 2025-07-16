@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpSession;
 import kr.spring.auth.security.CustomUserDetails;
@@ -146,8 +147,14 @@ public class HouseController {
 		// 숙소에 찜 여부
 		WishListVO wish_vo = new WishListVO();
 		wish_vo.setContentId(contentId);
-		MemberVO member = (MemberVO)model.getAttribute("member");
-		wish_vo.setMemberId(member != null ? member.getMemberId() : -1);
+		wish_vo.setContentType(32L); // 숙소 contentTypeId
+		Long memberId = -1L; // Default to -1 for non-logged-in users
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth != null && auth.getPrincipal() instanceof CustomUserDetails) {
+			CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+			memberId = userDetails.getMember().getMemberId();
+		}
+		wish_vo.setMemberId(memberId);
 		WishListVO db_wish = wishListService.selectWishList(wish_vo);
 		
 
@@ -189,4 +196,5 @@ public class HouseController {
 		return "redirect:/house/detail?contentId=" + reviewDTO.getContentId();
 	}
 
+	
 }

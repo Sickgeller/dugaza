@@ -27,13 +27,13 @@
 	
 	<delete id="deleteList" parameterType="kr.spring.wishlist.vo.WishListVO">
 		DELETE FROM WISHLIST
-		WHERE MEMBER_ID = #{memberId} AND CONTENT_ID = #{contentId}
+		WHERE MEMBER_ID = #{memberId} AND CONTENT_ID = #{contentId} AND CONTENT_TYPE = #{contentType}
 	</delete>
 	
 	<select id="selectWishList" parameterType="kr.spring.wishlist.vo.WishListVO" resultMap="wishListMap">
 		SELECT 
 			*
 		FROM WISHLIST
-		WHERE MEMBER_ID = #{memberId} AND CONTENT_ID = #{contentId}
+		WHERE MEMBER_ID = #{memberId} AND CONTENT_ID = #{contentId} AND CONTENT_TYPE = #{contentType} AND ROWNUM = 1
 	</select>
-</mapper> 
+</mapper>
