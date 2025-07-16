@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_mypage}">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지 - 결제 대기</title>
+    <th:block layout:fragment="css">
+        <style>
+            .payment-pending-container {
+                padding: 2rem;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            
+            .page-header {
+                margin-bottom: 2rem;
+            }
+            
+            .page-header h1 {
+                color: #333;
+                margin-bottom: 0.5rem;
+            }
+            
+            .payment-pending-item {
+                background: white;
+                border-radius: 10px;
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                border-left: 4px solid #007bff;
+            }
+            
+            .payment-pending-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .payment-pending-id {
+                font-weight: bold;
+                color: #007bff;
+            }
+            
+            .payment-status {
+                padding: 0.25rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.875rem;
+                font-weight: 500;
+            }
+            
+            .status-pending {
+                background: #fff3cd;
+                color: #856404;
+            }
+            
+            .status-expired {
+                background: #f8d7da;
+                color: #721c24;
+            }
+            
+            .expiry-timer {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: #dc3545;
+                font-weight: 500;
+            }
+            
+            .expiry-timer i {
+                font-size: 1.1rem;
+            }
+            
+            .payment-summary {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .summary-item {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.5rem 0;
+            }
+            
+            .summary-item.total {
+                font-weight: bold;
+                font-size: 1.1rem;
+                color: #007bff;
+                border-top: 1px solid #f0f0f0;
+                padding-top: 1rem;
+            }
+            
+            .payment-actions {
+                display: flex;
+                gap: 1rem;
+                justify-content: flex-end;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: 500;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .btn-primary {
+                background: #007bff;
+                color: white;
+            }
+            
+            .btn-secondary {
+                background: #6c757d;
+                color: white;
+            }
+            
+            .btn-danger {
+                background: #dc3545;
+                color: white;
+            }
+            
+            .empty-payment-pending {
+                text-align: center;
+                padding: 4rem 2rem;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            
+            .empty-payment-pending i {
+                font-size: 4rem;
+                color: #ddd;
+                margin-bottom: 1rem;
+            }
+            
+            .empty-payment-pending h3 {
+                color: #666;
+                margin-bottom: 0.5rem;
+            }
+            
+            .empty-payment-pending p {
+                color: #999;
+                margin-bottom: 2rem;
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="payment-pending-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1>결제 대기</h1>
+                <p>결제 대기 중인 예약들을 확인하고 결제하세요.</p>
+            </div>
+            
+            <div th:if="${paymentPendings.isEmpty()}" class="empty-payment-pending">
+                <i class="fas fa-clock"></i>
+                <h3>결제 대기 중인 예약이 없습니다</h3>
+                <p>아직 결제 대기 중인 예약이 없습니다. 새로운 예약을 만들어보세요!</p>
+                <a th:href="@{/house}" class="btn btn-primary">숙소 예약하기</a>
+                <a th:href="@{/car/search}" class="btn btn-secondary" style="margin-left: 0.5rem;">차량 예약하기</a>
+            </div>
+            
+            <div th:if="${not paymentPendings.isEmpty()}">
+                <div th:each="paymentPending : ${paymentPendings}" class="payment-pending-item">
+                    <div class="payment-pending-header">
+                        <div>
+                            <span class="payment-pending-id" th:text="'결제 대기 #' + ${paymentPending.paymentPendingId}">결제 대기 #123</span>
+                            <span th:class="${paymentPending.status == 0 ? 'payment-status status-pending' : 'payment-status status-expired'}"
+                                  th:text="${paymentPending.status == 0 ? '대기 중' : '만료됨'}">대기 중</span>
+                        </div>
+                        <div th:if="${paymentPending.status == 0}" class="expiry-timer">
+                            <i class="fas fa-clock"></i>
+                            <span th:text="${#temporals.format(paymentPending.expiresAt, 'HH:mm:ss')}">29:45</span> 후 만료
+                        </div>
+                    </div>
+                    
+                    <div class="payment-summary">
+                        <div class="summary-item">
+                            <span>총 금액:</span>
+                            <span th:text="${#numbers.formatInteger(paymentPending.totalPrice, 3, 'COMMA')} + '원'">300,000원</span>
+                        </div>
+                        <div class="summary-item" th:if="${paymentPending.discountAmount > 0}">
+                            <span>할인:</span>
+                            <span th:text="'-' + ${#numbers.formatInteger(paymentPending.discountAmount, 3, 'COMMA')} + '원'">-10,000원</span>
+                        </div>
+                        <div class="summary-item total">
+                            <span>최종 결제 금액:</span>
+                            <span th:text="${#numbers.formatInteger(paymentPending.finalPrice, 3, 'COMMA')} + '원'">290,000원</span>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-actions">
+                        <button th:if="${paymentPending.status == 0}" 
+                                class="btn btn-danger" 
+                                th:onclick="'cancelPaymentPending(' + ${paymentPending.paymentPendingId} + ')'">
+                            <i class="fas fa-times"></i> 취소
+                        </button>
+                        <button th:if="${paymentPending.status == 0}" 
+                                class="btn btn-primary" 
+                                th:onclick="'processPayment(' + ${paymentPending.paymentPendingId} + ')'">
+                            <i class="fas fa-credit-card"></i> 결제하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block layout:fragment="script">
+        <script>
+            function processPayment(paymentPendingId) {
+                if (confirm('정말로 결제하시겠습니까?')) {
+                    fetch(`/api/payment-pending/${paymentPendingId}/process`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('결제가 완료되었습니다.');
+                            location.reload();
+                        } else {
+                            alert('결제에 실패했습니다: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('오류가 발생했습니다.');
+                    });
+                }
+            }
+            
+            function cancelPaymentPending(paymentPendingId) {
+                if (confirm('정말로 이 결제 대기를 취소하시겠습니까?')) {
+                    fetch(`/api/payment-pending/${paymentPendingId}/cancel`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('결제 대기가 취소되었습니다.');
+                            location.reload();
+                        } else {
+                            alert('취소에 실패했습니다: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('오류가 발생했습니다.');
+                    });
+                }
+            }
+            
+            // 만료 타이머 업데이트 (1초마다)
+            setInterval(function() {
+                const timers = document.querySelectorAll('.expiry-timer span');
+                timers.forEach(timer => {
+                    const timeText = timer.textContent;
+                    const [hours, minutes, seconds] = timeText.split(':').map(Number);
+                    
+                    if (seconds > 0) {
+                        timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${(seconds - 1).toString().padStart(2, '0')}`;
+                    } else if (minutes > 0) {
+                        timer.textContent = `${hours.toString().padStart(2, '0')}:${(minutes - 1).toString().padStart(2, '0')}:59`;
+                    } else if (hours > 0) {
+                        timer.textContent = `${(hours - 1).toString().padStart(2, '0')}:59:59`;
+                    } else {
+                        // 만료됨
+                        location.reload();
+                    }
+                });
+            }, 1000);
+        </script>
+    </th:block>
+</body>
+</html> 

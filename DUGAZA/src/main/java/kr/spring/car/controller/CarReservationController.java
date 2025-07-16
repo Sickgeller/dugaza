@@ -173,35 +173,18 @@ public class CarReservationController {
                 model.addAttribute("reservation", reservation);
                 model.addAttribute("car", car);
             } else {
-                // 예약 정보가 없는 경우 기본 데이터 설정
-                setDefaultReservationData(model, reservationId);
+                // 예약 정보가 없는 경우 에러 처리
+                model.addAttribute("error", "예약 정보를 찾을 수 없습니다.");
+                return "views/common/error";
             }
         } catch (Exception e) {
             log.error("예약 정보 조회 중 오류 발생", e);
-            // 오류 발생 시 기본 데이터 설정
-            setDefaultReservationData(model, reservationId);
+            // 오류 발생 시 에러 처리
+            model.addAttribute("error", "예약 정보 조회 중 오류가 발생했습니다.");
+            return "views/common/error";
         }
         
         return "views/car/car-reservation-complete";
-    }
-    
-    private void setDefaultReservationData(Model model, Long reservationId) {
-        // 예시 데이터 (실제로는 예약 정보를 DB에서 조회)
-        CarReservationVO reservation = new CarReservationVO();
-        reservation.setReservationId(reservationId);
-        reservation.setPickupDate(java.time.LocalDate.now().plusDays(1));
-        reservation.setReturnDate(java.time.LocalDate.now().plusDays(3));
-        reservation.setDriverName("홍길동");
-        
-        CarVO car = new CarVO();
-        car.setCarName("현대 아반떼");
-        car.setCarType("경차");
-        car.setCarFuel("휘발유");
-        car.setCarSeats(5);
-        car.setCarPrice(50000);
-        
-        model.addAttribute("reservation", reservation);
-        model.addAttribute("car", car);
     }
 
     @GetMapping("/my-reservations")

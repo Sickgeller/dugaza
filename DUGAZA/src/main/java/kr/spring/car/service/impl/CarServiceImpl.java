@@ -126,8 +126,8 @@ public class CarServiceImpl implements CarService {
         CarReservationVO reservation = new CarReservationVO();
         reservation.setCarId(reservationDTO.getCarId());
         reservation.setMemberId(reservationDTO.getMemberId());
-        reservation.setPickupDate(reservationDTO.getPickupDate());
-        reservation.setReturnDate(reservationDTO.getReturnDate());
+        reservation.setStartDate(reservationDTO.getPickupDate().atStartOfDay());
+        reservation.setEndDate(reservationDTO.getReturnDate().atStartOfDay());
         reservation.setStatus("RESERVED");
         
         // 예약 생성
@@ -150,5 +150,15 @@ public class CarServiceImpl implements CarService {
     @Override
     public CarReservationVO getReservation(Long reservationId) {
         return carMapper.selectReservation(reservationId);
+    }
+    
+    @Override
+    public void updateReservation(CarReservationVO carReservationVO) {
+        carMapper.updateReservation(carReservationVO);
+    }
+    
+    @Override
+    public void deleteReservation(Long reservationId) {
+        carMapper.deleteReservation(reservationId);
     }
 } 

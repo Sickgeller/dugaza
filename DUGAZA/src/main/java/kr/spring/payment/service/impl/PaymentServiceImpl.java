@@ -1,8 +1,8 @@
 package kr.spring.payment.service.impl;
 
-import kr.spring.cart.service.CartService;
-import kr.spring.cart.vo.CartItemVO;
-import kr.spring.cart.vo.CartVO;
+import kr.spring.payment.service.PaymentPendingService;
+import kr.spring.payment.vo.PaymentPendingVO;
+import kr.spring.payment.vo.PaymentPendingItemVO;
 import kr.spring.car.service.CarService;
 import kr.spring.car.dto.CarReservationDTO;
 import kr.spring.car.vo.CarReservationVO;
@@ -27,16 +27,16 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
-    private final CartService cartService;
+    private final PaymentPendingService paymentPendingService;
     private final CarService carService;
     private final HouseService houseService;
     private final HouseReservationService houseReservationService;
 
     @Override
-    public PaymentResponseDTO processPayment(CartVO cart, PaymentRequestDTO paymentRequest) {
+    public PaymentResponseDTO processPayment(PaymentPendingVO paymentPending, PaymentRequestDTO paymentRequest) {
         try {
             // 1. 결제 검증
-            if (!validatePayment(cart, paymentRequest)) {
+            if (!validatePayment(paymentPending, paymentRequest)) {
                 return PaymentResponseDTO.builder()
                         .status("FAILED")
                         .message("결제 검증에 실패했습니다.")
@@ -60,18 +60,15 @@ public class PaymentServiceImpl implements PaymentService {
                         .build();
             }
 
-            // 3. 예약 생성
-            createReservations(cart);
+            // 3. 결제 대기 처리 (예약 확정)
+            paymentPendingService.processPayment(paymentPending.getPaymentPendingId());
 
-            // 4. 장바구니 비우기
-            cartService.clearCart(cart.getMemberId());
-
-            // 5. 결제 응답 생성
+            // 4. 결제 응답 생성
             return PaymentResponseDTO.builder()
                     .paymentId(paymentId)
                     .status("SUCCESS")
                     .message("결제가 성공적으로 처리되었습니다.")
-                    .amount(cart.getTotalAmount())
+                    .amount(paymentPending.getFinalPrice())
                     .currency("KRW")
                     .paymentDate(LocalDateTime.now())
                     .transactionId(transactionId)
@@ -90,28 +87,40 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public boolean validatePayment(CartVO cart, PaymentRequestDTO paymentRequest) {
+    public boolean validatePayment(PaymentPendingVO paymentPending, PaymentRequestDTO paymentRequest) {
         try {
-            // 1. 장바구니 검증
-            if (cart == null || cart.getItems() == null || cart.getItems().isEmpty()) {
-                log.warn("장바구니가 비어있습니다.");
+            // 1. 결제 대기 검증
+            if (paymentPending == null) {
+                log.warn("결제 대기 정보가 없습니다.");
                 return false;
             }
 
-            // 2. 결제 금액 검증
-            if (cart.getTotalAmount() <= 0) {
-                log.warn("결제 금액이 유효하지 않습니다: {}", cart.getTotalAmount());
+            // 2. 결제 대기 상태 검증
+            if (!paymentPending.isPending()) {
+                log.warn("결제 대기 상태가 유효하지 않습니다: {}", paymentPending.getStatus());
                 return false;
             }
 
-            // 3. 카드 정보 검증
+            // 3. 만료 여부 검증
+            if (paymentPending.isExpired(LocalDateTime.now())) {
+                log.warn("결제 대기 시간이 만료되었습니다.");
+                return false;
+            }
+
+            // 4. 결제 금액 검증
+            if (paymentPending.getFinalPrice() <= 0) {
+                log.warn("결제 금액이 유효하지 않습니다: {}", paymentPending.getFinalPrice());
+                return false;
+            }
+
+            // 5. 카드 정보 검증
             if (!validateCardInfo(paymentRequest)) {
                 log.warn("카드 정보가 유효하지 않습니다.");
                 return false;
             }
 
-            // 4. 예약 가능성 검증
-            if (!validateReservationAvailability(cart)) {
+            // 6. 예약 가능성 검증
+            if (!validateReservationAvailability(paymentPending)) {
                 log.warn("일부 예약이 불가능합니다.");
                 return false;
             }
@@ -184,112 +193,74 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
-    private void createReservations(CartVO cart) {
-        List<CartItemVO> items = cart.getItems();
-        
-        for (CartItemVO item : items) {
-            try {
-                if ("HOUSE".equals(item.getItemType())) {
-                    createHouseReservation(item);
-                } else if ("CAR".equals(item.getItemType())) {
-                    createCarReservation(item);
-                }
-            } catch (Exception e) {
-                log.error("예약 생성 중 오류: itemType={}, itemId={}", item.getItemType(), item.getItemId(), e);
-                throw new RuntimeException("예약 생성에 실패했습니다: " + e.getMessage());
-            }
-        }
-    }
-
-    private void createHouseReservation(CartItemVO item) {
-        HouseReservationVO reservation = new HouseReservationVO();
-        reservation.setHouseId(item.getItemId());
-        reservation.setMemberId(item.getMemberId());
-        reservation.setReservationStart(item.getStartDate().atStartOfDay());
-        reservation.setReservationEnd(item.getEndDate().atStartOfDay());
-        reservation.setReservationCount(item.getQuantity());
-        reservation.setPrice(item.getTotalPrice());
-        reservation.setStatus(0); // 예약 대기 상태
-
-        houseReservationService.insertReservation(reservation);
-        log.info("숙소 예약 생성 완료: houseId={}, memberId={}", item.getItemId(), item.getMemberId());
-    }
-
-    private void createCarReservation(CartItemVO item) {
-        CarReservationDTO reservationDTO = new CarReservationDTO();
-        reservationDTO.setCarId(item.getItemId());
-        reservationDTO.setMemberId(item.getMemberId());
-        reservationDTO.setPickupDate(item.getStartDate());
-        reservationDTO.setReturnDate(item.getEndDate());
-
-        carService.createReservation(reservationDTO);
-        log.info("차량 예약 생성 완료: carId={}, memberId={}", item.getItemId(), item.getMemberId());
-    }
-
-    private boolean validateCardInfo(PaymentRequestDTO paymentRequest) {
-        // 카드 번호 검증
-        if (paymentRequest.getCardNumber() == null || paymentRequest.getCardNumber().trim().isEmpty()) {
-            return false;
-        }
-
-        // 유효기간 검증
-        if (paymentRequest.getExpiryDate() == null || !paymentRequest.getExpiryDate().matches("\\d{2}/\\d{2}")) {
-            return false;
-        }
-
-        // CVC 검증
-        if (paymentRequest.getCvc() == null || !paymentRequest.getCvc().matches("\\d{3,4}")) {
-            return false;
-        }
-
-        // 카드 소유자명 검증
-        if (paymentRequest.getCardHolder() == null || paymentRequest.getCardHolder().trim().isEmpty()) {
-            return false;
-        }
-
-        // 생년월일 검증
-        if (paymentRequest.getBirthDate() == null || !paymentRequest.getBirthDate().matches("\\d{8}")) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean validateReservationAvailability(CartVO cart) {
-        List<CartItemVO> items = cart.getItems();
-        
-        for (CartItemVO item : items) {
-            try {
-                if ("HOUSE".equals(item.getItemType())) {
-                    // 숙소 예약 가능성 검증
+    private boolean validateReservationAvailability(PaymentPendingVO paymentPending) {
+        try {
+            List<PaymentPendingItemVO> items = paymentPendingService.getPaymentPendingItems(paymentPending.getPaymentPendingId());
+            
+            for (PaymentPendingItemVO item : items) {
+                if (PaymentPendingItemVO.TYPE_HOUSE.equals(item.getReservationType())) {
                     if (!validateHouseAvailability(item)) {
                         return false;
                     }
-                } else if ("CAR".equals(item.getItemType())) {
-                    // 차량 예약 가능성 검증
+                } else if (PaymentPendingItemVO.TYPE_CAR.equals(item.getReservationType())) {
                     if (!validateCarAvailability(item)) {
                         return false;
                     }
                 }
-            } catch (Exception e) {
-                log.error("예약 가능성 검증 중 오류: itemType={}, itemId={}", item.getItemType(), item.getItemId(), e);
+            }
+            
+            return true;
+            
+        } catch (Exception e) {
+            log.error("예약 가능성 검증 중 오류 발생", e);
+            return false;
+        }
+    }
+
+    private boolean validateHouseAvailability(PaymentPendingItemVO item) {
+        // 숙소 예약 가능성 검증 로직
+        // 실제로는 숙소 서비스에서 검증
+        return true;
+    }
+
+    private boolean validateCarAvailability(PaymentPendingItemVO item) {
+        // 차량 예약 가능성 검증 로직
+        // 실제로는 차량 서비스에서 검증
+        return true;
+    }
+
+    private boolean validateCardInfo(PaymentRequestDTO paymentRequest) {
+        try {
+            // 카드 번호 검증
+            String cardNumber = paymentRequest.getCardNumber().replace("-", "");
+            if (cardNumber.length() < 13 || cardNumber.length() > 19) {
                 return false;
             }
+
+            // 유효기간 검증
+            String expiryDate = paymentRequest.getExpiryDate();
+            if (expiryDate == null || expiryDate.length() != 5) {
+                return false;
+            }
+
+            // CVC 검증
+            String cvc = paymentRequest.getCvc();
+            if (cvc == null || cvc.length() < 3 || cvc.length() > 4) {
+                return false;
+            }
+
+            // 카드 소유자명 검증
+            String cardHolder = paymentRequest.getCardHolder();
+            if (cardHolder == null || cardHolder.trim().isEmpty()) {
+                return false;
+            }
+
+            return true;
+
+        } catch (Exception e) {
+            log.error("카드 정보 검증 중 오류 발생", e);
+            return false;
         }
-        
-        return true;
-    }
-
-    private boolean validateHouseAvailability(CartItemVO item) {
-        // 실제로는 숙소 예약 가능성 검증 로직 구현
-        // 현재는 더미로 항상 true 반환
-        return true;
-    }
-
-    private boolean validateCarAvailability(CartItemVO item) {
-        // 실제로는 차량 예약 가능성 검증 로직 구현
-        // 현재는 더미로 항상 true 반환
-        return true;
     }
 
     private boolean validateLuhnAlgorithm(String cardNumber) {
@@ -313,21 +284,16 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private String getLastFourDigits(String cardNumber) {
-        if (cardNumber == null || cardNumber.length() < 4) {
-            return "****";
-        }
         String cleanNumber = cardNumber.replace("-", "");
-        return cleanNumber.substring(cleanNumber.length() - 4);
+        if (cleanNumber.length() >= 4) {
+            return cleanNumber.substring(cleanNumber.length() - 4);
+        }
+        return "****";
     }
 
     private String detectCardType(String cardNumber) {
-        if (cardNumber == null) {
-            return "UNKNOWN";
-        }
-        
         String cleanNumber = cardNumber.replace("-", "");
         
-        // 간단한 카드 타입 감지
         if (cleanNumber.startsWith("4")) {
             return "VISA";
         } else if (cleanNumber.startsWith("5")) {

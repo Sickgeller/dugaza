@@ -46,4 +46,9 @@ public interface BaseReviewMapper {
     
     // 리뷰 작성
     public void writeReview(BaseReviewVO vo);
+    
+    /**
+     * 회원별 리뷰 조회
+     */
+    public List<BaseReviewVO> findReviewsByMemberId(@Param("memberId") Long memberId);
 }

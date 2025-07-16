@@ -23,4 +23,21 @@ public interface HouseReservationMapper {
     int checkReservationConflict(@Param("roomId") Long roomId, 
                                 @Param("reservationStart") String reservationStart, 
                                 @Param("reservationEnd") String reservationEnd);
+
+    List<HouseReservationVO> selectReservationsByMember(Long memberId);
+    
+    /**
+     * 예약 정보 조회
+     */
+    HouseReservationVO selectReservation(Long reservationId);
+    
+    /**
+     * 예약 정보 업데이트
+     */
+    void updateReservation(HouseReservationVO houseReservationVO);
+    
+    /**
+     * 예약 삭제
+     */
+    void deleteReservation(Long reservationId);
 }

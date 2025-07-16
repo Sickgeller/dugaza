@@ -9,4 +9,9 @@ public interface BaseReviewService {
     public List<BaseReviewVO> getReviews(Long sellerId, int page, int pageSize);
     public List<BaseReviewVO> getHouseReviews(Long houseId, int page, int pageSize);
     public void writeReview(BaseReviewVO vo);
+    
+    /**
+     * 회원별 리뷰 조회
+     */
+    public List<BaseReviewVO> getReviewsByMember(Long memberId);
 }

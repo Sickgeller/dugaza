@@ -5,11 +5,14 @@
         <id property="reservationId" column="RESERVATION_ID"/>
         <result property="carId" column="CAR_ID"/>
         <result property="memberId" column="MEMBER_ID"/>
-        <result property="startDate" column="START_DATE"/>
-        <result property="endDate" column="END_DATE"/>
+        <result property="startDate" column="START_DATE" jdbcType="TIMESTAMP"/>
+        <result property="endDate" column="END_DATE" jdbcType="TIMESTAMP"/>
         <result property="status" column="STATUS"/>
         <result property="createdAt" column="CREATED_AT"/>
         <result property="updatedAt" column="UPDATED_AT"/>
+        <result property="pickupLocationCode" column="PICK_UP_LOCATION_CODE"/>
+        <result property="returnLocationCode" column="RETURN_LOCATION_CODE"/>
+        <result property="price" column="PRICE"/>
     </resultMap>
 
     <insert id="insertReservation" parameterType="kr.spring.car.vo.CarReservationVO">
@@ -19,7 +22,8 @@
         INSERT INTO CAR_RESERVATION (
             RESERVATION_ID, CAR_ID, MEMBER_ID, START_DATE, END_DATE, STATUS, CREATED_AT, UPDATED_AT
         ) VALUES (
-            #{reservationId,jdbcType=NUMERIC}, #{carId,jdbcType=NUMERIC}, #{memberId,jdbcType=NUMERIC}, #{startDate}, #{endDate}, #{status}, SYSDATE, SYSDATE
+            #{reservationId,jdbcType=NUMERIC}, #{carId,jdbcType=NUMERIC}, #{memberId,jdbcType=NUMERIC}, 
+            #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, #{status}, SYSDATE, SYSDATE
         )
     </insert>
 
@@ -27,8 +31,8 @@
         UPDATE CAR_RESERVATION SET
             CAR_ID = #{carId},
             MEMBER_ID = #{memberId},
-            START_DATE = #{startDate},
-            END_DATE = #{endDate},
+            START_DATE = #{startDate,jdbcType=TIMESTAMP},
+            END_DATE = #{endDate,jdbcType=TIMESTAMP},
             STATUS = #{status},
             UPDATED_AT = SYSDATE
         WHERE RESERVATION_ID = #{reservationId}
@@ -48,5 +52,12 @@
 
     <select id="selectReservationsBySeller" parameterType="long" resultMap="carReservationMap">
         SELECT * FROM CAR_RESERVATION WHERE CAR_ID IN (SELECT CAR_ID FROM CAR WHERE SELLER_ID = #{sellerId}) ORDER BY START_DATE DESC
+    </select>
+
+    <select id="selectReservationsByMember" parameterType="long" resultMap="carReservationMap">
+        SELECT *
+        FROM CAR_RESERVATION
+        WHERE MEMBER_ID = #{memberId}
+        ORDER BY START_DATE DESC
     </select>
 </mapper> 

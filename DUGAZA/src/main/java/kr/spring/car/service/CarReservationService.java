@@ -10,4 +10,5 @@ public interface CarReservationService {
     CarReservationVO getReservation(Long reservationId);
     List<CarReservationVO> getReservationsByCar(Long carId);
     List<CarReservationVO> getReservationsBySeller(Long sellerId);
-} 
+    List<CarReservationVO> getReservationsByMember(Long memberId);
+}

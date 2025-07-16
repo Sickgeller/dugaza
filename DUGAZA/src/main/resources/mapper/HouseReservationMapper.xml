@@ -85,4 +85,34 @@
         )
     </select>
 
+    <select id="selectReservationsByMember" parameterType="long" resultMap="houseReservationResultMap">
+        SELECT *
+        FROM HOUSE_RESERVATION
+        WHERE MEMBER_ID = #{memberId}
+        ORDER BY RESERVATION_START DESC
+    </select>
+
+    <select id="selectReservation" parameterType="long" resultMap="houseReservationResultMap">
+        SELECT *
+        FROM HOUSE_RESERVATION
+        WHERE RESERVATION_ID = #{reservationId}
+    </select>
+
+    <update id="updateReservation" parameterType="kr.spring.reservation.vo.HouseReservationVO">
+        UPDATE HOUSE_RESERVATION SET
+            MEMBER_ID = #{memberId},
+            HOUSE_ID = #{houseId},
+            ROOM_ID = #{roomId},
+            RESERVATION_START = #{reservationStart},
+            RESERVATION_END = #{reservationEnd},
+            RESERVATION_COUNT = #{reservationCount},
+            PRICE = #{price},
+            STATUS = #{status}
+        WHERE RESERVATION_ID = #{reservationId}
+    </update>
+
+    <delete id="deleteReservation" parameterType="long">
+        DELETE FROM HOUSE_RESERVATION WHERE RESERVATION_ID = #{reservationId}
+    </delete>
+
 </mapper>

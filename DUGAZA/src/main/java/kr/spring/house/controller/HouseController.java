@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,19 +35,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 @RequestMapping("/house")
+@RequiredArgsConstructor
 public class HouseController {
 
-	@Autowired
-	private HouseService houseService;
-	
-	@Autowired
-	private BaseReviewService baseReviewService;
-	
-	@Autowired
-	private ReviewStatisticsService reviewStatisticsService;
-	
-	@Autowired
-	private WishListService wishListService;
+	private final HouseService houseService;
+	private final BaseReviewService baseReviewService;
+	private final ReviewStatisticsService reviewStatisticsService;
+	private final WishListService wishListService;
 
 	@GetMapping("")
 	public String accommodationMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
@@ -180,18 +176,15 @@ public class HouseController {
 
 	// 리뷰 작성
 	@PostMapping("/saveReview")
-	public String saveReview(@ModelAttribute BaseReviewVO reviewDTO, HttpSession session) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+	public String saveReview(@ModelAttribute BaseReviewVO reviewDTO, @AuthenticationPrincipal CustomUserDetails userDetails) {
 		MemberVO member = userDetails.getMember();
 
-		CustomUserDetails user = (CustomUserDetails)session.getAttribute("user");
-		reviewDTO.setMemberId(user.getUserId());
+		reviewDTO.setMemberId(member.getMemberId());
 		reviewDTO.setStatus(1);
 		reviewDTO.setContentTypeId(32L); // 숙소 타입 ID
 
 		baseReviewService.writeReview(reviewDTO);
-		log.debug("<<리뷰 작성>> 사용자 id : {}", user.getUserId());
+		log.debug("<<리뷰 작성>> 사용자 id : {}", member.getMemberId());
 
 		return "redirect:/house/detail?contentId=" + reviewDTO.getContentId();
 	}

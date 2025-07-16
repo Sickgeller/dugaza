@@ -12,4 +12,5 @@ public interface CarReservationMapper {
     CarReservationVO selectReservation(Long reservationId);
     List<CarReservationVO> selectReservationsByCar(Long carId);
     List<CarReservationVO> selectReservationsBySeller(Long sellerId);
-} 
+    List<CarReservationVO> selectReservationsByMember(Long memberId);
+}

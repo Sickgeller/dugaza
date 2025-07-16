@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 
@@ -18,15 +19,17 @@ public class CarReservationVO {
     private Long carId;
     private Long memberId;
     
-    // 예약 일정
-    private LocalDate pickupDate;
+    // 예약 일정 (데이터베이스 컬럼명에 맞춤) - TIMESTAMP 타입
+    private LocalDateTime startDate;  // START_DATE (TIMESTAMP)
+    private LocalDateTime endDate;    // END_DATE (TIMESTAMP)
+    
+    // 기존 필드들 (추가 정보용)
     private LocalTime pickupTime;
-    private LocalDate returnDate;
     private LocalTime returnTime;
     
     // 위치 정보
-    private Integer pickupLocationCode;
-    private Integer returnLocationCode;
+    private Integer pickupLocationCode;  // PICK_UP_LOCATION_CODE
+    private Integer returnLocationCode;  // RETURN_LOCATION_CODE
     private String pickupLocation;
     private String returnLocation;
     
@@ -38,9 +41,12 @@ public class CarReservationVO {
     private String specialRequests;
     
     // 상태 및 시간
-    private String status;  // RESERVED, CANCELLED, COMPLETED
-    private Date createdAt;
-    private Date updatedAt;
+    private String status;  // STATUS
+    private Date createdAt;  // CREATED_AT
+    private Date updatedAt;  // UPDATED_AT
+    
+    // 가격 정보
+    private Integer price;  // PRICE
     
     // JOIN 결과로 가져올 정보
     private CarVO car;

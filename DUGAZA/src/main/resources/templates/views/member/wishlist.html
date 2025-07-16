@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_mypage}">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지 - 찜 목록</title>
+    <th:block layout:fragment="css">
+        <style>
+            .wishlist-container {
+                padding: 2rem;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            
+            .page-header {
+                margin-bottom: 2rem;
+            }
+            
+            .page-header h1 {
+                color: #333;
+                margin-bottom: 0.5rem;
+            }
+            
+            .wishlist-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 1.5rem;
+            }
+            
+            .wishlist-item {
+                background: white;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            
+            .wishlist-item:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            }
+            
+            .item-image {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+            }
+            
+            .item-content {
+                padding: 1.5rem;
+            }
+            
+            .item-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 1rem;
+            }
+            
+            .item-title {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 0.5rem;
+            }
+            
+            .item-type {
+                padding: 0.25rem 0.75rem;
+                border-radius: 15px;
+                font-size: 0.8rem;
+                font-weight: bold;
+            }
+            
+            .type-house {
+                background: #e3f2fd;
+                color: #1976d2;
+            }
+            
+            .type-car {
+                background: #f3e5f5;
+                color: #7b1fa2;
+            }
+            
+            .item-description {
+                color: #666;
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+                line-height: 1.5;
+            }
+            
+            .item-details {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1rem;
+                padding: 1rem 0;
+                border-top: 1px solid #f0f0f0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .detail-item {
+                text-align: center;
+            }
+            
+            .detail-label {
+                font-size: 0.8rem;
+                color: #666;
+                margin-bottom: 0.25rem;
+            }
+            
+            .detail-value {
+                font-weight: bold;
+                color: #333;
+            }
+            
+            .item-price {
+                font-size: 1.3rem;
+                font-weight: bold;
+                color: #007bff;
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+            
+            .item-actions {
+                display: flex;
+                gap: 0.5rem;
+            }
+            
+            .btn {
+                flex: 1;
+                padding: 0.75rem;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                text-decoration: none;
+                font-size: 0.9rem;
+                transition: all 0.3s ease;
+                text-align: center;
+            }
+            
+            .btn-primary {
+                background: #007bff;
+                color: white;
+            }
+            
+            .btn-primary:hover {
+                background: #0056b3;
+            }
+            
+            .btn-danger {
+                background: #dc3545;
+                color: white;
+            }
+            
+            .btn-danger:hover {
+                background: #c82333;
+            }
+            
+            .empty-wishlist {
+                text-align: center;
+                padding: 3rem;
+                color: #666;
+            }
+            
+            .empty-wishlist i {
+                font-size: 4rem;
+                color: #ddd;
+                margin-bottom: 1rem;
+            }
+            
+            .empty-wishlist h3 {
+                margin-bottom: 1rem;
+                color: #333;
+            }
+            
+            .empty-wishlist p {
+                margin-bottom: 2rem;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="wishlist-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1>찜 목록</h1>
+                <p>관심 있는 상품들을 모아보세요.</p>
+            </div>
+            
+            <div th:if="${wishList.isEmpty()}" class="empty-wishlist">
+                <i class="fas fa-heart"></i>
+                <h3>찜 목록이 비어있습니다</h3>
+                <p>아직 찜한 상품이 없습니다. 마음에 드는 상품을 찜해보세요!</p>
+                <a th:href="@{/house}" class="btn btn-primary">숙소 둘러보기</a>
+                <a th:href="@{/car/search}" class="btn btn-outline" style="margin-left: 0.5rem;">차량 둘러보기</a>
+            </div>
+            
+            <div th:if="${not wishList.isEmpty()}" class="wishlist-grid">
+                <div th:each="item : ${wishList}" class="wishlist-item">
+                    <img th:if="${item.imageUrl}" th:src="${item.imageUrl}" alt="상품 이미지" class="item-image">
+                    <div th:unless="${item.imageUrl}" class="item-image" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-image" style="color: #ccc; font-size: 3rem;"></i>
+                    </div>
+                    
+                    <div class="item-content">
+                        <div class="item-header">
+                            <div>
+                                <div class="item-title" th:text="${item.title}">상품명</div>
+                                <div class="item-description" th:text="${item.description}">상품 설명</div>
+                            </div>
+                            <span th:class="${item.contentType == 'HOUSE' ? 'item-type type-house' : 'item-type type-car'}">
+                                <i th:class="${item.contentType == 'HOUSE' ? 'fas fa-bed' : 'fas fa-car'}"></i>
+                                <span th:text="${item.contentType == 'HOUSE' ? '숙소' : '차량'}">타입</span>
+                            </span>
+                        </div>
+                        
+                        <div class="item-details">
+                            <div class="detail-item">
+                                <div class="detail-label">평점</div>
+                                <div class="detail-value">
+                                    <i class="fas fa-star" style="color: #ffc107;"></i>
+                                    <span th:text="${item.rating}">4.5</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">리뷰</div>
+                                <div class="detail-value" th:text="${item.reviewCount} + '개'">10개</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">위치</div>
+                                <div class="detail-value" th:text="${item.location}">서울</div>
+                            </div>
+                        </div>
+                        
+                        <div class="item-price" th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">가격</div>
+                        
+                        <div class="item-actions">
+                            <a th:href="@{/house/detail(contentId=${item.contentId})}" th:if="${item.contentType == 'HOUSE'}" class="btn btn-primary">상세보기</a>
+                            <a th:href="@{/car/detail(carId=${item.contentId})}" th:if="${item.contentType == 'CAR'}" class="btn btn-primary">상세보기</a>
+                            <button class="btn btn-danger" th:onclick="'removeFromWishlist(' + ${item.contentId} + ', \'' + ${item.contentType} + '\')'">찜 해제</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block layout:fragment="script">
+        <script>
+            function removeFromWishlist(contentId, contentType) {
+                if (confirm('정말로 찜 목록에서 삭제하시겠습니까?')) {
+                    fetch('/wish/toggle', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            contentType: contentType,
+                            contentId: contentId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.liked === false) {
+                            location.reload();
+                        } else {
+                            alert('찜 해제에 실패했습니다.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('오류가 발생했습니다.');
+                    });
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html> 
