@@ -2,6 +2,7 @@ package kr.spring.seller.service;
 
 import kr.spring.seller.vo.SellerDetailVO;
 import kr.spring.seller.vo.SellerVO;
+import kr.spring.seller.vo.HouseSellerDetailVO;
 
 public interface SellerService {
 
@@ -16,4 +17,7 @@ public interface SellerService {
     
     // 결제 설정 업데이트 (향후 확장 가능)
     boolean updatePaymentSettings(Long sellerId, String paymentSettings);
+    
+    // houseId로 seller 조회
+    HouseSellerDetailVO getSellerByHouseId(Long houseId);
 }

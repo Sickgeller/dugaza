@@ -3,6 +3,11 @@ package kr.spring.house.service;
 import java.util.List;
 import java.util.Map;
 
+import kr.spring.api.client.HouseApiClient;
+import kr.spring.api.dto.HouseDetailApiDto;
+import kr.spring.api.mapper.CommonApiMapper;
+import kr.spring.api.mapper.HouseDetailApiMapper;
+import kr.spring.api.service.CommonDataSyncSupportService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,6 +27,9 @@ public class HouseServiceImpl implements HouseService {
 
     private final HouseMapper houseMapper;
     private final WishListService wishListService;
+    private final CommonDataSyncSupportService commonDataSyncSupportService;
+    private final HouseApiClient houseApiClient;
+    private final HouseDetailApiMapper houseDetailApiMapper;
 
     @Override
     public List<HouseVO> selectList(Map<String, Object> map) {
@@ -74,7 +82,9 @@ public class HouseServiceImpl implements HouseService {
 
 	@Override
 	public void insertWithApi(Long contentId) {
-		// TODO Auto-generated method stub
-		
+        HouseDetailApiDto houseDetailApiDto = houseApiClient.getHouseDetailData(contentId);
+        if (houseDetailApiDto != null) {
+            commonDataSyncSupportService.insertOrUpdate(houseDetailApiMapper, houseDetailApiDto);
+        }
 	}
 }

@@ -164,4 +164,13 @@
         ORDER BY HRI.PRICE ASC
     </select>
 
+    <!-- houseId로 객실 목록 조회 (RoomDetailVO 사용) -->
+    <select id="getRoomsByHouseId" parameterType="Long" resultMap="RoomDetailResultMap">
+        SELECT *
+        FROM HOUSE_ROOM_INFO
+        WHERE HOUSE_ID = #{houseId}
+        AND STATUS = 0 <!-- 0: 활성 상태 -->
+        ORDER BY PRICE ASC
+    </select>
+
 </mapper> 

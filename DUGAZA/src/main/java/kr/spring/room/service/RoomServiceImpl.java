@@ -63,4 +63,13 @@ public class RoomServiceImpl implements RoomService {
         }
         return result;
     }
+    
+    @Override
+    public List<RoomDetailVO> getRoomsByHouseId(Long houseId) {
+        List<RoomDetailVO> result = roomMapper.getRoomsByHouseId(houseId);
+        if(result.isEmpty()){
+            return new ArrayList<>();
+        }
+        return result;
+    }
 }
