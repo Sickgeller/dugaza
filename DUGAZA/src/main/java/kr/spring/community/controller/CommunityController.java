@@ -36,8 +36,8 @@ public class CommunityController {
     private final CommunityReplyService replyService;
     private final MemberService memberService;
 
-    private static final String UPLOAD_DIR =
-    	    System.getProperty("user.dir") + "/src/main/resources/static/assets/upload/";
+    private static final String UPLOAD_DIR = "C:/community-uploads/";
+
     
     
 
