@@ -20,11 +20,12 @@ public interface MemberMapper {
 			"VALUES (MEMBER_SEQ.NEXTVAL, #{id}, #{password}, #{name}, #{email}, #{phone}, #{address}, #{addressDetail}, SYSDATE, SYSDATE)")
 	public void insertMember(MemberVO member);
 	
-	// 카카오 사용자 전용 INSERT (ID 필드 제외)
-	@Insert("INSERT INTO MEMBER (MEMBER_ID, PASSWORD, NAME, EMAIL, PHONE, ADDRESS, ADDRESS_DETAIL, KAKAO_ID, NICKNAME, PROFILE_IMAGE, CREATED_AT, UPDATED_AT) " +
-			"VALUES (MEMBER_SEQ.NEXTVAL, #{password}, #{name}, #{email}, #{phone}, #{address}, #{addressDetail}, #{kakaoId}, #{nickname}, #{profileImage}, SYSDATE, SYSDATE)")
+	// 카카오 사용자 전용 INSERT (ID 필드 포함)
+	@Insert("INSERT INTO MEMBER (MEMBER_ID, ID, PASSWORD, NAME, EMAIL, PHONE, ADDRESS, ADDRESS_DETAIL, KAKAO_ID, PROFILE_IMAGE, CREATED_AT, UPDATED_AT) " +
+			"VALUES (MEMBER_SEQ.NEXTVAL, #{id,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{addressDetail,jdbcType=VARCHAR}, #{kakaoId,jdbcType=NUMERIC}, #{profileImage,jdbcType=VARCHAR}, SYSDATE, SYSDATE)")
 	public void insertKakaoMember(MemberVO member);
 	public void insertMemberDetail(MemberVO member);
+	@Select("SELECT * FROM MEMBER WHERE ID = #{id}")
 	public MemberVO selectIdCheck(String id);
 	public MemberVO selectCheckMember(String id);
 //	@Select("SELECT * FROM MEMBER WHERE ID=#{id}")
@@ -77,6 +78,10 @@ public interface MemberMapper {
 	// 카카오 계정 연결 해제
 	@Update("UPDATE MEMBER SET KAKAO_ID = NULL, UPDATED_AT = SYSDATE WHERE MEMBER_ID = #{memberId}")
 	public void unlinkKakaoAccount(Long memberId);
+	
+	// 카카오 ID 연결
+	@Update("UPDATE MEMBER SET KAKAO_ID = #[object Object]kakaoId}, UPDATED_AT = SYSDATE WHERE MEMBER_ID = #{memberId}")
+	public void linkKakaoAccount(Long memberId, Long kakaoId);
 }
 
 

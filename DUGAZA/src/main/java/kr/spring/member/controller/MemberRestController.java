@@ -54,6 +54,12 @@ public class MemberRestController {
         model.addAttribute("isSeller", false);
         return "views/common/resultView";
     }
+    @GetMapping("/checkId")
+    @ResponseBody
+    public String checkId(@RequestParam(name = "id") String id) {
+        MemberVO memberVO = memberService.selectIdCheck(id);
+        return memberVO != null ? "duplicate" : "usable";
+    }
 
 //    private final JavaMailSenderImpl javaMailSenderImpl;
 //	@Autowired

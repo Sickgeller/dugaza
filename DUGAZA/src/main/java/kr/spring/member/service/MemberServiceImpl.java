@@ -141,6 +141,11 @@ public class MemberServiceImpl implements MemberService{
     public void unlinkKakaoAccount(Long memberId) {
         memberMapper.unlinkKakaoAccount(memberId);
     }
+    
+    @Override
+    public void linkKakaoAccount(Long memberId, Long kakaoId) {
+        memberMapper.linkKakaoAccount(memberId, kakaoId);
+    }
 
 }
 

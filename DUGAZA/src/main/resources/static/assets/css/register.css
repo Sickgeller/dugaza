@@ -1,21 +1,53 @@
-/* 회원가입 폼에만 적용되는 스타일 */
-/* login.css와 충돌하지 않도록 필요한 스타일만 유지 */
+/* 회원가입 폼 전용 스타일 */
 
-/* 중복확인 버튼 */
-.btn-check {
-  padding: 8px 15px;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: var(--border-radius);
-  font-size: 14px;
-  cursor: pointer;
+/* 아이디 중복확인 컨테이너 */
+.id-check-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-top: 8px;
-  transition: background-color 0.3s;
+  position: relative;
+  z-index: 5;
+  pointer-events: none;
 }
 
-.btn-check:hover {
-  background-color: #1D4ED8;
+#checkIdBtn {
+  pointer-events: auto;
+}
+
+
+/* 중복확인 버튼 */
+.btn-check,
+#checkIdBtn {
+  padding: 8px 15px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+  min-width: 80px;
+  font-weight: 500;
+  display: inline-block;
+  visibility: visible;
+  opacity: 1;
+  position: relative;
+  z-index: 10;
+}
+
+.btn-check:hover,
+#checkIdBtn:hover {
+  background-color: #1d4ed8;
+}
+
+/* 중복확인 메시지 */
+.check-message {
+  font-size: 12px;
+  margin-left: 8px;
+  min-height: 16px;
+  color: #666;
 }
 
 /* 안내 문구 */
@@ -36,7 +68,7 @@
 .checkbox-group {
   margin: 20px 0;
   position: relative;
-  z-index: 20;
+  z-index: 5;
 }
 
 .checkbox-group strong {
@@ -65,33 +97,19 @@
   margin-left: 4px;
 }
 
-/* 셀렉트 박스 스타일 */
-.seller-type-select select {
-  width: 100%;
-  height: 45px;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  font-size: 1rem;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: calc(100% - 1rem) center;
-  background-size: 12px;
-  transition: all 0.2s;
-}
-
-.seller-type-select select:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
-  outline: none;
-}
-
 /* 모바일 반응형 */
 @media (max-width: 576px) {
+  .id-check-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .btn-check {
     width: 100%;
   }
-} 
+
+  .check-message {
+    margin-left: 0;
+    margin-top: 4px;
+  }
+}

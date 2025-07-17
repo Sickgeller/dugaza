@@ -31,7 +31,7 @@ public class HouseServiceImpl implements HouseService {
     private final HouseApiClient houseApiClient;
     private final HouseDetailApiMapper houseDetailApiMapper;
 
-    @Override
+    @Override //
     public List<HouseVO> selectList(Map<String, Object> map) {
         List<HouseVO> list = houseMapper.selectList(map);
 

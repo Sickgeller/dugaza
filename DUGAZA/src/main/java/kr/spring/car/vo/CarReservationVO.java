@@ -53,4 +53,6 @@ public class CarReservationVO {
     private String carName;
     private String carType;
     private Integer carPrice;
+
+    private String memberName;
 } 

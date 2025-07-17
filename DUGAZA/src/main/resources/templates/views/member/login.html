@@ -20,6 +20,11 @@
                     <!-- 사용자 타입 구분을 위한 숨겨진 필드 -->
                     <input type="hidden" name="userType" value="member">
                     
+                    <!-- 회원가입 성공 메시지 표시 -->
+                    <div th:if="${registerSuccess}" class="alert alert-success">
+                        <p th:text="${registerSuccess}">회원가입이 완료되었습니다!</p>
+                    </div>
+                    
                     <!-- 에러 메시지 표시 -->
                     <div th:if="${param.error}" class="alert alert-danger">
                         <p th:if="${param.reason != null and param.reason[0] == 'invalid_user_type'}">

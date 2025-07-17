@@ -14,11 +14,11 @@
         <result property="carPrice" column="CAR_PRICE"/>
         <result property="carImage" column="CAR_IMAGE"/>
         <result property="status" column="STATUS"/>
-        
+
         <!-- 위치 정보 -->
         <result property="locationCode" column="LOCATION_CODE"/>
         <result property="locationName" column="LOCATION_NAME"/>
-        
+
         <result property="createdAt" column="CREATED_AT"/>
         <result property="updatedAt" column="UPDATED_AT"/>
     </resultMap>
@@ -59,7 +59,7 @@
             #{carId,jdbcType=NUMERIC}, #{sellerId,jdbcType=NUMERIC}, #{carName}, #{carType}, 
             #{carNumber}, #{carYear}, #{carColor}, #{carFuel}, #{carSeats}, #{carPrice}, 
             #{carImage}, #{status}, 
-            #{locationCode}, SYSDATE, SYSDATE
+            #{locationCode,jdbcType=NUMERIC}, SYSDATE, SYSDATE
         )
     </insert>
 
@@ -75,7 +75,7 @@
             CAR_PRICE = #{carPrice},
             CAR_IMAGE = #{carImage},
             STATUS = #{status},
-            LOCATION_CODE = #{locationCode},
+            LOCATION_CODE = #{locationCode,jdbcType=NUMERIC},
             UPDATED_AT = SYSDATE
         WHERE CAR_ID = #{carId}
     </update>

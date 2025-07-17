@@ -70,23 +70,26 @@ public class MemberUserController {
 	
 	//회원가입 폼 호출
 	@GetMapping("/register")
-	public String form() {
+	public String form(Model model) {
+		model.addAttribute("memberVO", new MemberVO());
 		return "views/member/register";
 	}
+	
 	
 	//회원가입 처리
 	@PostMapping("/registerUser")
 	public String submit(@Valid MemberVO memberVO,
 			             BindingResult result,
 			             Model model,
-			             HttpServletRequest request) {
+			             HttpServletRequest request,
+			             HttpSession session) {
 		log.debug("<<회원가입>> : " + memberVO);
 		
 		//유효성 체크 결과 오류가 있으면 폼 호출
 		if(result.hasErrors()) {
 			//유효성 체크 결과 오류 필드 출력
 			ValidationUtil.printErrorFields(result);
-			return form();
+			return form(model);
 		}
 		
 		//Spring Security 암호화
@@ -95,20 +98,21 @@ public class MemberUserController {
 		//회원가입
 		memberService.insertMember(memberVO);
 		
-		//결과 메시지 처리
-		model.addAttribute("accessTitle", "회원가입 완료");
-		model.addAttribute("accessMsg", 
-				            "회원가입이 완료되었습니다. 이제 로그인하여 서비스를 이용해보세요!");
-		model.addAttribute("accessBtn", "로그인하러 가기");
-		model.addAttribute("accessUrl", 
-				  request.getContextPath()+"/member/login");
+		//세션에 성공 메시지 저장
+		session.setAttribute("registerSuccess", "회원가입이 완료되었습니다! 이제 로그인하여 서비스를 이용해보세요.");
 		
-		return "views/common/resultView";
+		return "redirect:/member/login";
 	}
 	
 	//로그인 폼 호출
 	@GetMapping("/login")
-	public String formLogin() {
+	public String formLogin(HttpSession session, Model model) {
+		//세션에서 회원가입 성공 메시지 확인
+		String registerSuccess = (String) session.getAttribute("registerSuccess");
+		if (registerSuccess != null) {
+			model.addAttribute("registerSuccess",registerSuccess);
+			session.removeAttribute("registerSuccess"); //메시지 사용 후 세션에서 제거
+		}
 		return "views/member/login";
 	}
 	

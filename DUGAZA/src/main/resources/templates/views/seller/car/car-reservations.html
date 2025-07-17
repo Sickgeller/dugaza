@@ -109,9 +109,9 @@
                                         <span th:text="${reservation.carName}">차량명</span>
                                     </div>
                                 </td>
-                                <td th:text="${reservation.memberId}">예약자</td>
-                                <td th:text="${#temporals.format(reservation.startDate, 'yyyy-MM-dd')} + ' ~ ' + ${#temporals.format(reservation.endDate, 'yyyy-MM-dd')}">대여기간</td>
-                                <td th:text="${#temporals.format(reservation.createdAt, 'yyyy-MM-dd')}">예약일</td>
+                                <td th:text="${reservation.memberName}">예약자</td>
+                                <td th:text="${reservation.startDate} + ' ~ ' + ${reservation.endDate}">대여기간</td>
+                                <td th:text="${reservation.createdAt}">예약일</td>
                                 <td>
                                     <span th:class="${reservation.status == 'RESERVED' ? 'status available' : (reservation.status == 'COMPLETED' ? 'status rented' : 'status disabled')}" 
                                           th:text="${reservation.status == 'RESERVED' ? '예약됨' : (reservation.status == 'COMPLETED' ? '완료' : '취소됨')}">상태</span>

@@ -166,7 +166,7 @@ public class SellerCarController {
     }
 
     @GetMapping("/car/edit/{carId}")
-    public String editForm(@PathVariable Long carId, Model model) {
+    public String editForm(@PathVariable("carId") Long carId, Model model) {
         try {
             CarVO car = carService.getCar(carId);
             if (car == null) {
@@ -185,8 +185,31 @@ public class SellerCarController {
     }
 
     @PostMapping("/car/edit")
-    public String editCar(CarVO carVO, Model model, RedirectAttributes redirectAttributes) {
+    public String editCar(CarVO carVO, @RequestParam(value = "carImageFile", required = false) MultipartFile carImage, Model model, RedirectAttributes redirectAttributes) {
         try {
+            // 기존 차량 정보 조회
+            CarVO existingCar = carService.getCar(carVO.getCarId());
+            if (existingCar == null) {
+                redirectAttributes.addFlashAttribute("error", "차량을 찾을 수 없습니다.");
+                return "redirect:/seller/car/management";
+            }
+
+            // 새 이미지가 업로드된 경우 처리
+            if (carImage != null && !carImage.isEmpty()) {
+                try {
+                    String imagePath = FileUtil.uploadFile(carImage, "car");
+                    carVO.setCarImage(imagePath);
+                    log.info("차량 이미지 업로드 성공: {}", imagePath);
+                } catch (Exception e) {
+                    log.error("차량 이미지 업로드 실패", e);
+                    redirectAttributes.addFlashAttribute("error", "이미지 업로드에 실패했습니다.");
+                    return "redirect:/seller/car/edit/" + carVO.getCarId();
+                }
+            } else {
+                // 기존 이미지 유지
+                carVO.setCarImage(existingCar.getCarImage());
+            }
+
             carService.updateCar(carVO);
             redirectAttributes.addFlashAttribute("message", "차량 정보가 성공적으로 수정되었습니다.");
             log.info("차량 수정 성공: carId = {}", carVO.getCarId());
@@ -199,7 +222,7 @@ public class SellerCarController {
     }
 
     @PostMapping("/car/delete/{carId}")
-    public String deleteCar(@PathVariable Long carId, Model model, RedirectAttributes redirectAttributes) {
+    public String deleteCar(@PathVariable("carId") Long carId, Model model, RedirectAttributes redirectAttributes) {
         try {
             carService.deleteCar(carId);
             redirectAttributes.addFlashAttribute("message", "차량이 성공적으로 삭제되었습니다.");
@@ -219,6 +242,16 @@ public class SellerCarController {
             if (seller == null) return "redirect:/seller/login";
 
             List<CarReservationVO> reservations = carReservationService.getReservationsBySeller(seller.getSellerId());
+            
+            // 데이터 확인을 위한 로그 추가
+            log.info("예약 목록 조회 - sellerId: {}, 예약 개수: {}", seller.getSellerId(), reservations.size());
+            if (!reservations.isEmpty()) {
+                CarReservationVO firstReservation = reservations.get(0);
+                log.info("첫 번째 예약 데이터 - reservationId: {}, carName: {}, memberName: {}, startDate: {}, endDate: {}, status: {}, createdAt: {}", 
+                    firstReservation.getReservationId(), firstReservation.getCarName(), firstReservation.getMemberName(),
+                    firstReservation.getStartDate(), firstReservation.getEndDate(), firstReservation.getStatus(), firstReservation.getCreatedAt());
+            }
+            
             model.addAttribute("reservations", reservations);
             model.addAttribute("seller", seller);
             model.addAttribute("currentMenu", "reservations");
@@ -238,6 +271,13 @@ public class SellerCarController {
             if (seller == null) return "redirect:/seller/login";
 
             List<CarVO> cars = carService.getCarListBySeller(seller.getSellerId());
+            
+            // 각 차량의 리뷰 정보 조회
+            for (CarVO car : cars) {
+                List<CarReviewVO> reviews = carReviewService.getReviewsByCar(car.getCarId());
+                car.setReviews(reviews);
+            }
+            
             model.addAttribute("cars", cars);
             model.addAttribute("seller", seller);
             model.addAttribute("currentMenu", "reviews");

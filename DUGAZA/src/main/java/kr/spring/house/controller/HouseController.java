@@ -130,7 +130,7 @@ public class HouseController {
 
 	// 항목 자세히 보기
 	@GetMapping("/detail")
-	public String houseDetail(@RequestParam(name = "contentId") Long contentId, Model model) {
+	public String houseDetail(@RequestParam(name = "contentId") Long contentId, Model model, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 		// 숙소 정보
 		HouseVO vo = null;
 			vo = houseService.selectHouse(contentId);
@@ -154,14 +154,13 @@ public class HouseController {
 		wish_vo.setContentId(contentId);
 		wish_vo.setContentType(32L); // 숙소 contentTypeId
 		Long memberId = -1L; // Default to -1 for non-logged-in users
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth != null && auth.getPrincipal() instanceof CustomUserDetails) {
-			CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-			memberId = userDetails.getMember().getMemberId();
+		WishListVO db_wish = null;
+		if (customUserDetails != null && customUserDetails.getMember() != null) {
+			memberId = customUserDetails.getMember().getMemberId();
+			wish_vo.setMemberId(memberId);
+			db_wish = wishListService.selectWishList(wish_vo);
 		}
-		wish_vo.setMemberId(memberId);
-		WishListVO db_wish = wishListService.selectWishList(wish_vo);
-		
+
 		// seller 정보 조회
 		HouseSellerDetailVO sellerDetail = sellerService.getSellerByHouseId(contentId);
 		
