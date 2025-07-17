@@ -36,6 +36,7 @@ public interface MemberService {
 	// 계정 통합 관련
 	public boolean isAccountLinked(Long memberId);
 	public void unlinkKakaoAccount(Long memberId);
+	public void linkKakaoAccount(Long memberId, Long kakaoId);
 	
 	// 카카오 회원 등록
 	public void registerKakaoMember(MemberVO member);

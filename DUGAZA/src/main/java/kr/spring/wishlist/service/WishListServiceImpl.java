@@ -1,7 +1,5 @@
 package kr.spring.wishlist.service;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,18 +27,8 @@ public class WishListServiceImpl implements WishListService{
 	}
 
 	@Override
-	public boolean toggleLike(Long memberId, Long contentType, Long contentId) {
-		// 받아온 정보
-		WishListVO vo = new WishListVO();
-		log.debug("좋아요 전달 파라미터: {} {} {}" ,memberId, contentType, contentId);
-		vo.setMemberId(memberId);
-		vo.setContentId(contentId);
-		vo.setContentType(contentType);
-		
-		// db의 정보
+	public boolean toggleWish(WishListVO vo) {
 		WishListVO db_vo = wishListMapper.selectWishList(vo);
-		log.debug("db_vo = " + db_vo);
-		
 		boolean result = false; 
 		
 		if(db_vo != null) {
@@ -59,3 +47,4 @@ public class WishListServiceImpl implements WishListService{
 	}
 	
 }
+

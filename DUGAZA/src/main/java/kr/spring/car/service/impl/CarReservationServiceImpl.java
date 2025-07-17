@@ -44,4 +44,9 @@ public class CarReservationServiceImpl implements CarReservationService {
     public List<CarReservationVO> getReservationsBySeller(Long sellerId) {
         return carReservationMapper.selectReservationsBySeller(sellerId);
     }
+
+    @Override
+    public List<CarReservationVO> getReservationsByMember(Long memberId) {
+        return carReservationMapper.selectReservationsByMember(memberId);
+    }
 } 

@@ -4,8 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kr.spring.tour.service.TourService;
+import kr.spring.tour.vo.TourVO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpSession;
 import kr.spring.auth.security.CustomUserDetails;
@@ -24,6 +29,10 @@ import kr.spring.review.base.vo.BaseReviewVO;
 import kr.spring.review.base.vo.ReviewStatisticsVO;
 import kr.spring.review.base.service.BaseReviewService;
 import kr.spring.review.base.service.ReviewStatisticsService;
+import kr.spring.room.service.RoomService;
+import kr.spring.room.vo.RoomDetailVO;
+import kr.spring.seller.service.SellerService;
+import kr.spring.seller.vo.HouseSellerDetailVO;
 import kr.spring.util.PagingUtil;
 import kr.spring.wishlist.service.WishListService;
 import kr.spring.wishlist.vo.WishListVO;
@@ -32,19 +41,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 @RequestMapping("/house")
+@RequiredArgsConstructor
 public class HouseController {
 
-	@Autowired
-	private HouseService houseService;
-	
-	@Autowired
-	private BaseReviewService baseReviewService;
-	
-	@Autowired
-	private ReviewStatisticsService reviewStatisticsService;
-	
-	@Autowired
-	private WishListService wishListService;
+	private final HouseService houseService;
+	private final BaseReviewService baseReviewService;
+	private final ReviewStatisticsService reviewStatisticsService;
+	private final WishListService wishListService;
+	private final RoomService roomService;
+	private final SellerService sellerService;
+	private final TourService tourService;
 
 	@GetMapping("")
 	public String accommodationMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
@@ -124,7 +130,7 @@ public class HouseController {
 
 	// 항목 자세히 보기
 	@GetMapping("/detail")
-	public String houseDetail(@RequestParam(name = "contentId") Long contentId, Model model) {
+	public String houseDetail(@RequestParam(name = "contentId") Long contentId, Model model, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 		// 숙소 정보
 		HouseVO vo = null;
 			vo = houseService.selectHouse(contentId);
@@ -146,26 +152,44 @@ public class HouseController {
 		// 숙소에 찜 여부
 		WishListVO wish_vo = new WishListVO();
 		wish_vo.setContentId(contentId);
-		MemberVO member = (MemberVO)model.getAttribute("member");
-		wish_vo.setMemberId(member != null ? member.getMemberId() : -1);
-		WishListVO db_wish = wishListService.selectWishList(wish_vo);
+		wish_vo.setContentType(32L); // 숙소 contentTypeId
+		Long memberId = -1L; // Default to -1 for non-logged-in users
+		WishListVO db_wish = null;
+		if (customUserDetails != null && customUserDetails.getMember() != null) {
+			memberId = customUserDetails.getMember().getMemberId();
+			wish_vo.setMemberId(memberId);
+			db_wish = wishListService.selectWishList(wish_vo);
+		}
+
+		// seller 정보 조회
+		HouseSellerDetailVO sellerDetail = sellerService.getSellerByHouseId(contentId);
 		
+		// room 정보 조회 (seller가 존재하거나 room이 있을 때)
+		List<RoomDetailVO> roomList = null;
+		roomList = roomService.getRoomsByHouseId(contentId);
+		
+		// room이 있으면 seller 정보도 다시 조회
+		if (roomList != null && !roomList.isEmpty()) {
+			sellerDetail = sellerService.getSellerByHouseId(contentId);
+		}
 
 		model.addAttribute("info",vo);
 		model.addAttribute("reviewList",reviewList);
 		model.addAttribute("status", status);
 		model.addAttribute("wish", db_wish);
+		model.addAttribute("sellerDetail", sellerDetail);
+		model.addAttribute("roomList", roomList);
 
 		// API에서 정보를 제공하지 않을 때 공통 템플릿 사용
 		if(vo == null) {
-			// tour_content에서 기본 정보만 가져오기 (HouseService에 selectTourContent 메서드가 있다고 가정)
-			// TourVO tourInfo = houseService.selectTourContent(contentId);
-			// if(tourInfo != null) {
-			//     model.addAttribute("info", tourInfo);
-			//     model.addAttribute("contentTypeName", "숙소");
-			//     model.addAttribute("reviewActionUrl", "/house/saveReview");
-			//     return "views/common/content-detail-basic";
-			// }
+//			 tour_content에서 기본 정보만 가져오기 (HouseService에 selectTourContent 메서드가 있다고 가정)
+			 TourVO tourInfo = tourService.selectTourContent(contentId);
+			 if(tourInfo != null) {
+			     model.addAttribute("info", tourInfo);
+			     model.addAttribute("contentTypeName", "숙소");
+			     model.addAttribute("reviewActionUrl", "/house/saveReview");
+			     return "views/common/content-detail-basic";
+			 }
 		}
 
 		return "views/house/house-detail";
@@ -173,20 +197,18 @@ public class HouseController {
 
 	// 리뷰 작성
 	@PostMapping("/saveReview")
-	public String saveReview(@ModelAttribute BaseReviewVO reviewDTO, HttpSession session) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+	public String saveReview(@ModelAttribute BaseReviewVO reviewDTO, @AuthenticationPrincipal CustomUserDetails userDetails) {
 		MemberVO member = userDetails.getMember();
 
-		CustomUserDetails user = (CustomUserDetails)session.getAttribute("user");
-		reviewDTO.setMemberId(user.getUserId());
+		reviewDTO.setMemberId(member.getMemberId());
 		reviewDTO.setStatus(1);
 		reviewDTO.setContentTypeId(32L); // 숙소 타입 ID
 
 		baseReviewService.writeReview(reviewDTO);
-		log.debug("<<리뷰 작성>> 사용자 id : {}", user.getUserId());
+		log.debug("<<리뷰 작성>> 사용자 id : {}", member.getMemberId());
 
 		return "redirect:/house/detail?contentId=" + reviewDTO.getContentId();
 	}
 
+	
 }

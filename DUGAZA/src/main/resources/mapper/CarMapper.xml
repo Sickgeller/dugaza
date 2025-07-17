@@ -14,11 +14,11 @@
         <result property="carPrice" column="CAR_PRICE"/>
         <result property="carImage" column="CAR_IMAGE"/>
         <result property="status" column="STATUS"/>
-        
+
         <!-- 위치 정보 -->
         <result property="locationCode" column="LOCATION_CODE"/>
         <result property="locationName" column="LOCATION_NAME"/>
-        
+
         <result property="createdAt" column="CREATED_AT"/>
         <result property="updatedAt" column="UPDATED_AT"/>
     </resultMap>
@@ -27,13 +27,18 @@
         <id property="reservationId" column="RESERVATION_ID"/>
         <result property="carId" column="CAR_ID"/>
         <result property="memberId" column="MEMBER_ID"/>
-        <result property="pickupDate" column="START_DATE"/>
-        <result property="returnDate" column="END_DATE"/>
+        <result property="startDate" column="START_DATE" jdbcType="TIMESTAMP"/>
+        <result property="endDate" column="END_DATE" jdbcType="TIMESTAMP"/>
         <result property="status" column="STATUS"/>
         <result property="createdAt" column="CREATED_AT"/>
         <result property="updatedAt" column="UPDATED_AT"/>
+        <result property="price" column="PRICE"/>
         
         <!-- 차량 정보 -->
+        <result property="carName" column="CAR_NAME"/>
+        <result property="carType" column="CAR_TYPE"/>
+        <result property="carPrice" column="CAR_PRICE"/>
+        
         <association property="car" javaType="kr.spring.car.vo.CarVO">
             <id property="carId" column="CAR_ID"/>
             <result property="carName" column="CAR_NAME"/>
@@ -54,7 +59,7 @@
             #{carId,jdbcType=NUMERIC}, #{sellerId,jdbcType=NUMERIC}, #{carName}, #{carType}, 
             #{carNumber}, #{carYear}, #{carColor}, #{carFuel}, #{carSeats}, #{carPrice}, 
             #{carImage}, #{status}, 
-            #{locationCode}, SYSDATE, SYSDATE
+            #{locationCode,jdbcType=NUMERIC}, SYSDATE, SYSDATE
         )
     </insert>
 
@@ -70,7 +75,7 @@
             CAR_PRICE = #{carPrice},
             CAR_IMAGE = #{carImage},
             STATUS = #{status},
-            LOCATION_CODE = #{locationCode},
+            LOCATION_CODE = #{locationCode,jdbcType=NUMERIC},
             UPDATED_AT = SYSDATE
         WHERE CAR_ID = #{carId}
     </update>
@@ -152,7 +157,7 @@
         INSERT INTO CAR_RESERVATION (
             RESERVATION_ID, CAR_ID, MEMBER_ID, START_DATE, END_DATE, STATUS, CREATED_AT, UPDATED_AT
         ) VALUES (
-            #{reservationId}, #{carId}, #{memberId}, #{pickupDate}, #{returnDate}, 
+            #{reservationId}, #{carId}, #{memberId}, #{startDate}, #{endDate}, 
             'RESERVED', SYSDATE, SYSDATE
         )
     </insert>
@@ -179,6 +184,22 @@
         LEFT JOIN CAR c ON cr.CAR_ID = c.CAR_ID
         WHERE cr.RESERVATION_ID = #{reservationId}
     </select>
+
+    <update id="updateReservation" parameterType="kr.spring.car.vo.CarReservationVO">
+        UPDATE CAR_RESERVATION SET
+            CAR_ID = #{carId},
+            MEMBER_ID = #{memberId},
+            START_DATE = #{startDate},
+            END_DATE = #{endDate},
+            STATUS = #{status},
+            PRICE = #{price},
+            UPDATED_AT = SYSDATE
+        WHERE RESERVATION_ID = #{reservationId}
+    </update>
+
+    <delete id="deleteReservation" parameterType="long">
+        DELETE FROM CAR_RESERVATION WHERE RESERVATION_ID = #{reservationId}
+    </delete>
 
     <!-- 차량 예약 중복 체크 -->
     <select id="checkCarReservationConflict" resultType="int">

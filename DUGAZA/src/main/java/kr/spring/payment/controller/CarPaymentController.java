@@ -43,7 +43,7 @@ public class CarPaymentController {
 
             // 대여 기간 계산
             long rentalDays = java.time.temporal.ChronoUnit.DAYS.between(
-                reservation.getPickupDate(), reservation.getReturnDate());
+                reservation.getStartDate().toLocalDate(), reservation.getEndDate().toLocalDate());
 
             // 총 요금 계산
             int totalPrice = car.getCarPrice() * (int) rentalDays;

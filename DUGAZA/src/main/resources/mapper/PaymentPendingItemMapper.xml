@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.payment.dao.PaymentPendingItemMapper">
+
+    <!-- 결과 매핑 -->
+    <resultMap id="paymentPendingItemMap" type="kr.spring.payment.vo.PaymentPendingItemVO">
+        <result property="paymentPendingId" column="PAYMENT_PENDING_ID"/>
+        <result property="reservationId" column="RESERVATION_ID"/>
+        <result property="reservationType" column="RESERVATION_TYPE"/>
+        <result property="createdAt" column="CREATED_AT"/>
+    </resultMap>
+
+    <!-- 결제 대기 아이템 추가 -->
+    <insert id="insertPaymentPendingItem" parameterType="kr.spring.payment.vo.PaymentPendingItemVO">
+        INSERT INTO PAYMENT_PENDING_ITEMS (
+            PAYMENT_PENDING_ID, RESERVATION_ID, RESERVATION_TYPE, CREATED_AT
+        ) VALUES (
+            #{paymentPendingId}, #{reservationId}, #{reservationType}, SYSDATE
+        )
+    </insert>
+
+    <!-- 결제 대기 아이템 삭제 -->
+    <delete id="deletePaymentPendingItem">
+        DELETE FROM PAYMENT_PENDING_ITEMS 
+        WHERE PAYMENT_PENDING_ID = #{paymentPendingId} AND RESERVATION_ID = #{reservationId}
+    </delete>
+
+    <!-- 결제 대기의 모든 아이템 삭제 -->
+    <delete id="deletePaymentPendingItems" parameterType="long">
+        DELETE FROM PAYMENT_PENDING_ITEMS 
+        WHERE PAYMENT_PENDING_ID = #{paymentPendingId}
+    </delete>
+
+    <!-- 결제 대기 아이템 목록 조회 -->
+    <select id="selectPaymentPendingItems" parameterType="long" resultMap="paymentPendingItemMap">
+        SELECT * FROM PAYMENT_PENDING_ITEMS 
+        WHERE PAYMENT_PENDING_ID = #{paymentPendingId}
+        ORDER BY CREATED_AT
+    </select>
+
+    <!-- 예약 ID로 결제 대기 아이템 조회 -->
+    <select id="selectPaymentPendingItemByReservation" parameterType="long" resultMap="paymentPendingItemMap">
+        SELECT * FROM PAYMENT_PENDING_ITEMS 
+        WHERE RESERVATION_ID = #{reservationId}
+    </select>
+
+</mapper> 

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.payment.dao.PaymentPendingMapper">
+
+    <!-- 결과 매핑 -->
+    <resultMap id="paymentPendingMap" type="kr.spring.payment.vo.PaymentPendingVO">
+        <id property="paymentPendingId" column="PAYMENT_PENDING_ID"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="totalPrice" column="TOTAL_PRICE"/>
+        <result property="discountAmount" column="DISCOUNT_AMOUNT"/>
+        <result property="finalPrice" column="FINAL_PRICE"/>
+        <result property="status" column="STATUS"/>
+        <result property="expiresAt" column="EXPIRES_AT"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+    </resultMap>
+
+    <!-- 결제 대기 생성 -->
+    <insert id="insertPaymentPending" parameterType="kr.spring.payment.vo.PaymentPendingVO">
+        INSERT INTO PAYMENT_PENDING (
+            PAYMENT_PENDING_ID, MEMBER_ID, TOTAL_PRICE, DISCOUNT_AMOUNT, 
+            FINAL_PRICE, STATUS, EXPIRES_AT, CREATED_AT, UPDATED_AT
+        ) VALUES (
+            PAYMENT_PENDING_SEQ.NEXTVAL, #{memberId}, #{totalPrice}, #{discountAmount},
+            #{finalPrice}, #{status}, #{expiresAt}, SYSDATE, SYSDATE
+        )
+        <selectKey keyProperty="paymentPendingId" resultType="long" order="AFTER">
+            SELECT PAYMENT_PENDING_SEQ.CURRVAL FROM DUAL
+        </selectKey>
+    </insert>
+
+    <!-- 결제 대기 수정 -->
+    <update id="updatePaymentPending" parameterType="kr.spring.payment.vo.PaymentPendingVO">
+        UPDATE PAYMENT_PENDING SET
+            TOTAL_PRICE = #{totalPrice},
+            DISCOUNT_AMOUNT = #{discountAmount},
+            FINAL_PRICE = #{finalPrice},
+            STATUS = #{status},
+            EXPIRES_AT = #{expiresAt},
+            UPDATED_AT = SYSDATE
+        WHERE PAYMENT_PENDING_ID = #{paymentPendingId}
+    </update>
+
+    <!-- 결제 대기 조회 -->
+    <select id="selectPaymentPending" parameterType="long" resultMap="paymentPendingMap">
+        SELECT * FROM PAYMENT_PENDING 
+        WHERE PAYMENT_PENDING_ID = #{paymentPendingId}
+    </select>
+
+    <!-- 회원의 결제 대기 목록 조회 -->
+    <select id="selectPaymentPendingByMember" parameterType="long" resultMap="paymentPendingMap">
+        SELECT * FROM PAYMENT_PENDING 
+        WHERE MEMBER_ID = #{memberId}
+        ORDER BY CREATED_AT DESC
+    </select>
+
+    <!-- 만료된 결제 대기 목록 조회 -->
+    <select id="selectExpiredPaymentPending" parameterType="java.time.LocalDateTime" resultMap="paymentPendingMap">
+        SELECT * FROM PAYMENT_PENDING 
+        WHERE STATUS = 0 AND EXPIRES_AT &lt; #{now}
+    </select>
+
+    <!-- 결제 대기 상태 업데이트 -->
+    <update id="updateStatus">
+        UPDATE PAYMENT_PENDING SET
+            STATUS = #{status},
+            UPDATED_AT = SYSDATE
+        WHERE PAYMENT_PENDING_ID = #{paymentPendingId}
+    </update>
+
+</mapper> 

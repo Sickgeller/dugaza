@@ -31,4 +31,14 @@ public interface CarService {
      * @return 중복이 있으면 true, 없으면 false
      */
     boolean checkReservationConflict(Long carId, LocalDate pickupDate, LocalDate returnDate);
+    
+    /**
+     * 예약 정보 업데이트
+     */
+    void updateReservation(CarReservationVO carReservationVO);
+    
+    /**
+     * 예약 삭제
+     */
+    void deleteReservation(Long reservationId);
 } 

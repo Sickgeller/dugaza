@@ -44,4 +44,5 @@ public class HouseVO extends TourVO{
     private Long price; //가격
 
     private Integer wish_count; //찜 횟수
+    private boolean wished; //찜 여부
 }

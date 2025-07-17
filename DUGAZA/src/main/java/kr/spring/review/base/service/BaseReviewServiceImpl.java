@@ -55,4 +55,18 @@ public class BaseReviewServiceImpl implements BaseReviewService {
 	public void writeReview(BaseReviewVO vo) {
 		baseReviewMapper.writeReview(vo);
 	}
+	
+	@Override
+	public List<BaseReviewVO> getReviewsByMember(Long memberId) {
+		try {
+			List<BaseReviewVO> result = baseReviewMapper.findReviewsByMemberId(memberId);
+			if(result.isEmpty()){
+				return new ArrayList<>();
+			}
+			return result;
+		} catch (Exception e) {
+			log.error("회원별 리뷰 조회 중 오류 발생: memberId={}, error={}", memberId, e.getMessage(), e);
+			return new ArrayList<>();
+		}
+	}
 } 

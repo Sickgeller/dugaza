@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
@@ -30,6 +31,9 @@ public class CarVO {
     
     // JOIN 결과로 가져올 위치 정보
     private String locationName;         // 위치명
+    
+    // 리뷰 목록
+    private List<CarReviewVO> reviews;
     
     private Date createdAt;
     private Date updatedAt;

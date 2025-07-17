@@ -60,6 +60,8 @@ public interface CarMapper {
     void insertReservation(CarReservationVO reservation);
     List<CarReservationVO> selectReservationsByMember(Long memberId);
     CarReservationVO selectReservation(Long reservationId);
+    void updateReservation(CarReservationVO reservation);
+    void deleteReservation(@Param("reservationId") Long reservationId);
     
     /**
      * 차량 예약 중복 체크

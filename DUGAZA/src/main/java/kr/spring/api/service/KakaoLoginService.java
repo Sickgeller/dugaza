@@ -101,17 +101,17 @@ public class KakaoLoginService {
                 return existingMember;
             }
             
-            // 2. 이메일로 기존 회원 확인 (통합 로직)
+            // 2. 이메일로 기존 회원 확인 (통합 확인 페이지로 리다이렉트)
             if (kakaoUserInfo.getEmail() != null) {
                 MemberVO emailMember = memberService.findByEmail(kakaoUserInfo.getEmail());
                 if (emailMember != null) {
-                    // 기존 이메일 회원이 있는 경우 - 카카오 ID 연결
-                    log.info("기존 이메일 회원과 카카오 계정 통합: {}", kakaoUserInfo.getEmail());
-                    return linkKakaoToExistingMember(emailMember, kakaoUserInfo);
+                    // 기존 이메일 회원이 있는 경우 - 통합 확인 페이지로 리다이렉트
+                    log.info("기존 이메일 회원 발견 - 통합 확인 페이지로 리다이렉트: {}", kakaoUserInfo.getEmail());
+                    throw new RuntimeException("INTEGRATION_REQUIRED:" + kakaoUserInfo.getEmail() + ":" + kakaoUserInfo.getId());
                 }
             }
             
-            // 3. 신규 회원인 경우 회원가입 처리
+            //3 신규 회원인 경우 회원가입 처리
             log.info("신규 카카오 회원 가입: {}", kakaoUserInfo.getId());
             return registerNewMember(kakaoUserInfo);
         });
@@ -122,6 +122,9 @@ public class KakaoLoginService {
      */
     private MemberVO registerNewMember(KakaoUserInfoDto kakaoUserInfo) {
         MemberVO newMember = new MemberVO();
+        
+        // 고유 ID 설정 (kakao_ + kakaoId)
+        newMember.setId("kakao_" + kakaoUserInfo.getId());
         
         // 카카오 정보 설정
         newMember.setEmail(kakaoUserInfo.getEmail());

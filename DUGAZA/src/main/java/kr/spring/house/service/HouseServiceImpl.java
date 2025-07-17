@@ -5,43 +5,75 @@ import java.util.Map;
 
 import kr.spring.api.client.HouseApiClient;
 import kr.spring.api.dto.HouseDetailApiDto;
-import kr.spring.api.mapper.HouseApiMapper;
+import kr.spring.api.mapper.CommonApiMapper;
 import kr.spring.api.mapper.HouseDetailApiMapper;
 import kr.spring.api.service.CommonDataSyncSupportService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.house.dao.HouseMapper;
 import kr.spring.house.vo.HouseVO;
+import kr.spring.wishlist.service.WishListService;
+import kr.spring.wishlist.vo.WishListVO;
+import lombok.RequiredArgsConstructor;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class HouseServiceImpl implements HouseService{
+public class HouseServiceImpl implements HouseService {
 
+    private final HouseMapper houseMapper;
+    private final WishListService wishListService;
+    private final CommonDataSyncSupportService commonDataSyncSupportService;
+    private final HouseApiClient houseApiClient;
+    private final HouseDetailApiMapper houseDetailApiMapper;
 
-	private final HouseApiClient houseApiClient;
-	private final CommonDataSyncSupportService commonDataSyncSupportService;
-	private final HouseDetailApiMapper houseDetailApiMapper;
+    @Override //
+    public List<HouseVO> selectList(Map<String, Object> map) {
+        List<HouseVO> list = houseMapper.selectList(map);
 
-	@Autowired
-	private HouseMapper houseMapper;
-	
-	@Override
-	public List<HouseVO> selectList(Map<String, Object> map) {
-		return houseMapper.selectList(map);
-	}
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            long memberId = userDetails.getMember().getMemberId();
 
-	@Override
-	public Integer selectRowCount(Map<String, Object> map) {
-		return houseMapper.selectRowCount(map);
-	}
+            for (HouseVO house : list) {
+                try {
+                    WishListVO wishListVO = new WishListVO();
+                    wishListVO.setMemberId(memberId);
+                    wishListVO.setContentId(house.getContentId());
+                    wishListVO.setContentType(house.getContentTypeId().longValue());
 
-	@Override
-	public HouseVO selectHouse(Long id) {
-		return houseMapper.selectHouse(id);
-	}
+                    if (wishListService.selectWishList(wishListVO) != null) {
+                        house.setWished(true);
+                    } else {
+                        house.setWished(false);
+                    }
+                } catch (NumberFormatException e) {
+                    house.setWished(false);
+                }
+            }
+        } else {
+            for (HouseVO house : list) {
+                house.setWished(false);
+            }
+        }
+
+        return list;
+    }
+
+    @Override
+    public Integer selectRowCount(Map<String, Object> map) {
+        return houseMapper.selectRowCount(map);
+    }
+
+    @Override
+    public HouseVO selectHouse(Long id) {
+        return houseMapper.selectHouse(id);
+    }
 
 	@Override
 	public HouseVO selectHouseWithSellerId(Long sellerId) {
@@ -50,10 +82,9 @@ public class HouseServiceImpl implements HouseService{
 
 	@Override
 	public void insertWithApi(Long contentId) {
-		HouseDetailApiDto houseDetailApiDto = houseApiClient.getHouseDetailData(contentId);
-		if (houseDetailApiDto != null) {
-			commonDataSyncSupportService.insertOrUpdate(houseDetailApiMapper, houseDetailApiDto);
-		}
+        HouseDetailApiDto houseDetailApiDto = houseApiClient.getHouseDetailData(contentId);
+        if (houseDetailApiDto != null) {
+            commonDataSyncSupportService.insertOrUpdate(houseDetailApiMapper, houseDetailApiDto);
+        }
 	}
-
 }

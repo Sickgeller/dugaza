@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_mypage}">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지 - 리뷰 관리</title>
+    <th:block layout:fragment="css">
+        <style>
+            .reviews-container {
+                padding: 2rem;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            
+            .page-header {
+                margin-bottom: 2rem;
+            }
+            
+            .page-header h1 {
+                color: #333;
+                margin-bottom: 0.5rem;
+            }
+            
+            .review-filters {
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 2rem;
+                flex-wrap: wrap;
+            }
+            
+            .filter-btn {
+                padding: 0.5rem 1rem;
+                border: 1px solid #dee2e6;
+                background: white;
+                border-radius: 20px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .filter-btn.active {
+                background: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
+            
+            .review-list {
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .review-card {
+                background: white;
+                border-radius: 10px;
+                padding: 1.5rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                border-left: 4px solid #007bff;
+            }
+            
+            .review-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 1rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .review-info {
+                flex: 1;
+            }
+            
+            .review-title {
+                font-size: 1.2rem;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 0.5rem;
+            }
+            
+            .review-meta {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                color: #666;
+                font-size: 0.9rem;
+            }
+            
+            .review-type {
+                padding: 0.25rem 0.75rem;
+                border-radius: 15px;
+                font-size: 0.8rem;
+                font-weight: bold;
+            }
+            
+            .type-house {
+                background: #e3f2fd;
+                color: #1976d2;
+            }
+            
+            .type-car {
+                background: #f3e5f5;
+                color: #7b1fa2;
+            }
+            
+            .review-rating {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .stars {
+                color: #ffc107;
+            }
+            
+            .review-content {
+                margin-bottom: 1rem;
+                line-height: 1.6;
+                color: #333;
+            }
+            
+            .review-images {
+                display: flex;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+                flex-wrap: wrap;
+            }
+            
+            .review-image {
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: transform 0.3s ease;
+            }
+            
+            .review-image:hover {
+                transform: scale(1.1);
+            }
+            
+            .review-actions {
+                display: flex;
+                gap: 0.5rem;
+                justify-content: flex-end;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                text-decoration: none;
+                font-size: 0.9rem;
+                transition: all 0.3s ease;
+            }
+            
+            .btn-primary {
+                background: #007bff;
+                color: white;
+            }
+            
+            .btn-primary:hover {
+                background: #0056b3;
+            }
+            
+            .btn-secondary {
+                background: #6c757d;
+                color: white;
+            }
+            
+            .btn-secondary:hover {
+                background: #545b62;
+            }
+            
+            .btn-danger {
+                background: #dc3545;
+                color: white;
+            }
+            
+            .btn-danger:hover {
+                background: #c82333;
+            }
+            
+            .empty-reviews {
+                text-align: center;
+                padding: 3rem;
+                color: #666;
+            }
+            
+            .empty-reviews i {
+                font-size: 4rem;
+                color: #ddd;
+                margin-bottom: 1rem;
+            }
+            
+            .empty-reviews h3 {
+                margin-bottom: 1rem;
+                color: #333;
+            }
+            
+            .empty-reviews p {
+                margin-bottom: 2rem;
+            }
+            
+            .review-stats {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                margin-bottom: 2rem;
+            }
+            
+            .stat-card {
+                background: white;
+                border-radius: 10px;
+                padding: 1.5rem;
+                text-align: center;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+                font-weight: bold;
+                color: #007bff;
+                margin-bottom: 0.5rem;
+            }
+            
+            .stat-label {
+                color: #666;
+                font-size: 0.9rem;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="reviews-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1>리뷰 관리</h1>
+                <p>내가 작성한 리뷰들을 관리하세요.</p>
+            </div>
+            
+            <!-- 리뷰 통계 -->
+            <div class="review-stats">
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${reviews.size()}">0</div>
+                    <div class="stat-label">총 리뷰 수</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${#numbers.formatDecimal(averageRating, 1, 1)}">0.0</div>
+                    <div class="stat-label">평균 평점</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${houseReviewCount}">0</div>
+                    <div class="stat-label">숙소 리뷰</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${carReviewCount}">0</div>
+                    <div class="stat-label">차량 리뷰</div>
+                </div>
+            </div>
+            
+            <!-- 리뷰 필터 -->
+            <div class="review-filters">
+                <button class="filter-btn active" onclick="filterReviews('all')">전체</button>
+                <button class="filter-btn" onclick="filterReviews('house')">숙소</button>
+                <button class="filter-btn" onclick="filterReviews('car')">차량</button>
+                <button class="filter-btn" onclick="filterReviews('recent')">최신순</button>
+                <button class="filter-btn" onclick="filterReviews('rating')">평점순</button>
+            </div>
+            
+            <div th:if="${reviews.isEmpty()}" class="empty-reviews">
+                <i class="fas fa-star"></i>
+                <h3>작성한 리뷰가 없습니다</h3>
+                <p>아직 리뷰를 작성하지 않으셨네요. 이용하신 서비스에 대한 리뷰를 남겨보세요!</p>
+                <a th:href="@{/member/reservations}" class="btn btn-primary">예약 내역 보기</a>
+            </div>
+            
+            <div th:if="${not reviews.isEmpty()}" class="review-list">
+                <div th:each="review : ${reviews}" class="review-card" th:data-type="${review.contentTypeId}">
+                    <div class="review-header">
+                        <div class="review-info">
+                            <div class="review-title" th:text="${review.review}">리뷰 제목</div>
+                            <div class="review-meta">
+                                <span th:text="${review.contentId}">상품명</span>
+                                <span th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">작성일</span>
+                                <span th:class="${review.contentTypeId == 1 ? 'review-type type-house' : 'review-type type-car'}">
+                                    <i th:class="${review.contentTypeId == 1 ? 'fas fa-bed' : 'fas fa-car'}"></i>
+                                    <span th:text="${review.contentTypeId == 1 ? '숙소' : '차량'}">타입</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="review-rating">
+                            <div class="stars">
+                                <i th:each="i : ${#numbers.sequence(1, 5)}" 
+                                   th:class="${i <= review.rating ? 'fas fa-star' : 'far fa-star'}"></i>
+                            </div>
+                            <span th:text="${#numbers.formatDecimal(review.rating, 1, 1)}">5.0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="review-content" th:text="${review.review}">리뷰 내용</div>
+                    
+                    <div class="review-actions">
+                        <a th:href="@{/house/detail(contentId=${review.contentId})}" th:if="${review.contentTypeId == 1}" class="btn btn-primary">상품 보기</a>
+                        <a th:href="@{/car/detail(carId=${review.contentId})}" th:if="${review.contentTypeId == 2}" class="btn btn-primary">상품 보기</a>
+                        <button class="btn btn-secondary" th:onclick="'editReview(' + ${review.reviewId} + ')'">수정</button>
+                        <button class="btn btn-danger" th:onclick="'deleteReview(' + ${review.reviewId} + ')'">삭제</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 이미지 모달 -->
+    <div id="imageModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9);">
+        <span class="close" onclick="closeImageModal()" style="position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer;">&times;</span>
+        <img id="modalImage" style="margin: auto; display: block; max-width: 90%; max-height: 90%; margin-top: 5%;">
+    </div>
+    
+    <th:block layout:fragment="script">
+        <script>
+            function filterReviews(filter) {
+                // 필터 버튼 활성화 상태 변경
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                // 리뷰 카드 필터링 (실제로는 서버에서 필터링하는 것이 좋습니다)
+                const reviewCards = document.querySelectorAll('.review-card');
+                
+                reviewCards.forEach(card => {
+                    const type = card.dataset.type;
+                    
+                    if (filter === 'all' || 
+                        (filter === 'house' && type === '1') || 
+                        (filter === 'car' && type === '2')) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+            
+            function editReview(reviewId) {
+                // 리뷰 수정 페이지로 이동
+                window.location.href = `/review/edit/${reviewId}`;
+            }
+            
+            function deleteReview(reviewId) {
+                if (confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
+                    fetch(`/review/delete/${reviewId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('리뷰 삭제에 실패했습니다.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('오류가 발생했습니다.');
+                    });
+                }
+            }
+            
+            function showImageModal(imageSrc) {
+                document.getElementById('modalImage').src = imageSrc;
+                document.getElementById('imageModal').style.display = 'block';
+            }
+            
+            function closeImageModal() {
+                document.getElementById('imageModal').style.display = 'none';
+            }
+            
+            // 모달 외부 클릭 시 닫기
+            window.onclick = function(event) {
+                const modal = document.getElementById('imageModal');
+                if (event.target === modal) {
+                    closeImageModal();
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html> 

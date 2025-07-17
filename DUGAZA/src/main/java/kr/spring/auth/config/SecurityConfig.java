@@ -118,7 +118,7 @@ public class SecurityConfig {
                     .alwaysRemember(false) // 체크박스 선택 시에만 remember-me 활성화
                 )
                 .authenticationProvider(authenticationProvider()) // 명시적 AuthenticationProvider 설정
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> {})
                 .build();
     }
 

@@ -46,7 +46,7 @@
                             <span class="badge bg-info ms-1" sec:authorize="hasRole('SELLER')">사업자</span>
                             <span class="badge bg-primary ms-1" sec:authorize="hasRole('MEMBER')">회원</span>
                         </span>
-                        <a th:href="@{/member/mypage}" class="btn btn-outline-primary me-2">마이페이지</a>
+                        <a th:href="@{/member/dashboard}" class="btn btn-outline-primary me-2">마이페이지</a>
                         <a th:href="@{/admin}" class="btn btn-outline-warning me-2" sec:authorize="hasRole('ADMIN')">관리자</a>
                         <a th:href="@{/seller/dashboard}" class="btn btn-outline-info me-2" sec:authorize="hasRole('SELLER')">사업자 대시보드</a>
                         <form th:action="@{/member/logout}" method="post" style="display: inline;">

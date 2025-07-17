@@ -60,13 +60,50 @@ public class ReviewStatisticsServiceImpl implements ReviewStatisticsService {
     @Override
     public ReviewStatisticsVO getReviewStatisticsByHouse(Long houseId) {
         log.info("숙소별 리뷰 통계 조회: houseId = {}", houseId);
-        
+
+        ReviewStatisticsVO statistics = null;
         try {
-            ReviewStatisticsVO statistics = baseReviewMapper.getReviewStatisticsByHouse(houseId);
-            return statistics != null ? statistics : ReviewStatisticsVO.builder().build();
+            statistics = baseReviewMapper.getReviewStatisticsByHouse(houseId);
         } catch (Exception e) {
             log.error("숙소별 리뷰 통계 조회 중 오류 발생: houseId={}, error={}", houseId, e.getMessage(), e);
-            return ReviewStatisticsVO.builder().build();
+            // Fallback to default empty statistics
         }
+
+        if (statistics == null) {
+            statistics = ReviewStatisticsVO.builder()
+                    .averageRating(0.0)
+                    .totalCount(0L)
+                    .fiveStarCount(0L)
+                    .fourStarCount(0L)
+                    .threeStarCount(0L)
+                    .twoStarCount(0L)
+                    .oneStarCount(0L)
+                    .fiveStarRatio(0.0)
+                    .fourStarRatio(0.0)
+                    .threeStarRatio(0.0)
+                    .twoStarRatio(0.0)
+                    .oneStarRatio(0.0)
+                    .build();
+        } else {
+            // Ensure counts are not null before calculating ratios
+            if (statistics.getFiveStarCount() == null) statistics.setFiveStarCount(0L);
+            if (statistics.getFourStarCount() == null) statistics.setFourStarCount(0L);
+            if (statistics.getThreeStarCount() == null) statistics.setThreeStarCount(0L);
+            if (statistics.getTwoStarCount() == null) statistics.setTwoStarCount(0L);
+            if (statistics.getOneStarCount() == null) statistics.setOneStarCount(0L);
+
+            // If totalCount is 0, ensure ratios are 0.0 to prevent division by zero or null issues
+            if (statistics.getTotalCount() == null || statistics.getTotalCount() == 0L) {
+                statistics.setAverageRating(0.0);
+                statistics.setFiveStarRatio(0.0);
+                statistics.setFourStarRatio(0.0);
+                statistics.setThreeStarRatio(0.0);
+                statistics.setTwoStarRatio(0.0);
+                statistics.setOneStarRatio(0.0);
+            } else {
+                statistics.calculateRatios(); // Ensure ratios are calculated if counts are available
+            }
+        }
+        return statistics;
     }
 } 

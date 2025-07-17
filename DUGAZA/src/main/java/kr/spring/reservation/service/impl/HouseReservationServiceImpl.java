@@ -58,4 +58,24 @@ public class HouseReservationServiceImpl implements HouseReservationService {
         int conflictCount = houseReservationMapper.checkReservationConflict(roomId, startStr, endStr);
         return conflictCount > 0;
     }
+
+    @Override
+    public List<HouseReservationVO> getReservationsByMember(Long memberId) {
+        return houseReservationMapper.selectReservationsByMember(memberId);
+    }
+    
+    @Override
+    public HouseReservationVO getReservation(Long reservationId) {
+        return houseReservationMapper.selectReservation(reservationId);
+    }
+    
+    @Override
+    public void updateReservation(HouseReservationVO houseReservationVO) {
+        houseReservationMapper.updateReservation(houseReservationVO);
+    }
+    
+    @Override
+    public void deleteReservation(Long reservationId) {
+        houseReservationMapper.deleteReservation(reservationId);
+    }
 }

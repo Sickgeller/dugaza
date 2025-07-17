@@ -65,4 +65,10 @@ public interface RoomMapper {
                                         @Param("checkInDate") String checkInDate,
                                         @Param("checkOutDate") String checkOutDate,
                                         @Param("guestCount") int guestCount);
+    
+    /**
+     * @param houseId 숙소 ID
+     * @return 해당 숙소의 객실 목록 (RoomDetailVO 사용)
+     */
+    List<RoomDetailVO> getRoomsByHouseId(@Param("houseId") Long houseId);
 }

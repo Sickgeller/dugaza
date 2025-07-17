@@ -3,6 +3,7 @@ package kr.spring.seller.service;
 import kr.spring.seller.dao.SellerMapper;
 import kr.spring.seller.vo.SellerDetailVO;
 import kr.spring.seller.vo.SellerVO;
+import kr.spring.seller.vo.HouseSellerDetailVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -72,6 +73,17 @@ public class SellerServiceImpl implements SellerService {
         } catch (Exception e) {
             log.error("결제 설정 업데이트 실패: sellerId = {}", sellerId, e);
             return false;
+        }
+    }
+    
+    @Override
+    public HouseSellerDetailVO getSellerByHouseId(Long houseId) {
+        try {
+            log.info("houseId로 seller 조회: houseId = {}", houseId);
+            return sellerMapper.getSellerByHouseId(houseId);
+        } catch (Exception e) {
+            log.error("houseId로 seller 조회 실패: houseId = {}", houseId, e);
+            return null;
         }
     }
 }

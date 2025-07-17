@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_mypage}">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지 - 문의 내역</title>
+    <th:block layout:fragment="css">
+        <style>
+            .qna-container {
+                padding: 2rem;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            
+            .page-header {
+                margin-bottom: 2rem;
+            }
+            
+            .page-header h1 {
+                color: #333;
+                margin-bottom: 0.5rem;
+            }
+            
+            .qna-actions {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 2rem;
+                background: white;
+                border-radius: 10px;
+                padding: 1.5rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            
+            .qna-filters {
+                display: flex;
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+            
+            .filter-btn {
+                padding: 0.5rem 1rem;
+                border: 1px solid #dee2e6;
+                background: white;
+                border-radius: 20px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            .filter-btn.active {
+                background: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
+            
+            .new-qna-btn {
+                padding: 0.75rem 1.5rem;
+                background: #28a745;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                text-decoration: none;
+                font-size: 0.9rem;
+                transition: all 0.3s ease;
+            }
+            
+            .new-qna-btn:hover {
+                background: #218838;
+                color: white;
+                text-decoration: none;
+            }
+            
+            .qna-list {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .qna-item {
+                background: white;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                transition: transform 0.3s ease;
+            }
+            
+            .qna-item:hover {
+                transform: translateY(-2px);
+            }
+            
+            .qna-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1.5rem;
+                background: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+            }
+            
+            .qna-title {
+                font-size: 1.1rem;
+                font-weight: bold;
+                color: #333;
+                margin-bottom: 0.5rem;
+            }
+            
+            .qna-meta {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                color: #666;
+                font-size: 0.9rem;
+            }
+            
+            .qna-status {
+                padding: 0.25rem 0.75rem;
+                border-radius: 15px;
+                font-size: 0.8rem;
+                font-weight: bold;
+            }
+            
+            .status-pending {
+                background: #fff3cd;
+                color: #856404;
+            }
+            
+            .status-answered {
+                background: #d4edda;
+                color: #155724;
+            }
+            
+            .status-closed {
+                background: #f8d7da;
+                color: #721c24;
+            }
+            
+            .qna-content {
+                padding: 1.5rem;
+            }
+            
+            .qna-question {
+                margin-bottom: 1rem;
+                line-height: 1.6;
+                color: #333;
+            }
+            
+            .qna-answer {
+                background: #f8f9fa;
+                padding: 1rem;
+                border-radius: 5px;
+                margin-top: 1rem;
+                border-left: 3px solid #007bff;
+            }
+            
+            .qna-answer h5 {
+                color: #007bff;
+                margin-bottom: 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .qna-answer p {
+                color: #333;
+                margin: 0;
+                line-height: 1.5;
+            }
+            
+            .qna-actions-item {
+                display: flex;
+                gap: 0.5rem;
+                justify-content: flex-end;
+                padding: 1rem 1.5rem;
+                border-top: 1px solid #f0f0f0;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                text-decoration: none;
+                font-size: 0.9rem;
+                transition: all 0.3s ease;
+            }
+            
+            .btn-primary {
+                background: #007bff;
+                color: white;
+            }
+            
+            .btn-primary:hover {
+                background: #0056b3;
+            }
+            
+            .btn-secondary {
+                background: #6c757d;
+                color: white;
+            }
+            
+            .btn-secondary:hover {
+                background: #545b62;
+            }
+            
+            .btn-danger {
+                background: #dc3545;
+                color: white;
+            }
+            
+            .btn-danger:hover {
+                background: #c82333;
+            }
+            
+            .empty-qna {
+                text-align: center;
+                padding: 3rem;
+                color: #666;
+            }
+            
+            .empty-qna i {
+                font-size: 4rem;
+                color: #ddd;
+                margin-bottom: 1rem;
+            }
+            
+            .empty-qna h3 {
+                margin-bottom: 1rem;
+                color: #333;
+            }
+            
+            .empty-qna p {
+                margin-bottom: 2rem;
+            }
+            
+            .qna-stats {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                margin-bottom: 2rem;
+            }
+            
+            .stat-card {
+                background: white;
+                border-radius: 10px;
+                padding: 1.5rem;
+                text-align: center;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+                font-weight: bold;
+                color: #007bff;
+                margin-bottom: 0.5rem;
+            }
+            
+            .stat-label {
+                color: #666;
+                font-size: 0.9rem;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="qna-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1>문의 내역</h1>
+                <p>나의 문의사항과 답변을 확인하세요.</p>
+            </div>
+            
+            <!-- 문의 통계 -->
+            <div class="qna-stats">
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${qnaList.size()}">0</div>
+                    <div class="stat-label">총 문의 수</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${qnaList.stream().filter(q -> q.status == 'PENDING').count()}">0</div>
+                    <div class="stat-label">답변 대기</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${qnaList.stream().filter(q -> q.status == 'ANSWERED').count()}">0</div>
+                    <div class="stat-label">답변 완료</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" th:text="${qnaList.stream().filter(q -> q.status == 'CLOSED').count()}">0</div>
+                    <div class="stat-label">문의 종료</div>
+                </div>
+            </div>
+            
+            <!-- 문의 액션 -->
+            <div class="qna-actions">
+                <div class="qna-filters">
+                    <button class="filter-btn active" onclick="filterQna('all')">전체</button>
+                    <button class="filter-btn" onclick="filterQna('pending')">답변 대기</button>
+                    <button class="filter-btn" onclick="filterQna('answered')">답변 완료</button>
+                    <button class="filter-btn" onclick="filterQna('closed')">문의 종료</button>
+                </div>
+                <a th:href="@{/faq/qnaQuestion}" class="new-qna-btn">
+                    <i class="fas fa-plus"></i>
+                    새 문의하기
+                </a>
+            </div>
+            
+            <div th:if="${qnaList.isEmpty()}" class="empty-qna">
+                <i class="fas fa-question-circle"></i>
+                <h3>문의 내역이 없습니다</h3>
+                <p>아직 문의사항이 없습니다. 궁금한 점이 있으시면 언제든 문의해주세요!</p>
+                <a th:href="@{/faq/qnaQuestion}" class="btn btn-primary">문의하기</a>
+            </div>
+            
+            <div th:if="${not qnaList.isEmpty()}" class="qna-list">
+                <div th:each="qna : ${qnaList}" class="qna-item" th:data-status="${qna.status}">
+                    <div class="qna-header">
+                        <div>
+                            <div class="qna-title" th:text="${qna.title}">문의 제목</div>
+                            <div class="qna-meta">
+                                <span th:text="${#temporals.format(qna.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</span>
+                                <span th:text="${qna.category}">카테고리</span>
+                            </div>
+                        </div>
+                        <span th:class="${qna.status == 'PENDING' ? 'qna-status status-pending' : 
+                                       qna.status == 'ANSWERED' ? 'qna-status status-answered' : 
+                                       'qna-status status-closed'}">
+                            <span th:text="${qna.status == 'PENDING' ? '답변 대기' : 
+                                          qna.status == 'ANSWERED' ? '답변 완료' : '문의 종료'}">상태</span>
+                        </span>
+                    </div>
+                    
+                    <div class="qna-content">
+                        <div class="qna-question" th:text="${qna.content}">문의 내용</div>
+                        
+                        <div th:if="${qna.status == 'ANSWERED' and qna.answer != null}" class="qna-answer">
+                            <h5><i class="fas fa-reply"></i> 답변</h5>
+                            <p th:text="${qna.answer}">답변 내용</p>
+                            <small th:text="${#temporals.format(qna.answeredAt, 'yyyy-MM-dd HH:mm')}">답변일</small>
+                        </div>
+                    </div>
+                    
+                    <div class="qna-actions-item">
+                        <button class="btn btn-primary" th:onclick="'viewQnaDetail(' + ${qna.qnaId} + ')'">상세보기</button>
+                        <button th:if="${qna.status == 'PENDING'}" class="btn btn-secondary" th:onclick="'editQna(' + ${qna.qnaId} + ')'">수정</button>
+                        <button th:if="${qna.status == 'PENDING'}" class="btn btn-danger" th:onclick="'deleteQna(' + ${qna.qnaId} + ')'">삭제</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block layout:fragment="script">
+        <script>
+            function filterQna(filter) {
+                // 필터 버튼 활성화 상태 변경
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                // 문의 아이템 필터링
+                const qnaItems = document.querySelectorAll('.qna-item');
+                
+                qnaItems.forEach(item => {
+                    const status = item.dataset.status;
+                    
+                    if (filter === 'all' || 
+                        (filter === 'pending' && status === 'PENDING') || 
+                        (filter === 'answered' && status === 'ANSWERED') || 
+                        (filter === 'closed' && status === 'CLOSED')) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+            
+            function viewQnaDetail(qnaId) {
+                // 문의 상세 페이지로 이동
+                window.location.href = `/faq/qnaDetail/${qnaId}`;
+            }
+            
+            function editQna(qnaId) {
+                // 문의 수정 페이지로 이동
+                window.location.href = `/faq/editQna/${qnaId}`;
+            }
+            
+            function deleteQna(qnaId) {
+                if (confirm('정말로 이 문의를 삭제하시겠습니까?')) {
+                    fetch(`/faq/deleteQna/${qnaId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('문의 삭제에 실패했습니다.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('오류가 발생했습니다.');
+                    });
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html> 

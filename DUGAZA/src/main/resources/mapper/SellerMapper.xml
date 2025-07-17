@@ -77,6 +77,13 @@
         WHERE SELLER_ID = #{sellerId}
     </select>
     
+    <!-- houseId로 seller 조회 -->
+    <select id="getSellerByHouseId" parameterType="long" resultType="kr.spring.seller.vo.HouseSellerDetailVO">
+        SELECT SELLER_ID, HOUSE_ID
+        FROM HOUSE_SELLER_DETAIL
+        WHERE HOUSE_ID = #{houseId}
+    </select>
+    
 </mapper>
 
 

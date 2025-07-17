@@ -6,31 +6,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
             console.log("찜 버튼 클릭됨", contentId, contentType); // 디버깅용
 
-            fetch('/wish/toggle', {
+            fetch('/wishlist/toggle', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: JSON.stringify({
-                    contentId: contentId,
-                    contentType: contentType
-                })
+                body: `contentId=${contentId}&contentTypeId=${contentType}`
             })
             .then(response => response.json()) 
 			.then(data => {
 			    const icon = button.querySelector('i');
-			    const textSpan = button.querySelector('span');
 
-				if (data.liked) {
+				if (data.wished) {
                    // 찜된 상태
-                   icon.className = 'fas fa-heart text-danger'; // 꽉 찬 빨간 하트
-                   textSpan.textContent = '찜 취소';
-                   button.classList.add('liked');
+                   icon.classList.remove('far');
+                   icon.classList.add('fas');
+                   icon.style.color = 'red';
                } else {
                    // 찜되지 않은 상태
-                   icon.className = 'far fa-heart text-secondary'; // 빈 회색 하트
-                   textSpan.textContent = '찜하기';
-                   button.classList.remove('liked');
+                   icon.classList.remove('fas');
+                   icon.classList.add('far');
+                   icon.style.color = '';
                }
 			})
             .catch(error => {

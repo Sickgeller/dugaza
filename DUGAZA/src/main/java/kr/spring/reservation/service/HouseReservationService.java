@@ -18,4 +18,24 @@ public interface HouseReservationService {
      * @return 중복이 있으면 true, 없으면 false
      */
     boolean checkReservationConflict(Long roomId, LocalDateTime reservationStart, LocalDateTime reservationEnd);
+    
+    /**
+     * 회원별 예약 목록 조회
+     */
+    List<HouseReservationVO> getReservationsByMember(Long memberId);
+    
+    /**
+     * 예약 정보 조회
+     */
+    HouseReservationVO getReservation(Long reservationId);
+    
+    /**
+     * 예약 정보 업데이트
+     */
+    void updateReservation(HouseReservationVO houseReservationVO);
+    
+    /**
+     * 예약 삭제
+     */
+    void deleteReservation(Long reservationId);
 }

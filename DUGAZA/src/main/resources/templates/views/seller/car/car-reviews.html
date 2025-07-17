@@ -119,12 +119,12 @@
                                             <img th:src="@{/assets/images/users/default-profile.jpg}" alt="리뷰어 프로필">
                                             <div class="user-details">
                                                 <span class="user-name" th:text="'고객 ' + ${review.memberId}">고객명</span>
-                                                <span class="review-date" th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">리뷰일</span>
+                                                <span class="review-date" th:text="${#dates.format(review.createdAt, 'yyyy-MM-dd')}">리뷰일</span>
                                             </div>
                                         </div>
                                         <div class="review-rating">
                                             <th:block th:each="i : ${#numbers.sequence(1, 5)}">
-                                                <i class="fas fa-star" th:class="${i <= review.rating ? 'active' : ''}"></i>
+                                                <i class="fas fa-star" th:classappend="${i <= review.rating} ? ' active' : ''"></i>
                                             </th:block>
                                             <span th:text="${review.rating} + '점'">5점</span>
                                         </div>
