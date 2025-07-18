@@ -66,10 +66,13 @@ public class RoomServiceImpl implements RoomService {
     
     @Override
     public List<RoomDetailVO> getRoomsByHouseId(Long houseId) {
+        log.info("getRoomsByHouseId 호출, houseId: {}", houseId);
         List<RoomDetailVO> result = roomMapper.getRoomsByHouseId(houseId);
         if(result.isEmpty()){
+            log.info("roomMapper.getRoomsByHouseId 결과가 비어있습니다.");
             return new ArrayList<>();
         }
+        log.info("roomMapper.getRoomsByHouseId 결과 크기: {}", result.size());
         return result;
     }
 }

@@ -95,8 +95,16 @@ body {
 
 .about-section img {
   width: 100%;
-  max-height: 300px;
+  /*max-height: 300px;*/
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 16px;
 }
+
+.juju-image {
+    max-width: 100%;  /* 너비를 적당히 크게 */
+    max-height: 400px;
+    display: block;
+    margin: 0 auto;
+}
+

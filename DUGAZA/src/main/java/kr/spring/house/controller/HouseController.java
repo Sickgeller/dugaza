@@ -57,12 +57,16 @@ public class HouseController {
 			@RequestParam(name = "keyword", defaultValue = "") String keyword,
 			@RequestParam(required = false, name = "cat3") String cat3,
 			@RequestParam(name = "sort", defaultValue = "latest") String sort,
+			@RequestParam(name = "checkIn", required = false) String checkIn,
+            @RequestParam(name = "checkOut", required = false) String checkOut,
 			Model model) {
 
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("keyword", keyword);
 		map.put("cat3", cat3);
 		map.put("sort", sort);
+		map.put("checkIn", checkIn);
+        map.put("checkOut", checkOut);
 
 		int count = houseService.selectRowCount(map);
 
@@ -99,12 +103,16 @@ public class HouseController {
 			@RequestParam(name = "keyword", defaultValue = "") String keyword,
 			@RequestParam(required = false, name = "cat3") String cat3,
 			@RequestParam(name = "sort", defaultValue = "latest") String sort,
+			@RequestParam(name = "checkIn", required = false) String checkIn,
+            @RequestParam(name = "checkOut", required = false) String checkOut,
 			Model model) {
 
 		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("keyword", keyword);
 		map.put("cat3", cat3);
 		map.put("sort", sort);
+		map.put("checkIn", checkIn);
+        map.put("checkOut", checkOut);
 
 		int count = houseService.selectRowCount(map);
 

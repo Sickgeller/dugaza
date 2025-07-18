@@ -118,7 +118,7 @@ public class MemberUserController {
 	
 	@GetMapping("/myPage")
 	public String getMyPage(Model model) {
-		return "views/member/memberView";
+		return "views/member/dashboard";
 	}
 	
 	//회원정보수정 폼 호출
@@ -142,7 +142,7 @@ public class MemberUserController {
 		
 		log.info("회원정보 수정 완료");
 		
-		return "redirect:/member/myPage";
+		return "redirect:/member/dashboard";
 	}
 
 	
