@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.servlet.http.HttpServletResponse;
 import kr.spring.community.service.CommunityReplyService;
 import kr.spring.community.service.CommunityService;
 import kr.spring.community.vo.CommunityPostVO;
@@ -54,7 +55,13 @@ public class CommunityController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String order,
             @RequestParam(required = false) String keyword,
-            Model model) {
+            Model model, HttpServletResponse response) {
+    	
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+    	
+    	
 
         log.info("Community main page requested: page={}, category={}, order={}, keyword={}", pageNum, category, order, keyword);
 
@@ -102,8 +109,15 @@ public class CommunityController {
         communityService.incrementViewCount(id); 
         CommunityPostVO post = communityService.selectPost(id);
         List<CommunityReplyVO> replyList = replyService.selectReplyList(id);
+        
+        if (post.getContent() != null) {
+            model.addAttribute("postContentWithBr", post.getContent().replace("\n", "<br/>"));
+        } else {
+            model.addAttribute("postContentWithBr", "");
+        }
 
         model.addAttribute("post", post);
+
         model.addAttribute("replyList", replyList);
 
         boolean isOwner = false;
