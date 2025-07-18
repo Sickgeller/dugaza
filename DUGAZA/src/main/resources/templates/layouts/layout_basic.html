@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,7 +25,8 @@
     <!-- 페이지별 추가 CSS -->
     <th:block layout:fragment="css"></th:block>
 </head>
-<body th:class="${requestURI != null and requestURI.contains('/member/') ? 'no-header-padding' : ''}">
+<body th:class="${requestURI != null and requestURI.contains('/member/') ? 'no-header-padding' : ''}" 
+      th:attr="data-is-login=${#authorization.expression('isAuthenticated()')}">
     <!-- 헤더 영역 -->
     <header th:replace="~{fragments/header :: header}"></header>
 

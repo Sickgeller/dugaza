@@ -126,7 +126,7 @@ public class IntegratedPaymentController {
             
             log.info("결제 성공: paymentPendingId={}, amount={}", paymentPendingId, paymentPending.getFinalPrice());
             
-            return "redirect:/payment/complete";
+            return "redirect:/member/dashboard";
             
         } catch (Exception e) {
             log.error("결제 처리 중 오류 발생", e);

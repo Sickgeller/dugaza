@@ -28,26 +28,26 @@
                         <label>체크인</label>
                         <div class="search-input">
                             <i class="fas fa-calendar"></i>
-                            <input type="date">
+                            <input type="date" name="checkIn" th:value="${param.checkIn}">
                         </div>
                     </div>
                     <div class="search-group">
                         <label>체크아웃</label>
                         <div class="search-input">
                             <i class="fas fa-calendar"></i>
-                            <input type="date">
+                            <input type="date" name="checkOut" th:value="${param.checkOut}">
                         </div>
                     </div>
                     <div class="search-group">
                         <label>인원</label>
                         <div class="search-input">
                             <i class="fas fa-user"></i>
-                            <select>
-                                <option value="1">1명</option>
-                                <option value="2">2명</option>
-                                <option value="3">3명</option>
-                                <option value="4">4명</option>
-                                <option value="5">5명 이상</option>
+                            <select name="numberOfGuests">
+                                <option value="1" th:selected="${#strings.equals(param.numberOfGuests, '1')}">1명</option>
+                                <option value="2" th:selected="${#strings.equals(param.numberOfGuests, '2')}">2명</option>
+                                <option value="3" th:selected="${#strings.equals(param.numberOfGuests, '3')}">3명</option>
+                                <option value="4" th:selected="${#strings.equals(param.numberOfGuests, '4')}">4명</option>
+                                <option value="5" th:selected="${#strings.equals(param.numberOfGuests, '5')}">5명 이상</option>
                             </select>
                         </div>
                     </div>
@@ -71,6 +71,9 @@
                 <form id="sortForm" method="get" action="/house">
                     <input type="hidden" name="keyword" th:value="${param.keyword}">
                     <input type="hidden" name="cat3" th:value="${param.cat3}">
+                    <input type="hidden" name="checkIn" th:value="${param.checkIn}">
+                    <input type="hidden" name="checkOut" th:value="${param.checkOut}">
+                    <input type="hidden" name="numberOfGuests" th:value="${param.numberOfGuests}">
                     <div class="sort-options">
                         <select name="sort" onchange="this.form.submit()">
                             <option value="latest" th:selected="${sort == 'latest'}">추천순</option>
@@ -123,13 +126,13 @@
             </div>
 
             <div class="pagination" th:if="${count > 0}">
-                <a th:href="@{/house/list(pageNum=${page.startPage - 1},keyword=${param.keyword},cat3=${param.cat3})}" th:if="${page.startPage > 1}" class="prev-btn"><i class="fas fa-chevron-left"></i></a>
+                <a th:href="@{/house/list(pageNum=${page.startPage - 1},keyword=${param.keyword},cat3=${param.cat3},checkIn=${param.checkIn},checkOut=${param.checkOut},numberOfGuests=${param.numberOfGuests})}" th:if="${page.startPage > 1}" class="prev-btn"><i class="fas fa-chevron-left"></i></a>
                 <div class="page-numbers">
                     <th:block th:each="i : ${#numbers.sequence(page.startPage, page.endPage)}">
-                    <a th:href="@{/house/list(pageNum=${i},keyword=${param.keyword},cat3=${param.cat3})}" th:classappend="${page.currentPage == i} ? 'active'" th:text="${i}"></a>
+                    <a th:href="@{/house/list(pageNum=${i},keyword=${param.keyword},cat3=${param.cat3},checkIn=${param.checkIn},checkOut=${param.checkOut},numberOfGuests=${param.numberOfGuests})}" th:classappend="${page.currentPage == i} ? 'active'" th:text="${i}"></a>
                     </th:block>
                 </div>
-                <a th:href="@{/house/list(pageNum=${page.endPage + 1},keyword=${param.keyword},cat3=${param.cat3})}" th:if="${page.endPage < page.totalPage}" class="next-btn"><i class="fas fa-chevron-right"></i></a>
+                <a th:href="@{/house/list(pageNum=${page.endPage + 1},keyword=${param.keyword},cat3=${param.cat3},checkIn=${param.checkIn},checkOut=${param.checkOut},numberOfGuests=${param.numberOfGuests})}" th:if="${page.endPage < page.totalPage}" class="next-btn"><i class="fas fa-chevron-right"></i></a>
             </div>
         </section>
 
