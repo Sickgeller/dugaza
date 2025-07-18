@@ -1,6 +1,7 @@
 package kr.spring.qnaQuestion.Controller;
 
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +17,7 @@ import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.member.vo.MemberVO;
 import kr.spring.qnaQuestion.service.QnaQuestionService;
 import kr.spring.qnaQuestion.vo.QnaQuestionVO;
+import kr.spring.qnaResponse.vo.QnaResponseVO;
 import kr.spring.util.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,20 +28,20 @@ public class QnaQuestionController {
     @Autowired
     private QnaQuestionService qnaQuestionService;
 
-    /** 기본 QnaQuestionVO 초기화 **/
+    // 기본 QnaQuestionVO 초기화
     @ModelAttribute
     public QnaQuestionVO initCommand() {
         return new QnaQuestionVO();
     }
 
-    /** FAQ 메인 페이지 **/
+    // FAQ 메인 페이지 
     public String faqMain(Model model, HttpServletRequest request) {
         CsrfToken token = (CsrfToken) request.getAttribute("_csrf");
         model.addAttribute("_csrf", token); // 수동 추가
         return "views/faq/faq";
     }
 
-    /** 1:1 문의 등록 처리 **/
+    //1:1 문의 등록 처리 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/faq/qnaQuestion")
     public String submitInquiry(@Valid QnaQuestionVO qnaVO,
@@ -50,6 +52,7 @@ public class QnaQuestionController {
 
     	MemberVO member = principal.getMember(); // 또는 getMember()
     	Long memberId = member.getMemberId(); // 실제 member_id 값
+    	qnaVO.setMember_id(memberId);
         // 로그인 정보 확인
         if (principal == null || principal.getMember() == null) {
             model.addAttribute("message", "로그인 후 이용 가능합니다.");
@@ -68,7 +71,6 @@ public class QnaQuestionController {
         // 로그인한 사용자 정보로 memberId 세팅
         memberId = principal.getMember().getMemberId();
         qnaVO.setMember_id(memberId);
-        
         qnaVO.setIs_answered("N");
 
         log.debug("<<로그인한 사용자>> : {}", principal.getUsername());
@@ -81,5 +83,48 @@ public class QnaQuestionController {
         model.addAttribute("message", "문의가 등록되었습니다.");
         model.addAttribute("url", request.getContextPath() + "/faq");
         return "views/common/resultAlert";
+    }
+    
+    
+    @GetMapping("/qna/list")
+    public String qnaList(Model model) {
+        List<QnaQuestionVO> list = qnaQuestionService.getQnaList();
+        model.addAttribute("qnaList", list);
+        return "qna/list"; // 뷰 파일 경로 (Thymeleaf 또는 JSP)
+    }
+    
+    
+    @GetMapping("/qna/my")
+    public String myQnaList(Model model, @AuthenticationPrincipal CustomUserDetails principal) {
+        Long member_id = principal.getMember().getMemberId();
+        System.out.println(">> 로그인한 member_id = " + member_id); // ✅ 추가
+
+        List<QnaQuestionVO> list = qnaQuestionService.getQnaListByMember(member_id);
+        System.out.println(">> qnaList.size() = " + list.size()); // ✅ 추가
+
+        model.addAttribute("qnaList", list);
+        return "qna/list";
+    }
+    
+    @GetMapping("/qna/detail/{qnaId}")
+    public String qnaDetail(@PathVariable("qnaId") Long qna_id, Model model) {
+        QnaQuestionVO qna = qnaQuestionService.getQnaDetail(qna_id);
+        model.addAttribute("qna", qna);
+        return "qna/detail"; // detail.html (또는 .jsp)
+    }
+
+    
+    @PostMapping("/qna/answer")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public String insertAnswer(@RequestParam Long qna_id,
+                               @RequestParam String content,
+                               @AuthenticationPrincipal CustomUserDetails principal) {
+        QnaResponseVO response = new QnaResponseVO();
+        response.setQna_id(qna_id);
+        response.setContent(content);
+        response.setMember_id(principal.getMember().getMemberId());
+
+        qnaQuestionService.insertAnswer(response);  // DAO를 통해 insert 처리
+        return "redirect:/qna/detail/" + qna_id;
     }
 }

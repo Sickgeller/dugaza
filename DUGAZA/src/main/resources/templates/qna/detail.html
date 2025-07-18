@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/assets/css/qnaResponseDetail.css}">
+    <title>문의 상세</title>
+</head>
+
+<body>
+<div layout:fragment="content" class="page-main">
+    <h2>문의 상세보기</h2>
+
+    <table class="qna-detail-table">
+        <tr>
+            <th>제목</th>
+            <td th:text="${qna.title}">제목</td>
+        </tr>
+        <tr>
+            <th>카테고리</th>
+            <td th:text="${qna.category}">카테고리</td>
+        </tr>
+        <tr>
+            <th>작성일</th>
+            <td th:text="${#dates.format(qna.created_at, 'yyyy-MM-dd HH:mm')}">작성일</td>
+        </tr>
+        <tr>
+            <th>내용</th>
+            <td>
+                <pre th:text="${qna.content}" style="white-space: pre-wrap;"></pre>
+            </td>
+        </tr>
+        <tr>
+            <th>답변 여부</th>
+            <td th:text="${qna.is_answered == 1 ? '답변 완료' : '미답변'}">답변 여부</td>
+        </tr>
+    </table>
+    
+		<div th:if="${response != null}" class="qna-answer-box">
+		    <h3>관리자 답변</h3>
+		    <pre th:text="${response.content}" style="white-space: pre-wrap;"></pre>
+		    <p class="qna-answer-date" th:text="${#dates.format(response.created_at, 'yyyy-MM-dd HH:mm')}">답변 일시</p>
+		</div>
+
+		<!-- 관리자 전용 답변 작성 폼 -->
+		<div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" class="qna-answer-form">
+		    <h3>답변 작성</h3>
+		    <form th:action="@{/qna/answer}" method="post">
+		        <input type="hidden" name="qna_id" th:value="${qna.qna_id}" />
+		        <textarea name="content" rows="6" style="width: 100%;" placeholder="답변 내용을 입력하세요"></textarea>
+		        <button type="submit" class="btn">답변 등록</button>
+		    </form>
+		</div>
+
+    <div class="qna-btn-box">
+        <a th:href="@{/qna/my}" class="btn" id="qna-btn">목록으로</a>
+    </div>
+</div>
+</body>
+</html>

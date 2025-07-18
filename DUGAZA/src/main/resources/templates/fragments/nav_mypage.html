@@ -52,7 +52,7 @@
                         </a>
                     </li>
                     <li th:class="${currentMenu == 'qna' ? 'active' : ''}">
-                        <a th:href="@{/member/qna}">
+                        <a th:href="@{/qna/my}">
                             <i class="fas fa-question-circle"></i>
                             <span>문의 내역</span>
                             <span class="badge" th:if="${qnaCount > 0}" th:text="${qnaCount}">0</span>

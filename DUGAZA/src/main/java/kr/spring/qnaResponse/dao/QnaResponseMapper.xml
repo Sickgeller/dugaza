@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="kr.spring.qnaResponse.dao.QnaResponseMapper">
+
+  <!-- 답변 등록 -->
+  <insert id="insertResponse">
+    INSERT INTO qna_response (
+      response_id,
+      qna_id,
+      member_id,
+      content,
+      created_at
+    ) VALUES (
+      qna_response_seq.NEXTVAL,
+      #{qna_id},
+      #{member_id},
+      #{content},
+      SYSDATE
+    )
+  </insert>
+
+  <!-- 답변 수정 -->
+  <update id="updateResponse">
+    UPDATE qna_response
+    SET content = #{content}
+    WHERE qna_id = #{qna_id}
+  </update>
+
+  <!-- 특정 문의에 대한 답변 가져오기 -->
+  <select id="getAnswerByQnaId" resultType="kr.spring.qnaResponse.vo.QnaResponseVO">
+    SELECT *
+    FROM qna_response
+    WHERE qna_id = #{qna_id}
+  </select>
+
+
+  <!-- 특정 문의 가져오기 (상세 보기) -->
+  <select id="getQnaById" resultType="kr.spring.qnaQuestion.vo.QnaQuestionVO">
+    SELECT *
+    FROM qna_question
+    WHERE qna_id = #{qna_id}
+  </select>
+
+	<update id="updateIsAnswered" parameterType="map">
+	  UPDATE qna_question
+	  SET is_answered = #{is_answered}
+	  WHERE qna_id = #{qna_id}
+	</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
