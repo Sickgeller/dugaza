@@ -15,15 +15,15 @@
 	</h2>
 	<ul>
 		<li th:text="'이름 : ' + ${member.name}"></li>
-		<li th:if="${not #strings.isEmpty(member.nick_name)}" th:text="'별명 : ' + ${member.nick_name}"></li>
+		<li th:if="${not #strings.isEmpty(member.nickname)}" th:text="'별명 : ' + ${member.nickname}"></li>
 		<li th:text="'전화번호 : ' + ${member.phone}"></li>
 		<li th:text="'이메일 : ' + ${member.email}"></li>
-		<li th:text="'우편번호 : ' + ${member.zipcode}"></li>
-		<li>주소 : [[${member.address1}]] [[${member.address2}]]</li>
-		<li th:text="'가입일 : ' + ${member.reg_date}"></li>
-		<li th:if="${not #strings.isEmpty(member.modify_date)}" th:text="'정보 수정일 : ' + ${member.modify_date}"></li>
+		<li th:text="'주소 : ' + ${member.address}"></li>
+		<li>주소 : [[${member.address}]] [[${member.addressDetail}]]</li>
+		<li th:text="'가입일 : ' + ${member.createdAt}"></li>
+		<li th:if="${not #strings.isEmpty(member.updatedAt)}" th:text="'정보 수정일 : ' + ${member.updatedAt}"></li>
 	</ul>
-</div>
+</div>  
 </body>
 </html>
 

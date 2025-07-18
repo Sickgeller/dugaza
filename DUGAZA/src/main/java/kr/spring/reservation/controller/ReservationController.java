@@ -132,6 +132,6 @@ public class ReservationController {
         model.addAttribute("reservation", reservation);
         model.addAttribute("house", house);
         
-        return "views/house/house-reservation-complete";
+        return "redirect:/member/dashboard";
     }
 } 

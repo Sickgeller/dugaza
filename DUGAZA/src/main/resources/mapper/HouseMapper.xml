@@ -85,12 +85,28 @@
             <if test="cat3 != null and cat3 != ''">
                 AND cat3 = #{cat3}
             </if>
+            <if test="checkIn != null and checkIn != '' and checkOut != null and checkOut != ''">
+                AND tc.content_id IN (
+                    SELECT DISTINCT hri.house_id
+                    FROM house_room_info hri
+                    WHERE hri.status = 0
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM house_reservation hr
+                        WHERE hr.room_id = hri.room_id
+                        AND hr.status IN (0, 1)
+                        AND (
+                            (hr.reservation_start &lt; TO_TIMESTAMP(#{checkOut} || ' 11:00:00', 'YYYY-MM-DD HH24:MI:SS') AND hr.reservation_end > TO_TIMESTAMP(#{checkIn} || ' 15:00:00', 'YYYY-MM-DD HH24:MI:SS'))
+                        )
+                    )
+                )
+            </if>
 	</sql>
 	<!-- 전체/검색 레코드수 (숙박:32번) -->
 	<select id="selectRowCount" resultType="integer">
 		SELECT
 		  COUNT(*)
-		FROM tour_content WHERE content_type_id = 32
+		FROM tour_content tc WHERE content_type_id = 32
 		<include refid="houseSearch"/>                          
 	</select>
 	
