@@ -69,7 +69,7 @@ public class CarReservationController {
     }
 
     @GetMapping("/detail/{carId}")
-    public String carDetail(@PathVariable Long carId, Model model) {
+    public String carDetail(@PathVariable(name = "carId") Long carId, Model model) {
         try {
             CarVO car = carService.getCar(carId);
             if (car == null) {
@@ -87,7 +87,7 @@ public class CarReservationController {
     }
 
     @GetMapping("/reservation/{carId}")
-    public String reservationForm(@PathVariable Long carId, Model model) {
+    public String reservationForm(@PathVariable(name = "carId") Long carId, Model model) {
         try {
             CarVO car = carService.getCar(carId);
             if (car == null) {
