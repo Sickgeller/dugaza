@@ -10,8 +10,8 @@
         <result property="reservationStart" column="RESERVATION_START"/>
         <result property="reservationEnd" column="RESERVATION_END"/>
         <result property="reservationCount" column="RESERVATION_COUNT"/>
-        <result property="price" column="RESERVATION_PRICE"/>
-        <result property="status" column="RESERVATION_STATUS"/>
+        <result property="price" column="PRICE"/>
+        <result property="status" column="STATUS"/>
     </resultMap>
 
     <select id="findBySellerId" resultMap="houseReservationResultMap">
@@ -108,7 +108,7 @@
             RESERVATION_COUNT = #{reservationCount},
             PRICE = #{price},
             STATUS = #{status}
-        WHERE RESERVATION_ID = #{reservationId}
+        WHERE RESERVATION_ID = #{houseReservationId}
     </update>
 
     <delete id="deleteReservation" parameterType="long">

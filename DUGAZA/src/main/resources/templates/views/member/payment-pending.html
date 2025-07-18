@@ -4,6 +4,8 @@
       layout:decorate="~{layouts/layout_mypage}">
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <title>마이페이지 - 결제 대기</title>
     <th:block layout:fragment="css">
         <style>
@@ -207,11 +209,16 @@
                                 th:onclick="'cancelPaymentPending(' + ${paymentPending.paymentPendingId} + ')'">
                             <i class="fas fa-times"></i> 취소
                         </button>
-                        <button th:if="${paymentPending.status == 0}" 
+                        <!-- <button th:if="${paymentPending.status == 0}" 
                                 class="btn btn-primary" 
                                 th:onclick="'processPayment(' + ${paymentPending.paymentPendingId} + ')'">
                             <i class="fas fa-credit-card"></i> 결제하기
-                        </button>
+                        </button> -->
+                        <form th:action="@{/payment/checkout}" method="post">
+						    <input type="hidden" name="paymentPendingId" th:value="${paymentPending.paymentPendingId}" />
+						    <input type="hidden" name="amount" th:value="${paymentPending.finalPrice}" />
+						    <button type="submit" class="btn btn-primary">결제하기</button>
+						</form>    
                     </div>
                 </div>
             </div>

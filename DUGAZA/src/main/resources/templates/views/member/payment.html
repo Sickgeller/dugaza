@@ -256,7 +256,9 @@
                                     <span th:text="${#temporals.format(reservation.reservationEnd, 'yyyy-MM-dd HH:mm')}">종료일</span>
                                 </div>
                             </div>
-                            <div class="reservation-price" th:text="${#numbers.formatInteger(reservation.price, 3, 'COMMA')} + '원'">가격</div>
+                            <div class="reservation-price" th:text="(${#numbers.formatInteger(reservation.price, 3, 'COMMA')} + '원')">가격</div>
+                            
+
                         </div>
                     </div>
                     
@@ -372,7 +374,7 @@
                     .then(data => {
                         if (data.success) {
                             alert('결제 대기가 생성되었습니다. 30분 내에 결제를 완료해주세요.');
-                            window.location.href = '/member/payment-pending';
+                            window.location.href = '/payment/pending';
                         } else {
                             alert('결제 대기 생성에 실패했습니다: ' + data.message);
                         }

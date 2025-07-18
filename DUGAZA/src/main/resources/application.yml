@@ -126,4 +126,6 @@ api:
     rest-api-key: ${data-config.api.kakao.rest-api-key}
     client-secret: ${data-config.api.kakao.client-secret}
 
-
+toss:
+  payments:
+    secret-key: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6

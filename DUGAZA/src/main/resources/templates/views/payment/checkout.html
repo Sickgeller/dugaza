@@ -8,6 +8,7 @@
     <title>결제하기 - 드가자닷컴</title>
     <link rel="stylesheet" th:href="@{/assets/css/style.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://js.tosspayments.com/v1/payment-widget"></script>
     <style>
         .checkout-container {
             max-width: 1200px;
@@ -296,75 +297,52 @@
                     </div>
                 </div>
                 
-                <!-- 결제 폼 -->
-                <div class="payment-form">
-                    <h2 class="form-title">
-                        <i class="fas fa-lock"></i> 결제 정보
-                    </h2>
-                    
-                    <form th:action="@{/payment/process}" method="post">
-                        <div class="form-group">
-                            <label class="form-label">카드 번호</label>
-                            <input type="text" class="form-input" name="cardNumber" 
-                                   placeholder="1234-5678-9012-3456" maxlength="19" required>
-                        </div>
-                        
-                        <div class="card-info">
-                            <div class="form-group">
-                                <label class="form-label">유효기간</label>
-                                <input type="text" class="form-input" name="expiryDate" 
-                                       placeholder="MM/YY" maxlength="5" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">CVC</label>
-                                <input type="text" class="form-input" name="cvc" 
-                                       placeholder="123" maxlength="3" required>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">카드 소유자명</label>
-                            <input type="text" class="form-input" name="cardHolder" 
-                                   placeholder="홍길동" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">생년월일</label>
-                            <input type="text" class="form-input" name="birthDate" 
-                                   placeholder="YYYYMMDD" maxlength="8" required>
-                        </div>
-                        
-                        <!-- 총액 요약 -->
-                        <div class="total-summary">
-                            <div class="total-item">
-                                <span>상품 수:</span>
-                                <span th:text="${cart.itemCount + '개'}">2개</span>
-                            </div>
-                            <div class="total-item">
-                                <span>총 결제 금액:</span>
-                                <span th:text="${#numbers.formatInteger(cart.totalAmount, 3, 'COMMA') + '원'}">150,000원</span>
-                            </div>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-credit-card"></i> 
-                            <span th:text="${#numbers.formatInteger(cart.totalAmount, 3, 'COMMA') + '원'}">150,000원</span> 결제하기
-                        </button>
-                        
-                        <a href="/payment/cart" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> 장바구니로 돌아가기
-                        </a>
-                    </form>
-                    
-                    <div class="security-notice">
-                        <i class="fas fa-shield-alt"></i>
-                        <strong>보안 안내:</strong> 모든 결제 정보는 SSL 암호화를 통해 안전하게 전송됩니다.
-                    </div>
-                </div>
+                <!-- 결제 UI, 이용약관 UI 영역 -->
+			    <div id="payment-method"></div>
+			    <div id="agreement"></div>
+			    <!-- 결제하기 버튼 -->
+			    <button id="payment-button">결제하기</button>
+			
+			    <script th:inline="javascript">
+			      const button = document.getElementById("payment-button");
+			      const amount = [[${amount}]];
+			
+			      // 구매자의 고유 아이디를 불러와서 customerKey로 설정하세요.
+			      // 이메일・전화번호와 같이 유추가 가능한 값은 안전하지 않습니다.
+			      const widgetClientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
+			      const customerKey = "-0ClCz9VhJYwNOvIButvu";
+			      const paymentWidget = PaymentWidget(widgetClientKey, customerKey); // 회원 결제
+			      // const paymentWidget = PaymentWidget(widgetClientKey, PaymentWidget.ANONYMOUS) // 비회원 결제
+			
+			      const paymentMethodWidget = paymentWidget.renderPaymentMethods(
+			        "#payment-method",
+			        { value: amount },
+			        { variantKey: "DEFAULT" }
+			      );
+			
+			      paymentWidget.renderAgreement(
+			        "#agreement",
+			        { variantKey: "AGREEMENT" }
+			      );
+			
+			      button.addEventListener("click", function () {
+			        // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
+			        // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
+			        paymentWidget.requestPayment({
+			          orderId: [[${paymentPendingId}]][[${paymentPendingId}]][[${paymentPendingId}]],
+			          orderName: "토스 티셔츠 외 2건",
+			          successUrl: window.location.origin + "/payment/success",
+			          failUrl: window.location.origin + "/payment/fail",
+			          customerEmail: "customer123@gmail.com",
+			          customerName: "김토스",
+			          customerMobilePhone: "01012341234",
+			        });
+			      });
+			    </script>
             </div>
         </div>
         
-        <script>
+       <!--  <script>
             // 카드 번호 자동 하이픈 추가
             document.querySelector('input[name="cardNumber"]').addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
@@ -390,7 +368,8 @@
             document.querySelector('input[name="birthDate"]').addEventListener('input', function(e) {
                 e.target.value = e.target.value.replace(/\D/g, '');
             });
-        </script>
+        </script> -->
     </main>
+    
 </body>
 </html> 
