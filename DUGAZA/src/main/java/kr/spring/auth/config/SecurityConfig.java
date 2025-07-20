@@ -77,15 +77,17 @@ public class SecurityConfig {
         return http
                 .securityMatcher("/**")
                 .authorizeHttpRequests(authorize -> authorize
-//                    .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**", "/favicon.*").permitAll() // 정적 리소스 허용
-//                    .requestMatchers("/", "/member/login", "/member/register", "/member/registerUser").permitAll() // 인증 없이 접근 가능한 페이지
-//                    .requestMatchers("/views/common/**").permitAll() // 공통 페이지들
-//                    .requestMatchers("/seller/login", "/seller/register").permitAll() // 판매자 로그인/가입 페이지
-//                    .requestMatchers("/seller/**").hasAnyRole("SELLER", "CAR", "HOUSE") // 판매자 전용 페이지
-//                    .requestMatchers("/admin/**").hasRole("ADMIN")// 관리자 전용 페이지
-//                    // API 제외한 나머지 요청은 인증 필요
-//                    .requestMatchers("/api/**").denyAll() // API는 별도 필터체인에서 처리
-                    .anyRequest().permitAll()
+                    .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**", "/favicon.*").permitAll() // 정적 리소스 허용
+                    .requestMatchers("/", "/member/login", "/member/register", "/member/registerUser").permitAll() // 인증 없이 접근 가능한 페이지
+                    .requestMatchers("/views/common/**").permitAll() // 공통 페이지들
+                    .requestMatchers("/transportation/**").permitAll() // 교통 관련 페이지 및 API 허용
+                    .requestMatchers("/faq/**").authenticated() // FAQ 페이지는 인증 필요
+                    .requestMatchers("/seller/login", "/seller/register").permitAll() // 판매자 로그인/가입 페이지
+                    .requestMatchers("/seller/**").hasAnyRole("SELLER", "CAR", "HOUSE") // 판매자 전용 페이지
+                    .requestMatchers("/admin/**").hasRole("ADMIN")// 관리자 전용 페이지
+                    // API 제외한 나머지 요청은 인증 필요
+                    .requestMatchers("/api/**").denyAll() // API는 별도 필터체인에서 처리
+                    .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                     .loginPage("/member/login")
@@ -118,7 +120,9 @@ public class SecurityConfig {
                     .alwaysRemember(false) // 체크박스 선택 시에만 remember-me 활성화
                 )
                 .authenticationProvider(authenticationProvider()) // 명시적 AuthenticationProvider 설정
-                .csrf(csrf -> {})
+                .csrf(csrf -> csrf
+                    .ignoringRequestMatchers("/transportation/bus/search") // 고속버스 검색 API는 CSRF 비활성화
+                )
                 .build();
     }
 

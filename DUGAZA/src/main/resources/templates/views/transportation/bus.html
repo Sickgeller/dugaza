@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>버스 조회 - 드가자닷컴</title>
+    <title>고속버스 조회 - 드가자닷컴</title>
     <link rel="stylesheet" th:href="@{/assets/css/style.css}">
     <link rel="stylesheet" th:href="@{/assets/css/bus.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -14,34 +14,52 @@
     <main layout:fragment="content">
         <div class="bus-container">
             <div class="bus-header">
-                <h1><i class="fas fa-bus"></i> 버스 조회</h1>
-                <p>고속버스, 시외버스 정보를 조회할 수 있습니다</p>
+                <h1><i class="fas fa-bus"></i> 고속버스 조회</h1>
+                <p>전국 고속버스 노선을 검색하고 실시간 정보를 확인하세요</p>
                 <div class="status-notice">
                     <i class="fas fa-info-circle"></i>
-                    <span>현재 예약 기능은 준비 중입니다. 조회만 가능합니다.</span>
+                    <span>현재 조회 기능만 제공됩니다. 예약 기능은 준비 중입니다.</span>
                 </div>
             </div>
 
             <div class="bus-search-section">
-                <form class="bus-search-form">
+                <form class="bus-search-form" id="busSearchForm">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="departure"><i class="fas fa-map-marker-alt"></i> 출발지</label>
-                            <input type="text" id="departure" placeholder="출발지를 입력하세요" required>
+                            <label for="departureCity"><i class="fas fa-map-marker-alt"></i> 출발지</label>
+                            <select id="departureCity" required>
+                                <option value="">도시를 선택하세요</option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label for="arrival"><i class="fas fa-map-marker-alt"></i> 도착지</label>
-                            <input type="text" id="arrival" placeholder="도착지를 입력하세요" required>
+                            <label for="departureTerminal"><i class="fas fa-building"></i> 출발 터미널</label>
+                            <select id="departureTerminal" required disabled>
+                                <option value="">터미널을 선택하세요</option>
+                            </select>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="date"><i class="fas fa-calendar"></i> 출발 날짜</label>
-                            <input type="date" id="date" required>
+                            <label for="arrivalCity"><i class="fas fa-map-marker-alt"></i> 도착지</label>
+                            <select id="arrivalCity" required>
+                                <option value="">도시를 선택하세요</option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label for="time"><i class="fas fa-clock"></i> 출발 시간</label>
-                            <select id="time">
+                            <label for="arrivalTerminal"><i class="fas fa-building"></i> 도착 터미널</label>
+                            <select id="arrivalTerminal" required disabled>
+                                <option value="">터미널을 선택하세요</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="departureDate"><i class="fas fa-calendar"></i> 출발 날짜</label>
+                            <input type="date" id="departureDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="timeRange"><i class="fas fa-clock"></i> 출발 시간대</label>
+                            <select id="timeRange">
                                 <option value="">전체</option>
                                 <option value="06-12">06:00 ~ 12:00</option>
                                 <option value="12-18">12:00 ~ 18:00</option>
@@ -49,63 +67,49 @@
                             </select>
                         </div>
                     </div>
-                    <div class="bus-types">
-                        <label class="bus-type">
-                            <input type="radio" name="busType" value="express" checked>
-                            <span>고속버스</span>
-                        </label>
-                        <label class="bus-type">
-                            <input type="radio" name="busType" value="intercity">
-                            <span>시외버스</span>
-                        </label>
-                    </div>
-                    <div class="grade-options">
-                        <label class="grade">
-                            <input type="checkbox" checked>
-                            <span>우등</span>
-                        </label>
-                        <label class="grade">
-                            <input type="checkbox" checked>
-                            <span>일반</span>
-                        </label>
-                        <label class="grade express-only">
-                            <input type="checkbox" checked>
-                            <span>프리미엄</span>
-                        </label>
-                    </div>
                     <div class="search-actions">
                         <button type="submit" class="search-btn">
-                            <i class="fas fa-search"></i> 조회하기
+                            <i class="fas fa-search"></i> 노선 검색
                         </button>
                     </div>
                 </form>
             </div>
 
+            <!-- 검색 결과 섹션 -->
+            <div class="search-results" id="searchResults" style="display: none;">
+                <h2><i class="fas fa-list"></i> 검색 결과</h2>
+                <div class="results-container" id="resultsContainer">
+                    <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
+                </div>
+            </div>
+
             <div class="bus-info-section">
-                <h2><i class="fas fa-info-circle"></i> 버스 정보</h2>
+                <h2><i class="fas fa-info-circle"></i> 고속버스 안내</h2>
                 <div class="bus-info-grid">
                     <div class="info-card">
                         <div class="info-icon">
                             <i class="fas fa-bus"></i>
                         </div>
                         <h3>고속버스</h3>
-                        <p>도시 간 빠른 이동을 위한 고속버스입니다</p>
+                        <p>도시 간 빠르고 편리한 이동을 위한 고속버스입니다</p>
                         <ul>
-                            <li>최고속도: 100km/h</li>
-                            <li>예상 소요시간: 4시간 30분 (서울-부산)</li>
-                            <li>요금: 34,000원 (서울-부산, 우등)</li>
+                            <li><i class="fas fa-check"></i> 전국 주요 도시 연결</li>
+                            <li><i class="fas fa-check"></i> 실시간 운행 정보</li>
+                            <li><i class="fas fa-check"></i> 다양한 등급 (우등, 일반, 프리미엄)</li>
+                            <li><i class="fas fa-check"></i> 안전하고 편안한 여행</li>
                         </ul>
                     </div>
                     <div class="info-card">
                         <div class="info-icon">
-                            <i class="fas fa-bus"></i>
+                            <i class="fas fa-clock"></i>
                         </div>
-                        <h3>시외버스</h3>
-                        <p>지방 간 이동을 위한 시외버스입니다</p>
+                        <h3>운행 시간</h3>
+                        <p>고속버스는 24시간 운행되며, 노선별로 차이가 있습니다</p>
                         <ul>
-                            <li>최고속도: 80km/h</li>
-                            <li>예상 소요시간: 5시간 (서울-부산)</li>
-                            <li>요금: 28,000원 (서울-부산, 일반)</li>
+                            <li><i class="fas fa-clock"></i> 첫차: 05:00 ~ 07:00</li>
+                            <li><i class="fas fa-clock"></i> 막차: 23:00 ~ 24:00</li>
+                            <li><i class="fas fa-info"></i> 휴일 및 공휴일 운행</li>
+                            <li><i class="fas fa-exclamation"></i> 날씨에 따라 운행 변경 가능</li>
                         </ul>
                     </div>
                 </div>
@@ -121,8 +125,9 @@
                             <span><i class="fas fa-won-sign"></i> 34,000원</span>
                         </div>
                         <div class="route-buses">
-                            <span class="bus-badge express">고속</span>
-                            <span class="bus-badge intercity">시외</span>
+                            <span class="bus-badge express">우등</span>
+                            <span class="bus-badge intercity">일반</span>
+                            <span class="bus-badge premium">프리미엄</span>
                         </div>
                     </div>
                     <div class="route-card">
@@ -132,8 +137,8 @@
                             <span><i class="fas fa-won-sign"></i> 18,000원</span>
                         </div>
                         <div class="route-buses">
-                            <span class="bus-badge express">고속</span>
-                            <span class="bus-badge intercity">시외</span>
+                            <span class="bus-badge express">우등</span>
+                            <span class="bus-badge intercity">일반</span>
                         </div>
                     </div>
                     <div class="route-card">
@@ -143,8 +148,8 @@
                             <span><i class="fas fa-won-sign"></i> 15,000원</span>
                         </div>
                         <div class="route-buses">
-                            <span class="bus-badge express">고속</span>
-                            <span class="bus-badge intercity">시외</span>
+                            <span class="bus-badge express">우등</span>
+                            <span class="bus-badge intercity">일반</span>
                         </div>
                     </div>
                 </div>
@@ -152,10 +157,273 @@
         </div>
     </main>
 
-    <script>
-        // 최소 날짜 설정
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('date').min = today;
-    </script>
+    <th:block layout:fragment="script">
+        <script>
+            // 전역 변수
+            let cities = [];
+            let terminals = [];
+            let selectedDepartureCity = null;
+            let selectedArrivalCity = null;
+
+            // 페이지 로드 시 초기화
+            document.addEventListener('DOMContentLoaded', function() {
+                loadCities();
+                loadTerminals();
+                setDefaultDate();
+                setupEventListeners();
+            });
+
+            // 도시 목록 로드
+            async function loadCities() {
+                try {
+                    const response = await fetch('/transportation/bus/cities');
+                    if (response.ok) {
+                        cities = await response.json();
+                        populateCitySelects();
+                    } else {
+                        console.error('도시 목록 로드 실패');
+                    }
+                } catch (error) {
+                    console.error('도시 목록 로드 중 오류:', error);
+                }
+            }
+
+            // 터미널 목록 로드
+            async function loadTerminals() {
+                try {
+                    const response = await fetch('/transportation/bus/terminals');
+                    if (response.ok) {
+                        terminals = await response.json();
+                    } else {
+                        console.error('터미널 목록 로드 실패');
+                    }
+                } catch (error) {
+                    console.error('터미널 목록 로드 중 오류:', error);
+                }
+            }
+
+            // 도시 선택 옵션 채우기
+            function populateCitySelects() {
+                const departureCitySelect = document.getElementById('departureCity');
+                const arrivalCitySelect = document.getElementById('arrivalCity');
+
+                // 기존 옵션 제거 (첫 번째 옵션 제외)
+                departureCitySelect.innerHTML = '<option value="">도시를 선택하세요</option>';
+                arrivalCitySelect.innerHTML = '<option value="">도시를 선택하세요</option>';
+
+                // 도시 옵션 추가
+                cities.forEach(city => {
+                    const departureOption = document.createElement('option');
+                    departureOption.value = city.cityCode;
+                    departureOption.textContent = city.cityName;
+                    departureCitySelect.appendChild(departureOption);
+
+                    const arrivalOption = document.createElement('option');
+                    arrivalOption.value = city.cityCode;
+                    arrivalOption.textContent = city.cityName;
+                    arrivalCitySelect.appendChild(arrivalOption);
+                });
+            }
+
+            // 터미널 선택 옵션 채우기
+            function populateTerminalSelects(cityCode, selectElement) {
+                selectElement.innerHTML = '<option value="">터미널을 선택하세요</option>';
+                selectElement.disabled = true;
+
+                if (!cityCode) return;
+
+                // 해당 도시의 터미널 조회
+                fetch(`/transportation/bus/terminals/${cityCode}`)
+                    .then(response => response.json())
+                    .then(cityTerminals => {
+                        cityTerminals.forEach(terminal => {
+                            const option = document.createElement('option');
+                            option.value = terminal.terminalId;
+                            option.textContent = terminal.terminalName;
+                            selectElement.appendChild(option);
+                        });
+                        selectElement.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('터미널 조회 중 오류:', error);
+                        selectElement.disabled = false;
+                    });
+            }
+
+            // 도시 코드로 도시명 가져오기
+            function getCityNameByCode(cityCode) {
+                const city = cities.find(c => c.cityCode == cityCode);
+                return city ? city.cityName : '';
+            }
+
+            // 기본 날짜 설정 (내일)
+            function setDefaultDate() {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const dateString = tomorrow.toISOString().split('T')[0];
+                document.getElementById('departureDate').value = dateString;
+            }
+
+            // 이벤트 리스너 설정
+            function setupEventListeners() {
+                // 출발 도시 변경
+                document.getElementById('departureCity').addEventListener('change', function() {
+                    selectedDepartureCity = this.value;
+                    populateTerminalSelects(this.value, document.getElementById('departureTerminal'));
+                });
+
+                // 도착 도시 변경
+                document.getElementById('arrivalCity').addEventListener('change', function() {
+                    selectedArrivalCity = this.value;
+                    populateTerminalSelects(this.value, document.getElementById('arrivalTerminal'));
+                });
+
+                // 검색 폼 제출
+                document.getElementById('busSearchForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    searchBusRoutes();
+                });
+            }
+
+            // 버스 노선 검색
+            async function searchBusRoutes() {
+                const departureTerminal = document.getElementById('departureTerminal').value;
+                const arrivalTerminal = document.getElementById('arrivalTerminal').value;
+                const departureDate = document.getElementById('departureDate').value;
+
+                if (!departureTerminal || !arrivalTerminal || !departureDate) {
+                    alert('모든 필드를 입력해주세요.');
+                    return;
+                }
+
+                // 날짜 형식 변환 (YYYY-MM-DD -> YYYYMMDD)
+                const formattedDate = departureDate.replace(/-/g, '');
+
+                try {
+                    const formData = new FormData();
+                    formData.append('depTerminalId', departureTerminal);
+                    formData.append('arrTerminalId', arrivalTerminal);
+                    formData.append('depPlandTime', formattedDate);
+
+                    const response = await fetch('/transportation/bus/search', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const routes = await response.json();
+                        displaySearchResults(routes);
+                    } else {
+                        console.error('노선 검색 실패');
+                        alert('노선 검색에 실패했습니다. 다시 시도해주세요.');
+                    }
+                } catch (error) {
+                    console.error('노선 검색 중 오류:', error);
+                    alert('노선 검색 중 오류가 발생했습니다.');
+                }
+            }
+
+            // 검색 결과 표시
+            function displaySearchResults(routes) {
+                const resultsContainer = document.getElementById('resultsContainer');
+                const searchResults = document.getElementById('searchResults');
+
+                if (routes.length === 0) {
+                    resultsContainer.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search"></i>
+                            <h3>검색 결과가 없습니다</h3>
+                            <p>다른 날짜나 시간대를 선택해보세요.</p>
+                        </div>
+                    `;
+                } else {
+                    resultsContainer.innerHTML = routes.map(route => `
+                        <div class="route-result">
+                            <div class="route-header">
+                                <div class="route-info">
+                                    <h3>${route.depPlaceNm} → ${route.arrPlaceNm}</h3>
+                                    <span class="grade-badge ${getGradeClass(route.gradeNm)}">${route.gradeNm}</span>
+                                </div>
+                            </div>
+                            <div class="route-details">
+                                <div class="time-info">
+                                    <div class="departure">
+                                        <span class="time">${route.depPlandTimeStr}</span>
+                                        <span class="place">${route.depPlaceNm}</span>
+                                    </div>
+                                    <div class="duration">
+                                        <i class="fas fa-arrow-right"></i>
+                                        <span>${calculateDuration(route.depPlandTimeStr, route.arrPlandTimeStr)}</span>
+                                    </div>
+                                    <div class="arrival">
+                                        <span class="time">${route.arrPlandTimeStr}</span>
+                                        <span class="place">${route.arrPlaceNm}</span>
+                                    </div>
+                                </div>
+                                <div class="price-info">
+                                    <span class="price">${route.charge}원</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                searchResults.style.display = 'block';
+                searchResults.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // 등급별 CSS 클래스 반환
+            function getGradeClass(gradeNm) {
+                switch (gradeNm) {
+                    case '우등': return 'premium';
+                    case '일반': return 'regular';
+                    case '프리미엄': return 'luxury';
+                    default: return 'regular';
+                }
+            }
+
+            // 시간 형식 변환
+            function formatTime(timeStr) {
+                if (timeStr && timeStr.length >= 6) {
+                    return timeStr.substring(0, 2) + ':' + timeStr.substring(2, 4);
+                }
+                return timeStr;
+            }
+
+            // 소요시간 계산
+            function calculateDuration(depTime, arrTime) {
+                if (!depTime || !arrTime) return '';
+                
+                // HH:mm 형식에서 시간과 분 추출
+                const depParts = depTime.split(':');
+                const arrParts = arrTime.split(':');
+                
+                if (depParts.length !== 2 || arrParts.length !== 2) return '';
+                
+                const depHour = parseInt(depParts[0]);
+                const depMin = parseInt(depParts[1]);
+                const arrHour = parseInt(arrParts[0]);
+                const arrMin = parseInt(arrParts[1]);
+                
+                let durationHours = arrHour - depHour;
+                let durationMins = arrMin - depMin;
+                
+                if (durationMins < 0) {
+                    durationHours -= 1;
+                    durationMins += 60;
+                }
+                
+                if (durationHours < 0) {
+                    durationHours += 24; // 다음날로 넘어가는 경우
+                }
+                
+                if (durationMins === 0) {
+                    return durationHours + '시간';
+                } else {
+                    return durationHours + '시간 ' + durationMins + '분';
+                }
+            }
+        </script>
+    </th:block>
 </body>
 </html> 

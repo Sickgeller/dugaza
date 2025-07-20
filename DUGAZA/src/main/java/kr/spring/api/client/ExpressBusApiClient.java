@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.util.List;
+import kr.spring.api.dto.ExpressBusRouteApiDto;
 
 @Component
 @RequiredArgsConstructor
@@ -34,6 +35,22 @@ public class ExpressBusApiClient {
         return baseApiClient.callApiManyTimes(uri, this::createExpressBusGradeApiDto);
     }
 
+    @LogExecutionTime(category = "RouteData")
+    public List<ExpressBusGradeApiDto> getRouteData() {
+        URI uri = baseApiClient.makeExpressBusUri("/getStrtpntAlocFndExpbusInfo");
+        return baseApiClient.callApiManyTimes(uri, this::createExpressBusGradeApiDto);
+    }
+
+    @LogExecutionTime(category = "RouteSearch")
+    public List<ExpressBusRouteApiDto> searchRoutes(String depTerminalId, String arrTerminalId, String depPlandTime) {
+        URI uri = baseApiClient.makeExpressBusUri("/getStrtpntAlocFndExpbusInfo", 
+            "depTerminalId", depTerminalId,
+            "arrTerminalId", arrTerminalId,
+            "depPlandTime", depPlandTime);
+        return baseApiClient.callApi(uri, this::createExpressBusRouteApiDto);
+    }
+
+
     private ExpressBusGradeApiDto createExpressBusGradeApiDto(JsonNode jsonNode, String s) {
         return ExpressBusGradeApiDto.builder()
                 .gradeId(jsonNode.path("gradeId").asLong())
@@ -46,6 +63,8 @@ public class ExpressBusApiClient {
                 .builder()
                 .terminalId(item.path("terminalId").asText())
                 .terminalName((item.path("terminalNm").asText()))
+                .address(item.path("address").asText())
+                .cityCode(item.path("cityCode").asLong())
                 .build();
     }
 
@@ -57,4 +76,34 @@ public class ExpressBusApiClient {
                 .build();
     }
 
+    private ExpressBusRouteApiDto createExpressBusRouteApiDto(JsonNode item, String type) {
+        // 시간 형식 변환 (YYYYMMDDHHMM -> HH:mm)
+        String depTime = formatTime(item.path("depPlandTime").asText());
+        String arrTime = formatTime(item.path("arrPlandTime").asText());
+        
+        return ExpressBusRouteApiDto.builder()
+                .depPlaceNm(item.path("depPlaceNm").asText())
+                .arrPlaceNm(item.path("arrPlaceNm").asText())
+                .depPlandTimeStr(depTime)
+                .arrPlandTimeStr(arrTime)
+                .charge(item.path("charge").asText())
+                .gradeNm(item.path("gradeNm").asText())
+                .routeId(item.path("routeId").asText())
+                .build();
+    }
+    
+    /**
+     * 시간 형식을 HH:mm으로 변환
+     * @param timeStr YYYYMMDDHHMM 형식의 시간 문자열
+     * @return HH:mm 형식의 시간 문자열
+     */
+    private String formatTime(String timeStr) {
+        if (timeStr == null || timeStr.length() < 12) {
+            return "";
+        }
+        // YYYYMMDDHHMM -> HH:mm
+        String hour = timeStr.substring(8, 10);
+        String minute = timeStr.substring(10, 12);
+        return hour + ":" + minute;
+    }
 }

@@ -30,11 +30,17 @@
                             <span>예약 내역</span>
                         </a>
                     </li>
+                    <li th:class="${currentMenu == 'payment-pending' ? 'active' : ''}">
+                        <a th:href="@{/payment/pending}">
+                            <i class="fas fa-clock"></i>
+                            <span>결제 대기</span>
+                            <span class="badge" th:if="${paymentPendingCount > 0}" th:text="${paymentPendingCount}">0</span>
+                        </a>
+                    </li>
                     <li th:class="${currentMenu == 'payment' ? 'active' : ''}">
                         <a th:href="@{/member/payment}">
                             <i class="fas fa-credit-card"></i>
-                            <span>결제</span>
-                            <span class="badge" th:if="${paymentPendingCount > 0}" th:text="${paymentPendingCount}">0</span>
+                            <span>결제하기</span>
                         </a>
                     </li>
                     <li th:class="${currentMenu == 'wishlist' ? 'active' : ''}">

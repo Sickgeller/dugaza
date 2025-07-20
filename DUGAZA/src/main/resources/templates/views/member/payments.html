@@ -307,30 +307,26 @@
             <!-- 결제 통계 -->
             <div class="payment-stats">
                 <div class="stat-card">
-                    <div class="stat-number" th:text="${payments.size()}">0</div>
+                    <div class="stat-number" th:text="${totalPaymentCount}">0</div>
                     <div class="stat-label">총 결제 건수</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" th:text="${#numbers.formatInteger(payments.stream().mapToInt(p -> p.amount).sum(), 3, 'COMMA')}">0</div>
+                    <div class="stat-number" th:text="${#numbers.formatInteger(totalPaymentAmount, 3, 'COMMA')}">0</div>
                     <div class="stat-label">총 결제 금액</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" th:text="${payments.stream().filter(p -> p.status == 'SUCCESS').count()}">0</div>
+                    <div class="stat-number" th:text="${successPaymentCount}">0</div>
                     <div class="stat-label">성공한 결제</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" th:text="${payments.stream().filter(p -> p.status == 'CANCELLED').count()}">0</div>
+                    <div class="stat-number" th:text="${cancelledPaymentCount}">0</div>
                     <div class="stat-label">취소된 결제</div>
                 </div>
             </div>
             
             <!-- 결제 필터 -->
             <div class="payment-filters">
-                <button class="filter-btn active" onclick="filterPayments('all')">전체</button>
-                <button class="filter-btn" onclick="filterPayments('success')">성공</button>
-                <button class="filter-btn" onclick="filterPayments('pending')">대기</button>
-                <button class="filter-btn" onclick="filterPayments('failed')">실패</button>
-                <button class="filter-btn" onclick="filterPayments('cancelled')">취소</button>
+                <button class="filter-btn active" onclick="filterPayments('all')">전체 결제 내역</button>
             </div>
             
             <div th:if="${payments.isEmpty()}" class="empty-payments">
@@ -345,58 +341,53 @@
                 <div th:each="payment : ${payments}" class="payment-card" th:data-status="${payment.status}">
                     <div class="payment-header">
                         <div class="payment-info">
-                            <div class="payment-id" th:text="${payment.paymentId}">결제번호</div>
+                            <div class="payment-id" th:text="'결제 #' + ${payment.paymentPendingId}">결제번호</div>
                             <div class="payment-meta">
-                                <span th:text="${#temporals.format(payment.paymentDate, 'yyyy-MM-dd HH:mm')}">결제일</span>
-                                <span th:text="${payment.paymentMethod}">결제수단</span>
+                                <span th:text="${#temporals.format(payment.createdAt, 'yyyy-MM-dd HH:mm')}">결제일</span>
+                                <span>통합 결제</span>
                             </div>
                         </div>
-                        <span th:class="${payment.status == 'SUCCESS' ? 'payment-status status-success' : 
-                                       payment.status == 'PENDING' ? 'payment-status status-pending' : 
-                                       payment.status == 'FAILED' ? 'payment-status status-failed' : 
-                                       'payment-status status-cancelled'}">
-                            <span th:text="${payment.status == 'SUCCESS' ? '결제 완료' : 
-                                          payment.status == 'PENDING' ? '결제 대기' : 
-                                          payment.status == 'FAILED' ? '결제 실패' : '결제 취소'}">상태</span>
+                        <span class="payment-status status-success">
+                            <span>결제 완료</span>
                         </span>
                     </div>
                     
                     <div class="payment-content">
                         <div class="payment-items">
-                            <div th:each="item : ${payment.items}" class="payment-item">
+                            <!-- 결제대기 아이템 정보는 별도 조회 필요 -->
+                            <div class="payment-item">
                                 <div class="item-info">
-                                    <div th:class="${item.itemType == 'HOUSE' ? 'item-icon icon-house' : 'item-icon icon-car'}">
-                                        <i th:class="${item.itemType == 'HOUSE' ? 'fas fa-bed' : 'fas fa-car'}"></i>
+                                    <div class="item-icon icon-mixed">
+                                        <i class="fas fa-shopping-cart"></i>
                                     </div>
                                     <div class="item-details">
-                                        <h5 th:text="${item.itemName}">상품명</h5>
-                                        <p th:text="${item.itemType == 'HOUSE' ? '숙소' : '차량'} + ' - ' + ${item.quantity} + '개'">상품 정보</p>
+                                        <h5>통합 결제</h5>
+                                        <p>숙소 및 차량 예약</p>
                                     </div>
                                 </div>
-                                <div class="item-price" th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">가격</div>
+                                <div class="item-price" th:text="${#numbers.formatInteger(payment.finalPrice, 3, 'COMMA')} + '원'">가격</div>
                             </div>
                         </div>
                         
                         <div class="payment-summary">
                             <div class="summary-row">
                                 <span>상품 금액</span>
-                                <span th:text="${#numbers.formatInteger(payment.amount - payment.discount, 3, 'COMMA')} + '원'">상품금액</span>
+                                <span th:text="${#numbers.formatInteger(payment.totalPrice, 3, 'COMMA')} + '원'">상품금액</span>
                             </div>
-                            <div th:if="${payment.discount > 0}" class="summary-row">
+                            <div th:if="${payment.discountAmount > 0}" class="summary-row">
                                 <span>할인 금액</span>
-                                <span style="color: #dc3545;" th:text="'-' + ${#numbers.formatInteger(payment.discount, 3, 'COMMA')} + '원'">할인금액</span>
+                                <span style="color: #dc3545;" th:text="'-' + ${#numbers.formatInteger(payment.discountAmount, 3, 'COMMA')} + '원'">할인금액</span>
                             </div>
                             <div class="summary-row">
                                 <span>총 결제 금액</span>
-                                <span th:text="${#numbers.formatInteger(payment.amount, 3, 'COMMA')} + '원'">총금액</span>
+                                <span th:text="${#numbers.formatInteger(payment.finalPrice, 3, 'COMMA')} + '원'">총금액</span>
                             </div>
                         </div>
                     </div>
                     
                     <div class="payment-actions">
-                        <button class="btn btn-primary" th:onclick="'viewPaymentDetail(\'' + ${payment.paymentId} + '\')'">상세보기</button>
-                        <button th:if="${payment.status == 'SUCCESS'}" class="btn btn-secondary" th:onclick="'downloadReceipt(\'' + ${payment.paymentId} + '\')'">영수증</button>
-                        <button th:if="${payment.status == 'SUCCESS'}" class="btn btn-danger" th:onclick="'cancelPayment(\'' + ${payment.paymentId} + '\')'">결제 취소</button>
+                        <button class="btn btn-primary" th:onclick="'viewPaymentDetail(\'' + ${payment.paymentPendingId} + '\')'">상세보기</button>
+                        <button class="btn btn-secondary" th:onclick="'downloadReceipt(\'' + ${payment.paymentPendingId} + '\')'">영수증</button>
                     </div>
                 </div>
             </div>
@@ -412,21 +403,11 @@
                 });
                 event.target.classList.add('active');
                 
-                // 결제 카드 필터링
+                // 현재는 모든 결제가 완료된 상태이므로 필터링 불필요
+                // 모든 결제 카드를 표시
                 const paymentCards = document.querySelectorAll('.payment-card');
-                
                 paymentCards.forEach(card => {
-                    const status = card.dataset.status;
-                    
-                    if (filter === 'all' || 
-                        (filter === 'success' && status === 'SUCCESS') || 
-                        (filter === 'pending' && status === 'PENDING') || 
-                        (filter === 'failed' && status === 'FAILED') || 
-                        (filter === 'cancelled' && status === 'CANCELLED')) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
+                    card.style.display = 'block';
                 });
             }
             

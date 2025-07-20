@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Slf4j
 @Controller
@@ -442,10 +443,26 @@ public class MemberUserController {
 			}
 			
 			Long memberId = member.getMemberId();
-			// 임시로 빈 리스트 사용
-			List<Object> payments = new ArrayList<>();
 			
-			model.addAttribute("payments", payments);
+			// 결제완료된 결제대기 목록 조회 (status = 1)
+			List<PaymentPendingVO> completedPayments = paymentPendingService.getPaymentPendingByMember(memberId)
+				.stream()
+				.filter(payment -> payment.getStatus() == PaymentPendingVO.STATUS_PAID)
+				.toList();
+			
+			// Thymeleaf에서 지원하지 않는 복잡한 표현식들을 미리 계산
+			int totalPaymentCount = completedPayments.size();
+			int totalPaymentAmount = completedPayments.stream()
+				.mapToInt(PaymentPendingVO::getFinalPrice)
+				.sum();
+			int successPaymentCount = completedPayments.size(); // status가 1이면 모두 성공
+			int cancelledPaymentCount = 0; // 취소된 결제는 별도 처리 필요
+			
+			model.addAttribute("payments", completedPayments);
+			model.addAttribute("totalPaymentCount", totalPaymentCount);
+			model.addAttribute("totalPaymentAmount", totalPaymentAmount);
+			model.addAttribute("successPaymentCount", successPaymentCount);
+			model.addAttribute("cancelledPaymentCount", cancelledPaymentCount);
 			model.addAttribute("currentMenu", "payments");
 			
 			return "views/member/payments";
@@ -521,6 +538,100 @@ public class MemberUserController {
 			model.addAttribute("error", "결제 페이지를 불러올 수 없습니다.");
 			return "views/common/error";
 		}
+	}
+	
+	/**
+	 * 차량 예약 취소
+	 */
+	@PostMapping("/reservations/car/{reservationId}/cancel")
+	@ResponseBody
+	public Map<String, Object> cancelCarReservation(@PathVariable Long reservationId, 
+			@AuthenticationPrincipal CustomUserDetails userDetails) {
+		Map<String, Object> response = new HashMap<>();
+		
+		try {
+			MemberVO member = userDetails.getMember();
+			if (member == null) {
+				response.put("success", false);
+				response.put("message", "로그인이 필요합니다.");
+				return response;
+			}
+			
+			// 예약 정보 조회
+			CarReservationVO reservation = carReservationService.getReservation(reservationId);
+			if (reservation == null) {
+				response.put("success", false);
+				response.put("message", "예약 정보를 찾을 수 없습니다.");
+				return response;
+			}
+			
+			// 본인 예약인지 확인
+			if (!reservation.getMemberId().equals(member.getMemberId())) {
+				response.put("success", false);
+				response.put("message", "본인의 예약만 취소할 수 있습니다.");
+				return response;
+			}
+			
+			// 예약 취소 처리
+			carReservationService.deleteReservation(reservationId);
+			
+			response.put("success", true);
+			response.put("message", "차량 예약이 취소되었습니다.");
+			
+		} catch (Exception e) {
+			log.error("차량 예약 취소 중 오류 발생", e);
+			response.put("success", false);
+			response.put("message", "예약 취소 중 오류가 발생했습니다.");
+		}
+		
+		return response;
+	}
+	
+	/**
+	 * 숙소 예약 취소
+	 */
+	@PostMapping("/reservations/house/{reservationId}/cancel")
+	@ResponseBody
+	public Map<String, Object> cancelHouseReservation(@PathVariable Long reservationId, 
+			@AuthenticationPrincipal CustomUserDetails userDetails) {
+		Map<String, Object> response = new HashMap<>();
+		
+		try {
+			MemberVO member = userDetails.getMember();
+			if (member == null) {
+				response.put("success", false);
+				response.put("message", "로그인이 필요합니다.");
+				return response;
+			}
+			
+			// 예약 정보 조회
+			HouseReservationVO reservation = houseReservationService.getReservation(reservationId);
+			if (reservation == null) {
+				response.put("success", false);
+				response.put("message", "예약 정보를 찾을 수 없습니다.");
+				return response;
+			}
+			
+			// 본인 예약인지 확인
+			if (!reservation.getMemberId().equals(member.getMemberId())) {
+				response.put("success", false);
+				response.put("message", "본인의 예약만 취소할 수 있습니다.");
+				return response;
+			}
+			
+			// 예약 취소 처리
+			houseReservationService.deleteReservation(reservationId);
+			
+			response.put("success", true);
+			response.put("message", "숙소 예약이 취소되었습니다.");
+			
+		} catch (Exception e) {
+			log.error("숙소 예약 취소 중 오류 발생", e);
+			response.put("success", false);
+			response.put("message", "예약 취소 중 오류가 발생했습니다.");
+		}
+		
+		return response;
 	}
 }
 

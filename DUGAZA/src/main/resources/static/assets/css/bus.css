@@ -1,53 +1,55 @@
-/* 버스 조회 페이지 스타일 */
+/* Bus Search Page Styles */
 .bus-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 20px;
 }
 
 .bus-header {
     text-align: center;
     margin-bottom: 40px;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    color: white;
 }
 
 .bus-header h1 {
-    color: #333;
     font-size: 2.5rem;
     margin-bottom: 10px;
+    font-weight: 700;
 }
 
 .bus-header h1 i {
-    color: #28a745;
-    margin-right: 10px;
+    margin-right: 15px;
+    color: #ffd700;
 }
 
 .bus-header p {
-    color: #666;
     font-size: 1.1rem;
     margin-bottom: 20px;
+    opacity: 0.9;
 }
 
 .status-notice {
-    background: #fff3cd;
-    color: #856404;
+    background: rgba(255, 255, 255, 0.2);
     padding: 15px 20px;
-    border-radius: 8px;
-    border: 1px solid #ffeaa7;
+    border-radius: 10px;
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 
 .status-notice i {
-    color: #f39c12;
+    color: #ffd700;
 }
 
-/* 검색 섹션 */
+/* Search Section */
 .bus-search-section {
     background: white;
+    padding: 30px;
     border-radius: 15px;
-    padding: 40px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     margin-bottom: 40px;
 }
@@ -55,162 +57,261 @@
 .bus-search-form {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 20px;
 }
 
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 30px;
+    gap: 20px;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
+    gap: 8px;
 }
 
 .form-group label {
     font-weight: 600;
     color: #333;
-    margin-bottom: 8px;
-    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .form-group label i {
-    color: #28a745;
-    margin-right: 8px;
+    color: #667eea;
 }
 
-.form-group input,
-.form-group select {
-    padding: 12px 16px;
+.form-group select,
+.form-group input {
+    padding: 12px 15px;
     border: 2px solid #e1e5e9;
     border-radius: 8px;
     font-size: 1rem;
-    transition: border-color 0.3s ease;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group input:focus {
     outline: none;
-    border-color: #28a745;
-    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.bus-types {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-}
-
-.bus-type {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    padding: 10px 15px;
-    border: 2px solid #e1e5e9;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-}
-
-.bus-type:hover {
-    border-color: #28a745;
-    background: #f8f9fa;
-}
-
-.bus-type input[type="radio"] {
-    width: 18px;
-    height: 18px;
-    accent-color: #28a745;
-}
-
-.bus-type span {
-    font-weight: 600;
-    color: #333;
-}
-
-.grade-options {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.grade {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    padding: 8px 12px;
-    border: 2px solid #e1e5e9;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-}
-
-.grade:hover {
-    border-color: #28a745;
-    background: #f8f9fa;
-}
-
-.grade input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: #28a745;
-}
-
-.grade span {
-    font-weight: 500;
-    color: #333;
-    font-size: 0.9rem;
-}
-
-.grade.express-only {
-    background: #e8f5e8;
-    border-color: #28a745;
+.form-group select:disabled {
+    background: #f1f3f4;
+    color: #6c757d;
+    cursor: not-allowed;
 }
 
 .search-actions {
-    display: flex;
-    justify-content: center;
+    text-align: center;
+    margin-top: 20px;
 }
 
 .search-btn {
-    background: linear-gradient(135deg, #28a745, #20c997);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 15px 40px;
     border: none;
-    border-radius: 8px;
-    font-size: 1rem;
+    padding: 15px 40px;
+    border-radius: 25px;
+    font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .search-btn:hover {
-    background: linear-gradient(135deg, #20c997, #17a2b8);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
-/* 버스 정보 섹션 */
+.search-btn i {
+    font-size: 1rem;
+}
+
+/* Search Results */
+.search-results {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+}
+
+.search-results h2 {
+    color: #333;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-results h2 i {
+    color: #667eea;
+}
+
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+.no-results i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #dee2e6;
+}
+
+.no-results h3 {
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+.route-result {
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.route-result:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+.route-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.route-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.route-info h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.3rem;
+}
+
+.grade-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+}
+
+.grade-badge.premium {
+    background: #28a745;
+}
+
+.grade-badge.regular {
+    background: #6c757d;
+}
+
+.grade-badge.luxury {
+    background: #dc3545;
+}
+
+.company-info .company-name {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.route-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.time-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.departure,
+.arrival {
+    text-align: center;
+}
+
+.time {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.place {
+    display: block;
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+.duration {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.duration i {
+    color: #667eea;
+    margin-bottom: 5px;
+}
+
+.price-info {
+    text-align: right;
+}
+
+.price {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #dc3545;
+    margin-bottom: 5px;
+}
+
+.remaining-seat {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Info Section */
 .bus-info-section {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     margin-bottom: 40px;
 }
 
 .bus-info-section h2 {
     color: #333;
-    margin-bottom: 30px;
-    font-size: 1.8rem;
-    text-align: center;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .bus-info-section h2 i {
-    color: #28a745;
-    margin-right: 10px;
+    color: #667eea;
 }
 
 .bus-info-grid {
@@ -220,98 +321,91 @@
 }
 
 .info-card {
-    background: white;
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    transition: transform 0.3s ease;
+    padding: 25px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-left: 4px solid #667eea;
 }
 
-.info-card:hover {
-    transform: translateY(-5px);
-}
-
-.info-icon {
-    font-size: 3rem;
-    color: #28a745;
+.info-card .info-icon {
+    font-size: 2.5rem;
+    color: #667eea;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .info-card h3 {
     color: #333;
     margin-bottom: 15px;
-    font-size: 1.5rem;
+    text-align: center;
 }
 
 .info-card p {
-    color: #666;
-    margin-bottom: 20px;
+    color: #6c757d;
     line-height: 1.6;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .info-card ul {
     list-style: none;
     padding: 0;
-    text-align: left;
 }
 
 .info-card li {
-    color: #666;
-    margin-bottom: 8px;
-    padding-left: 20px;
-    position: relative;
+    padding: 8px 0;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.info-card li:before {
-    content: "•";
-    color: #28a745;
-    font-weight: bold;
-    position: absolute;
-    left: 0;
+.info-card li i {
+    color: #667eea;
+    width: 16px;
 }
 
-/* 인기 노선 */
+/* Popular Routes */
 .popular-routes {
-    background: #f8f9fa;
+    background: white;
+    padding: 30px;
     border-radius: 15px;
-    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .popular-routes h2 {
     color: #333;
-    margin-bottom: 30px;
-    font-size: 1.8rem;
-    text-align: center;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .popular-routes h2 i {
-    color: #ffc107;
-    margin-right: 10px;
+    color: #ffd700;
 }
 
 .routes-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
 }
 
 .route-card {
-    background: white;
+    padding: 20px;
+    border: 1px solid #e9ecef;
     border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .route-card:hover {
-    transform: translateY(-3px);
+    border-color: #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
 }
 
 .route-card h3 {
     color: #333;
     margin-bottom: 15px;
-    font-size: 1.3rem;
     text-align: center;
 }
 
@@ -319,18 +413,14 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 15px;
+    font-size: 0.9rem;
+    color: #6c757d;
 }
 
 .route-info span {
     display: flex;
     align-items: center;
     gap: 5px;
-    color: #666;
-    font-size: 0.9rem;
-}
-
-.route-info i {
-    color: #28a745;
 }
 
 .route-buses {
@@ -340,60 +430,50 @@
 }
 
 .bus-badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
     font-weight: 600;
+    color: white;
 }
 
 .bus-badge.express {
-    background: #e8f5e8;
-    color: #28a745;
+    background: #28a745;
 }
 
 .bus-badge.intercity {
-    background: #fff3cd;
-    color: #856404;
+    background: #6c757d;
 }
 
-/* 반응형 디자인 */
+.bus-badge.premium {
+    background: #dc3545;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-    .bus-container {
-        padding: 20px 15px;
-    }
-    
-    .bus-search-section {
-        padding: 25px;
-    }
-    
     .form-row {
         grid-template-columns: 1fr;
-        gap: 20px;
     }
     
-    .bus-types {
+    .route-details {
         flex-direction: column;
-        align-items: center;
+        gap: 20px;
+        align-items: stretch;
     }
     
-    .grade-options {
-        justify-content: center;
+    .time-info {
+        justify-content: space-between;
     }
     
-    .bus-info-grid,
-    .routes-grid {
+    .price-info {
+        text-align: center;
+    }
+    
+    .bus-info-grid {
         grid-template-columns: 1fr;
     }
-}
-
-@media (max-width: 480px) {
-    .bus-header h1 {
-        font-size: 2rem;
-    }
     
-    .route-info {
-        flex-direction: column;
-        gap: 8px;
-        text-align: center;
+    .routes-grid {
+        grid-template-columns: 1fr;
     }
 } 
