@@ -142,7 +142,7 @@ public class SellerCarController {
             // 파일 업로드 처리
             if (carRegisterDTO.getCarImage() != null && !carRegisterDTO.getCarImage().isEmpty()) {
                 try {
-                    String imagePath = FileUtil.uploadFile(carRegisterDTO.getCarImage(), "car");
+                    String imagePath = FileUtil.uploadFile(carRegisterDTO.getCarImage(), "");
                     carVO.setCarImage(imagePath);
                     log.info("차량 이미지 업로드 성공: {}", imagePath);
                 } catch (Exception e) {
@@ -197,7 +197,7 @@ public class SellerCarController {
             // 새 이미지가 업로드된 경우 처리
             if (carImage != null && !carImage.isEmpty()) {
                 try {
-                    String imagePath = FileUtil.uploadFile(carImage, "car");
+                    String imagePath = FileUtil.uploadFile(carImage, "");
                     carVO.setCarImage(imagePath);
                     log.info("차량 이미지 업로드 성공: {}", imagePath);
                 } catch (Exception e) {

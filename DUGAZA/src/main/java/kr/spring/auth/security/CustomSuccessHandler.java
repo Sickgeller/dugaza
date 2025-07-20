@@ -6,9 +6,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
@@ -41,6 +43,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             log.warn("사용자 타입 불일치: 요청타입 = {}, 실제권한 = {}", 
                     requestedUserType, userDetails.getAuthorities());
             
+            // 세션 정리 및 SecurityContext 클리어
+            clearAuthenticationAndSession(request, response, authentication);
+            
             // 적절한 로그인 페이지로 리다이렉트 (에러 메시지와 함께)
             String redirectUrl = getFailureRedirectUrl(requestedUserType);
             redirectStrategy.sendRedirect(request, response, redirectUrl);
@@ -67,6 +72,27 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         
         // Remember-me 처리를 위해 부모 클래스의 메서드 호출
         super.onAuthenticationSuccess(request, response, authentication);
+    }
+    
+    /**
+     * 인증 정보와 세션을 정리하는 메서드
+     */
+    private void clearAuthenticationAndSession(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        // SecurityContext 클리어
+        SecurityContextHolder.clearContext();
+        
+        // 세션에서 인증 관련 정보 제거
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.removeAttribute("user");
+            session.removeAttribute("seller");
+            session.removeAttribute("member");
+            session.removeAttribute("SPRING_SECURITY_CONTEXT");
+        }
+        
+        // SecurityContextLogoutHandler를 사용하여 완전한 로그아웃 처리
+        SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+        logoutHandler.logout(request, response, authentication);
     }
     
     /**

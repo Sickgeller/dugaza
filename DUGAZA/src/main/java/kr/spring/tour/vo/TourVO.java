@@ -31,8 +31,10 @@ public class TourVO {
     private Date updatedAt;  		  // 수정일
     private Integer showFlag;         // 표시 여부 (1: 표시, 0: 비표시)
     
+    // 찜 상태 필드 추가
+    private boolean wished;           // 찜 여부
+    
     public String getContentTypeName() {
         return ContentType.getNameById(this.contentTypeId);
     }
-
 }

@@ -5,24 +5,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>여행명소 - 드가자닷컴</title>
-    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <title>관광지 - 드가자닷컴</title>
     <link rel="stylesheet" th:href="@{/assets/css/tour.css}">
-    <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
-<body>
+<body th:data-is-login="${#authentication.principal != 'anonymousUser'}">
     <main class="tour-main" layout:fragment="content">
-    <form id="searchForm" method="get" action="/touristAttraction">
+        <form th:action="@{/tour}" method="get">
             <section class="filter-section">
                 <div class="filter-container">
                     <div class="filter-group">
                         <label>지역</label>
-                        <select>
-                            <option>전체</option>
-                            <option>서울</option>
-                            <option>부산</option>
-                            <option>제주</option>
+                        <select name="category">
+                            <option value="0">전체</option>
+                            <option value="1">서울</option>
+                            <option value="2">부산</option>
+                            <option value="3">제주</option>
                         </select>
                     </div>
                     <div class="filter-group">
@@ -41,81 +41,37 @@
             </section>
             </form>
 
-                    <section class="tour-list">
-            <div class="tour-grid">
-                <article class="tour-card" th:each="tour : ${list}">
-                <a th:href="@{/touristAttraction/detail(contentId=${tour.contentId})}">
-                    <div class="tour-image">
-                        <img th:src="${tour.firstImage != null ? tour.firstImage : '/assets/images/tour-icon.png'}" alt="여행명소">
-                        <button class="like-btn"><i class="fas fa-heart"></i></button>
-                    </div>
-                    <div class="tour-content">
-                        <h3 th:text="${tour.title}"></h3>
-                        <div class="tour-meta">
-                            <span class="location"><i class="fas fa-map-marker-alt" th:text="${tour.addr1}"></i></span>
-                            <span class="rating"><i class="fas fa-star"></i> 4.5</span>
-                        </div>
-                        <!-- <p class="tour-description">조선시대 대표적인 궁궐로, 아름다운 전통 건축과 정원을 감상할 수 있습니다.</p> -->
-                        <div class="tour-footer">
-                            <!-- <span class="category" th:text="${tour.contentTypeName}"></span> -->
-                            <a href="#" class="detail-btn">자세히 보기</a>
-                        </div>
-                    </div>
-                    </a>
-                </article>
-
-               <!--  <article class="tour-card">
-                    <div class="tour-image">
-                        <img src="../images/tour/haeundae.jpg" alt="해운대 해수욕장">
-                        <button class="like-btn"><i class="fas fa-heart"></i></button>
-                    </div>
-                    <div class="tour-content">
-                        <h3>해운대 해수욕장</h3>
-                        <div class="tour-meta">
-                            <span class="location"><i class="fas fa-map-marker-alt"></i> 부산 해운대구</span>
-                            <span class="rating"><i class="fas fa-star"></i> 4.7</span>
-                        </div>
-                        <p class="tour-description">부산의 대표적인 해수욕장으로, 아름다운 해변과 다양한 먹거리를 즐길 수 있습니다.</p>
-                        <div class="tour-footer">
-                            <span class="category">자연/해변</span>
-                            <a href="#" class="detail-btn">자세히 보기</a>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="tour-card">
-                    <div class="tour-image">
-                        <img src="../images/tour/seongsan.jpg" alt="성산일출봉">
-                        <button class="like-btn"><i class="fas fa-heart"></i></button>
-                    </div>
-                    <div class="tour-content">
-                        <h3>성산일출봉</h3>
-                        <div class="tour-meta">
-                            <span class="location"><i class="fas fa-map-marker-alt"></i> 제주 서귀포시</span>
-                            <span class="rating"><i class="fas fa-star"></i> 4.8</span>
-                        </div>
-                        <p class="tour-description">유네스코 세계자연유산으로 지정된 제주의 상징적인 관광지입니다.</p>
-                        <div class="tour-footer">
-                            <span class="category">자연/명소</span>
-                            <a href="#" class="detail-btn">자세히 보기</a>
-                        </div>
-                    </div>
-                </article>
-                -->
-            </div>
- 
-            <div class="pagination" th:utext="${page}">
-                <!-- <button class="prev-btn"><i class="fas fa-chevron-left"></i></button>
-                <div class="page-numbers">
-                    <a href="#" class="active">1</a>
-                    <a href="#">2</a>
-                    <a href="#">3</a>
-                    <a href="#">4</a>
-                    <a href="#">5</a>
+            <section class="tour-list">
+                <div class="tour-grid">
+                    <article class="tour-card" th:each="tour : ${list}">
+                        <a th:href="@{/touristAttraction/detail(contentId=${tour.contentId})}">
+                            <div class="tour-image">
+                                <img th:src="${tour.firstImage != null ? tour.firstImage : '/assets/images/tour-icon.png'}" alt="여행명소">
+                                <button class="like-btn" th:data-content-id="${tour.contentId}" th:data-content-type="${tour.contentTypeId}">
+                                    <i th:class="${tour.wished ? 'fas fa-heart' : 'far fa-heart'}" th:style="${tour.wished ? 'color: red;' : ''}"></i>
+                                </button>
+                            </div>
+                            <div class="tour-content">
+                                <h3 th:text="${tour.title}"></h3>
+                                <div class="tour-meta">
+                                    <span class="location"><i class="fas fa-map-marker-alt" th:text="${tour.addr1}"></i></span>
+                                    <span class="rating"><i class="fas fa-star"></i> 4.5</span>
+                                </div>
+                                <div class="tour-footer">
+                                    <a href="#" class="detail-btn">자세히 보기</a>
+                                </div>
+                            </div>
+                        </a>
+                    </article>
                 </div>
-                <button class="next-btn"><i class="fas fa-chevron-right"></i></button> -->
-            </div>
-        </section> 
+ 
+                <div class="pagination" th:utext="${page}">
+                </div>
+            </section> 
     </main>
+    
+    <th:block layout:fragment="script">
+        <script th:src="@{/assets/js/wishlist.js}"></script>
+    </th:block>
 </body>
 </html> 

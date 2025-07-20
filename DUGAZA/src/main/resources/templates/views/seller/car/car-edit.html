@@ -96,7 +96,7 @@
                         <input type="file" id="carImage" name="carImageFile" accept="image/*">
                         <div class="image-preview" id="imagePreview">
                             <img th:if="${car.carImage != null and car.carImage != ''}"
-                                 th:src="@{/assets/upload/car/} + ${car.carImage}"
+                                 th:src="@{/assets/upload/} + ${car.carImage}"
                                  alt="현재 차량 이미지" style="width: 150px; height: 150px; object-fit: cover; margin: 10px; border-radius: 8px; border: 2px solid #ddd;">
                             <img th:unless="${car.carImage != null and car.carImage != ''}"
                                  th:src="@{/assets/images/car/default-car.png}"
