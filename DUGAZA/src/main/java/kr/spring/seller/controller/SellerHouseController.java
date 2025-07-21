@@ -510,11 +510,14 @@ public class SellerHouseController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         
         // 현재 로그인한 판매자 정보 가져오기
+        if (customUserDetails == null || customUserDetails.getSeller() == null) {
+            return "redirect:/seller/login";
+        }
+        
         SellerVO seller = customUserDetails.getSeller();
-        if (seller == null) return "redirect:/seller/login";
         
         // 페이징 처리
-        int pageSize = 12;
+        int pageSize = 10; // 한 페이지당 10개씩 표시
         Map<String, Object> params = new HashMap<>();
         
         // 현재 판매자 ID 전달
