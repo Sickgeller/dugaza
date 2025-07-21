@@ -129,3 +129,6 @@ api:
 toss:
   payments:
     secret-key: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
+
+file:
+    upload-dir: ${user.home}/myapp/uploads
