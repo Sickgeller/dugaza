@@ -21,7 +21,7 @@
                         <label>위치</label>
                         <div class="search-input">
                             <i class="fas fa-map-marker-alt"></i>
-                            <input type="text" placeholder="어디로 가시나요?" name="keyword">
+                            <input type="text" placeholder="어디로 가시나요?" name="keyword" th:value="${keyword}">
                         </div>
                     </div>
                     <div class="search-group">
@@ -53,14 +53,14 @@
                     </div>
                     <button class="search-btn">검색</button>
                 </div>
-                <div class="filter-tags">
+                <!-- <div class="filter-tags">
                     <a th:href="@{/house(keyword=${param.keyword})}" th:classappend="${cat3 == null || cat3 == ''} ? 'active'" class="tag">전체</a>
                     <a th:href="@{/house(cat3='B02010100', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02010100')} ? 'active'" class="tag">호텔</a>
                     <a th:href="@{/house(cat3='B02010700', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02010700')} ? 'active'" class="tag">펜션</a>
                     <a th:href="@{/house(cat3='B02010500', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02010500')} ? 'active'" class="tag">콘도/리조트</a>
                     <a th:href="@{/house(cat3='B02011100', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02011100')} ? 'active'" class="tag">게스트하우스</a>
                     <a th:href="@{/house(cat3='B02011600', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02011600')} ? 'active'" class="tag">한옥</a>
-                </div>
+                </div> -->
             </div>
            </form>
         </section>

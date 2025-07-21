@@ -46,6 +46,7 @@ public class TourController {
 			map.put("keyword", keyword);
 			list = tourService.selectList(map);
 		}
+		model.addAttribute("keyword", keyword);
 		model.addAttribute("count", count);
 		model.addAttribute("list", list);
 		model.addAttribute("page", page.getPage());

@@ -36,7 +36,7 @@
 
         <div class="detail-gallery">
             <div class="main-image">
-                <img th:src="${info.firstImage}" alt="그랜드 호텔 대표 이미지">
+                <img th:src="${info.firstImage != null ? info.firstImage : '/assets/images/house.png'}" alt="그랜드 호텔 대표 이미지">
             </div>
         </div>
 

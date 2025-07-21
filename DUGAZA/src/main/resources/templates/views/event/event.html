@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>행사 - 드가자닷컴</title>
     <link rel="stylesheet" th:href="@{/assets/css/tour.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/restaurant.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
@@ -14,28 +15,11 @@
 <body th:data-is-login="${#authentication.principal != 'anonymousUser'}">
     <main class="tour-main" layout:fragment="content">
         <form th:action="@{/event}" method="get">
-            <section class="filter-section">
-                <div class="filter-container">
-                    <div class="filter-group">
-                        <label>지역</label>
-                        <select name="category">
-                            <option value="0">전체</option>
-                            <option value="1">서울</option>
-                            <option value="2">부산</option>
-                            <option value="3">제주</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>정렬</label>
-                        <select>
-                            <option>추천순</option>
-                            <option>평점순</option>
-                            <option>리뷰순</option>
-                        </select>
-                    </div>
-                    <div class="search-box" style="display: contents;">
-                    	<input type="text" placeholder="통합 검색" name="keyword">	
-	                <button><i class="fas fa-search"></i></button>
+            <section class="search-section">
+                <div class="search-container">
+                    <div class="search-box">
+                        <input type="text" placeholder="통합 검색" name="keyword">
+                        <button type="submit" class="search-btn">검색</button>
                     </div>
                 </div>
             </section>
