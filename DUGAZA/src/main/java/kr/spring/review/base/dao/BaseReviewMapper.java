@@ -51,4 +51,14 @@ public interface BaseReviewMapper {
      * 회원별 리뷰 조회
      */
     public List<BaseReviewVO> findReviewsByMemberId(@Param("memberId") Long memberId);
+    
+    /**
+     * 모든 리뷰 조회 (관리자용)
+     */
+    public List<BaseReviewVO> findAllReviews(@Param("startRow") int startRow, @Param("endRow") int endRow);
+    
+    /**
+     * 리뷰 상태 업데이트
+     */
+    public void updateReviewStatus(@Param("reviewId") Long reviewId, @Param("status") Integer status);
 }

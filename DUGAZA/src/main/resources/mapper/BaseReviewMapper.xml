@@ -252,7 +252,7 @@
     </insert>
     
     <!-- 회원별 리뷰 조회 -->
-    <select id="findReviewsByMemberId" resultMap="reviewResultMap">
+    <select id="findReviewsByMemberId" resultMap="reviewResultMap" parameterType="long">
         SELECT
             TO_NUMBER(R.REVIEW_ID) as REVIEW_ID,
             TO_NUMBER(R.MEMBER_ID) as MEMBER_ID,
@@ -270,4 +270,38 @@
         WHERE R.MEMBER_ID = #{memberId}
         ORDER BY R.CREATED_AT DESC, R.REVIEW_ID DESC
     </select>
+    
+    <!-- 모든 리뷰 조회 (관리자용) -->
+    <select id="findAllReviews" resultMap="reviewResultMap" parameterType="map">
+        SELECT * FROM (
+            SELECT ROWNUM AS RN, R.*
+            FROM (
+                SELECT
+                    TO_NUMBER(R.REVIEW_ID) as REVIEW_ID,
+                    TO_NUMBER(R.MEMBER_ID) as MEMBER_ID,
+                    TO_NUMBER(R.CONTENT_ID) as CONTENT_ID,
+                    TO_NUMBER(R.RESERVATION_ID) as RESERVATION_ID,
+                    TO_NUMBER(NVL(R.RATING, 0)) as RATING,
+                    TO_NUMBER(NVL(R.STATUS, 1)) as STATUS,
+                    NVL(R.REVIEW, '') as REVIEW,
+                    R.CREATED_AT,
+                    R.UPDATED_AT,
+                    TO_NUMBER(R.CONTENT_TYPE_ID) as CONTENT_TYPE_ID,
+                    TO_CHAR(M.ID) as ID
+                FROM REVIEWS R
+                JOIN MEMBER M ON M.MEMBER_ID = R.MEMBER_ID
+                ORDER BY R.CREATED_AT DESC, R.REVIEW_ID DESC
+            ) R
+            WHERE ROWNUM &lt;= #{endRow}
+        )
+        WHERE RN &gt;= #{startRow}
+    </select>
+    
+    <!-- 리뷰 상태 업데이트 -->
+    <update id="updateReviewStatus" parameterType="map">
+        UPDATE REVIEWS 
+        SET STATUS = #{status, jdbcType=NUMERIC},
+            UPDATED_AT = SYSDATE
+        WHERE REVIEW_ID = #{reviewId, jdbcType=NUMERIC}
+    </update>
 </mapper> 

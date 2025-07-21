@@ -32,4 +32,14 @@
     <select id="selectReviewsByCar" parameterType="long" resultMap="carReviewMap">
         SELECT * FROM CAR_REVIEW WHERE CAR_ID = #{carId} ORDER BY CREATED_AT DESC
     </select>
+    
+    <select id="selectAllCarReviews" resultMap="carReviewMap">
+        SELECT * FROM CAR_REVIEW ORDER BY CREATED_AT DESC
+    </select>
+    
+    <update id="updateReviewStatus" parameterType="map">
+        UPDATE CAR_REVIEW 
+        SET STATUS = #{status, jdbcType=NUMERIC}
+        WHERE REVIEW_ID = #{reviewId, jdbcType=NUMERIC}
+    </update>
 </mapper> 
