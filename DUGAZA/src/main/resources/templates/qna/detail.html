@@ -5,7 +5,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" th:href="@{/assets/css/qnaResponseDetail.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/qnaDetail.css}">
     <title>문의 상세</title>
 </head>
 
@@ -34,26 +34,18 @@
         </tr>
         <tr>
             <th>답변 여부</th>
-            <td th:text="${qna.is_answered == 1 ? '답변 완료' : '미답변'}">답변 여부</td>
+            <td th:text="${qna.is_answered?.toUpperCase() == 'Y' ? '답변 완료' : '미답변'}"></td>
         </tr>
     </table>
     
-		<div th:if="${response != null}" class="qna-answer-box">
-		    <h3>관리자 답변</h3>
-		    <pre th:text="${response.content}" style="white-space: pre-wrap;"></pre>
-		    <p class="qna-answer-date" th:text="${#dates.format(response.created_at, 'yyyy-MM-dd HH:mm')}">답변 일시</p>
-		</div>
-
-		<!-- 관리자 전용 답변 작성 폼 -->
-		<div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" class="qna-answer-form">
-		    <h3>답변 작성</h3>
-		    <form th:action="@{/qna/answer}" method="post">
-		        <input type="hidden" name="qna_id" th:value="${qna.qna_id}" />
-		        <textarea name="content" rows="6" style="width: 100%;" placeholder="답변 내용을 입력하세요"></textarea>
-		        <button type="submit" class="btn">답변 등록</button>
-		    </form>
-		</div>
-
+	<div th:if="${response != null}">
+	    <h3>관리자 답변</h3>
+	    <div class="admin-answer-box">
+	        <pre th:text="${response.content}" style="white-space: pre-wrap;"></pre>
+	        <p class="admin-answer-date" th:text="'작성일: ' + ${#dates.format(response.created_at, 'yyyy-MM-dd HH:mm')}"></p>
+	    </div>
+	</div>
+	
     <div class="qna-btn-box">
         <a th:href="@{/qna/my}" class="btn" id="qna-btn">목록으로</a>
     </div>

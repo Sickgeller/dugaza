@@ -20,13 +20,15 @@
         <p><strong>작성자:</strong> <span th:text="${question.member_id}">작성자</span></p>
     </div>
 
-    <form th:action="@{/admin/qna/response}" method="post">
+    <form th:action="@{/admin/qna/response}" method="post" class="response-form">
     	<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <input type="hidden" name="qna_id" th:value="${question.qna_id}" />
-        <textarea name="content" rows="5" cols="60"
+        <textarea name="content" rows="5" 
                   th:text="${response != null ? response.content : ''}"></textarea>
         <br>
+        <div class="btn-submit">
         <button type="submit" th:text="${response != null ? '답변 수정' : '답변 등록'}"></button>
+        </div>
     </form>
 
 </div>

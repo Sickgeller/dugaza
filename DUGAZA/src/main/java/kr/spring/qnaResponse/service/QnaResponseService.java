@@ -10,7 +10,7 @@ import kr.spring.qnaResponse.vo.QnaResponseVO;
 public interface QnaResponseService {
     void insertResponse(QnaResponseVO responseVO);
     List<QnaQuestionVO> getAllQnaList();
-    QnaResponseVO getAnswerByQnaId(Long qnaId);
+    QnaResponseVO getAnswerByQnaId(Long qna_id);
     QnaQuestionVO getQnaById(Long qnaId);
     void updateIsAnswered(Long qna_id, String is_answered);
     void updateResponse(QnaResponseVO responseVO);

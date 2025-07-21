@@ -16,7 +16,7 @@ public interface QnaQuestionService {
 	List<QnaQuestionVO> getAllQnaList();
 	void insertResponse(QnaResponseVO responseVO);
 	void updateIsAnswered(Long qna_id, String is_answered);
-	QnaResponseVO getAnswerByQnaId(Long qnaId);
+	QnaResponseVO getAnswerByQnaId(Long qna_id);
 	QnaQuestionVO getQnaById(Long qnaId);
 	void updateResponse(QnaResponseVO responseVO);
 }
