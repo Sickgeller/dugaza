@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 @Slf4j
 @Controller
@@ -111,8 +112,43 @@ public class AdminController {
             params.put("sort", sort);
         }
         
-        List<Map<String, Object>> carList = adminService.getCarList();
-        model.addAttribute("carList", carList);
+        List<Map<String, Object>> carList = adminService.getCarList(params);
+        log.info("차량 목록 조회 결과: {}건", carList.size());
+        
+        // 통계 데이터 계산
+        int totalCount = carList != null ? carList.size() : 0;
+        int availableCount = 0;
+        int maintenanceCount = 0;
+        double totalRating = 0.0;
+        int ratingCount = 0;
+        
+        if (carList != null) {
+            for (Map<String, Object> car : carList) {
+                String carStatus = car.get("status") != null ? car.get("status").toString() : "";
+                if ("AVAILABLE".equals(carStatus)) {
+                    availableCount++;
+                } else if ("REPAIRED".equals(carStatus)) {
+                    maintenanceCount++;
+                }
+                
+                Object rating = car.get("rating");
+                if (rating instanceof Number) {
+                    totalRating += ((Number) rating).doubleValue();
+                    ratingCount++;
+                }
+            }
+        }
+        
+        double avgRating = ratingCount > 0 ? totalRating / ratingCount : 0.0;
+        
+        log.info("통계 계산 결과: 총차량={}, 운행가능={}, 정비중={}, 평균평점={}", 
+                totalCount, availableCount, maintenanceCount, avgRating);
+        
+        model.addAttribute("carList", carList != null ? carList : new ArrayList<>());
+        model.addAttribute("count", totalCount);
+        model.addAttribute("availableCount", availableCount);
+        model.addAttribute("maintenanceCount", maintenanceCount);
+        model.addAttribute("avgRating", String.format("%.1f", avgRating));
         model.addAttribute("keyword", keyword);
         model.addAttribute("carType", carType);
         model.addAttribute("status", status);
@@ -130,7 +166,7 @@ public class AdminController {
         
         try {
             // 차량 목록에서 해당 차량 찾기
-            List<Map<String, Object>> carList = adminService.getCarList();
+            List<Map<String, Object>> carList = adminService.getCarList(new HashMap<>());
             Map<String, Object> carDetail = carList.stream()
                     .filter(car -> carId.equals(car.get("carId")))
                     .findFirst()
@@ -178,10 +214,15 @@ public class AdminController {
         Map<String, Object> response = new HashMap<>();
         
         try {
+            log.info("승인 대기 차량 목록 조회 API 호출됨");
             List<Map<String, Object>> pendingCars = adminService.getPendingCarList();
+            log.info("승인 대기 차량 목록 조회 결과: 개수={}", pendingCars.size());
+            
             response.put("success", true);
             response.put("cars", pendingCars);
             response.put("count", pendingCars.size());
+            
+            log.info("승인 대기 차량 목록 응답: {}", response);
         } catch (Exception e) {
             log.error("승인 대기 차량 목록 조회 실패", e);
             response.put("success", false);
@@ -417,10 +458,15 @@ public class AdminController {
     public Map<String, Object> getPendingHouses() {
         Map<String, Object> response = new HashMap<>();
         try {
+            log.info("승인 대기 숙소 목록 조회 API 호출됨");
             List<HouseSellerDetailVO> pendingHouses = houseService.getPendingHouses();
+            log.info("승인 대기 숙소 목록 조회 결과: 개수={}", pendingHouses.size());
+            
             response.put("success", true);
             response.put("data", pendingHouses);
             response.put("count", pendingHouses.size());
+            
+            log.info("승인 대기 숙소 목록 응답: {}", response);
         } catch (Exception e) {
             log.error("승인 대기 숙소 조회 중 오류 발생", e);
             response.put("success", false);

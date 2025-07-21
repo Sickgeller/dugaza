@@ -80,6 +80,11 @@ public class SecurityConfig {
                     .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**", "/favicon.*").permitAll() // 정적 리소스 허용
                     .requestMatchers("/", "/member/login", "/member/register", "/member/registerUser").permitAll() // 인증 없이 접근 가능한 페이지
                     .requestMatchers("/views/common/**").permitAll() // 공통 페이지들
+                    .requestMatchers("/touristAttraction/**").permitAll()
+                    .requestMatchers("/event/**").permitAll()
+                    .requestMatchers("/house/**").permitAll()
+                    .requestMatchers("/search/**").permitAll()
+                    .requestMatchers("/restaurant/**").permitAll()
                     .requestMatchers("/transportation/**").permitAll() // 교통 관련 페이지 및 API 허용
                     .requestMatchers("/seller/login", "/seller/register").permitAll() // 판매자 로그인/가입 페이지
                     .requestMatchers("/seller/**").hasAnyRole("SELLER", "CAR", "HOUSE") // 판매자 전용 페이지
@@ -120,7 +125,7 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider()) // 명시적 AuthenticationProvider 설정
                 .csrf(csrf -> csrf
-                    .ignoringRequestMatchers("/transportation/bus/search") // 고속버스 검색 API는 CSRF 비활성화
+                    .ignoringRequestMatchers("/transportation/bus/search", "/api/**", "/admin/**")
                 )
                 .build();
     }
@@ -129,24 +134,22 @@ public class SecurityConfig {
      * REST API용 Security Filter Chain 역할별로
      * API부분은 따로 시작부분 수정해야함
      */
-//    @Bean
-//    @Order(1)
-//    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
-//
-//        return http
-//                .securityMatcher("/api/**")
-//                .authorizeHttpRequests(authorize -> authorize
-//                    .requestMatchers("/api/public/**").permitAll()
-//                    .requestMatchers("/api/user/**").hasRole("USER")
-//                    .requestMatchers("/api/seller/**").hasRole("SELLER")
-//                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
-//                    .anyRequest().authenticated()
-//                )
-//                .authenticationProvider(authenticationProvider()) // 명시적 AuthenticationProvider 설정
-//                .csrf(csrf -> csrf.disable())
-//                .httpBasic(basic -> {}) // REST API는 Basic Auth 사용
-//                .build();
-//    } // 개발하는동안은 모두허용
+    @Bean
+    @Order(1)
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
+
+        return http
+                .securityMatcher("/api/**")
+                .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers("/api/public/**").permitAll()
+                    .requestMatchers("/api/user/**").hasRole("USER")
+                    .requestMatchers("/api/seller/**").hasRole("SELLER")
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .anyRequest().authenticated()
+                )
+                .authenticationProvider(authenticationProvider()) // 명시적 AuthenticationProvider 설정
+                .build();
+    } // 개발하는동안은 모두허용
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping("/reservation")
@@ -33,23 +34,43 @@ public class ReservationController {
     @GetMapping("/house")
     public String reservation(@RequestParam("contentId") Long contentId, Model model) {
         try {
+            log.info("숙소 예약 페이지 요청: contentId={}", contentId);
+            
             // 숙소 정보 조회
             HouseVO houseInfo = houseService.selectHouse(contentId);
             
             if (houseInfo == null) {
+                log.warn("숙소 정보를 찾을 수 없음: contentId={}", contentId);
                 return "redirect:/house/list?error=not_found";
             }
             
             // 해당 숙소의 모든 객실 목록 조회
             List<RoomDetailVO> roomList = roomService.getRoomsWithHouseId(contentId);
+            log.info("방 목록 조회 결과: contentId={}, 방 개수={}", contentId, roomList != null ? roomList.size() : 0);
+            
+            if (roomList != null && !roomList.isEmpty()) {
+                log.info("방 목록 상세 정보:");
+                for (RoomDetailVO room : roomList) {
+                    log.info("  - roomId={}, houseId={}, roomName={}, roomType={}, price={}, roomSize={}, minCapacity={}, maxCapacity={}", 
+                            room.getRoomId(), room.getHouseId(), room.getRoomName(), room.getRoomType(), room.getPrice(), 
+                            room.getRoomSize(), room.getMinimumCapacity(), room.getMaximumCapacity());
+                }
+            } else {
+                log.warn("방 목록이 비어있습니다: contentId={}", contentId);
+                log.info("HOUSE_ROOM_INFO 테이블에서 HOUSE_ID={}인 방이 있는지 확인이 필요합니다.", contentId);
+            }
             
             model.addAttribute("houseInfo", houseInfo);
             model.addAttribute("contentId", contentId);
-            model.addAttribute("roomList", roomList);
+            model.addAttribute("roomList", roomList != null ? roomList : new ArrayList<>());
+            
+            log.info("모델에 추가된 속성들: houseInfo={}, contentId={}, roomList.size={}", 
+                    houseInfo != null ? "있음" : "없음", contentId, 
+                    roomList != null ? roomList.size() : 0);
             
             return "views/house/house-reservation";
         } catch (Exception e) {
-            log.error("예약 페이지 로드 실패", e);
+            log.error("예약 페이지 로드 실패: contentId={}", contentId, e);
             return "redirect:/house/list?error=load_failed";
         }
     }

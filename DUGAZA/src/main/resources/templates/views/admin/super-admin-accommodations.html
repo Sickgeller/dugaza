@@ -19,7 +19,6 @@
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a th:href="@{/admin}"><i class="fas fa-home"></i><span>대시보드</span></a></li>
                     <li><a th:href="@{/member/admin_member}"><i class="fas fa-users"></i><span>회원 관리</span></a></li>
                     <li><a th:href="@{/admin/sellers}"><i class="fas fa-store"></i><span>판매자 관리</span></a></li>
                     <li class="active">
@@ -49,7 +48,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>총 숙소</h3>
-                            <p th:text="${count} + '개'">0개</p>
+                            <p th:text="${totalCount} + '개'">0개</p>
                             <span class="stat-change increase">전체 숙소</span>
                         </div>
                     </div>
@@ -59,8 +58,8 @@
                         </div>
                         <div class="stat-info">
                             <h3>운영 중</h3>
-                            <p th:text="${count - (count * 0.1)} + '개'">0개</p>
-                            <span class="stat-change">90%</span>
+                            <p th:text="${availableCount} + '개'">0개</p>
+                            <span class="stat-change" th:text="${availablePercentage} + '%'">0%</span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -69,7 +68,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>평균 평점</h3>
-                            <p>4.5</p>
+                            <p th:text="${avgRating} + ' ⭐'">0.0 ⭐</p>
                             <span class="stat-change increase">+0.2</span>
                         </div>
                     </div>
@@ -79,8 +78,8 @@
                         </div>
                         <div class="stat-info">
                             <h3>점검 중</h3>
-                            <p th:text="${count * 0.1} + '개'">0개</p>
-                            <span class="stat-change">10%</span>
+                            <p th:text="${repairedCount} + '개'">0개</p>
+                            <span class="stat-change" th:text="${repairedPercentage} + '%'">0%</span>
                         </div>
                     </div>
                 </div>
@@ -104,6 +103,7 @@
                             <option value="">상태</option>
                             <option value="AVAILABLE" th:selected="${status == 'AVAILABLE'}">운영중</option>
                             <option value="INAVAILABLE" th:selected="${status == 'INAVAILABLE'}">운영정지</option>
+                            <option value="suspending" th:selected="${status == 'suspending'}">승인대기</option>
                             <option value="REPAIRED" th:selected="${status == 'REPAIRED'}">점검중</option>
                             <option value="DELETED" th:selected="${status == 'DELETED'}">삭제됨</option>
                         </select>
@@ -154,6 +154,7 @@
                                     <select class="status-select" th:data-house-id="${house.contentId}" onchange="updateHouseStatus(this)">
                                         <option value="AVAILABLE" th:selected="${house.status == 'AVAILABLE'}">운영중</option>
                                         <option value="INAVAILABLE" th:selected="${house.status == 'INAVAILABLE'}">운영정지</option>
+                                        <option value="suspending" th:selected="${house.status == 'suspending'}">승인대기</option>
                                         <option value="REPAIRED" th:selected="${house.status == 'REPAIRED'}">점검중</option>
                                         <option value="DELETED" th:selected="${house.status == 'DELETED'}">삭제됨</option>
                                     </select>
@@ -162,7 +163,9 @@
                                     <button class="btn-icon" title="상세정보" th:onclick="'viewHouseDetail(' + ${house.contentId} + ')'">
                                         <i class="fas fa-info-circle"></i>
                                     </button>
-                                    <button class="btn-icon" title="판매자 등록" th:onclick="'registerSeller(' + ${house.contentId} + ', \'' + ${house.title} + '\')'">
+                                    <button class="btn-icon" title="판매자 등록" 
+                                            th:attr="data-house-id=${house.contentId},data-house-title=${house.title}"
+                                            onclick="registerSellerFromData(this)">
                                         <i class="fas fa-user-plus"></i>
                                     </button>
                                     <button class="btn-icon" title="삭제" th:onclick="'deleteHouse(' + ${house.contentId} + ')'">
@@ -304,9 +307,11 @@
 
     <script th:src="@{/assets/js/admin.js}"></script>
     <script>
-        // CSRF 토큰 설정
-        const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
-        const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
+        // CSRF 토큰 설정 - null 체크 추가
+        const tokenElement = document.querySelector('meta[name="_csrf"]');
+        const headerElement = document.querySelector('meta[name="_csrf_header"]');
+        const token = tokenElement ? tokenElement.getAttribute('content') : '';
+        const header = headerElement ? headerElement.getAttribute('content') : '';
 
         // 숙소 상세정보 보기
         function viewHouseDetail(houseId) {
@@ -366,6 +371,7 @@
             switch(status) {
                 case 'AVAILABLE': return '운영중';
                 case 'INAVAILABLE': return '운영정지';
+                case 'suspending': return '승인대기';
                 case 'REPAIRED': return '점검중';
                 case 'DELETED': return '삭제됨';
                 default: return status;
@@ -378,6 +384,15 @@
         }
 
         // 판매자 등록 모달 열기
+        function registerSellerFromData(button) {
+            const contentId = button.getAttribute('data-house-id');
+            const houseName = button.getAttribute('data-house-title');
+            document.getElementById('selectedContentId').value = contentId;
+            document.getElementById('selectedHouseName').textContent = houseName;
+            document.getElementById('sellerRegisterModal').style.display = 'block';
+        }
+
+        // 판매자 등록 모달 열기 (이전 함수, 호환성 유지)
         function registerSeller(contentId, houseName) {
             document.getElementById('selectedContentId').value = contentId;
             document.getElementById('selectedHouseName').textContent = houseName;

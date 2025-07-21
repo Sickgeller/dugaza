@@ -21,7 +21,7 @@ import java.io.IOException;
 @Slf4j
 @Component("customSuccessHandler")
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    
+
     private final RequestCache requestCache = new HttpSessionRequestCache();
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
@@ -138,7 +138,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             return "/seller/dashboard";
         } else if (userDetails.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-            return "/admin";
+            return "/member/admin_member"; // 관리자는 회원관리 페이지로 리다이렉트
         } else {
             return "/";
         }

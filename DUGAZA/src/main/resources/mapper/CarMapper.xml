@@ -224,4 +224,12 @@
             OR (END_DATE &gt; #{pickupDate} AND END_DATE &lt;= #{returnDate})
         )
     </select>
+    
+    <!-- 차량 상태 업데이트 -->
+    <update id="updateCarStatus" parameterType="map">
+        UPDATE CAR SET
+            STATUS = #{status},
+            UPDATED_AT = SYSDATE
+        WHERE CAR_ID = #{carId}
+    </update>
 </mapper> 

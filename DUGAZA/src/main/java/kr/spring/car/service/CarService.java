@@ -42,4 +42,11 @@ public interface CarService {
      * 예약 삭제
      */
     void deleteReservation(Long reservationId);
+    
+    /**
+     * 차량 상태 업데이트
+     * @param carId 차량 ID
+     * @param status 변경할 상태
+     */
+    void updateCarStatus(Long carId, String status);
 } 

@@ -2,6 +2,7 @@ package kr.spring.house.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import kr.spring.api.client.HouseApiClient;
 import kr.spring.api.dto.HouseDetailApiDto;
@@ -19,10 +20,12 @@ import kr.spring.seller.vo.HouseSellerDetailVO;
 import kr.spring.wishlist.service.WishListService;
 import kr.spring.wishlist.vo.WishListVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class HouseServiceImpl implements HouseService {
 
     private final HouseMapper houseMapper;
@@ -66,6 +69,12 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public List<HouseVO> selectAdminList(Map<String, Object> map) {
+        // 관리자용 목록 조회 - WishList 관련 로직 없이 단순히 mapper 호출
+        return houseMapper.selectAdminList(map);
+    }
+
+    @Override
     public Integer selectRowCount(Map<String, Object> map) {
         return houseMapper.selectRowCount(map);
     }
@@ -96,12 +105,16 @@ public class HouseServiceImpl implements HouseService {
 	// 숙소 승인 관련 메서드들 구현
 	@Override
 	public void applyHouse(HouseSellerDetailVO houseSellerDetailVO) {
+		houseSellerDetailVO.setStatus("suspending");
 		houseMapper.insertHouseApplication(houseSellerDetailVO);
 	}
 
 	@Override
 	public List<HouseSellerDetailVO> getPendingHouses() {
-		return houseMapper.selectPendingHouses();
+		log.info("getPendingHouses 서비스 메서드 호출됨");
+		List<HouseSellerDetailVO> result = houseMapper.selectPendingHouses();
+		log.info("getPendingHouses 결과: 개수={}", result.size());
+		return result;
 	}
 
 	@Override
@@ -116,20 +129,35 @@ public class HouseServiceImpl implements HouseService {
 
 	@Override
 	public void rejectHouse(Long houseId, Long sellerId) {
-		Map<String, Object> params = Map.of(
-			"houseId", houseId,
-			"sellerId", sellerId,
-			"status", "deleted"
-		);
-		houseMapper.updateHouseStatus(params);
+		houseMapper.updateHouseStatus(Map.of(
+                "houseId", houseId,
+                "sellerId", sellerId,
+                "status", "deleted"
+        ));
 	}
 
 	@Override
 	public List<HouseSellerDetailVO> getHousesBySellerAndStatus(Long sellerId, String status) {
-		Map<String, Object> params = Map.of(
-			"sellerId", sellerId,
-			"status", status
-		);
+		Map<String, Object> params = new HashMap<>();
+        params.put("sellerId", sellerId);
+        if (status != null && !status.isEmpty()) {
+            params.put("status", status);
+        }
 		return houseMapper.selectHousesBySellerAndStatus(params);
 	}
+    
+    @Override
+    public List<HouseSellerDetailVO> getHouseApplications(Map<String, Object> params) {
+        return houseMapper.selectHouseApplications(params);
+    }
+    
+    @Override
+    public int getHouseApplicationCount(Map<String, Object> params) {
+        return houseMapper.countHouseApplications(params);
+    }
+    
+    @Override
+    public boolean cancelHouseApplication(Map<String, Object> params) {
+        return houseMapper.deleteHouseApplication(params) > 0;
+    }
 }

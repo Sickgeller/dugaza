@@ -1,58 +1,40 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <body>
-    <!-- 사이드바 fragment -->
+    <!-- 숙소 판매자 사이드바 -->
     <div th:fragment="houseSideBar" class="sidebar">
         <div class="sidebar-header">
-            <h1>숙소 관리자</h1>
-            <p>숙소 판매자 대시보드</p>
+            <h1>숙소 판매자</h1>
+            <p>숙소 관리 대시보드</p>
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li th:class="${currentMenu == 'dashboard' ? 'active' : ''}">
-                    <a th:href="@{/seller/dashboard}">
-                        <i class="fas fa-home"></i><span>대시보드</span>
-                    </a>
+                <li th:class="${currentMenu == 'main' ? 'active' : ''}">
+                    <a th:href="@{/seller/house/}"><i class="fas fa-home"></i><span>대시보드</span></a>
+                </li>
+                <li th:class="${currentMenu == 'apply' ? 'active' : ''}">
+                    <a th:href="@{/seller/house/apply}"><i class="fas fa-plus-circle"></i><span>숙소 추가 신청</span></a>
+                </li>
+                <li th:class="${currentMenu == 'applications' ? 'active' : ''}">
+                    <a th:href="@{/seller/house/applications}"><i class="fas fa-clipboard-list"></i><span>신청 목록</span></a>
                 </li>
                 <li th:class="${currentMenu == 'management' ? 'active' : ''}">
-                    <a th:href="@{/seller/house/management}">
-                        <i class="fas fa-bed"></i><span>객실 관리</span>
-                    </a>
+                    <a th:href="@{/seller/house/management}"><i class="fas fa-hotel"></i><span>객실 관리</span></a>
                 </li>
                 <li th:class="${currentMenu == 'reservation' ? 'active' : ''}">
-                    <a th:href="@{/seller/house/reservation}">
-                        <i class="fas fa-calendar-check"></i><span>예약 관리</span>
-                    </a>
+                    <a th:href="@{/seller/house/reservation}"><i class="fas fa-calendar-check"></i><span>예약 관리</span></a>
                 </li>
                 <li th:class="${currentMenu == 'review' ? 'active' : ''}">
-                    <a th:href="@{/seller/house/review}">
-                        <i class="fas fa-star"></i><span>리뷰 관리</span>
-                    </a>
-                </li>
-<!--                <li th:class="${currentMenu == 'promotion'} ? 'active'">-->
-<!--                    <a th:href="@{/seller/house/promotion}">-->
-<!--                        <i class="fas fa-tags"></i><span>프로모션 관리</span>-->
-<!--                    </a>-->
-<!--                </li>-->
-<!--                <li th:class="${currentMenu == 'facility'} ? 'active'">-->
-<!--                    <a th:href="@{/seller/house/facility}">-->
-<!--                        <i class="fas fa-swimming-pool"></i><span>부대시설 관리</span>-->
-<!--                    </a>-->
-<!--                </li>-->
-                <li th:class="${currentMenu == 'apply' ? 'active' : ''}">
-                    <a th:href="@{/seller/house/apply}">
-                        <i class="fas fa-plus-circle"></i><span>관리숙소 추가 신청</span>
-                    </a>
+                    <a th:href="@{/seller/house/review}"><i class="fas fa-star"></i><span>리뷰 관리</span></a>
                 </li>
                 <li th:class="${currentMenu == 'sales' ? 'active' : ''}">
-                    <a th:href="@{/seller/house/sales}">
-                        <i class="fas fa-chart-line"></i><span>매출 관리</span>
-                    </a>
+                    <a th:href="@{/seller/house/sales}"><i class="fas fa-chart-line"></i><span>매출 관리</span></a>
                 </li>
                 <li th:class="${currentMenu == 'settings' ? 'active' : ''}">
-                    <a th:href="@{/seller/house/settings}">
-                        <i class="fas fa-cog"></i><span>설정</span>
-                    </a>
+                    <a th:href="@{/seller/house/settings}"><i class="fas fa-cog"></i><span>설정</span></a>
+                </li>
+                <li>
+                    <a th:href="@{/seller/logout}"><i class="fas fa-sign-out-alt"></i><span>로그아웃</span></a>
                 </li>
             </ul>
         </nav>

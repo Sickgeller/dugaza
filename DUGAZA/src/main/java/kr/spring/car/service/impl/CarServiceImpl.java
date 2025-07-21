@@ -166,4 +166,14 @@ public class CarServiceImpl implements CarService {
     public void deleteReservation(Long reservationId) {
         carMapper.deleteReservation(reservationId);
     }
+    
+    @Override
+    public void updateCarStatus(Long carId, String status) {
+        log.info("차량 상태 업데이트: carId={}, status={}", carId, status);
+        Map<String, Object> params = new HashMap<>();
+        params.put("carId", carId);
+        params.put("status", status);
+        carMapper.updateCarStatus(params);
+        log.info("차량 상태 업데이트 완료");
+    }
 } 

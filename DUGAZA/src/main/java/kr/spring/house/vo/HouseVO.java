@@ -45,4 +45,6 @@ public class HouseVO extends TourVO{
 
     private Integer wish_count; //찜 횟수
     private boolean wished; //찜 여부
+    
+    private String status; //숙소 상태
 }

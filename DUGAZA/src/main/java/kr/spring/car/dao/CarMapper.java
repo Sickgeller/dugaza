@@ -78,4 +78,10 @@ public interface CarMapper {
     int checkCarReservationConflict(@Param("carId") Long carId, 
                                    @Param("pickupDate") LocalDate pickupDate, 
                                    @Param("returnDate") LocalDate returnDate);
+    
+    /**
+     * 차량 상태 업데이트
+     * @param params 파라미터 맵 (carId, status)
+     */
+    void updateCarStatus(Map<String, Object> params);
 } 

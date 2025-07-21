@@ -28,6 +28,8 @@ import kr.spring.review.base.vo.BaseReviewVO;
 import kr.spring.car.vo.CarReviewVO;
 import kr.spring.review.base.dao.BaseReviewMapper;
 import kr.spring.car.dao.CarReviewMapper;
+import kr.spring.seller.vo.HouseSellerDetailVO;
+import kr.spring.room.service.RoomService;
 
 @Slf4j
 @Service
@@ -45,6 +47,7 @@ public class AdminServiceImpl implements AdminService {
     private final FaqService faqService;
     private final BaseReviewMapper baseReviewMapper;
     private final CarReviewMapper carReviewMapper;
+    private final RoomService roomService;
     
     @Override
     public Map<String, Object> getDashboardStats() {
@@ -201,7 +204,7 @@ public class AdminServiceImpl implements AdminService {
     }
     
     @Override
-    public List<Map<String, Object>> getCarList() {
+    public List<Map<String, Object>> getCarList(Map<String, Object> params) {
         List<Map<String, Object>> carList = new ArrayList<>();
         
         try {
@@ -217,11 +220,42 @@ public class AdminServiceImpl implements AdminService {
                 carMap.put("carType", car.getCarType());
                 carMap.put("fuelType", car.getCarFuel());
                 carMap.put("dailyPrice", car.getCarPrice());
-                carMap.put("rating", 4.5); // 임시 평점
+                carMap.put("rating", 0.0); // 기본값 0으로 설정
                 carMap.put("status", car.getStatus());
                 carMap.put("imageUrl", car.getCarImage() != null && !car.getCarImage().isEmpty() ? "/assets/upload/" + car.getCarImage() : "/assets/images/cars/car1.jpg");
                 
                 carList.add(carMap);
+            }
+            
+            // 필터링 적용
+            if (params != null) {
+                // 키워드 필터링
+                if (params.containsKey("keyword") && params.get("keyword") != null) {
+                    String keyword = params.get("keyword").toString().toLowerCase();
+                    carList = carList.stream()
+                            .filter(car -> {
+                                String carName = car.get("carName").toString().toLowerCase();
+                                String sellerName = car.get("sellerName").toString().toLowerCase();
+                                return carName.contains(keyword) || sellerName.contains(keyword);
+                            })
+                            .collect(java.util.stream.Collectors.toList());
+                }
+                
+                // 상태 필터링
+                if (params.containsKey("status") && params.get("status") != null) {
+                    String status = params.get("status").toString();
+                    carList = carList.stream()
+                            .filter(car -> status.equals(car.get("status")))
+                            .collect(java.util.stream.Collectors.toList());
+                }
+                
+                // 차량 타입 필터링
+                if (params.containsKey("carType") && params.get("carType") != null) {
+                    String carType = params.get("carType").toString();
+                    carList = carList.stream()
+                            .filter(car -> carType.equals(car.get("carType")))
+                            .collect(java.util.stream.Collectors.toList());
+                }
             }
             
             log.info("차량 목록 조회 완료: {}건", carList.size());
@@ -237,7 +271,7 @@ public class AdminServiceImpl implements AdminService {
             car1.put("carType", "준중형");
             car1.put("fuelType", "가솔린");
             car1.put("dailyPrice", 50000);
-            car1.put("rating", 4.5);
+            car1.put("rating", 0.0);
             car1.put("status", "AVAILABLE");
             car1.put("imageUrl", "/assets/images/cars/car1.jpg");
             carList.add(car1);
@@ -248,39 +282,10 @@ public class AdminServiceImpl implements AdminService {
     
     @Override
     public List<Map<String, Object>> getPendingCarList() {
-        List<Map<String, Object>> pendingCarList = new ArrayList<>();
-        
-        try {
-            // CarService에서 승인 대기 중인 차량 목록 조회
-            List<CarVO> cars = carService.getAllCars();
-            
-            for (CarVO car : cars) {
-                if ("SUSPENDING".equals(car.getStatus())) {
-                    Map<String, Object> carMap = new HashMap<>();
-                    carMap.put("carId", car.getCarId());
-                    carMap.put("carName", car.getCarName());
-                    carMap.put("year", car.getCarYear());
-                    carMap.put("sellerName", car.getSellerName() != null ? car.getSellerName() : "미지정");
-                    carMap.put("carType", car.getCarType());
-                    carMap.put("fuelType", car.getCarFuel());
-                    carMap.put("dailyPrice", car.getCarPrice());
-                    carMap.put("rating", 4.5); // 임시 평점
-                    carMap.put("status", car.getStatus());
-                    carMap.put("imageUrl", car.getCarImage() != null && !car.getCarImage().isEmpty() ? "/assets/upload/" + car.getCarImage() : "/assets/images/cars/car1.jpg");
-                    carMap.put("carNumber", car.getCarNumber());
-                    carMap.put("carColor", car.getCarColor());
-                    carMap.put("carSeats", car.getCarSeats());
-                    
-                    pendingCarList.add(carMap);
-                }
-            }
-            
-            log.info("승인 대기 차량 목록 조회 완료: {}건", pendingCarList.size());
-        } catch (Exception e) {
-            log.error("승인 대기 차량 목록 조회 중 오류 발생", e);
-        }
-        
-        return pendingCarList;
+        log.info("getPendingCarList 서비스 메서드 호출됨");
+        List<Map<String, Object>> result = adminMapper.selectPendingCars();
+        log.info("getPendingCarList 결과: 개수={}", result.size());
+        return result;
     }
     
     @Override
@@ -305,10 +310,22 @@ public class AdminServiceImpl implements AdminService {
                         houseMap.put("firstImage2", house.getFirstImage2() != null && !house.getFirstImage2().isEmpty() ? house.getFirstImage2() : "/assets/images/house.png");
                         houseMap.put("cat3", house.getCat3());
                         houseMap.put("sellerName", "제주호텔그룹"); // 임시 판매자명
-                        houseMap.put("roomCount", house.getRoomCount() != null ? house.getRoomCount() : "120"); // 실제 객실 수 또는 기본값
+                        
+                        // 실제 방 개수 조회
+                        int actualRoomCount = 0;
+                        try {
+                            actualRoomCount = roomService.getTotalRoomCountByHouseId(house.getContentId());
+                        } catch (Exception e) {
+                            log.warn("방 개수 조회 실패: contentId={}", house.getContentId(), e);
+                        }
+                        houseMap.put("roomCount", actualRoomCount > 0 ? actualRoomCount : 0);
+                        
                         houseMap.put("reservationRate", 88); // 임시 예약률
-                        houseMap.put("rating", house.getReview_avg() != null ? house.getReview_avg() : 4.7); // 실제 평점 또는 기본값
-                        houseMap.put("status", "ACTIVE"); // 임시 상태
+                        houseMap.put("rating", house.getReview_avg() != null ? house.getReview_avg() : 0.0); // 실제 평점 또는 기본값
+                        
+                        // 상태 정보는 기본값으로 설정 (트랜잭션 오류 방지)
+                        String actualStatus = "AVAILABLE"; // 기본값
+                        houseMap.put("status", actualStatus);
                         
                         houseList.add(houseMap);
                     }
@@ -327,10 +344,10 @@ public class AdminServiceImpl implements AdminService {
             house1.put("firstImage2", "/assets/images/house.png");
             house1.put("cat3", "호텔/제주시");
             house1.put("sellerName", "제주호텔그룹");
-            house1.put("roomCount", 120);
+            house1.put("roomCount", 0);
             house1.put("reservationRate", 88);
-            house1.put("rating", 4.7);
-            house1.put("status", "ACTIVE");
+            house1.put("rating", 0.0);
+            house1.put("status", "AVAILABLE");
             houseList.add(house1);
         }
         
@@ -533,7 +550,7 @@ public class AdminServiceImpl implements AdminService {
         try {
             switch (productType.toLowerCase()) {
                 case "car":
-                    productList = getCarList();
+                    productList = getCarList(new HashMap<>());
                     break;
                 case "house":
                     productList = getHouseList(new HashMap<>());
@@ -614,8 +631,8 @@ public class AdminServiceImpl implements AdminService {
                 case "car":
                     // 차량 상태 업데이트
                     if (carService != null) {
-                        // CarService에 상태 업데이트 메서드가 있다면 호출
-                        // carService.updateCarStatus(productId, status);
+                        // CarService에 상태 업데이트 메서드 호출
+                        carService.updateCarStatus(productId, status);
                         log.info("차량 상태 업데이트 완료: carId={}, status={}", productId, status);
                     } else {
                         log.warn("CarService가 주입되지 않아 차량 상태 업데이트를 건너뜁니다.");

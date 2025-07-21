@@ -33,7 +33,7 @@ public interface AdminService {
     /**
      * 차량 목록 조회
      */
-    List<Map<String, Object>> getCarList();
+    List<Map<String, Object>> getCarList(Map<String, Object> params);
     
     /**
      * 승인 대기 차량 목록 조회

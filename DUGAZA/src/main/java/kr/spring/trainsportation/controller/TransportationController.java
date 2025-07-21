@@ -7,6 +7,10 @@ import kr.spring.api.dto.ExpressBusTerminalApiDto;
 import kr.spring.api.dto.TrainCityApiDto;
 import kr.spring.api.mapper.ExpressBusTerminalApiMapper;
 import kr.spring.api.mapper.TrainCityApiMapper;
+import kr.spring.trainsportation.service.TrainService;
+import kr.spring.trainsportation.vo.TrainCityVO;
+import kr.spring.trainsportation.vo.TrainRouteVO;
+import kr.spring.trainsportation.vo.TrainStationVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,7 +18,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +35,7 @@ public class TransportationController {
 	private final ExpressBusApiClient expressBusApiClient;
 	private final ExpressBusTerminalApiMapper expressBusTerminalApiMapper;
 	private final TrainCityApiMapper trainCityApiMapper;
+	private final TrainService trainService;
 
 	@GetMapping("")
 	public String transportationMain() {
@@ -106,6 +113,59 @@ public class TransportationController {
 			return ResponseEntity.ok(routes);
 		} catch (Exception e) {
 			log.error("고속버스 경로 검색 중 오류 발생", e);
+			return ResponseEntity.internalServerError().build();
+		}
+	}
+
+	/**
+	 * 기차 도시 목록 조회
+	 */
+	@GetMapping("/train/cities")
+	@ResponseBody
+	public ResponseEntity<List<TrainCityVO>> getTrainCities() {
+		try {
+			List<TrainCityVO> cities = trainService.getAllCities();
+			return ResponseEntity.ok(cities);
+		} catch (Exception e) {
+			log.error("기차 도시 목록 조회 중 오류 발생", e);
+			return ResponseEntity.internalServerError().build();
+		}
+	}
+
+	/**
+	 * 도시별 기차역 목록 조회
+	 */
+	@GetMapping("/train/stations/{cityCode}")
+	@ResponseBody
+	public ResponseEntity<List<TrainStationVO>> getTrainStationsByCity(@PathVariable Integer cityCode) {
+		try {
+			List<TrainStationVO> stations = trainService.getStationsByCity(cityCode);
+			return ResponseEntity.ok(stations);
+		} catch (Exception e) {
+			log.error("도시별 기차역 목록 조회 중 오류 발생", e);
+			return ResponseEntity.internalServerError().build();
+		}
+	}
+
+	/**
+	 * 기차 노선 검색
+	 */
+	@PostMapping("/train/search")
+	@ResponseBody
+	public ResponseEntity<List<TrainRouteVO>> searchTrainRoutes(
+			@RequestParam(name = "depPlaceName") String depPlaceName,
+			@RequestParam(name = "arrPlaceName") String arrPlaceName,
+			@RequestParam(name = "depPlandTime") String depPlandTime) {
+		try {
+			Map<String, Object> params = new HashMap<>();
+			params.put("depPlaceName", depPlaceName);
+			params.put("arrPlaceName", arrPlaceName);
+			params.put("depPlandTime", depPlandTime);
+			
+			List<TrainRouteVO> routes = trainService.searchRoutes(params);
+			return ResponseEntity.ok(routes);
+		} catch (Exception e) {
+			log.error("기차 노선 검색 중 오류 발생", e);
 			return ResponseEntity.internalServerError().build();
 		}
 	}

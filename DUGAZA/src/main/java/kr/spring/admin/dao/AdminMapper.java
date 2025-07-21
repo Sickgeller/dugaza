@@ -49,4 +49,9 @@ public interface AdminMapper {
      * 판매자 타입별 통계 조회
      */
     Map<String, Object> getSellerTypeStatistics();
+    
+    /**
+     * 승인 대기 중인 차량 목록 조회
+     */
+    List<Map<String, Object>> selectPendingCars();
 } 

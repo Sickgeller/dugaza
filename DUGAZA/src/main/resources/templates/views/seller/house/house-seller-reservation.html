@@ -120,11 +120,11 @@
                         </thead>
                         <tbody>
                             <tr th:each="reservation : ${reservations}">
-                                <td th:text="${reservation.reservationId}">1</td>
+                                <td th:text="${reservation.houseReservationId}">1</td>
                                 <td th:text="${reservation.roomId}">101</td>
                                 <td th:text="${reservation.memberId}">1001</td>
-                                <td th:text="${#temporals.format(reservation.reservationStartDate, 'yyyy-MM-dd')}">2024-03-15</td>
-                                <td th:text="${#temporals.format(reservation.reservationEndDate, 'yyyy-MM-dd')}">2024-03-16</td>
+                                <td th:text="${#temporals.format(reservation.reservationStart, 'yyyy-MM-dd')}">2024-03-15</td>
+                                <td th:text="${#temporals.format(reservation.reservationEnd, 'yyyy-MM-dd')}">2024-03-16</td>
                                 <td th:text="${reservation.reservationCount} + '명'">2명</td>
                                 <td th:text="${#numbers.formatInteger(reservation.price, 0, 'COMMA')} + '원'">₩150,000</td>
                                 <td>
@@ -136,18 +136,18 @@
                                 <td>
                                     <div class="action-buttons">
                                         <button class="btn-icon view-reservation" 
-                                                th:data-id="${reservation.reservationId}"
+                                                th:data-id="${reservation.houseReservationId}"
                                                 title="상세보기">
                                             <i class="fas fa-eye"></i>
                                         </button>
                                         <button class="btn-icon update-status" 
-                                                th:data-id="${reservation.reservationId}"
+                                                th:data-id="${reservation.houseReservationId}"
                                                 title="상태 변경">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <button class="btn-icon cancel-reservation" 
                                                 th:if="${reservation.status == 0}"
-                                                th:data-id="${reservation.reservationId}"
+                                                th:data-id="${reservation.houseReservationId}"
                                                 title="예약 취소">
                                             <i class="fas fa-times"></i>
                                         </button>

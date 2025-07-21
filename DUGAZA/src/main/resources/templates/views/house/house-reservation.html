@@ -9,6 +9,7 @@
     <link rel="stylesheet" th:href="@{/assets/css/style.css}">
     <link rel="stylesheet" th:href="@{/assets/css/accommodation-detail.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .reservation-container {
             max-width: 1200px;
@@ -733,23 +734,41 @@
                         
                         <!-- 선택된 타입의 객실 목록 -->
                         <div class="room-options" id="roomOptions">
+                            <!-- 디버깅용: 방 목록 개수 표시 -->
+                            <div style="background: #f0f0f0; padding: 10px; margin-bottom: 10px;">
+                                <p>전체 방 개수: <span th:text="${#lists.size(roomList)}">0</span>개</p>
+                            </div>
+                            
                             <!-- 객실이 없을 경우 -->
                             <div th:if="${#lists.isEmpty(roomList)}" class="no-rooms">
                                 <p>등록된 객실이 없습니다.</p>
                             </div>
                             
-                            <!-- 기존 객실 목록 (JavaScript에서 동적으로 처리됨) -->
-                            <div class="room-option" th:each="room : ${roomList}" 
-                                 th:data-room-id="${room.roomId}" 
-                                 th:data-price="${room.price}"
-                                 th:data-room-name="${room.roomName}"
-                                 th:data-room-type="${room.roomType}"
-                                 th:data-room-size="${room.roomSize}"
-                                 th:data-min-capacity="${room.minimumCapacity}"
-                                 th:data-max-capacity="${room.maximumCapacity}"
-                                 th:data-bed-info="${room.bedInfo}"
-                                 th:data-description="${room.description}"
-                                 style="display: none;">
+                            <!-- 방 목록이 있을 경우 -->
+                            <div th:if="${!#lists.isEmpty(roomList)}" class="room-list">
+                                <div class="room-option" th:each="room : ${roomList}" 
+                                     th:data-room-id="${room.roomId}" 
+                                     th:data-price="${room.price}"
+                                     th:data-room-name="${room.roomName}"
+                                     th:data-room-type="${room.roomType}"
+                                     th:data-room-size="${room.roomSize}"
+                                     th:data-min-capacity="${room.minimumCapacity}"
+                                     th:data-max-capacity="${room.maximumCapacity}"
+                                     th:data-bed-info="${room.bedInfo}"
+                                     th:data-description="${room.description}">
+                                    <div class="room-info">
+                                        <div class="room-details">
+                                            <h4 th:text="${room.roomName}">객실명</h4>
+                                            <p th:text="'최소 ' + ${room.minimumCapacity} + '명 ~ 최대 ' + ${room.maximumCapacity} + '명 / ' + ${room.roomSize} + '㎡'">수용인원</p>
+                                            <p th:text="${room.bedInfo}">침대정보</p>
+                                            <p th:if="${room.description != null and room.description != ''}" th:text="${room.description}">설명</p>
+                                        </div>
+                                        <div class="room-price">
+                                            <div class="price" th:text="${#numbers.formatInteger(room.price, 3, 'COMMA')} + '원'">가격</div>
+                                            <div class="per-night">1박 기준</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -880,36 +899,63 @@
         // Thymeleaf에서 houseInfo 데이터 가져오기
         const houseInfo = /*[[${houseInfo}]]*/ {};
         
+        // 전역 변수 선언
+        let checkInDate, checkOutDate, guestCount, roomOptions, roomTypeButtons, reservationBtn;
+        let selectedRoom = null;
+        let roomData = [];
+        
+        // 페이지 로드 시 객실 데이터 초기화
         $(document).ready(function() {
-            const checkInDate = $('#checkInDate');
-            const checkOutDate = $('#checkOutDate');
-            const guestCount = $('#guestCount');
-            const roomOptions = $('#roomOptions');
-            const roomTypeButtons = $('#roomTypeButtons');
-            const reservationBtn = $('#reservationBtn');
+            console.log('페이지 로드 완료');
             
-            let selectedRoom = null;
-            let roomData = [];
+            checkInDate = $('#checkInDate');
+            checkOutDate = $('#checkOutDate');
+            guestCount = $('#guestCount');
+            roomOptions = $('#roomOptions');
+            roomTypeButtons = $('#roomTypeButtons');
+            reservationBtn = $('#reservationBtn');
             
-            // 페이지 로드 시 객실 데이터 초기화
-            function initializeRoomData() {
-                $('.room-option').each(function() {
+            initializeRoomData();
+        });
+        
+        function initializeRoomData() {
+                console.log('initializeRoomData 호출됨');
+                
+                // 방 데이터 배열 초기화
+                roomData = [];
+                
+                // 숨겨진 방 옵션들에서 데이터 수집
+                const roomElements = $('.room-option');
+                console.log('찾은 방 요소 개수:', roomElements.length);
+                
+                roomElements.each(function(index) {
+                    const $element = $(this);
                     const room = {
-                        roomId: $(this).data('room-id'),
-                        roomName: $(this).data('room-name'),
-                        roomType: $(this).data('room-type'),
-                        price: $(this).data('price'),
-                        roomSize: $(this).data('room-size'),
-                        minimumCapacity: $(this).data('min-capacity') || 1,
-                        maximumCapacity: $(this).data('max-capacity'),
-                        bedInfo: $(this).data('bed-info'),
-                        description: $(this).data('description')
+                        roomId: $element.data('room-id'),
+                        roomName: $element.data('room-name'),
+                        roomType: $element.data('room-type'),
+                        price: $element.data('price'),
+                        roomSize: $element.data('room-size'),
+                        minimumCapacity: $element.data('min-capacity') || 1,
+                        maximumCapacity: $element.data('max-capacity'),
+                        bedInfo: $element.data('bed-info'),
+                        description: $element.data('description')
                     };
+                    
+                    console.log(`방 ${index + 1} 데이터 수집:`, room);
                     roomData.push(room);
                 });
                 
+                console.log('총 수집된 방 데이터:', roomData.length, roomData);
+                
+                if (roomData.length === 0) {
+                    console.log('방 데이터가 없습니다.');
+                    return;
+                }
+                
                 // 객실 타입별로 그룹화하여 버튼 생성
                 const roomTypes = [...new Set(roomData.map(room => room.roomType))];
+                console.log('발견된 객실 타입들:', roomTypes);
                 
                 roomTypes.forEach(type => {
                     const roomsOfType = roomData.filter(room => room.roomType === type);
@@ -1007,7 +1053,7 @@
             checkInDate.attr('min', today);
             
             // 페이지 로드 시 객실 데이터 초기화
-            initializeRoomData();
+            // initializeRoomData(); // 이 부분은 이미 위에서 페이지 로드 시 호출되었으므로 제거
             
             // 날짜 변경 시 예약 가능 여부 확인
             checkInDate.on('change', function() {
@@ -1364,11 +1410,7 @@
                     success: function(response) {
                         if (response.success) {
                             alert('예약이 성공적으로 완료되었습니다!');
-<<<<<<< HEAD
-                            window.location.href = '/member/payment';
-=======
                             window.location.href = '/member/dashboard';
->>>>>>> branch 'main' of https://github.com/joojungho/DUGAZA.git
                         } else {
                             alert(response.message || '예약 처리 중 오류가 발생했습니다.');
                         }

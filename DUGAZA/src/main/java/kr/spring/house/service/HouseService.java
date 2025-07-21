@@ -11,6 +11,8 @@ public interface HouseService {
 	public Integer selectRowCount(Map<String, Object> map);
 	// 숙소 목록
 	public List<HouseVO> selectList(Map<String, Object> map);
+	// 관리자용 숙소 목록 (WISHLIST JOIN 제거)
+	public List<HouseVO> selectAdminList(Map<String, Object> map);
 	public HouseVO selectHouse(Long id);
 	List<HouseVO> selectHousesWithSellerId(Long sellerId);
 	void insertWithApi(Long contentId);
@@ -24,4 +26,9 @@ public interface HouseService {
 	void approveHouse(Long houseId, Long sellerId);
 	void rejectHouse(Long houseId, Long sellerId);
 	List<HouseSellerDetailVO> getHousesBySellerAndStatus(Long sellerId, String status);
+	
+	// 신규 메서드 추가
+	public List<HouseSellerDetailVO> getHouseApplications(Map<String, Object> params);
+	public int getHouseApplicationCount(Map<String, Object> params);
+	public boolean cancelHouseApplication(Map<String, Object> params);
 }

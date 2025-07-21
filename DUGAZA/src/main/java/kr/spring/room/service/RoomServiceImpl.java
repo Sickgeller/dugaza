@@ -52,7 +52,15 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<RoomDetailVO> getRoomsWithHouseId(Long contentId) {
-        return roomMapper.getRoomByHouseId(contentId);
+        log.info("getRoomsWithHouseId 호출: contentId={}", contentId);
+        List<RoomDetailVO> result = roomMapper.getRoomByHouseId(contentId);
+        log.info("getRoomsWithHouseId 결과: contentId={}, 방 개수={}", contentId, result != null ? result.size() : 0);
+        
+        if (result == null || result.isEmpty()) {
+            log.warn("HOUSE_ROOM_INFO 테이블에서 HOUSE_ID={}인 방을 찾을 수 없습니다.", contentId);
+        }
+        
+        return result != null ? result : new ArrayList<>();
     }
 
     @Override

@@ -588,6 +588,88 @@ public class SellerHouseController {
         
         return "redirect:/seller/house/apply";
     }
+    
+    @GetMapping("/applications")
+    public String viewApplications(
+            Model model,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            HttpServletRequest request) {
+        
+        SellerVO seller = (SellerVO) request.getSession().getAttribute("seller");
+        if (seller == null) return "redirect:/seller/login";
+        
+        try {
+            // 페이징 처리
+            int pageSize = 10;
+            Map<String, Object> params = new HashMap<>();
+            params.put("sellerId", seller.getSellerId());
+            params.put("status", "suspending"); // 대기 중인 신청만 조회
+            
+            int startRow = (page - 1) * pageSize + 1;
+            int endRow = page * pageSize;
+            params.put("start", startRow);
+            params.put("end", endRow);
+            
+            // 신청 목록 조회
+            List<HouseSellerDetailVO> applications = houseService.getHouseApplications(params);
+            int totalCount = houseService.getHouseApplicationCount(params);
+            
+            model.addAttribute("applications", applications);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("pageSize", pageSize);
+            model.addAttribute("totalPages", (int)Math.ceil((double)totalCount / pageSize));
+            model.addAttribute("currentMenu", "applications");
+            
+        } catch (Exception e) {
+            log.error("숙소 신청 목록 조회 중 오류 발생", e);
+            model.addAttribute("error", "숙소 신청 목록을 불러오는 중 오류가 발생했습니다.");
+        }
+        
+        return "views/seller/house/applications";
+    }
+    
+    @PostMapping("/cancel-application")
+    @ResponseBody
+    public Map<String, Object> cancelApplication(
+            @RequestParam("houseId") Long houseId,
+            HttpServletRequest request) {
+        
+        Map<String, Object> response = new HashMap<>();
+        SellerVO seller = (SellerVO) request.getSession().getAttribute("seller");
+        
+        if (seller == null) {
+            response.put("success", false);
+            response.put("message", "로그인이 필요합니다.");
+            return response;
+        }
+        
+        try {
+            // 신청 정보 조회
+            Map<String, Object> params = new HashMap<>();
+            params.put("houseId", houseId);
+            params.put("sellerId", seller.getSellerId());
+            
+            // 신청 취소 (삭제)
+            boolean result = houseService.cancelHouseApplication(params);
+            
+            if (result) {
+                response.put("success", true);
+                response.put("message", "숙소 신청이 취소되었습니다.");
+                log.info("숙소 신청 취소 완료: sellerId={}, houseId={}", seller.getSellerId(), houseId);
+            } else {
+                response.put("success", false);
+                response.put("message", "숙소 신청 취소에 실패했습니다.");
+                log.warn("숙소 신청 취소 실패: sellerId={}, houseId={}", seller.getSellerId(), houseId);
+            }
+            
+        } catch (Exception e) {
+            log.error("숙소 신청 취소 중 오류 발생", e);
+            response.put("success", false);
+            response.put("message", "숙소 신청 취소 중 오류가 발생했습니다.");
+        }
+        
+        return response;
+    }
 
 
 }
