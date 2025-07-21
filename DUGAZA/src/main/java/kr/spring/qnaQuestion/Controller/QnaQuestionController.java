@@ -17,6 +17,7 @@ import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.member.vo.MemberVO;
 import kr.spring.qnaQuestion.service.QnaQuestionService;
 import kr.spring.qnaQuestion.vo.QnaQuestionVO;
+import kr.spring.qnaResponse.service.QnaResponseService;
 import kr.spring.qnaResponse.vo.QnaResponseVO;
 import kr.spring.util.ValidationUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +28,20 @@ public class QnaQuestionController {
 
     @Autowired
     private QnaQuestionService qnaQuestionService;
+    
+    @Autowired
+    private QnaResponseService qnaResponseService;
 
     // 기본 QnaQuestionVO 초기화
     @ModelAttribute
     public QnaQuestionVO initCommand() {
         return new QnaQuestionVO();
+    }
+    
+    //기본 QnaResponseVO 초기화
+    @ModelAttribute
+    public QnaResponseVO initCommand2() {
+    	return new QnaResponseVO();
     }
 
     // FAQ 메인 페이지 
@@ -108,8 +118,10 @@ public class QnaQuestionController {
     
     @GetMapping("/qna/detail/{qnaId}")
     public String qnaDetail(@PathVariable("qnaId") Long qna_id, Model model) {
-        QnaQuestionVO qna = qnaQuestionService.getQnaDetail(qna_id);
-        model.addAttribute("qna", qna);
+        QnaQuestionVO question = qnaQuestionService.getQnaDetail(qna_id);
+        QnaResponseVO response = qnaResponseService.getAnswerByQnaId(qna_id);
+        model.addAttribute("qna", question);
+        model.addAttribute("response",response);
         return "qna/detail"; // detail.html (또는 .jsp)
     }
 
@@ -126,5 +138,19 @@ public class QnaQuestionController {
 
         qnaQuestionService.insertAnswer(response);  // DAO를 통해 insert 처리
         return "redirect:/qna/detail/" + qna_id;
+    }
+    
+    @GetMapping("/detail/{qnaId}")
+    public String getQnaDetail(@PathVariable("qnaId") Long qna_id, Model model) {
+        // 1. 문의글 가져오기
+        QnaQuestionVO question = qnaResponseService.getQnaById(qna_id);
+        model.addAttribute("qna", question); // 이름 명확하게
+
+        // 2. 답변 가져오기 (있으면 null 아님)
+        QnaResponseVO response = qnaResponseService.getAnswerByQnaId(qna_id);
+        System.out.println(">>> 관리자 답변 내용: " + response);  // null이면 mapper 문제
+        model.addAttribute("response", response); // 중복 제거하고 한 번만 호출
+
+        return "qna/detail"; 
     }
 }

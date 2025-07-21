@@ -73,7 +73,7 @@
 	<select id="getAnswerByQnaId" resultType="kr.spring.qnaResponse.vo.QnaResponseVO">
 	  SELECT *
 	  FROM qna_response
-	  WHERE qna_id = #{qnaId}
+	  WHERE qna_id = #{qna_id}
 	</select>
 	
 	<select id="getQnaById" resultType="kr.spring.qnaQuestion.vo.QnaQuestionVO">

@@ -18,7 +18,7 @@ public interface QnaMapper {
 	void insertAnswer();
 	void insertResponse();
 	void updateIsAnswered(@Param("qna_id") Long qna_id, @Param("is_answered") String is_answered);
-	QnaResponseVO getAnswerByQnaId(Long qnaId);
+	QnaResponseVO getAnswerByQnaId(Long qna_id);
 	QnaQuestionVO getQnaById(Long qnaId);
 	void updateResponse(QnaResponseVO responseVO);
 }

@@ -26,8 +26,8 @@ public class QnaResponseServiceImpl implements QnaResponseService{
 	}
 
 	@Override
-	public QnaResponseVO getAnswerByQnaId(Long qnaId) {
-		return mapper.getAnswerByQnaId(qnaId);
+	public QnaResponseVO getAnswerByQnaId(Long qna_id) {
+		return mapper.getAnswerByQnaId(qna_id);
 	}
 
 	@Override

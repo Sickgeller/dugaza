@@ -76,7 +76,7 @@ public class CommunityController {
         PagingUtil page = new PagingUtil(
                 pageNum,
                 count,
-                15,     // 한 페이지에 16개
+                15,     // 한 페이지에 15개
                 5,      // 블록 크기
                 "/community",
                 "&category=" + (category != null ? category : "") + "&order=" + (order != null ? order : "") + "&keyword=" + (keyword != null ? keyword : "")

@@ -12,7 +12,7 @@ import kr.spring.qnaResponse.vo.QnaResponseVO;
 public interface QnaResponseMapper {
     void insertResponse(QnaResponseVO responseVO);
     void updateIsAnswered(@Param("qna_id") Long qna_id, @Param("is_answered") String is_answered);
-    QnaResponseVO getAnswerByQnaId(Long qnaId);
+    QnaResponseVO getAnswerByQnaId(@Param("qna_id") Long qna_id);
     QnaQuestionVO getQnaById(Long qnaId);
     List<QnaQuestionVO> getAllQnaList(); // 관리자용 전체 조회
     void updateResponse(QnaResponseVO responseVO);

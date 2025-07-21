@@ -42,16 +42,16 @@ public class QnaResponseController {
     
     @GetMapping("/detail/{qnaId}")
     public String getQnaDetail(@PathVariable("qnaId") Long qnaId, Model model) {
-        // 문의 내용
-        QnaQuestionVO qna = qnaResponseService.getQnaById(qnaId); 
-        model.addAttribute("question", qna); // 이름을 "question"으로 바꿈
-        model.addAttribute("response", qnaResponseService.getAnswerByQnaId(qnaId));
+        // 1. 문의글 가져오기
+        QnaQuestionVO question = qnaResponseService.getQnaById(qnaId);
+        model.addAttribute("question", question); // 이름 명확하게
 
-        // 기존 답변 (있으면)
-        QnaResponseVO response = qnaResponseService.getAnswerByQnaId(qnaId); 
-        model.addAttribute("response", response);
+        // 2. 답변 가져오기 (있으면 null 아님)
+        QnaResponseVO response = qnaResponseService.getAnswerByQnaId(qnaId);
+        System.out.println(">>> 관리자 답변 내용: " + response);  // null이면 mapper 문제
+        model.addAttribute("response", response); // 중복 제거하고 한 번만 호출
 
-        return "qnaResponse/detail"; // templates/qnaResponse/detail.html
+        return "qnaResponse/detail";
     }
 
     
@@ -70,7 +70,7 @@ public class QnaResponseController {
         QnaQuestionVO question = qnaResponseService.getQnaById(qnaId); // 문의 내용
         QnaResponseVO response = qnaResponseService.getAnswerByQnaId(qnaId); // 기존 답변 (있다면)
 
-        model.addAttribute("question", question);
+        model.addAttribute("qna", question);
         model.addAttribute("response", response != null ? response : new QnaResponseVO());
 
         return "qnaResponse/detail"; // templates/qnaResponse/detail.html
