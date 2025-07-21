@@ -1,3 +1,4 @@
+
 package kr.spring.config;
 
 import org.springframework.context.annotation.Configuration;
@@ -12,3 +13,4 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:///C:/community-uploads/");
     }
 }
+
