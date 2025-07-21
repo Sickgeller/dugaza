@@ -35,7 +35,7 @@
 
 /* 카테고리 블록 */
 .category-block {
-    margin: 40px 0;
+    margin: 40px 0 100px 0;
     padding: 0 20px;
 }
 
@@ -52,7 +52,7 @@
 }
 
 .more-btn {
-    font-size: 0.9rem;
+    font-size: 1.0rem;
     text-decoration: none;
     color: #007BFF;
     margin-left: 50px;

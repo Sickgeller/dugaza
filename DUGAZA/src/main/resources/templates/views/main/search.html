@@ -28,7 +28,7 @@
         <div th:each="category : ${groupedResults}" class="category-block">
             <div class="category-header">
                 <h2 th:text="${displayNames[category.key] + ' (' + groupedCounts[category.key] + '건)'}"></h2>
-                <a th:href="@{'/' + ${category.key} + '?keyword=' + ${keyword}}" class="more-btn">더보기</a>
+                <a th:href="@{'/' + ${category.key} + '?keyword=' + ${keyword}}" class="more-btn">더 보기 ></a>
             </div>
 
             <div class="card-grid">
