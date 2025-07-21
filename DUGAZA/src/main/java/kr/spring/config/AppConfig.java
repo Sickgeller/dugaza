@@ -97,12 +97,7 @@ public class AppConfig implements WebMvcConfigurer, WebSocketConfigurer {
         
         return sessionFactory.getObject();
     }
-    //시발
+
     
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/assets/upload/**")
-                .addResourceLocations("classpath:/static/assets/upload/");
-    }
 
 }
