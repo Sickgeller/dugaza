@@ -5,7 +5,6 @@ import java.util.Map;
 
 import kr.spring.api.client.HouseApiClient;
 import kr.spring.api.dto.HouseDetailApiDto;
-import kr.spring.api.mapper.CommonApiMapper;
 import kr.spring.api.mapper.HouseDetailApiMapper;
 import kr.spring.api.service.CommonDataSyncSupportService;
 import org.springframework.security.core.Authentication;
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.house.dao.HouseMapper;
 import kr.spring.house.vo.HouseVO;
+import kr.spring.seller.vo.HouseSellerDetailVO;
 import kr.spring.wishlist.service.WishListService;
 import kr.spring.wishlist.vo.WishListVO;
 import lombok.RequiredArgsConstructor;
@@ -75,16 +75,61 @@ public class HouseServiceImpl implements HouseService {
         return houseMapper.selectHouse(id);
     }
 
-	@Override
-	public HouseVO selectHouseWithSellerId(Long sellerId) {
-		return houseMapper.selectHouseWithSellerId(sellerId);
-	}
+    @Override
+    public List<HouseVO> selectHousesWithSellerId(Long sellerId) {
+        return houseMapper.selectHousesWithSellerId(sellerId);
+    }
 
-	@Override
-	public void insertWithApi(Long contentId) {
+    @Override
+    public void insertWithApi(Long contentId) {
         HouseDetailApiDto houseDetailApiDto = houseApiClient.getHouseDetailData(contentId);
         if (houseDetailApiDto != null) {
             commonDataSyncSupportService.insertOrUpdate(houseDetailApiMapper, houseDetailApiDto);
         }
+	}
+
+    @Override
+    public List<HouseVO> selectListForApply(Map<String, Object> map) {
+        return houseMapper.selectListForApply(map);
+    }
+
+	// 숙소 승인 관련 메서드들 구현
+	@Override
+	public void applyHouse(HouseSellerDetailVO houseSellerDetailVO) {
+		houseMapper.insertHouseApplication(houseSellerDetailVO);
+	}
+
+	@Override
+	public List<HouseSellerDetailVO> getPendingHouses() {
+		return houseMapper.selectPendingHouses();
+	}
+
+	@Override
+	public void approveHouse(Long houseId, Long sellerId) {
+		Map<String, Object> params = Map.of(
+			"houseId", houseId,
+			"sellerId", sellerId,
+			"status", "available"
+		);
+		houseMapper.updateHouseStatus(params);
+	}
+
+	@Override
+	public void rejectHouse(Long houseId, Long sellerId) {
+		Map<String, Object> params = Map.of(
+			"houseId", houseId,
+			"sellerId", sellerId,
+			"status", "deleted"
+		);
+		houseMapper.updateHouseStatus(params);
+	}
+
+	@Override
+	public List<HouseSellerDetailVO> getHousesBySellerAndStatus(Long sellerId, String status) {
+		Map<String, Object> params = Map.of(
+			"sellerId", sellerId,
+			"status", status
+		);
+		return houseMapper.selectHousesBySellerAndStatus(params);
 	}
 }

@@ -55,8 +55,17 @@
                             <i class="fas fa-clock"></i>
                         </div>
                         <div class="stat-info">
+                            <h3>승인 대기</h3>
+                            <p th:text="${suspendingCars} + '대'"></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-car-side"></i>
+                        </div>
+                        <div class="stat-info">
                             <h3>대여 중</h3>
-                            <p th:text="${totalCars - availableCars} + '대'"></p>
+                            <p th:text="${rentedCars} + '대'"></p>
                         </div>
                     </div>
                 </div>
@@ -108,8 +117,8 @@
                                 <td th:text="${car.carNumber}">차량번호</td>
                                 <td th:text="${car.carYear} + '년'">연식</td>
                                 <td>
-                                    <span th:class="${car.status == 'AVAILABLE' ? 'status available' : 'status rented'}" 
-                                          th:text="${car.status == 'AVAILABLE' ? '대여가능' : '대여중'}">상태</span>
+                                    <span th:class="${car.status == 'AVAILABLE' ? 'status available' : car.status == 'SUSPENDING' ? 'status suspending' : car.status == 'INAVAILABLE' ? 'status inavailable' : car.status == 'DELETED' ? 'status deleted' : 'status rented'}" 
+                                          th:text="${car.status == 'AVAILABLE' ? '대여 가능' : car.status == 'SUSPENDING' ? '승인 대기' : car.status == 'INAVAILABLE' ? '대여 불가' : car.status == 'DELETED' ? '삭제됨' : '대여중'}">상태</span>
                                 </td>
                                 <td th:text="${#numbers.formatInteger(car.carPrice, 3, 'COMMA')} + '원'">일일 요금</td>
                                 <td>

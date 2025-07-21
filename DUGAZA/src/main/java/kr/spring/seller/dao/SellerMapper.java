@@ -21,4 +21,7 @@ public interface SellerMapper {
     
     // houseId로 seller 조회
     HouseSellerDetailVO getSellerByHouseId(@Param("houseId") Long houseId);
+    
+    // 숙소-판매자 연결
+    void connectHouseToSeller(@Param("contentId") Long contentId, @Param("sellerId") Long sellerId);
 }

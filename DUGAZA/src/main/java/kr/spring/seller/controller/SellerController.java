@@ -2,6 +2,7 @@ package kr.spring.seller.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.common.SellerType;
 import kr.spring.reservation.service.HouseReservationService;
 import kr.spring.review.base.service.BaseReviewService;
@@ -11,6 +12,7 @@ import kr.spring.seller.vo.SellerVO;
 import kr.spring.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import kr.spring.house.vo.HouseVO;
+import kr.spring.house.service.HouseService;
+import kr.spring.util.PagingUtil;
 
 @Controller
 @Slf4j
@@ -31,7 +42,7 @@ public class SellerController {
     private final PasswordEncoder passwordEncoder;
     private final BaseReviewService baseReviewService;
     private final SellerHouseController sellerHouseController;
-
+    private final HouseService houseService;
 
 
     @GetMapping("/register")
@@ -108,55 +119,28 @@ public class SellerController {
     }
 
     @GetMapping("/dashboard")
-    public String myPage(Model model){
-        SellerVO seller = (SellerVO) model.getAttribute("seller");
-        if(seller != null) {
-            model.addAttribute("currentMenu", "dashboard");
-            if(seller.getSellerType() == null) {
-                log.error("판매자 타입이 null입니다. 사용자: {}, 판매자 정보: {}", seller.getName(), seller);
-                model.addAttribute("error", "판매자 정보를 불러올 수 없습니다. 다시 로그인해주세요.");
-                return "views/common/error";
-            }
-            log.info("판매자 대시보드 접근 - 사용자: {}, 타입: {}", seller.getName(), seller.getSellerType());
-            if(SellerType.CAR.getValue().equals(seller.getSellerType())) {
-                return "redirect:/seller/car/dashboard";
-            }else if(SellerType.HOUSE.getValue().equals(seller.getSellerType())) {
-                return sellerHouseController.main(model);
-            }else {
-                log.warn("알 수 없는 판매자 타입: {} - 사용자: {}", seller.getSellerType(), seller.getName());
-                model.addAttribute("error", "알 수 없는 판매자 타입입니다.");
-                return "views/common/error";
-            }
-        }else{
-            return login();
+    public String myPage(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+        SellerVO seller = userDetails.getSeller();
+        if (seller == null) {
+            return "redirect:/seller/login";
         }
+        String sellerType = seller.getSellerType();
+        if (SellerType.HOUSE.getValue().equals(sellerType)) {
+            return "redirect:/seller/house/";
+        } else if (SellerType.CAR.getValue().equals(sellerType)) {
+            return "redirect:/seller/car/";
+        }
+        // 기타 사업자 유형 처리
+        return "redirect:/seller/house/";
     }
 
-
-//    /**
-//     * 판매자 대시보드 (기본 페이지)
-//     * @return 기본 판매자 페이지
-//     */
-//    @GetMapping("/dashboard")
-//    public String sellerDashboard() {
-//        return "views/seller/seller-dashboard";
-//    }
-
-    /**
-     * 판매자 프로필 페이지
-     * @return 판매자 프로필 페이지
-     */
     @GetMapping("/profile")
     public String sellerProfile() {
-        return "views/seller/seller-profile";
+        return "views/seller/profile";
     }
 
-    /**
-     * 판매자 설정 페이지
-     * @return 판매자 설정 페이지
-     */
     @GetMapping("/settings")
     public String sellerSettings() {
-        return "views/seller/seller-settings";
+        return "views/seller/settings";
     }
 }

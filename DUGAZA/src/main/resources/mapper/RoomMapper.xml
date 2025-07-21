@@ -174,4 +174,24 @@
         ORDER BY PRICE ASC
     </select>
 
+    <select id="selectRoomsByHouseIdWithPaging" resultMap="RoomDetailResultMap">
+        SELECT *
+        FROM (
+            SELECT A.*, ROWNUM RN
+            FROM (
+                SELECT *
+                FROM HOUSE_ROOM_INFO
+                WHERE HOUSE_ID = #{houseId}
+                AND STATUS = 0
+                ORDER BY ROOM_ID DESC
+            ) A
+            WHERE ROWNUM &lt;= #{offset} + #{limit}
+        )
+        WHERE RN &gt; #{offset}
+    </select>
+
+    <select id="countRoomsByHouseId" resultType="int">
+        SELECT COUNT(*) FROM HOUSE_ROOM_INFO WHERE HOUSE_ID = #{houseId} AND STATUS = 0
+    </select>
+
 </mapper> 

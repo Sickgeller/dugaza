@@ -51,12 +51,14 @@ public class SellerCarController {
                 
                 int totalCars = carList.size();
                 int availableCars = (int) carList.stream().filter(car -> "AVAILABLE".equals(car.getStatus())).count();
-                int rentedCars = totalCars - availableCars;
+                int suspendingCars = (int) carList.stream().filter(car -> "SUSPENDING".equals(car.getStatus())).count();
+                int rentedCars = (int) carList.stream().filter(car -> !"AVAILABLE".equals(car.getStatus()) && !"SUSPENDING".equals(car.getStatus()) && !"DELETED".equals(car.getStatus())).count();
                 int rentalRate = totalCars > 0 ? (int) Math.round((double) rentedCars / totalCars * 100) : 0;
 
                 // 대시보드 통계 데이터
                 model.addAttribute("totalCars", totalCars);
                 model.addAttribute("availableCars", availableCars);
+                model.addAttribute("suspendingCars", suspendingCars);
                 model.addAttribute("rentedCars", rentedCars);
                 model.addAttribute("rentalRate", rentalRate);
 
@@ -97,11 +99,15 @@ public class SellerCarController {
         List<CarVO> cars = carService.getCarListBySeller(seller.getSellerId());
         int totalCars = cars.size();
         int availableCars = (int) cars.stream().filter(car -> "AVAILABLE".equals(car.getStatus())).count();
+        int suspendingCars = (int) cars.stream().filter(car -> "SUSPENDING".equals(car.getStatus())).count();
+        int rentedCars = (int) cars.stream().filter(car -> !"AVAILABLE".equals(car.getStatus()) && !"SUSPENDING".equals(car.getStatus()) && !"DELETED".equals(car.getStatus())).count();
 
         // 모델에 데이터 추가
         model.addAttribute("cars", cars);
         model.addAttribute("totalCars", totalCars);
         model.addAttribute("availableCars", availableCars);
+        model.addAttribute("suspendingCars", suspendingCars);
+        model.addAttribute("rentedCars", rentedCars);
         model.addAttribute("currentPage", currentPage);
         model.addAttribute("totalPages", (int) Math.ceil((double) totalCars / pageSize));
         model.addAttribute("seller", seller);
@@ -136,7 +142,7 @@ public class SellerCarController {
                     .carSeats(carRegisterDTO.getCarSeats())
                     .carPrice(carRegisterDTO.getCarPrice())
                     .sellerId(seller.getSellerId())
-                    .status("AVAILABLE")
+                    .status("SUSPENDING")
                     .build();
 
             // 파일 업로드 처리
@@ -154,7 +160,7 @@ public class SellerCarController {
 
             carService.registerCar(carVO);
 
-            redirectAttributes.addFlashAttribute("message", "차량이 성공적으로 등록되었습니다.");
+            redirectAttributes.addFlashAttribute("message", "차량이 성공적으로 등록되었습니다. 관리자 승인 후 서비스에 등록됩니다.");
             log.info("차량 등록 성공: sellerId = {}, carName = {}, carId = {}", seller.getSellerId(), carVO.getCarName(), carVO.getCarId());
 
             return "redirect:/seller/car/management";

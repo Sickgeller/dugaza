@@ -57,7 +57,16 @@
             <div class="content-section">
                 <div class="section-header">
                     <h3>객실 목록</h3>
-                    <button class="btn-primary" type="button" id="openRoomAddModal">
+                    <form id="houseFilterForm" method="get" th:action="@{/seller/house/management}">
+                        <label for="houseId">숙소 선택:</label>
+                        <select name="houseId" id="houseId" onchange="document.getElementById('houseFilterForm').submit();">
+                            <option th:each="house : ${houseList}" 
+                                    th:value="${house.contentId}" 
+                                    th:text="${house.title}" 
+                                    th:selected="${house.contentId == selectedHouseId}">숙소명</option>
+                        </select>
+                    </form>
+                    <button class="btn-primary" type="button" id="openRoomAddModal" th:disabled="${selectedHouseId == null}">
                         <i class="fas fa-plus"></i> 새 객실 추가
                     </button>
                 </div>
@@ -99,18 +108,21 @@
                             </tr>
                         </tbody>
                     </table>
-                </div>
-                <!-- 페이징 -->
-                <div class="pagination" th:if="${totalPages > 1}">
-                    <a th:href="@{/seller/house/management(page=${currentPage - 1})}"
-                       th:class="${currentPage == 1 ? 'disabled' : ''}">&laquo;</a>
-                    <th:block th:each="pageNum : ${#numbers.sequence(1, totalPages)}">
-                        <a th:href="@{/seller/house/management(page=${pageNum})}"
-                           th:text="${pageNum}"
-                           th:class="${pageNum == currentPage ? 'active' : ''}">1</a>
-                    </th:block>
-                    <a th:href="@{/seller/house/management(page=${currentPage + 1})}"
-                       th:class="${currentPage == totalPages ? 'disabled' : ''}">&raquo;</a>
+                    <!-- 페이지네이션 블록 -->
+                    <div class="pagination">
+                        <ul>
+                            <li th:if="${currentPage > 1}">
+                                <a th:href="@{|/seller/house/management?page=${currentPage-1}&houseId=${selectedHouseId}|}">&laquo; 이전</a>
+                            </li>
+                            <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                                th:classappend="${i == currentPage} ? 'active'">
+                                <a th:href="@{|/seller/house/management?page=${i}&houseId=${selectedHouseId}|}" th:text="${i}"></a>
+                            </li>
+                            <li th:if="${currentPage < totalPages}">
+                                <a th:href="@{|/seller/house/management?page=${currentPage+1}&houseId=${selectedHouseId}|}">다음 &raquo;</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

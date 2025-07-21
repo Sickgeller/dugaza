@@ -228,22 +228,59 @@ public class AdminServiceImpl implements AdminService {
         } catch (Exception e) {
             log.error("차량 목록 조회 중 오류 발생", e);
             
-            // 오류 발생 시 임시 데이터 반환
+            // 오류 발생 시 기본 데이터 반환
             Map<String, Object> car1 = new HashMap<>();
             car1.put("carId", 1L);
             car1.put("carName", "현대 아반떼");
-            car1.put("year", "2023");
-            car1.put("sellerName", "제주렌트카");
-            car1.put("carType", "중형차");
-            car1.put("fuelType", "휘발유");
+            car1.put("year", 2023);
+            car1.put("sellerName", "제주렌터카");
+            car1.put("carType", "준중형");
+            car1.put("fuelType", "가솔린");
             car1.put("dailyPrice", 50000);
-            car1.put("rating", 4.8);
+            car1.put("rating", 4.5);
             car1.put("status", "AVAILABLE");
             car1.put("imageUrl", "/assets/images/cars/car1.jpg");
             carList.add(car1);
         }
         
         return carList;
+    }
+    
+    @Override
+    public List<Map<String, Object>> getPendingCarList() {
+        List<Map<String, Object>> pendingCarList = new ArrayList<>();
+        
+        try {
+            // CarService에서 승인 대기 중인 차량 목록 조회
+            List<CarVO> cars = carService.getAllCars();
+            
+            for (CarVO car : cars) {
+                if ("SUSPENDING".equals(car.getStatus())) {
+                    Map<String, Object> carMap = new HashMap<>();
+                    carMap.put("carId", car.getCarId());
+                    carMap.put("carName", car.getCarName());
+                    carMap.put("year", car.getCarYear());
+                    carMap.put("sellerName", car.getSellerName() != null ? car.getSellerName() : "미지정");
+                    carMap.put("carType", car.getCarType());
+                    carMap.put("fuelType", car.getCarFuel());
+                    carMap.put("dailyPrice", car.getCarPrice());
+                    carMap.put("rating", 4.5); // 임시 평점
+                    carMap.put("status", car.getStatus());
+                    carMap.put("imageUrl", car.getCarImage() != null && !car.getCarImage().isEmpty() ? "/assets/upload/" + car.getCarImage() : "/assets/images/cars/car1.jpg");
+                    carMap.put("carNumber", car.getCarNumber());
+                    carMap.put("carColor", car.getCarColor());
+                    carMap.put("carSeats", car.getCarSeats());
+                    
+                    pendingCarList.add(carMap);
+                }
+            }
+            
+            log.info("승인 대기 차량 목록 조회 완료: {}건", pendingCarList.size());
+        } catch (Exception e) {
+            log.error("승인 대기 차량 목록 조회 중 오류 발생", e);
+        }
+        
+        return pendingCarList;
     }
     
     @Override

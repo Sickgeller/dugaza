@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class HouseSellerDetailVO {
     private Long sellerId;
     private Long houseId;
+    private String status; // available, inavailable, suspending, deleted
 } 

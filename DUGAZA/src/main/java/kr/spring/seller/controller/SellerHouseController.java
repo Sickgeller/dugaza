@@ -1,5 +1,6 @@
 package kr.spring.seller.controller;
 
+import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.common.SellerType;
 import kr.spring.house.service.HouseService;
 import kr.spring.house.vo.HouseVO;
@@ -15,6 +16,7 @@ import kr.spring.seller.service.SellerService;
 import kr.spring.seller.vo.SellerVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.ResponseBody;
+import kr.spring.seller.vo.HouseSellerDetailVO;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping("/seller/house")
 @Controller
@@ -89,30 +93,42 @@ public class SellerHouseController {
     }
 
     @GetMapping("/management")
-    public String rooms(Model model, @RequestParam(name = "page", defaultValue = "1") int page) {
-        SellerVO seller = (SellerVO)model.getAttribute("seller");
+    public String rooms(Model model, 
+                       @RequestParam(name = "page", defaultValue = "1") int page,
+                       @RequestParam(name = "houseId", required = false) Long houseId,
+                       @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        // 세션에서 seller 정보 가져오기
+        SellerVO seller = customUserDetails.getSeller();
         if(seller == null) return "redirect:/seller/login";
         model.addAttribute("seller", seller);
 
-        // sellerId를 houseId로 사용하여 house 조회 및 model에 추가
-        Long id = seller.getSellerId();
-        HouseVO house = houseService.selectHouseWithSellerId(id);
-        model.addAttribute("house", house);
+        // 판매자가 소유한 숙소 목록 조회
+        List<HouseVO> houseList = houseService.selectHousesWithSellerId(seller.getSellerId());
+        model.addAttribute("houseList", houseList);
 
-        // 페이징 처리를 위한 설정
+        // 선택된 숙소 ID 결정
+        Long selectedHouseId = houseId;
+        if (selectedHouseId == null && !houseList.isEmpty()) {
+            selectedHouseId = houseList.get(0).getContentId();
+        }
+        model.addAttribute("selectedHouseId", selectedHouseId);
+
+        // 해당 숙소의 객실 목록 조회
         int pageSize = 10;
         int currentPage = Math.max(1, page);
-
-        // 객실 목록 조회
-        List<RoomDetailVO> rooms = roomService.getRoomsWithSeller(seller.getSellerId(), currentPage, pageSize);
-        int totalRooms = roomService.getTotalRoomCount(seller.getSellerId());
-        int availableRooms = (int)rooms.stream().filter(room -> room.getStatus() == 0).count();
-
-        // 모델에 데이터 추가
+        List<RoomDetailVO> rooms = List.of();
+        int totalRooms = 0;
+        int availableRooms = 0;
+        if (selectedHouseId != null) {
+            rooms = roomService.getRoomsByHouseId(selectedHouseId, currentPage, pageSize);
+            totalRooms = roomService.getTotalRoomCountByHouseId(selectedHouseId);
+            availableRooms = (int)rooms.stream().filter(room -> room.getStatus() == 0).count();
+        }
         model.addAttribute("rooms", rooms);
         model.addAttribute("totalRooms", totalRooms);
         model.addAttribute("availableRooms", availableRooms);
         model.addAttribute("currentPage", currentPage);
+        model.addAttribute("pageSize", pageSize);
         model.addAttribute("totalPages", (int)Math.ceil((double)totalRooms / pageSize));
         model.addAttribute("currentMenu", "management");
 
@@ -346,9 +362,9 @@ public class SellerHouseController {
             Model model,
             @RequestParam(name = "contentId", required = true) Long contentId
     ) {
-        HouseVO house = houseService.selectHouseWithSellerId(contentId);
+        HouseVO house = houseService.selectHouse(contentId);
         model.addAttribute("house", house);
-        return "views/seller/house-seller-room-add";
+        return "views/seller/house/house-seller-room-add";
     }
 
     @PostMapping("/room/insert")
@@ -482,6 +498,92 @@ public class SellerHouseController {
             response.put("message", "객실 삭제 중 오류가 발생했습니다.");
         }
         return response;
+    }
+
+    @GetMapping("/apply")
+    public String applyForm(
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "category", required = false) String category,
+            @RequestParam(name = "sort", defaultValue = "latest") String sort,
+            Model model,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        
+        // 현재 로그인한 판매자 정보 가져오기
+        SellerVO seller = customUserDetails.getSeller();
+        if (seller == null) return "redirect:/seller/login";
+        
+        // 페이징 처리
+        int pageSize = 12;
+        Map<String, Object> params = new HashMap<>();
+        
+        // 현재 판매자 ID 전달
+        params.put("sellerId", seller.getSellerId());
+        
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            params.put("keyword", keyword.trim());
+        }
+        if (category != null && !category.trim().isEmpty()) {
+            params.put("cat3", category.trim());
+        }
+        params.put("sort", sort);
+        
+        int startRow = (page - 1) * pageSize + 1;
+        int endRow = page * pageSize;
+        params.put("start", startRow);
+        params.put("end", endRow);
+        
+        // selectList 대신 selectListForApply 사용
+        List<HouseVO> houseList = houseService.selectListForApply(params);
+        int totalCount = houseService.selectRowCount(params);
+        
+        model.addAttribute("houseList", houseList);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("totalPages", (int)Math.ceil((double)totalCount / pageSize));
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("category", category);
+        model.addAttribute("sort", sort);
+        model.addAttribute("currentMenu", "apply");
+        
+        return "views/seller/house/apply";
+    }
+
+    @PostMapping("/apply")
+    public String applySubmit(
+            @RequestParam(name = "contentId") Long contentId,
+            HttpServletRequest request,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        
+        SellerVO seller = (SellerVO) request.getSession().getAttribute("seller");
+        if (seller == null) return "redirect:/seller/login";
+        
+        try {
+            // 숙소 정보 조회
+            HouseVO house = houseService.selectHouse(contentId);
+            if (house == null) {
+                redirectAttributes.addFlashAttribute("error", "선택한 숙소를 찾을 수 없습니다.");
+                return "redirect:/seller/house/apply";
+            }
+            
+            // HouseSellerDetailVO 생성 및 저장
+            HouseSellerDetailVO houseSellerDetailVO = new HouseSellerDetailVO();
+            houseSellerDetailVO.setHouseId(contentId);
+            houseSellerDetailVO.setSellerId(seller.getSellerId());
+            houseSellerDetailVO.setStatus("suspending");
+            
+            houseService.applyHouse(houseSellerDetailVO);
+            
+            redirectAttributes.addFlashAttribute("message", "숙소 추가 신청이 완료되었습니다. 관리자의 승인 후 사용 가능합니다.");
+            log.info("숙소 신청 완료: sellerId={}, houseId={}", seller.getSellerId(), contentId);
+            
+        } catch (Exception e) {
+            log.error("숙소 신청 중 오류 발생", e);
+            redirectAttributes.addFlashAttribute("error", "숙소 신청 중 오류가 발생했습니다.");
+        }
+        
+        return "redirect:/seller/house/apply";
     }
 
 

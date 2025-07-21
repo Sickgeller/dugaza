@@ -36,16 +36,7 @@
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
             <!-- 헤더 -->
-            <div class="content-header">
-                <div class="header-left">
-                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
-                    <h2>판매자 관리</h2>
-                </div>
-                <div class="user-info">
-                    <span>관리자님</span>
-                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
-                </div>
-            </div>
+            <div th:replace="~{fragments/header :: admin-header}"></div>
 
             <!-- 판매자 통계 -->
             <div class="content-section">

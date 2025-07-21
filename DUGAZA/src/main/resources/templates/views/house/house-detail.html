@@ -241,6 +241,21 @@
                         </div>
                     </div>
                 </div>
+                <!-- 페이지네이션 블록 -->
+                <div class="pagination">
+                    <ul>
+                        <li th:if="${currentPage > 1}">
+                            <a th:href="@{|/house/detail?contentId=${info.contentId}&page=${currentPage-1}&pageSize=${pageSize}|}">&laquo; 이전</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                            th:classappend="${i == currentPage} ? 'active'">
+                            <a th:href="@{|/house/detail?contentId=${info.contentId}&page=${i}&pageSize=${pageSize}|}" th:text="${i}"></a>
+                        </li>
+                        <li th:if="${currentPage < totalPages}">
+                            <a th:href="@{|/house/detail?contentId=${info.contentId}&page=${currentPage+1}&pageSize=${pageSize}|}">다음 &raquo;</a>
+                        </li>
+                    </ul>
+                </div>
             </section>
 
             <section class="map-section">

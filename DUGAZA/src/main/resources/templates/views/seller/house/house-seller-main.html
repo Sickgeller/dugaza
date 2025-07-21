@@ -107,11 +107,11 @@
                                 <td colspan="9" class="text-center">최근 예약이 없습니다.</td>
                             </tr>
                             <tr th:each="reservation : ${recentReservations}">
-                                <td th:text="'#' + ${reservation.reservationId}"></td>
-                                <td th:text="${reservation.roomNo}">호</td>
+                                <td th:text="'#' + ${reservation.houseReservationId}"></td>
+                                <td th:text="${reservation.roomId}">호</td>
                                 <td th:text="${reservation.memberId}">김철수</td>
-                                <td th:text="${#temporals.format(reservation.reservationStartDate, 'yyyy-MM-dd')}">2024-02-15</td>
-                                <td th:text="${#temporals.format(reservation.reservationEndDate, 'yyyy-MM-dd')}">2024-02-17</td>
+                                <td th:text="${#temporals.format(reservation.reservationStart, 'yyyy-MM-dd')}">2024-02-15</td>
+                                <td th:text="${#temporals.format(reservation.reservationEnd, 'yyyy-MM-dd')}">2024-02-17</td>
                                 <td th:text="${reservation.reservationCount} + '명'">2명</td>
                                 <td th:text="${#numbers.formatInteger(reservation.price, 3, 'COMMA')} + '원'">320,000원</td>
                                 <td>

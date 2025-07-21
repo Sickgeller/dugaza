@@ -113,3 +113,42 @@
     margin-top: 4px;
   }
 }
+
+/* 숙소 선택 정보 */
+.house-select-info {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+}
+
+.house-select-info p {
+    margin: 0 0 10px 0;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.house-select-info i {
+    color: #007bff;
+    margin-right: 5px;
+}
+
+.house-select-info .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.house-select-info .btn:hover {
+    background: #545b62;
+    color: white;
+    text-decoration: none;
+}

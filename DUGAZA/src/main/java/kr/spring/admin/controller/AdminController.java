@@ -1,6 +1,8 @@
 package kr.spring.admin.controller;
 
 import kr.spring.admin.service.AdminService;
+import kr.spring.house.service.HouseService;
+import kr.spring.seller.vo.HouseSellerDetailVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import java.util.HashMap;
 public class AdminController {
 
     private final AdminService adminService;
+    private final HouseService houseService;
 
     // 대시보드
     @GetMapping("")
@@ -149,23 +152,59 @@ public class AdminController {
         return response;
     }
     
-    // 차량 상태 변경
-    @PostMapping("/cars/status")
+    // 차량 상태 수정
+    @PostMapping("/cars/{carId}/status")
     @ResponseBody
-    public Map<String, Object> updateCarStatus(@RequestBody Map<String, Object> request) {
+    public Map<String, Object> updateCarStatus(@PathVariable Long carId, @RequestParam String status) {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            Long carId = Long.valueOf(request.get("carId").toString());
-            String status = request.get("status").toString();
-            
-            adminService.updateProductStatus(carId, "car", status);
+            adminService.updateProductStatus(carId, "CAR", status);
             response.put("success", true);
             response.put("message", "차량 상태가 성공적으로 변경되었습니다.");
         } catch (Exception e) {
-            log.error("차량 상태 변경 실패: request={}", request, e);
+            log.error("차량 상태 변경 실패: carId={}, status={}", carId, status, e);
             response.put("success", false);
             response.put("message", "차량 상태 변경에 실패했습니다.");
+        }
+        
+        return response;
+    }
+    
+    // 승인 대기 차량 목록 조회
+    @GetMapping("/pending-cars")
+    @ResponseBody
+    public Map<String, Object> getPendingCars() {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            List<Map<String, Object>> pendingCars = adminService.getPendingCarList();
+            response.put("success", true);
+            response.put("cars", pendingCars);
+            response.put("count", pendingCars.size());
+        } catch (Exception e) {
+            log.error("승인 대기 차량 목록 조회 실패", e);
+            response.put("success", false);
+            response.put("message", "승인 대기 차량 목록을 불러올 수 없습니다.");
+        }
+        
+        return response;
+    }
+    
+    // 차량 승인 처리
+    @PostMapping("/cars/{carId}/approve")
+    @ResponseBody
+    public Map<String, Object> approveCar(@PathVariable Long carId) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            adminService.updateProductStatus(carId, "CAR", "AVAILABLE");
+            response.put("success", true);
+            response.put("message", "차량이 성공적으로 승인되었습니다.");
+        } catch (Exception e) {
+            log.error("차량 승인 실패: carId={}", carId, e);
+            response.put("success", false);
+            response.put("message", "차량 승인에 실패했습니다.");
         }
         
         return response;
@@ -370,5 +409,55 @@ public class AdminController {
             log.error("문의 상태 수정 실패", e);
             return "error";
         }
+    }
+
+    // 숙소 승인 관련 엔드포인트들
+    @GetMapping("/pending-houses")
+    @ResponseBody
+    public Map<String, Object> getPendingHouses() {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<HouseSellerDetailVO> pendingHouses = houseService.getPendingHouses();
+            response.put("success", true);
+            response.put("data", pendingHouses);
+            response.put("count", pendingHouses.size());
+        } catch (Exception e) {
+            log.error("승인 대기 숙소 조회 중 오류 발생", e);
+            response.put("success", false);
+            response.put("message", "승인 대기 숙소 조회 중 오류가 발생했습니다.");
+        }
+        return response;
+    }
+
+    @PostMapping("/houses/{houseId}/approve")
+    @ResponseBody
+    public Map<String, Object> approveHouse(@PathVariable Long houseId, @RequestParam Long sellerId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            houseService.approveHouse(houseId, sellerId);
+            response.put("success", true);
+            response.put("message", "숙소가 승인되었습니다.");
+        } catch (Exception e) {
+            log.error("숙소 승인 중 오류 발생", e);
+            response.put("success", false);
+            response.put("message", "숙소 승인 중 오류가 발생했습니다.");
+        }
+        return response;
+    }
+
+    @PostMapping("/houses/{houseId}/reject")
+    @ResponseBody
+    public Map<String, Object> rejectHouse(@PathVariable Long houseId, @RequestParam Long sellerId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            houseService.rejectHouse(houseId, sellerId);
+            response.put("success", true);
+            response.put("message", "숙소가 거절되었습니다.");
+        } catch (Exception e) {
+            log.error("숙소 거절 중 오류 발생", e);
+            response.put("success", false);
+            response.put("message", "숙소 거절 중 오류가 발생했습니다.");
+        }
+        return response;
     }
 } 

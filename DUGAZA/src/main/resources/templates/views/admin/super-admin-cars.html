@@ -38,16 +38,7 @@
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
             <!-- 헤더 -->
-            <div class="content-header">
-                <div class="header-left">
-                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
-                    <h2>차량 관리</h2>
-                </div>
-                <div class="user-info">
-                    <span>관리자님</span>
-                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
-                </div>
-            </div>
+            <div th:replace="~{fragments/header :: admin-header}"></div>
 
             <!-- 차량 통계 -->
             <div class="content-section">
@@ -144,28 +135,33 @@
                             </tr>
                         </thead>
                         <tbody id="carTableBody">
-                            <tr th:each="car : ${carList}">
+                            <tr th:each="car : ${carList}" th:class="'car-row ' + ${car.status.toLowerCase()}" th:data-car-id="${car.carId}">
                                 <td>
                                     <div class="car-info">
-                                        <img th:src="${car.imageUrl != null and car.imageUrl != '' ? car.imageUrl : '/assets/images/cars/car1.jpg'}" alt="차량 이미지">
+                                        <img th:src="${car.imageUrl}" alt="차량 이미지">
                                         <div>
                                             <strong th:text="${car.carName}">차량명</strong>
                                             <small th:text="${car.year} + '년식'">연식</small>
                                         </div>
                                     </div>
                                 </td>
-                                <td th:text="${car.sellerName}">판매자명</td>
-                                <td th:text="${car.carType}">차량종류</td>
+                                <td th:text="${car.sellerName}">판매자</td>
+                                <td th:text="${car.carType}">차종</td>
                                 <td th:text="${car.fuelType}">연료</td>
                                 <td th:text="'₩' + ${#numbers.formatInteger(car.dailyPrice, 3, 'COMMA')}">일일요금</td>
                                 <td th:text="${car.rating} + ' ⭐'">평점</td>
                                 <td>
-                                    <select class="status-select" th:data-car-id="${car.carId}" onchange="updateCarStatus(this)">
-                                        <option value="AVAILABLE" th:selected="${car.status == 'AVAILABLE'}">대여 가능</option>
-                                        <option value="INAVAILABLE" th:selected="${car.status == 'INAVAILABLE'}">대여 불가</option>
-                                        <option value="REPAIRED" th:selected="${car.status == 'REPAIRED'}">점검 중</option>
-                                        <option value="DELETED" th:selected="${car.status == 'DELETED'}">삭제됨</option>
-                                    </select>
+                                    <div class="status-container">
+                                        <span class="car-status-badge" th:class="'car-status-badge ' + ${car.status.toLowerCase()}" th:text="${car.status == 'AVAILABLE' ? '대여 가능' : car.status == 'SUSPENDING' ? '승인 대기' : car.status == 'INAVAILABLE' ? '대여 불가' : car.status == 'DELETED' ? '삭제됨' : car.status}">
+                                            상태
+                                        </span>
+                                        <select class="status-select" th:data-car-id="${car.carId}" onchange="updateCarStatus(this)">
+                                            <option value="AVAILABLE" th:selected="${car.status == 'AVAILABLE'}">대여 가능</option>
+                                            <option value="SUSPENDING" th:selected="${car.status == 'SUSPENDING'}">승인 대기</option>
+                                            <option value="INAVAILABLE" th:selected="${car.status == 'INAVAILABLE'}">대여 불가</option>
+                                            <option value="DELETED" th:selected="${car.status == 'DELETED'}">삭제됨</option>
+                                        </select>
+                                    </div>
                                 </td>
                                 <td>
                                     <button class="btn-icon" title="상세정보" th:onclick="'viewCarDetail(' + ${car.carId} + ')'">
@@ -177,7 +173,7 @@
                                 </td>
                             </tr>
                             <!-- 임시 데이터 (실제 데이터가 없을 때) -->
-                            <tr th:if="${#lists.isEmpty(carList)}">
+                            <tr th:if="${#lists.isEmpty(carList)}" class="car-row available">
                                 <td>
                                     <div class="car-info">
                                         <img src="../images/cars/car1.jpg" alt="차량 이미지">
@@ -193,12 +189,7 @@
                                 <td>₩50,000</td>
                                 <td>4.8 ⭐</td>
                                 <td>
-                                    <select class="status-select" onchange="updateCarStatus(this)">
-                                        <option value="AVAILABLE" selected>대여 가능</option>
-                                        <option value="INAVAILABLE">대여 불가</option>
-                                        <option value="REPAIRED">점검 중</option>
-                                        <option value="DELETED">삭제됨</option>
-                                    </select>
+                                    <span class="car-status-badge available">대여 가능</span>
                                 </td>
                                 <td>
                                     <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
@@ -289,8 +280,8 @@
         function getStatusText(status) {
             switch(status) {
                 case 'AVAILABLE': return '대여 가능';
+                case 'SUSPENDING': return '승인 대기';
                 case 'INAVAILABLE': return '대여 불가';
-                case 'REPAIRED': return '점검 중';
                 case 'DELETED': return '삭제됨';
                 default: return status;
             }
@@ -307,24 +298,21 @@
             const newStatus = selectElement.value;
             
             if (confirm(`차량 상태를 "${getStatusText(newStatus)}"로 변경하시겠습니까?`)) {
-                fetch('/admin/cars/status', {
+                fetch(`/admin/cars/${carId}/status`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded',
                         [header]: token
                     },
-                    body: JSON.stringify({
-                        carId: carId,
-                        status: newStatus
-                    })
+                    body: `status=${newStatus}`
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         alert('상태가 성공적으로 변경되었습니다.');
+                        location.reload(); // 페이지 새로고침으로 상태 배지 업데이트
                     } else {
-                        alert('상태 변경에 실패했습니다.');
-                        // 원래 상태로 되돌리기
+                        alert('상태 변경에 실패했습니다: ' + data.message);
                         location.reload();
                     }
                 })
@@ -342,16 +330,13 @@
         // 차량 삭제 (상태를 DELETED로 변경)
         function deleteCar(carId) {
             if (confirm('정말로 이 차량을 삭제하시겠습니까?')) {
-                fetch('/admin/cars/status', {
+                fetch(`/admin/cars/${carId}/status`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded',
                         [header]: token
                     },
-                    body: JSON.stringify({
-                        carId: carId,
-                        status: 'DELETED'
-                    })
+                    body: 'status=DELETED'
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -359,7 +344,7 @@
                         alert('차량이 삭제되었습니다.');
                         location.reload();
                     } else {
-                        alert('삭제에 실패했습니다.');
+                        alert('삭제에 실패했습니다: ' + data.message);
                     }
                 })
                 .catch(error => {
@@ -394,4 +379,4 @@
         }
     </script>
 </body>
-</html> 
+</html>

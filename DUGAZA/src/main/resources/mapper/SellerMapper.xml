@@ -84,6 +84,12 @@
         WHERE HOUSE_ID = #{houseId}
     </select>
     
+    <!-- 숙소-판매자 연결 -->
+    <insert id="connectHouseToSeller">
+        INSERT INTO HOUSE_SELLER_DETAIL (HOUSE_ID, SELLER_ID, CREATED_AT)
+        VALUES (#{contentId}, #{sellerId}, SYSDATE)
+    </insert>
+    
 </mapper>
 
 

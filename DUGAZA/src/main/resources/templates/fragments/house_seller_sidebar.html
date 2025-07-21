@@ -39,6 +39,11 @@
 <!--                        <i class="fas fa-swimming-pool"></i><span>부대시설 관리</span>-->
 <!--                    </a>-->
 <!--                </li>-->
+                <li th:class="${currentMenu == 'apply' ? 'active' : ''}">
+                    <a th:href="@{/seller/house/apply}">
+                        <i class="fas fa-plus-circle"></i><span>관리숙소 추가 신청</span>
+                    </a>
+                </li>
                 <li th:class="${currentMenu == 'sales' ? 'active' : ''}">
                     <a th:href="@{/seller/house/sales}">
                         <i class="fas fa-chart-line"></i><span>매출 관리</span>

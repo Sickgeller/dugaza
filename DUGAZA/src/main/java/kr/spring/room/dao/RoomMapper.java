@@ -71,4 +71,7 @@ public interface RoomMapper {
      * @return 해당 숙소의 객실 목록 (RoomDetailVO 사용)
      */
     List<RoomDetailVO> getRoomsByHouseId(@Param("houseId") Long houseId);
+
+    List<RoomDetailVO> selectRoomsByHouseIdWithPaging(@Param("houseId") Long houseId, @Param("offset") int offset, @Param("limit") int limit);
+    int countRoomsByHouseId(@Param("houseId") Long houseId);
 }

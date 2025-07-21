@@ -59,4 +59,16 @@
     </nav>
 </header>
 
+<!-- Admin 페이지용 헤더 -->
+<div th:fragment="admin-header" class="content-header">
+    <div class="header-left">
+        <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+        <h2 th:text="${pageTitle ?: '관리자'}">관리자</h2>
+    </div>
+    <div class="user-info">
+        <span>관리자님</span>
+        <img src="../images/users/profile1.jpg" alt="프로필 이미지">
+    </div>
+</div>
+
 

@@ -20,4 +20,7 @@ public interface SellerService {
     
     // houseId로 seller 조회
     HouseSellerDetailVO getSellerByHouseId(Long houseId);
+    
+    // 숙소-판매자 연결
+    void connectHouseToSeller(Long contentId, Long sellerId);
 }

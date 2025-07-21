@@ -36,116 +36,294 @@
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
             <!-- 헤더 -->
-            <div class="content-header">
-                <div class="header-left">
-                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
-                    <h2>대시보드</h2>
-                </div>
-                <div class="user-info">
-                    <span>관리자님</span>
-                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
-                </div>
-            </div>
+            <div th:replace="~{fragments/header :: admin-header}"></div>
 
-            <!-- 대시보드 통계 -->
-            <div class="content-section">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>총 사용자</h3>
-                            <p th:text="${stats?.totalMembers ?: '1,234'}">1,234</p>
-                            <span class="stat-change increase">+5.2% (이번 달)</span>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>오늘 예약</h3>
-                            <p th:text="${stats?.todayReservations ?: '89'}">89</p>
-                            <span class="stat-change increase">+12.1% (어제 대비)</span>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-won-sign"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>오늘 매출</h3>
-                            <p th:text="'₩' + ${#numbers.formatInteger(stats?.todayRevenue ?: 2450000, 3, 'COMMA')}">₩2,450,000</p>
-                            <span class="stat-change decrease">-3.4% (어제 대비)</span>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>월 매출</h3>
-                            <p th:text="'₩' + ${#numbers.formatInteger(stats?.monthlyRevenue ?: 45230000, 3, 'COMMA')}">₩45,230,000</p>
-                            <span class="stat-change increase">+8.7% (지난달 대비)</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 최근 활동 -->
+            <!-- 승인 대기 차량 목록 -->
             <div class="content-section">
                 <div class="section-header">
-                    <h3>최근 예약</h3>
-                    <a href="#" class="view-all">전체보기</a>
+                    <h3>승인 대기 차량</h3>
+                    <p>새로 등록된 차량들의 승인을 처리하세요.</p>
                 </div>
-                <div class="recent-activity">
-                    <div class="activity-item" th:each="booking : ${stats?.recentBookings}">
-                        <div class="activity-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="activity-content">
-                            <h4 th:text="${booking.title}">경복궁 투어</h4>
-                            <p th:text="${booking.customer + ' - ' + booking.date}">김철수 - 2024.01.15</p>
-                        </div>
-                        <div class="activity-status">
-                            <span class="status" th:class="${booking.status == '확정' ? 'confirmed' : 'pending'}" th:text="${booking.status}">확정</span>
-                        </div>
+                
+                <div class="pending-cars-container">
+                    <div id="pendingCarsList" class="pending-cars-grid">
+                        <!-- 승인 대기 차량들이 여기에 동적으로 로드됩니다 -->
+                    </div>
+                    
+                    <div id="noPendingCars" class="no-data" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <p>승인 대기 중인 차량이 없습니다.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- 빠른 액션 -->
+            <!-- 승인 대기 숙소 목록 -->
             <div class="content-section">
                 <div class="section-header">
-                    <h3>빠른 액션</h3>
+                    <h3>승인 대기 숙소</h3>
+                    <p>새로 신청된 숙소들의 승인을 처리하세요.</p>
                 </div>
-                <div class="quick-actions">
-                    <a href="/member/admin_member" class="action-card">
-                        <i class="fas fa-users"></i>
-                        <h4>회원 관리</h4>
-                        <p>회원 목록 및 상태 관리</p>
-                    </a>
-                    <a href="/admin/sellers" class="action-card">
-                        <i class="fas fa-store"></i>
-                        <h4>판매자 관리</h4>
-                        <p>판매자 승인 및 관리</p>
-                    </a>
-                    <a href="/house/admin_house" class="action-card">
-                        <i class="fas fa-hotel"></i>
-                        <h4>숙소 관리</h4>
-                        <p>숙소 상품 관리</p>
-                    </a>
-                    <a href="/admin/reviews" class="action-card">
-                        <i class="fas fa-star"></i>
-                        <h4>리뷰 관리</h4>
-                        <p>리뷰 모니터링</p>
-                    </a>
+                
+                <div class="pending-houses-container">
+                    <div id="pendingHousesList" class="pending-houses-grid">
+                        <!-- 승인 대기 숙소들이 여기에 동적으로 로드됩니다 -->
+                    </div>
+                    
+                    <div id="noPendingHouses" class="no-data" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <p>승인 대기 중인 숙소가 없습니다.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script th:src="@{/assets/js/admin.js}"></script>
+    <script th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/assets/js/customjs.js}"></script>
+    <script>
+        // CSRF 토큰 설정
+        const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        
+        // 페이지 로드 시 승인 대기 차량 목록 조회
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPendingCars();
+            loadPendingHouses();
+        });
+        
+        // 승인 대기 차량 목록 조회
+        function loadPendingCars() {
+            fetch('/admin/pending-cars', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [header]: token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayPendingCars(data.cars);
+                } else {
+                    console.error('승인 대기 차량 목록 조회 실패:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+            });
+        }
+        
+        // 승인 대기 차량 목록 표시
+        function displayPendingCars(cars) {
+            const container = document.getElementById('pendingCarsList');
+            const noDataDiv = document.getElementById('noPendingCars');
+            
+            if (cars.length === 0) {
+                container.style.display = 'none';
+                noDataDiv.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'grid';
+            noDataDiv.style.display = 'none';
+            
+            container.innerHTML = cars.map(car => `
+                <div class="pending-car-card">
+                    <div class="car-image">
+                        <img src="${car.imageUrl}" alt="${car.carName}">
+                    </div>
+                    <div class="car-info">
+                        <h4>${car.carName}</h4>
+                        <p><strong>판매자:</strong> ${car.sellerName}</p>
+                        <p><strong>차종:</strong> ${car.carType}</p>
+                        <p><strong>연식:</strong> ${car.year}년</p>
+                        <p><strong>색상:</strong> ${car.carColor}</p>
+                        <p><strong>연료:</strong> ${car.fuelType}</p>
+                        <p><strong>승차정원:</strong> ${car.carSeats}명</p>
+                        <p><strong>일일 대여료:</strong> ₩${car.dailyPrice.toLocaleString()}</p>
+                        <p><strong>차량번호:</strong> ${car.carNumber}</p>
+                    </div>
+                    <div class="car-actions">
+                        <button onclick="approveCar(${car.carId})" class="btn-approve">
+                            <i class="fas fa-check"></i> 승인
+                        </button>
+                        <button onclick="rejectCar(${car.carId})" class="btn-reject">
+                            <i class="fas fa-times"></i> 거절
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 차량 승인
+        function approveCar(carId) {
+            if (!confirm('이 차량을 승인하시겠습니까?')) {
+                return;
+            }
+            
+            fetch(`/admin/cars/${carId}/approve`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [header]: token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('차량이 성공적으로 승인되었습니다.');
+                    loadPendingCars(); // 목록 새로고침
+                } else {
+                    alert('차량 승인에 실패했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('차량 승인 중 오류가 발생했습니다.');
+            });
+        }
+        
+        // 차량 거절
+        function rejectCar(carId) {
+            if (!confirm('이 차량을 거절하시겠습니까?')) {
+                return;
+            }
+            
+            fetch(`/admin/cars/${carId}/status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    [header]: token
+                },
+                body: `status=DELETED`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('차량이 거절되었습니다.');
+                    loadPendingCars(); // 목록 새로고침
+                } else {
+                    alert('차량 거절에 실패했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('차량 거절 중 오류가 발생했습니다.');
+            });
+        }
+
+        // 승인 대기 숙소 목록 조회
+        function loadPendingHouses() {
+            fetch('/admin/pending-houses', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [header]: token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayPendingHouses(data.data);
+                } else {
+                    console.error('승인 대기 숙소 목록 조회 실패:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+            });
+        }
+        
+        // 승인 대기 숙소 목록 표시
+        function displayPendingHouses(houses) {
+            const container = document.getElementById('pendingHousesList');
+            const noDataDiv = document.getElementById('noPendingHouses');
+            
+            if (houses.length === 0) {
+                container.style.display = 'none';
+                noDataDiv.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'grid';
+            noDataDiv.style.display = 'none';
+            
+            container.innerHTML = houses.map(house => `
+                <div class="pending-house-card">
+                    <div class="house-info">
+                        <h4>${house.houseTitle}</h4>
+                        <p><strong>판매자:</strong> ${house.sellerName}</p>
+                        <p><strong>이메일:</strong> ${house.sellerEmail}</p>
+                        <p><strong>주소:</strong> ${house.houseAddress}</p>
+                        <p><strong>신청일:</strong> ${new Date(house.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div class="house-actions">
+                        <button onclick="approveHouse(${house.houseId}, ${house.sellerId})" class="btn-approve">
+                            <i class="fas fa-check"></i> 승인
+                        </button>
+                        <button onclick="rejectHouse(${house.houseId}, ${house.sellerId})" class="btn-reject">
+                            <i class="fas fa-times"></i> 거절
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 숙소 승인
+        function approveHouse(houseId, sellerId) {
+            if (!confirm('이 숙소를 승인하시겠습니까?')) {
+                return;
+            }
+            
+            fetch(`/admin/houses/${houseId}/approve?sellerId=${sellerId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [header]: token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('숙소가 성공적으로 승인되었습니다.');
+                    loadPendingHouses(); // 목록 새로고침
+                } else {
+                    alert('숙소 승인에 실패했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('숙소 승인 중 오류가 발생했습니다.');
+            });
+        }
+        
+        // 숙소 거절
+        function rejectHouse(houseId, sellerId) {
+            if (!confirm('이 숙소를 거절하시겠습니까?')) {
+                return;
+            }
+            
+            fetch(`/admin/houses/${houseId}/reject?sellerId=${sellerId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [header]: token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('숙소가 거절되었습니다.');
+                    loadPendingHouses(); // 목록 새로고침
+                } else {
+                    alert('숙소 거절에 실패했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('숙소 거절 중 오류가 발생했습니다.');
+            });
+        }
+    </script>
 </body>
 </html> 

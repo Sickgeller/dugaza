@@ -191,13 +191,146 @@
         WHERE content_id=#{id}
     </select>
 
-	<select id="selectHouseWithSellerId" parameterType="long" resultMap="houseMap">
+	<select id="selectHousesWithSellerId" parameterType="long" resultMap="houseMap">
 		SELECT
-			*
-		FROM house_detail hd
-        join house_seller_detail hsd
-		on hd.content_id = hsd.house_id
-		WHERE hsd.seller_id = ${id}
+			tc.*,
+			hd.*,
+			NVL(r.review_avg, 0.0) as review_avg,
+			NVL(r.review_count, 0) as review_count
+		FROM tour_content tc
+		JOIN house_seller_detail hsd ON tc.content_id = hsd.house_id
+		LEFT JOIN house_detail hd ON tc.content_id = hd.content_id
+		LEFT JOIN (
+			SELECT 
+				content_id,
+				ROUND(AVG(rating),1) as review_avg,
+				COUNT(*) as review_count
+			FROM REVIEWS
+			GROUP BY content_id
+		) r ON tc.content_id = r.content_id
+		WHERE hsd.seller_id = #{sellerId}
+		ORDER BY tc.content_id DESC
+	</select>
+
+    <!-- 숙소 신청용 목록 조회 (신청 가능한 숙소만) -->
+    <select id="selectListForApply" parameterType="map" resultMap="houseMap">
+        WITH filtered_houses AS (
+            SELECT
+                tc.*, 
+                NVL(b.review_avg, 0.0) as review_avg,
+                NVL(b.review_count, 0) as review_count,
+                NVL(d.wish_count, 0) as wish_count,
+                ROW_NUMBER() OVER (
+                    ORDER BY
+                    <choose>
+                        <when test="sort == 'title'">tc.TITLE ASC</when>
+                        <when test="sort == 'rating'">review_avg DESC NULLS LAST</when>
+                        <when test="sort == 'popular'">wish_count DESC NULLS LAST</when>
+                        <otherwise>tc.UPDATED_AT DESC NULLS LAST</otherwise>
+                    </choose>
+                ) as row_num
+            FROM tour_content tc 
+            LEFT JOIN house_seller_detail hsd ON tc.content_id = hsd.house_id
+            LEFT JOIN (
+                SELECT 
+                    content_id,
+                    ROUND(AVG(rating),1) as review_avg,
+                    COUNT(*) as review_count
+                FROM REVIEWS
+                GROUP BY content_id
+            ) b ON tc.content_id = b.content_id
+            LEFT JOIN (
+                SELECT
+                    CONTENT_ID,
+                    COUNT(*) as wish_count
+                FROM WISHLIST
+                GROUP BY CONTENT_ID
+            ) d ON tc.content_id = d.content_id
+            WHERE tc.content_type_id = 32
+            AND (
+                hsd.house_id IS NULL  -- 아직 신청된 적 없는 숙소
+                OR (
+                    hsd.status = 'suspending'  -- 승인 대기 중이면서
+                    AND hsd.seller_id != #{sellerId}  -- 다른 판매자가 신청한 숙소
+                )
+                OR hsd.status = 'deleted'  -- 삭제된 숙소도 재신청 가능
+                OR hsd.status = 'inavailable'  -- 운영 중단된 숙소도 재신청 가능
+            )
+            AND NOT EXISTS (  -- 이미 available 상태인 숙소는 제외
+                SELECT 1 
+                FROM house_seller_detail hsd2 
+                WHERE hsd2.house_id = tc.content_id 
+                AND hsd2.status = 'available'
+            )
+            <include refid="houseSearch"/>
+        )
+        SELECT *
+        FROM filtered_houses
+        WHERE row_num BETWEEN #{start} AND #{end}
+    </select>
+
+	<!-- 숙소 신청 INSERT -->
+	<insert id="insertHouseApplication" parameterType="kr.spring.seller.vo.HouseSellerDetailVO">
+		INSERT INTO HOUSE_SELLER_DETAIL (
+			HOUSE_ID,
+			SELLER_ID,
+			STATUS,
+			CREATED_AT,
+			UPDATED_AT
+		) VALUES (
+			#{houseId},
+			#{sellerId},
+			'suspending',
+			SYSDATE,
+			SYSDATE
+		)
+	</insert>
+
+	<!-- 승인 대기 중인 숙소 목록 조회 -->
+	<select id="selectPendingHouses" resultType="kr.spring.seller.vo.HouseSellerDetailVO">
+		SELECT 
+			hsd.HOUSE_ID as houseId,
+			hsd.SELLER_ID as sellerId,
+			hsd.STATUS as status,
+			hsd.CREATED_AT as createdAt,
+			hsd.UPDATED_AT as updatedAt,
+			tc.TITLE as houseTitle,
+			tc.ADDR1 as houseAddress,
+			s.SELLER_NAME as sellerName,
+			s.SELLER_EMAIL as sellerEmail
+		FROM HOUSE_SELLER_DETAIL hsd
+		JOIN TOUR_CONTENT tc ON hsd.HOUSE_ID = tc.CONTENT_ID
+		JOIN SELLER s ON hsd.SELLER_ID = s.SELLER_ID
+		WHERE hsd.STATUS = 'suspending'
+		ORDER BY hsd.CREATED_AT DESC
+	</select>
+
+	<!-- 숙소 승인/거절 상태 업데이트 -->
+	<update id="updateHouseStatus" parameterType="map">
+		UPDATE HOUSE_SELLER_DETAIL 
+		SET STATUS = #{status},
+			UPDATED_AT = SYSDATE
+		WHERE HOUSE_ID = #{houseId} 
+		AND SELLER_ID = #{sellerId}
+	</update>
+
+	<!-- 판매자별 숙소 목록 조회 (status별) -->
+	<select id="selectHousesBySellerAndStatus" parameterType="map" resultType="kr.spring.seller.vo.HouseSellerDetailVO">
+		SELECT 
+			hsd.HOUSE_ID as houseId,
+			hsd.SELLER_ID as sellerId,
+			hsd.STATUS as status,
+			hsd.CREATED_AT as createdAt,
+			hsd.UPDATED_AT as updatedAt,
+			tc.TITLE as houseTitle,
+			tc.ADDR1 as houseAddress
+		FROM HOUSE_SELLER_DETAIL hsd
+		JOIN TOUR_CONTENT tc ON hsd.HOUSE_ID = tc.CONTENT_ID
+		WHERE hsd.SELLER_ID = #{sellerId}
+		<if test="status != null and status != ''">
+			AND hsd.STATUS = #{status}
+		</if>
+		ORDER BY hsd.CREATED_AT DESC
 	</select>
 </mapper>
 

@@ -36,6 +36,11 @@ public interface AdminService {
     List<Map<String, Object>> getCarList();
     
     /**
+     * 승인 대기 차량 목록 조회
+     */
+    List<Map<String, Object>> getPendingCarList();
+    
+    /**
      * 숙소 목록 조회
      */
     List<Map<String, Object>> getHouseList(Map<String, Object> params);

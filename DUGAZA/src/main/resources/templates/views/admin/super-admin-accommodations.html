@@ -38,16 +38,7 @@
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
             <!-- 헤더 -->
-            <div class="content-header">
-                <div class="header-left">
-                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
-                    <h2>숙소 관리</h2>
-                </div>
-                <div class="user-info">
-                    <span>관리자님</span>
-                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
-                </div>
-            </div>
+            <div th:replace="~{fragments/header :: admin-header}"></div>
 
             <!-- 숙소 통계 -->
             <div class="content-section">
@@ -171,6 +162,9 @@
                                     <button class="btn-icon" title="상세정보" th:onclick="'viewHouseDetail(' + ${house.contentId} + ')'">
                                         <i class="fas fa-info-circle"></i>
                                     </button>
+                                    <button class="btn-icon" title="판매자 등록" th:onclick="'registerSeller(' + ${house.contentId} + ', \'' + ${house.title} + '\')'">
+                                        <i class="fas fa-user-plus"></i>
+                                    </button>
                                     <button class="btn-icon" title="삭제" th:onclick="'deleteHouse(' + ${house.contentId} + ')'">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -231,6 +225,79 @@
             </div>
             <div class="modal-body" id="houseDetailContent">
                 <!-- 상세정보 내용이 여기에 로드됩니다 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 판매자 등록 모달 -->
+    <div id="sellerRegisterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>숙소 판매자 등록</h3>
+                <span class="close" onclick="closeSellerRegisterModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="selected-house-info">
+                    <h4>선택된 숙소</h4>
+                    <p id="selectedHouseName"></p>
+                </div>
+                <form id="sellerRegisterForm" th:action="@{/seller/house/register}" method="post">
+                    <input type="hidden" id="selectedContentId" name="contentId">
+                    
+                    <div class="form-group">
+                        <label for="businessName">상호명 *</label>
+                        <input type="text" id="businessName" name="businessName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="license">사업자등록번호 *</label>
+                        <input type="text" id="license" name="license" placeholder="000-00-00000" pattern="\d{3}-\d{2}-\d{5}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">대표자명 *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">이메일 *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">비밀번호 *</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">사업장 주소 *</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="addressDetail">상세주소</label>
+                        <input type="text" id="addressDetail" name="addressDetail">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">연락처 *</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="secondaryPhone">보조연락처</label>
+                        <input type="tel" id="secondaryPhone" name="secondaryPhone">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i> 등록 완료
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeSellerRegisterModal()">
+                            <i class="fas fa-times"></i> 취소
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -308,6 +375,19 @@
         // 모달 닫기
         function closeHouseDetailModal() {
             document.getElementById('houseDetailModal').style.display = 'none';
+        }
+
+        // 판매자 등록 모달 열기
+        function registerSeller(contentId, houseName) {
+            document.getElementById('selectedContentId').value = contentId;
+            document.getElementById('selectedHouseName').textContent = houseName;
+            document.getElementById('sellerRegisterModal').style.display = 'block';
+        }
+
+        // 판매자 등록 모달 닫기
+        function closeSellerRegisterModal() {
+            document.getElementById('sellerRegisterModal').style.display = 'none';
+            document.getElementById('sellerRegisterForm').reset();
         }
 
         // 숙소 상태 업데이트
@@ -427,9 +507,14 @@
 
         // 모달 외부 클릭 시 닫기
         window.onclick = function(event) {
-            const modal = document.getElementById('houseDetailModal');
-            if (event.target == modal) {
-                modal.style.display = 'none';
+            const houseDetailModal = document.getElementById('houseDetailModal');
+            const sellerRegisterModal = document.getElementById('sellerRegisterModal');
+            
+            if (event.target == houseDetailModal) {
+                houseDetailModal.style.display = 'none';
+            }
+            if (event.target == sellerRegisterModal) {
+                sellerRegisterModal.style.display = 'none';
             }
         }
     </script>

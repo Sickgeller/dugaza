@@ -64,7 +64,6 @@ public class RoomServiceImpl implements RoomService {
         return result;
     }
     
-    @Override
     public List<RoomDetailVO> getRoomsByHouseId(Long houseId) {
         log.info("getRoomsByHouseId 호출, houseId: {}", houseId);
         List<RoomDetailVO> result = roomMapper.getRoomsByHouseId(houseId);
@@ -74,5 +73,15 @@ public class RoomServiceImpl implements RoomService {
         }
         log.info("roomMapper.getRoomsByHouseId 결과 크기: {}", result.size());
         return result;
+    }
+
+    @Override
+    public List<RoomDetailVO> getRoomsByHouseId(Long houseId, int page, int pageSize) {
+        int offset = (page - 1) * pageSize;
+        return roomMapper.selectRoomsByHouseIdWithPaging(houseId, offset, pageSize);
+    }
+    @Override
+    public int getTotalRoomCountByHouseId(Long houseId) {
+        return roomMapper.countRoomsByHouseId(houseId);
     }
 }

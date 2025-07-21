@@ -86,4 +86,16 @@ public class SellerServiceImpl implements SellerService {
             return null;
         }
     }
+    
+    @Override
+    public void connectHouseToSeller(Long contentId, Long sellerId) {
+        try {
+            log.info("숙소-판매자 연결: contentId = {}, sellerId = {}", contentId, sellerId);
+            sellerMapper.connectHouseToSeller(contentId, sellerId);
+            log.info("숙소-판매자 연결 성공");
+        } catch (Exception e) {
+            log.error("숙소-판매자 연결 실패: contentId = {}, sellerId = {}", contentId, sellerId, e);
+            throw new RuntimeException("숙소-판매자 연결에 실패했습니다.", e);
+        }
+    }
 }

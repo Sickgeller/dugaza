@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>객실 관리 - 숙소 판매자</title>
+    <link rel="stylesheet" th:href="@{/assets/css/seller.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 헤더 -->
+        <div class="header">
+            <div class="header-content">
+                <h1>객실 관리</h1>
+                <p th:text="${houseInfo.title + ' - 객실 관리'}">숙소명 - 객실 관리</p>
+            </div>
+        </div>
+
+        <!-- 숙소 정보 -->
+        <div class="house-info-card">
+            <div class="house-image">
+                <img th:if="${houseInfo.firstImage2 != null and houseInfo.firstImage2 != ''}" 
+                     th:src="${houseInfo.firstImage2}" alt="숙소 이미지">
+                <img th:unless="${houseInfo.firstImage2 != null and houseInfo.firstImage2 != ''}" 
+                     th:src="@{/assets/images/house.png}" alt="기본 숙소 이미지">
+            </div>
+            <div class="house-details">
+                <h3 th:text="${houseInfo.title}">숙소명</h3>
+                <p th:text="${houseInfo.addr1}">주소</p>
+                <p th:text="${houseInfo.cat3}">카테고리</p>
+            </div>
+        </div>
+
+        <!-- 통계 카드 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-bed"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 th:text="${totalRooms}">0</h3>
+                    <p>전체 객실</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon available">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 th:text="${availableRooms}">0</h3>
+                    <p>예약 가능</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon reserved">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 th:text="${reservedRooms}">0</h3>
+                    <p>예약 완료</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon rate">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 th:text="${reservationRate + '%'}">0%</h3>
+                    <p>예약률</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 객실 관리 섹션 -->
+        <div class="room-management-section">
+            <div class="section-header">
+                <h2>객실 목록</h2>
+                <button class="btn btn-primary" onclick="openAddRoomModal()">
+                    <i class="fas fa-plus"></i> 객실 추가
+                </button>
+            </div>
+
+            <!-- 객실 목록 -->
+            <div class="room-list">
+                <div th:each="room : ${roomList}" class="room-card">
+                    <div class="room-image">
+                        <img th:if="${room.roomImage != null and room.roomImage != ''}" 
+                             th:src="${room.roomImage}" alt="객실 이미지">
+                        <img th:unless="${room.roomImage != null and room.roomImage != ''}" 
+                             th:src="@{/assets/images/room.png}" alt="기본 객실 이미지">
+                        <div class="room-status" th:class="${room.status == 0 ? 'available' : 'reserved'}">
+                            <span th:text="${room.status == 0 ? '예약가능' : '예약완료'}">예약가능</span>
+                        </div>
+                    </div>
+                    <div class="room-info">
+                        <h4 th:text="${room.roomName}">객실명</h4>
+                        <p class="room-type" th:text="${room.roomType}">객실 타입</p>
+                        <p class="room-capacity">
+                            <i class="fas fa-users"></i> 
+                            <span th:text="${room.capacity + '명'}">2명</span>
+                        </p>
+                        <p class="room-price">
+                            <i class="fas fa-won-sign"></i> 
+                            <span th:text="${#numbers.formatInteger(room.price, 3, 'COMMA') + '원'}">50,000원</span>
+                        </p>
+                        <div class="room-amenities">
+                            <span th:each="amenity : ${room.amenities}" class="amenity-tag" 
+                                  th:text="${amenity}">와이파이</span>
+                        </div>
+                    </div>
+                    <div class="room-actions">
+                        <button class="btn btn-secondary" th:onclick="'editRoom(' + ${room.roomId} + ')'">
+                            <i class="fas fa-edit"></i> 수정
+                        </button>
+                        <button class="btn btn-danger" th:onclick="'deleteRoom(' + ${room.roomId} + ')'">
+                            <i class="fas fa-trash"></i> 삭제
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 객실이 없을 때 -->
+            <div th:if="${#lists.isEmpty(roomList)}" class="no-rooms">
+                <i class="fas fa-bed"></i>
+                <h3>등록된 객실이 없습니다</h3>
+                <p>첫 번째 객실을 등록해보세요!</p>
+                <button class="btn btn-primary" onclick="openAddRoomModal()">
+                    <i class="fas fa-plus"></i> 객실 추가하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 객실 추가/수정 모달 -->
+    <div id="roomModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">객실 추가</h3>
+                <span class="close" onclick="closeRoomModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="roomForm" th:action="@{/seller/house/room/save}" method="post" enctype="multipart/form-data">
+                    <input type="hidden" id="roomId" name="roomId">
+                    <input type="hidden" id="houseId" name="houseId" th:value="${houseInfo.contentId}">
+                    
+                    <div class="form-group">
+                        <label for="roomName">객실명 *</label>
+                        <input type="text" id="roomName" name="roomName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="roomType">객실 타입 *</label>
+                        <select id="roomType" name="roomType" required>
+                            <option value="">객실 타입 선택</option>
+                            <option value="STANDARD">스탠다드</option>
+                            <option value="DELUXE">디럭스</option>
+                            <option value="SUITE">스위트</option>
+                            <option value="FAMILY">패밀리</option>
+                            <option value="DORMITORY">도미토리</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="capacity">수용 인원 *</label>
+                        <input type="number" id="capacity" name="capacity" min="1" max="10" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="price">가격 (1박) *</label>
+                        <input type="number" id="price" name="price" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">객실 설명</label>
+                        <textarea id="description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="amenities">편의시설</label>
+                        <div class="amenities-checkboxes">
+                            <label><input type="checkbox" name="amenities" value="와이파이"> 와이파이</label>
+                            <label><input type="checkbox" name="amenities" value="TV"> TV</label>
+                            <label><input type="checkbox" name="amenities" value="에어컨"> 에어컨</label>
+                            <label><input type="checkbox" name="amenities" value="욕실"> 욕실</label>
+                            <label><input type="checkbox" name="amenities" value="주방"> 주방</label>
+                            <label><input type="checkbox" name="amenities" value="발코니"> 발코니</label>
+                            <label><input type="checkbox" name="amenities" value="바다전망"> 바다전망</label>
+                            <label><input type="checkbox" name="amenities" value="산전망"> 산전망</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="roomImage">객실 이미지</label>
+                        <input type="file" id="roomImage" name="roomImage" accept="image/*">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 저장
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeRoomModal()">
+                            <i class="fas fa-times"></i> 취소
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 객실 추가 모달 열기
+        function openAddRoomModal() {
+            document.getElementById('modalTitle').textContent = '객실 추가';
+            document.getElementById('roomForm').reset();
+            document.getElementById('roomId').value = '';
+            document.getElementById('roomModal').style.display = 'block';
+        }
+        
+        // 객실 수정 모달 열기
+        function editRoom(roomId) {
+            // AJAX로 객실 정보 가져오기
+            fetch(`/seller/house/room/${roomId}`)
+                .then(response => response.json())
+                .then(room => {
+                    document.getElementById('modalTitle').textContent = '객실 수정';
+                    document.getElementById('roomId').value = room.roomId;
+                    document.getElementById('roomName').value = room.roomName;
+                    document.getElementById('roomType').value = room.roomType;
+                    document.getElementById('capacity').value = room.capacity;
+                    document.getElementById('price').value = room.price;
+                    document.getElementById('description').value = room.description || '';
+                    
+                    // 편의시설 체크박스 설정
+                    const amenities = room.amenities ? room.amenities.split(',') : [];
+                    document.querySelectorAll('input[name="amenities"]').forEach(checkbox => {
+                        checkbox.checked = amenities.includes(checkbox.value);
+                    });
+                    
+                    document.getElementById('roomModal').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('객실 정보 조회 실패:', error);
+                    alert('객실 정보를 불러올 수 없습니다.');
+                });
+        }
+        
+        // 객실 삭제
+        function deleteRoom(roomId) {
+            if (confirm('정말로 이 객실을 삭제하시겠습니까?')) {
+                fetch(`/seller/house/room/${roomId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]').getAttribute('content')
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('객실 삭제에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('객실 삭제 실패:', error);
+                    alert('객실 삭제에 실패했습니다.');
+                });
+            }
+        }
+        
+        // 모달 닫기
+        function closeRoomModal() {
+            document.getElementById('roomModal').style.display = 'none';
+        }
+        
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('roomModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html> 
