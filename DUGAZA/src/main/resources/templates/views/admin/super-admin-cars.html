@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>렌터카 관리 - 슈퍼 관리자</title>
-    <link rel="stylesheet" href="../css/admin.css">
+    <title>차량 관리 - 관리자</title>
+    <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
@@ -12,28 +12,23 @@
         <!-- 사이드바 -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <h1>슈퍼 관리자</h1>
+                <h1>관리자</h1>
                 <p>시스템 관리자 대시보드</p>
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="super-admin.html"><i class="fas fa-home"></i><span>대시보드</span></a></li>
-                    <li><a href="super-admin-users.html"><i class="fas fa-users"></i><span>회원 관리</span></a></li>
-                    <li><a href="super-admin-sellers.html"><i class="fas fa-store"></i><span>판매자 관리</span></a></li>
+                    <li><a th:href="@{/admin}"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li><a th:href="@{/member/admin_member}"><i class="fas fa-users"></i><span>회원 관리</span></a></li>
+                    <li><a th:href="@{/admin/sellers}"><i class="fas fa-store"></i><span>판매자 관리</span></a></li>
                     <li class="active">
-                        <a href="super-admin-products.html"><i class="fas fa-boxes"></i><span>상품 관리</span></a>
+                        <a href="#" class="dropdown-toggle"><i class="fas fa-boxes"></i><span>상품 관리</span></a>
                         <ul class="submenu">
-                            <li class="active"><a href="super-admin-cars.html"><i class="fas fa-car"></i><span>렌터카</span></a></li>
-                            <li><a href="super-admin-accommodations.html"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
-                            <li><a href="super-admin-tours.html"><i class="fas fa-map-marked-alt"></i><span>투어</span></a></li>
+                            <li class="active"><a th:href="@{/admin/cars}"><i class="fas fa-car"></i><span>렌터카</span></a></li>
+                            <li><a th:href="@{/house/admin_house}"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
                         </ul>
                     </li>
-                    <li><a href="super-admin-payments.html"><i class="fas fa-credit-card"></i><span>결제 관리</span></a></li>
-                    <li><a href="super-admin-reviews.html"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
-                    <li><a href="super-admin-reports.html"><i class="fas fa-flag"></i><span>신고 관리</span></a></li>
-                    <li><a href="super-admin-promotions.html"><i class="fas fa-tags"></i><span>프로모션 관리</span></a></li>
-                    <li><a href="super-admin-statistics.html"><i class="fas fa-chart-bar"></i><span>통계</span></a></li>
-                    <li><a href="super-admin-settings.html"><i class="fas fa-cog"></i><span>시스템 설정</span></a></li>
+                    <li><a th:href="@{/admin/reviews}"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a th:href="@{/admin/qna/list}"><i class="fas fa-flag"></i><span>문의 관리</span></a></li>
                 </ul>
             </nav>
         </div>
@@ -44,7 +39,7 @@
             <div class="content-header">
                 <div class="header-left">
                     <button class="menu-toggle"><i class="fas fa-bars"></i></button>
-                    <h2>렌터카 관리</h2>
+                    <h2>차량 관리</h2>
                 </div>
                 <div class="user-info">
                     <span>관리자님</span>
@@ -52,7 +47,7 @@
                 </div>
             </div>
 
-            <!-- 렌터카 통계 -->
+            <!-- 차량 통계 -->
             <div class="content-section">
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -60,29 +55,29 @@
                             <i class="fas fa-car"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>총 등록 차량</h3>
+                            <h3>총 차량</h3>
                             <p>1,234대</p>
-                            <span class="stat-change increase">+45대 (이번 달)</span>
+                            <span class="stat-change increase">+15대 (이번 주)</span>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">
-                            <i class="fas fa-calendar-check"></i>
+                            <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>이번 달 예약</h3>
-                            <p>3,567건</p>
-                            <span class="stat-change increase">+12.5% (전월 대비)</span>
+                            <h3>대여 가능</h3>
+                            <p>856대</p>
+                            <span class="stat-change">69.4%</span>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">
-                            <i class="fas fa-star"></i>
+                            <i class="fas fa-clock"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>평균 평점</h3>
-                            <p>4.5 ⭐</p>
-                            <span class="stat-change increase">+0.2 (전월 대비)</span>
+                            <h3>대여 중</h3>
+                            <p>378대</p>
+                            <span class="stat-change increase">+23대</span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -90,58 +85,46 @@
                             <i class="fas fa-exclamation-triangle"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>신고 접수</h3>
-                            <p>15건</p>
-                            <span class="stat-change decrease">-5건 (전월 대비)</span>
+                            <h3>점검 중</h3>
+                            <p>12대</p>
+                            <span class="stat-change">0.9%</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 렌터카 검색 및 필터 -->
+            <!-- 검색 및 필터 -->
             <div class="content-section">
                 <div class="search-filter-container">
                     <div class="search-box">
-                        <input type="text" placeholder="차량명, 판매자, 차량번호 검색">
+                        <input type="text" placeholder="차량명, 판매자명 검색">
                         <button><i class="fas fa-search"></i></button>
                     </div>
                     <div class="filter-options">
                         <select>
-                            <option value="">차종</option>
-                            <option value="compact">경차/소형</option>
-                            <option value="medium">중형</option>
-                            <option value="large">대형</option>
+                            <option value="">차량 종류</option>
+                            <option value="small">소형차</option>
+                            <option value="medium">중형차</option>
+                            <option value="large">대형차</option>
                             <option value="suv">SUV</option>
-                            <option value="van">승합</option>
-                        </select>
-                        <select>
-                            <option value="">연료</option>
-                            <option value="gasoline">휘발유</option>
-                            <option value="diesel">경유</option>
-                            <option value="lpg">LPG</option>
-                            <option value="ev">전기</option>
-                            <option value="hybrid">하이브리드</option>
                         </select>
                         <select>
                             <option value="">상태</option>
-                            <option value="available">대여가능</option>
-                            <option value="rented">대여중</option>
-                            <option value="maintenance">정비중</option>
-                            <option value="disabled">운행중지</option>
+                            <option value="available">대여 가능</option>
+                            <option value="rented">대여 중</option>
+                            <option value="maintenance">점검 중</option>
                         </select>
                         <select>
                             <option value="">정렬 기준</option>
                             <option value="recent">최근 등록순</option>
                             <option value="popular">인기순</option>
-                            <option value="rating">평점순</option>
-                            <option value="price-low">가격 낮은순</option>
-                            <option value="price-high">가격 높은순</option>
+                            <option value="price">가격순</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <!-- 렌터카 목록 -->
+            <!-- 차량 목록 -->
             <div class="content-section">
                 <div class="table-container">
                     <table>
@@ -149,79 +132,68 @@
                             <tr>
                                 <th>차량 정보</th>
                                 <th>판매자</th>
-                                <th>차종/연료</th>
-                                <th>일일요금</th>
-                                <th>예약률</th>
+                                <th>종류</th>
+                                <th>연료</th>
+                                <th>일일 요금</th>
                                 <th>평점</th>
                                 <th>상태</th>
                                 <th>관리</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
+                        <tbody id="carTableBody">
+                            <tr th:each="car : ${carList}">
                                 <td>
                                     <div class="car-info">
-                                        <img src="../images/cars/avante.jpg" alt="아반떼 이미지">
+                                        <img th:src="${car.imageUrl != null ? car.imageUrl : '/assets/images/cars/car1.jpg'}" alt="차량 이미지">
                                         <div>
-                                            <strong>아반떼 CN7</strong>
-                                            <small>12가 3456</small>
+                                            <strong th:text="${car.carName}">차량명</strong>
+                                            <small th:text="${car.year} + '년식'">연식</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${car.sellerName}">판매자명</td>
+                                <td th:text="${car.carType}">차량종류</td>
+                                <td th:text="${car.fuelType}">연료</td>
+                                <td th:text="'₩' + ${#numbers.formatInteger(car.dailyPrice, 3, 'COMMA')}">일일요금</td>
+                                <td th:text="${car.rating} + ' ⭐'">평점</td>
+                                <td>
+                                    <span th:if="${car.status == 'AVAILABLE'}" class="status available">대여 가능</span>
+                                    <span th:if="${car.status == 'RENTED'}" class="status rented">대여 중</span>
+                                    <span th:if="${car.status == 'MAINTENANCE'}" class="status suspended">점검 중</span>
+                                </td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보" th:onclick="'viewCarDetail(' + ${car.carId} + ')'">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <button class="btn-icon" title="수정" th:onclick="'editCar(' + ${car.carId} + ')'">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-icon" title="삭제" th:onclick="'deleteCar(' + ${car.carId} + ')'">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- 임시 데이터 (실제 데이터가 없을 때) -->
+                            <tr th:if="${#lists.isEmpty(carList)}">
+                                <td>
+                                    <div class="car-info">
+                                        <img src="../images/cars/car1.jpg" alt="차량 이미지">
+                                        <div>
+                                            <strong>현대 아반떼</strong>
+                                            <small>2023년식</small>
                                         </div>
                                     </div>
                                 </td>
                                 <td>제주렌트카</td>
-                                <td>중형/휘발유</td>
+                                <td>중형차</td>
+                                <td>휘발유</td>
                                 <td>₩50,000</td>
-                                <td>85%</td>
                                 <td>4.8 ⭐</td>
-                                <td><span class="status available">대여가능</span></td>
+                                <td><span class="status available">대여 가능</span></td>
                                 <td>
                                     <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
                                     <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon" title="운행중지"><i class="fas fa-ban"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="car-info">
-                                        <img src="../images/cars/tucson.jpg" alt="투싼 이미지">
-                                        <div>
-                                            <strong>투싼 NX4</strong>
-                                            <small>34가 5678</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>한라렌트카</td>
-                                <td>SUV/디젤</td>
-                                <td>₩70,000</td>
-                                <td>92%</td>
-                                <td>4.6 ⭐</td>
-                                <td><span class="status rented">대여중</span></td>
-                                <td>
-                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
-                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon" title="운행중지"><i class="fas fa-ban"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="car-info">
-                                        <img src="../images/cars/morning.jpg" alt="차량 이미지">
-                                        <div>
-                                            <strong>아이오닉 6</strong>
-                                            <small>56가 7890</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>성산렌트카</td>
-                                <td>중형/전기</td>
-                                <td>₩80,000</td>
-                                <td>78%</td>
-                                <td>4.9 ⭐</td>
-                                <td><span class="status maintenance">정비중</span></td>
-                                <td>
-                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
-                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon" title="운행중지"><i class="fas fa-ban"></i></button>
+                                    <button class="btn-icon" title="삭제"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
                         </tbody>
@@ -243,6 +215,37 @@
         </div>
     </div>
 
-    <script src="../js/admin.js"></script>
+    <script th:src="@{/assets/js/admin.js}"></script>
+    <script>
+        // 차량 상세정보 보기
+        function viewCarDetail(carId) {
+            // 모달이나 새 페이지로 차량 상세정보 표시
+            console.log('차량 상세정보:', carId);
+        }
+
+        // 차량 수정
+        function editCar(carId) {
+            // 차량 수정 페이지로 이동
+            console.log('차량 수정:', carId);
+        }
+
+        // 차량 삭제
+        function deleteCar(carId) {
+            if (confirm('정말로 이 차량을 삭제하시겠습니까?')) {
+                // 차량 삭제 로직
+                console.log('차량 삭제:', carId);
+            }
+        }
+
+        // 차량 검색
+        function searchCars() {
+            const keyword = document.getElementById('searchKeyword').value;
+            const carType = document.getElementById('carTypeFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            
+            // 실제 구현에서는 AJAX로 검색 결과를 가져와서 테이블을 업데이트
+            console.log('검색 조건:', { keyword, carType, status });
+        }
+    </script>
 </body>
 </html> 

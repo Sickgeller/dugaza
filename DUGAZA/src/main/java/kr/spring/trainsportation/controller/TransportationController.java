@@ -81,7 +81,7 @@ public class TransportationController {
 	 */
 	@GetMapping("/bus/terminals/{cityCode}")
 	@ResponseBody
-	public ResponseEntity<List<ExpressBusTerminalApiDto>> getTerminalsByCity(@PathVariable Long cityCode) {
+	public ResponseEntity<List<ExpressBusTerminalApiDto>> getTerminalsByCity(@PathVariable(name = "cityCode") Long cityCode) {
 		try {
 			List<ExpressBusTerminalApiDto> terminals = expressBusTerminalApiMapper.selectByCityCode(cityCode);
 			return ResponseEntity.ok(terminals);
@@ -97,9 +97,9 @@ public class TransportationController {
 	@PostMapping("/bus/search")
 	@ResponseBody
 	public ResponseEntity<List<ExpressBusRouteApiDto>> searchBusRoutes(
-			@RequestParam String depTerminalId,
-			@RequestParam String arrTerminalId,
-			@RequestParam String depPlandTime) {
+			@RequestParam(name = "depTerminalId") String depTerminalId,
+			@RequestParam(name = "arrTerminalId") String arrTerminalId,
+			@RequestParam(name = "depPlandTime") String depPlandTime) {
 		try {
 			List<ExpressBusRouteApiDto> routes = expressBusApiClient.searchRoutes(
 				depTerminalId, arrTerminalId, depPlandTime);

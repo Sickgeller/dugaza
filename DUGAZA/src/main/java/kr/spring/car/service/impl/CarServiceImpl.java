@@ -52,6 +52,11 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
+    public List<CarVO> getAllCars() {
+        return carMapper.selectAllCars();
+    }
+
+    @Override
     public List<CarVO> searchAvailableCars(CarSearchDTO searchDTO) {
         log.info("차량 검색 시작: pickupLocationCode={}, pickupDate={}, returnDate={}", 
                 searchDTO.getPickupLocationCode(), searchDTO.getPickupDate(), searchDTO.getReturnDate());

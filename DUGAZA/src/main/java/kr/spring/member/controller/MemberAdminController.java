@@ -50,7 +50,9 @@ public class MemberAdminController {
 	@GetMapping("/admin_member")
 	public String getList(
 			@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
-			String keyfield,String keyword,Model model) {
+			@RequestParam(name = "keyfield", required = false) String keyfield,
+			@RequestParam(name = "keyword", required = false) String keyword,
+			Model model) {
 		
 		Map<String,Object> map = 
 				new HashMap<String,Object>();
@@ -87,8 +89,9 @@ public class MemberAdminController {
 		model.addAttribute("newCount", newCount);
 		model.addAttribute("withdrawnCount", withdrawnCount);
 		model.addAttribute("humanCount", humanCount);
-		model.addAttribute("list", list);
-		model.addAttribute("page", page.getPage());
+		model.addAttribute("memberList", list);
+		model.addAttribute("pageCount", page.getTotalPage());
+		model.addAttribute("currentPage", pageNum);
 		model.addAttribute("keyfield", keyfield);
 		model.addAttribute("keyword", keyword);
 		

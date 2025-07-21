@@ -18,6 +18,8 @@ public interface MemberService {
 	public void updateRadomPassword(MemberVO member);
 	//프로필 이미지 업데이트
 	public void updateProfile(MemberVO member);
+	//회원 상태 업데이트
+	public void updateMemberStatus(Long memberId, String status);
 
 	//회원관리 - 관리자
 	public Integer selectRowCount(Map<String,Object> map);

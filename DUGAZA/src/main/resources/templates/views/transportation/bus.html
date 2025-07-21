@@ -18,7 +18,7 @@
                 <p>전국 고속버스 노선을 검색하고 실시간 정보를 확인하세요</p>
                 <div class="status-notice">
                     <i class="fas fa-info-circle"></i>
-                    <span>현재 조회 기능만 제공됩니다. 예약 기능은 준비 중입니다.</span>
+                    <span>현재 조회 기능만 제공됩니다. 예약 기능은 제공되지않습니다.</span>
                 </div>
             </div>
 
@@ -57,15 +57,17 @@
                             <label for="departureDate"><i class="fas fa-calendar"></i> 출발 날짜</label>
                             <input type="date" id="departureDate" required>
                         </div>
-                        <div class="form-group">
-                            <label for="timeRange"><i class="fas fa-clock"></i> 출발 시간대</label>
-                            <select id="timeRange">
-                                <option value="">전체</option>
-                                <option value="06-12">06:00 ~ 12:00</option>
-                                <option value="12-18">12:00 ~ 18:00</option>
-                                <option value="18-24">18:00 ~ 24:00</option>
-                            </select>
-                        </div>
+
+                        <!-- 시간까지주면 너무 결과가 안나옴 -->
+<!--                        <div class="form-group">-->
+<!--                            <label for="timeRange"><i class="fas fa-clock"></i> 출발 시간대</label>-->
+<!--                            <select id="timeRange">-->
+<!--                                <option value="">전체</option>-->
+<!--                                <option value="06-12">06:00 ~ 12:00</option>-->
+<!--                                <option value="12-18">12:00 ~ 18:00</option>-->
+<!--                                <option value="18-24">18:00 ~ 24:00</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
                     </div>
                     <div class="search-actions">
                         <button type="submit" class="search-btn">
@@ -115,45 +117,45 @@
                 </div>
             </div>
 
-            <div class="popular-routes">
-                <h2><i class="fas fa-star"></i> 인기 노선</h2>
-                <div class="routes-grid">
-                    <div class="route-card">
-                        <h3>서울 ↔ 부산</h3>
-                        <div class="route-info">
-                            <span><i class="fas fa-clock"></i> 4시간 30분</span>
-                            <span><i class="fas fa-won-sign"></i> 34,000원</span>
-                        </div>
-                        <div class="route-buses">
-                            <span class="bus-badge express">우등</span>
-                            <span class="bus-badge intercity">일반</span>
-                            <span class="bus-badge premium">프리미엄</span>
-                        </div>
-                    </div>
-                    <div class="route-card">
-                        <h3>서울 ↔ 강릉</h3>
-                        <div class="route-info">
-                            <span><i class="fas fa-clock"></i> 3시간</span>
-                            <span><i class="fas fa-won-sign"></i> 18,000원</span>
-                        </div>
-                        <div class="route-buses">
-                            <span class="bus-badge express">우등</span>
-                            <span class="bus-badge intercity">일반</span>
-                        </div>
-                    </div>
-                    <div class="route-card">
-                        <h3>서울 ↔ 전주</h3>
-                        <div class="route-info">
-                            <span><i class="fas fa-clock"></i> 2시간 45분</span>
-                            <span><i class="fas fa-won-sign"></i> 15,000원</span>
-                        </div>
-                        <div class="route-buses">
-                            <span class="bus-badge express">우등</span>
-                            <span class="bus-badge intercity">일반</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!--            <div class="popular-routes">-->
+<!--                <h2><i class="fas fa-star"></i> 인기 노선</h2>-->
+<!--                <div class="routes-grid">-->
+<!--                    <div class="route-card">-->
+<!--                        <h3>서울 ↔ 부산</h3>-->
+<!--                        <div class="route-info">-->
+<!--                            <span><i class="fas fa-clock"></i> 4시간 30분</span>-->
+<!--                            <span><i class="fas fa-won-sign"></i> 34,000원</span>-->
+<!--                        </div>-->
+<!--                        <div class="route-buses">-->
+<!--                            <span class="bus-badge express">우등</span>-->
+<!--                            <span class="bus-badge intercity">일반</span>-->
+<!--                            <span class="bus-badge premium">프리미엄</span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="route-card">-->
+<!--                        <h3>서울 ↔ 강릉</h3>-->
+<!--                        <div class="route-info">-->
+<!--                            <span><i class="fas fa-clock"></i> 3시간</span>-->
+<!--                            <span><i class="fas fa-won-sign"></i> 18,000원</span>-->
+<!--                        </div>-->
+<!--                        <div class="route-buses">-->
+<!--                            <span class="bus-badge express">우등</span>-->
+<!--                            <span class="bus-badge intercity">일반</span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="route-card">-->
+<!--                        <h3>서울 ↔ 전주</h3>-->
+<!--                        <div class="route-info">-->
+<!--                            <span><i class="fas fa-clock"></i> 2시간 45분</span>-->
+<!--                            <span><i class="fas fa-won-sign"></i> 15,000원</span>-->
+<!--                        </div>-->
+<!--                        <div class="route-buses">-->
+<!--                            <span class="bus-badge express">우등</span>-->
+<!--                            <span class="bus-badge intercity">일반</span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
         </div>
     </main>
 

@@ -103,6 +103,17 @@
         ORDER BY c.CREATED_AT DESC
     </select>
 
+    <select id="selectAllCars" resultMap="carMap">
+        SELECT 
+            c.*,
+            lc.LOCATION_NAME,
+            s.BUSINESS_NAME as SELLER_NAME
+        FROM CAR c
+        LEFT JOIN CAR_LOCATION_CODE lc ON c.LOCATION_CODE = lc.LOCATION_CODE
+        LEFT JOIN SELLER s ON c.SELLER_ID = s.SELLER_ID
+        ORDER BY c.CREATED_AT DESC
+    </select>
+
     <!-- 위치별 차량 검색 -->
     <select id="selectCarsByLocation" parameterType="int" resultMap="carMap">
         SELECT 

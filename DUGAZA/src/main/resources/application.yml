@@ -78,17 +78,17 @@ mybatis: #mybatis 설정
 logging: #로그 지정
   level:
     root: info
-    kr.spring: debug
-    kr.spring.aop: debug
-    kr.spring.api.client: debug
-    kr.spring.api.controller: debug
-    kr.spring.api.service: debug
-    kr.spring.auth.security: debug
-    kr.spring.review: trace
-    org.mybatis: trace
-    org.apache.ibatis: debug
-    org.springframework.security: debug
-    org.springframework.security.web.authentication.rememberme: debug
+    kr.spring: info
+    kr.spring.aop: warn
+    kr.spring.api.client: warn
+    kr.spring.api.controller: info
+    kr.spring.api.service: warn
+    kr.spring.auth.security: warn
+    kr.spring.review: warn
+    org.mybatis: warn
+    org.apache.ibatis: warn
+    org.springframework.security: warn
+    org.springframework.security.web.authentication.rememberme: warn
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 

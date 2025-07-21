@@ -64,6 +64,11 @@ public class MemberServiceImpl implements MemberService{
 	public void updateProfile(MemberVO member) {
 		memberMapper.updateProfile(member);
 	}
+	
+	@Override
+	public void updateMemberStatus(Long memberId, String status) {
+		memberMapper.updateMemberStatus(memberId, status);
+	}
 
 	@Override
 	public Integer selectRowCount(Map<String, Object> map) {

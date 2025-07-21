@@ -48,12 +48,6 @@ public class MainController {
         return "views/about/about"; 
     }
 	
-	//관리자 페이지
-	@GetMapping("/admin")
-	public String adminMain(Model model) {
-		return "views/admin/admin";
-	}
-	
 	@GetMapping("/accessDenied")
 	public String access(Model model) {
 		return "views/common/accessDenied";

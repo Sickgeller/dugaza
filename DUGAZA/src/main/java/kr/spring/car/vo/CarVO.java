@@ -32,6 +32,9 @@ public class CarVO {
     // JOIN 결과로 가져올 위치 정보
     private String locationName;         // 위치명
     
+    // JOIN 결과로 가져올 판매자 정보
+    private String sellerName;           // 판매자명
+    
     // 리뷰 목록
     private List<CarReviewVO> reviews;
     

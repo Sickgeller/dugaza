@@ -16,6 +16,7 @@ public interface CarService {
     void deleteCar(Long carId);
     CarVO getCar(Long carId);
     List<CarVO> getCarListBySeller(Long sellerId);
+    List<CarVO> getAllCars(); // 전체 차량 목록 조회
     List<CarVO> searchAvailableCars(CarSearchDTO searchDTO);
     
     // 예약 관련 메서드

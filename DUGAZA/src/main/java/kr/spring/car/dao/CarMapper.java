@@ -39,6 +39,11 @@ public interface CarMapper {
     List<CarVO> selectCarListBySeller(@Param("sellerId") Long sellerId);
     
     /**
+     * 전체 차량 목록 조회
+     */
+    List<CarVO> selectAllCars();
+    
+    /**
      * 위치별 차량 검색
      */
     List<CarVO> selectCarsByLocation(@Param("locationCode") int locationCode);

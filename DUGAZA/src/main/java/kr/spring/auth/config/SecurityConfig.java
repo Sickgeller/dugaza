@@ -81,7 +81,6 @@ public class SecurityConfig {
                     .requestMatchers("/", "/member/login", "/member/register", "/member/registerUser").permitAll() // 인증 없이 접근 가능한 페이지
                     .requestMatchers("/views/common/**").permitAll() // 공통 페이지들
                     .requestMatchers("/transportation/**").permitAll() // 교통 관련 페이지 및 API 허용
-                    .requestMatchers("/faq/**").authenticated() // FAQ 페이지는 인증 필요
                     .requestMatchers("/seller/login", "/seller/register").permitAll() // 판매자 로그인/가입 페이지
                     .requestMatchers("/seller/**").hasAnyRole("SELLER", "CAR", "HOUSE") // 판매자 전용 페이지
                     .requestMatchers("/admin/**").hasRole("ADMIN")// 관리자 전용 페이지

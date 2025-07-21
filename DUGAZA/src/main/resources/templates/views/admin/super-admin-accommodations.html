@@ -1,16 +1,38 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout_admin}">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>숙소 관리 - 슈퍼 관리자</title>
+    <title>숙소 관리 - 관리자</title>
     <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <div class="admin-container" layout:fragment="content">
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>관리자</h1>
+                <p>시스템 관리자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a th:href="@{/admin}"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li><a th:href="@{/member/admin_member}"><i class="fas fa-users"></i><span>회원 관리</span></a></li>
+                    <li><a th:href="@{/admin/sellers}"><i class="fas fa-store"></i><span>판매자 관리</span></a></li>
+                    <li class="active">
+                        <a href="#" class="dropdown-toggle"><i class="fas fa-boxes"></i><span>상품 관리</span></a>
+                        <ul class="submenu">
+                            <li><a th:href="@{/admin/cars}"><i class="fas fa-car"></i><span>렌터카</span></a></li>
+                            <li class="active"><a th:href="@{/house/admin_house}"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
+                        </ul>
+                    </li>
+                    <li><a th:href="@{/admin/reviews}"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a th:href="@{/admin/qna/list}"><i class="fas fa-flag"></i><span>문의 관리</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
             <!-- 헤더 -->
@@ -33,19 +55,19 @@
                             <i class="fas fa-hotel"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>총 등록 숙소</h3>
-                            <p th:text="${count} + '개'"></p>
-                            <!-- <span class="stat-change increase">+23개 (이번 달)</span> -->
+                            <h3>총 숙소</h3>
+                            <p th:text="${count} + '개'">0개</p>
+                            <span class="stat-change increase">전체 숙소</span>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">
-                            <i class="fas fa-calendar-check"></i>
+                            <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>이번 달 예약</h3>
-                            <p>4,567건</p>
-                            <span class="stat-change increase">+15.3% (전월 대비)</span>
+                            <h3>운영 중</h3>
+                            <p th:text="${count - (count * 0.1)} + '개'">0개</p>
+                            <span class="stat-change">90%</span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -54,8 +76,8 @@
                         </div>
                         <div class="stat-info">
                             <h3>평균 평점</h3>
-                            <p>4.6 ⭐</p>
-                            <span class="stat-change increase">+0.1 (전월 대비)</span>
+                            <p>4.5</p>
+                            <span class="stat-change increase">+0.2</span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -63,57 +85,42 @@
                             <i class="fas fa-exclamation-triangle"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>신고 접수</h3>
-                            <p>12건</p>
-                            <span class="stat-change decrease">-3건 (전월 대비)</span>
+                            <h3>점검 중</h3>
+                            <p th:text="${count * 0.1} + '개'">0개</p>
+                            <span class="stat-change">10%</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 숙소 검색 및 필터 -->
+            <!-- 검색 및 필터 -->
             <div class="content-section">
                 <div class="search-filter-container">
                     <div class="search-box">
-                        <input type="text" placeholder="숙소명, 판매자, 지역 검색">
-                        <button><i class="fas fa-search"></i></button>
+                        <input type="text" id="searchKeyword" placeholder="숙소명, 주소 검색">
+                        <button onclick="searchHouses()"><i class="fas fa-search"></i></button>
                     </div>
                     <div class="filter-options">
-                        <select>
-                            <option value="">숙소 유형</option>
+                        <select id="categoryFilter">
+                            <option value="">카테고리</option>
                             <option value="hotel">호텔</option>
-                            <option value="resort">리조트</option>
+                            <option value="motel">모텔</option>
                             <option value="pension">펜션</option>
                             <option value="guesthouse">게스트하우스</option>
-                            <option value="camping">캠핑/글램핑</option>
                         </select>
-                        <select>
-                            <option value="">지역</option>
-                            <option value="jeju-city">제주시</option>
-                            <option value="seogwipo-city">서귀포시</option>
-                            <option value="aewol">애월읍</option>
-                            <option value="seongsan">성산읍</option>
-                            <option value="jungmun">중문</option>
-                        </select>
-                        <select>
+                        <select id="statusFilter">
                             <option value="">상태</option>
-                            <option value="open">영업중</option>
-                            <option value="closed">휴업중</option>
-                            <option value="suspended">운영정지</option>
-                            <option value="pending">승인대기</option>
+                            <option value="active">운영중</option>
+                            <option value="maintenance">점검중</option>
+                            <option value="closed">폐업</option>
                         </select>
-                        <select>
+                        <select id="sortFilter">
                             <option value="">정렬 기준</option>
                             <option value="recent">최근 등록순</option>
                             <option value="popular">인기순</option>
                             <option value="rating">평점순</option>
-                            <option value="price-low">가격 낮은순</option>
-                            <option value="price-high">가격 높은순</option>
                         </select>
                     </div>
-                </div>
-                <div class="search-box">
-                	<button>숙소 등록 신청</button>
                 </div>
             </div>
 
@@ -125,57 +132,124 @@
                             <tr>
                                 <th>숙소 정보</th>
                                 <th>판매자</th>
-                                <th>유형/지역</th>
-                                <th>객실수</th>
+                                <th>카테고리</th>
+                                <th>객실 수</th>
                                 <th>예약률</th>
                                 <th>평점</th>
                                 <th>상태</th>
                                 <th>관리</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr th:each="house : ${list}">
+                        <tbody id="houseTableBody">
+                            <tr th:each="house : ${houseList}">
                                 <td>
-                                    <div class="accommodation-info">
-                                        <img th:src="${house.firstImage2 != null ? house.firstImage2 : '/assets/images/house.png'}" alt="숙소 이미지"
-                                        onerror="this.onerror=null; this.src='/assets/images/house.png';">
+                                    <div class="house-info">
+                                        <img th:src="${house.firstImage2 != null ? house.firstImage2 : '/assets/images/house.png'}" 
+                                             alt="숙소 이미지" onerror="this.onerror=null; this.src='/assets/images/house.png';">
                                         <div>
-                                            <strong th:text="${house.title}"></strong>
-                                            <small th:text="${house.addr1}"></small>
+                                            <strong th:text="${house.title}">숙소명</strong>
+                                            <small th:text="${house.addr1}">주소</small>
                                         </div>
                                     </div>
                                 </td>
-                                <td>제주호텔그룹</td>
-                                <td>호텔/제주시</td>
-                                <td>120실</td>
-                                <td>88%</td>
-                                <td>4.7 ⭐</td>
-                                <td><span class="status available">영업중</span></td>
+                                <td th:text="${house.sellerName}">제주호텔그룹</td>
+                                <td th:text="${house.cat3}">호텔/제주시</td>
+                                <td th:text="${house.roomCount != null ? house.roomCount + '실' : '120실'}">120실</td>
+                                <td th:text="${house.reservationRate} + '%'">88%</td>
+                                <td th:text="${house.rating} + ' ⭐'">4.7 ⭐</td>
                                 <td>
-                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
-                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon" title="운영정지"><i class="fas fa-ban"></i></button>
+                                    <span th:if="${house.status == 'ACTIVE'}" class="status available">영업중</span>
+                                    <span th:if="${house.status == 'SUSPENDED'}" class="status suspended">운영정지</span>
+                                    <span th:if="${house.status == 'MAINTENANCE'}" class="status pending">점검중</span>
+                                </td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보" th:onclick="'viewHouseDetail(' + ${house.contentId} + ')'">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <button class="btn-icon" title="수정" th:onclick="'editHouse(' + ${house.contentId} + ')'">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button th:if="${house.status == 'ACTIVE'}" class="btn-icon" title="운영정지" 
+                                            th:onclick="'updateHouseStatus(' + ${house.contentId} + ', &quot;SUSPENDED&quot;)'">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                    <button th:if="${house.status == 'SUSPENDED'}" class="btn-icon" title="운영재개" 
+                                            th:onclick="'updateHouseStatus(' + ${house.contentId} + ', &quot;ACTIVE&quot;)'">
+                                        <i class="fas fa-check"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <!-- 페이지네이션 -->
-                <div class="pagination" th:utext="${page}">
-                    <!-- <button class="btn-page"><i class="fas fa-angle-double-left"></i></button>
-                    <button class="btn-page"><i class="fas fa-angle-left"></i></button>
-                    <button class="btn-page active">1</button>
-                    <button class="btn-page">2</button>
-                    <button class="btn-page">3</button>
-                    <button class="btn-page">4</button>
-                    <button class="btn-page">5</button>
-                    <button class="btn-page"><i class="fas fa-angle-right"></i></button>
-                    <button class="btn-page"><i class="fas fa-angle-double-right"></i></button> -->
+                <div class="pagination" th:if="${page != null}">
+                    <div th:utext="${page}"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="../js/admin.js"></script>
+    <script th:src="@{/assets/js/admin.js}"></script>
+    <script th:inline="javascript">
+        // CSRF 토큰 가져오기
+        var csrfToken = /*[[${_csrf.token}]]*/ '';
+        var csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+        
+        // 숙소 상태 업데이트
+        function updateHouseStatus(houseId, status) {
+            if (confirm('정말로 이 숙소의 상태를 변경하시겠습니까?')) {
+                const headers = {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                };
+                
+                // CSRF 토큰이 있으면 헤더에 추가
+                if (csrfToken && csrfHeader) {
+                    headers[csrfHeader] = csrfToken;
+                }
+                
+                fetch('/admin/product/status', {
+                    method: 'POST',
+                    headers: headers,
+                    body: `productId=${houseId}&productType=house&status=${status}`
+                })
+                .then(response => response.text())
+                .then(result => {
+                    if (result === 'success') {
+                        alert('숙소 상태가 성공적으로 업데이트되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('숙소 상태 업데이트에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('숙소 상태 업데이트 중 오류가 발생했습니다.');
+                });
+            }
+        }
+
+        // 숙소 검색
+        function searchHouses() {
+            const keyword = document.getElementById('searchKeyword').value;
+            const category = document.getElementById('categoryFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            
+            // 실제 구현에서는 AJAX로 검색 결과를 가져와서 테이블을 업데이트
+            console.log('검색 조건:', { keyword, category, status });
+        }
+
+        // 숙소 상세정보 보기
+        function viewHouseDetail(houseId) {
+            // 모달이나 새 페이지로 숙소 상세정보 표시
+            console.log('숙소 상세정보:', houseId);
+        }
+
+        // 숙소 수정
+        function editHouse(houseId) {
+            // 숙소 수정 페이지로 이동
+            console.log('숙소 수정:', houseId);
+        }
+    </script>
 </body>
 </html> 
