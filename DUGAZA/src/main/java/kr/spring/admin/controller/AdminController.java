@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @Slf4j
 @Controller
@@ -34,26 +35,245 @@ public class AdminController {
 
     // 판매자 관리
     @GetMapping("/sellers")
-    public String sellers(Model model) {
-        List<Map<String, Object>> sellerList = adminService.getSellerList();
+    public String sellers(
+            @RequestParam(name = "page", defaultValue="1") int pageNum,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "sellerType", required = false) String sellerType,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "sort", required = false) String sort,
+            Model model) {
+        
+        Map<String, Object> params = new HashMap<>();
+        
+        // 검색 조건 설정
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            params.put("keyword", keyword.trim());
+        }
+        
+        // 판매자 타입 필터 설정
+        if (sellerType != null && !sellerType.trim().isEmpty()) {
+            params.put("sellerType", sellerType);
+        }
+        
+        // 상태 필터 설정
+        if (status != null && !status.trim().isEmpty()) {
+            params.put("status", status);
+        }
+        
+        // 정렬 설정
+        if (sort != null && !sort.trim().isEmpty()) {
+            params.put("sort", sort);
+        }
+        
+        List<Map<String, Object>> sellerList = adminService.getSellerList(params);
         model.addAttribute("sellerList", sellerList);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("sellerType", sellerType);
+        model.addAttribute("status", status);
+        model.addAttribute("sort", sort);
+        model.addAttribute("currentPage", pageNum);
+        
         return "views/admin/super-admin-sellers";
     }
 
     // 차량 관리
     @GetMapping("/cars")
-    public String cars(Model model) {
+    public String cars(
+            @RequestParam(name = "page", defaultValue="1") int pageNum,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "carType", required = false) String carType,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "sort", required = false) String sort,
+            Model model) {
+        
+        Map<String, Object> params = new HashMap<>();
+        
+        // 검색 조건 설정
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            params.put("keyword", keyword.trim());
+        }
+        
+        // 차량 타입 필터 설정
+        if (carType != null && !carType.trim().isEmpty()) {
+            params.put("carType", carType);
+        }
+        
+        // 상태 필터 설정
+        if (status != null && !status.trim().isEmpty()) {
+            params.put("status", status);
+        }
+        
+        // 정렬 설정
+        if (sort != null && !sort.trim().isEmpty()) {
+            params.put("sort", sort);
+        }
+        
         List<Map<String, Object>> carList = adminService.getCarList();
         model.addAttribute("carList", carList);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("carType", carType);
+        model.addAttribute("status", status);
+        model.addAttribute("sort", sort);
+        model.addAttribute("currentPage", pageNum);
+        
         return "views/admin/super-admin-cars";
+    }
+    
+    // 차량 상세보기
+    @GetMapping("/cars/{carId}/detail")
+    @ResponseBody
+    public Map<String, Object> getCarDetail(@PathVariable(name = "carId") Long carId) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // 차량 목록에서 해당 차량 찾기
+            List<Map<String, Object>> carList = adminService.getCarList();
+            Map<String, Object> carDetail = carList.stream()
+                    .filter(car -> carId.equals(car.get("carId")))
+                    .findFirst()
+                    .orElse(null);
+            
+            if (carDetail != null) {
+                response.put("success", true);
+                response.put("car", carDetail);
+            } else {
+                response.put("success", false);
+                response.put("message", "차량을 찾을 수 없습니다.");
+            }
+        } catch (Exception e) {
+            log.error("차량 상세보기 실패: carId={}", carId, e);
+            response.put("success", false);
+            response.put("message", "차량 정보를 불러올 수 없습니다.");
+        }
+        
+        return response;
+    }
+    
+    // 차량 상태 변경
+    @PostMapping("/cars/status")
+    @ResponseBody
+    public Map<String, Object> updateCarStatus(@RequestBody Map<String, Object> request) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Long carId = Long.valueOf(request.get("carId").toString());
+            String status = request.get("status").toString();
+            
+            adminService.updateProductStatus(carId, "car", status);
+            response.put("success", true);
+            response.put("message", "차량 상태가 성공적으로 변경되었습니다.");
+        } catch (Exception e) {
+            log.error("차량 상태 변경 실패: request={}", request, e);
+            response.put("success", false);
+            response.put("message", "차량 상태 변경에 실패했습니다.");
+        }
+        
+        return response;
     }
     
     // 숙소 관리
     @GetMapping("/houses")
-    public String houses(Model model) {
-        List<Map<String, Object>> houseList = adminService.getHouseList();
+    public String houses(
+            @RequestParam(name = "page", defaultValue="1") int pageNum,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "category", required = false) String category,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "sort", required = false) String sort,
+            Model model) {
+        
+        Map<String, Object> params = new HashMap<>();
+        
+        // 검색 조건 설정
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            params.put("keyword", keyword.trim());
+        }
+        
+        // 카테고리 필터 설정
+        if (category != null && !category.trim().isEmpty()) {
+            params.put("category", category);
+        }
+        
+        // 상태 필터 설정
+        if (status != null && !status.trim().isEmpty()) {
+            params.put("status", status);
+        }
+        
+        // 정렬 설정
+        if (sort != null && !sort.trim().isEmpty()) {
+            params.put("sort", sort);
+        }
+        
+        // 페이지네이션 설정
+        int pageSize = 10;
+        params.put("start", (pageNum - 1) * pageSize + 1);
+        params.put("end", pageNum * pageSize);
+        
+        List<Map<String, Object>> houseList = adminService.getHouseList(params);
+        int totalCount = adminService.getHouseCount(params);
+        int totalPages = (int) Math.ceil((double) totalCount / pageSize);
+        
         model.addAttribute("houseList", houseList);
+        model.addAttribute("count", totalCount);
+        model.addAttribute("currentPage", pageNum);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("category", category);
+        model.addAttribute("status", status);
+        model.addAttribute("sort", sort);
+        
         return "views/admin/super-admin-accommodations";
+    }
+    
+    // 숙소 상세보기
+    @GetMapping("/houses/{houseId}/detail")
+    @ResponseBody
+    public Map<String, Object> getHouseDetail(@PathVariable(name = "houseId") Long houseId) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            log.info("숙소 상세보기 요청: houseId={}", houseId);
+            
+            Map<String, Object> houseDetail = adminService.getHouseDetail(houseId);
+            log.info("서비스에서 반환된 결과: {}", houseDetail != null ? "성공" : "실패");
+            
+            if (houseDetail != null) {
+                response.put("success", true);
+                response.put("house", houseDetail);
+                log.info("숙소 상세보기 성공: houseId={}", houseId);
+            } else {
+                response.put("success", false);
+                response.put("message", "상세정보를 제공하지 않는 숙소입니다.");
+                log.warn("숙소 상세보기 실패: houseId={}", houseId);
+            }
+        } catch (Exception e) {
+            log.error("숙소 상세보기 실패: houseId={}", houseId, e);
+            response.put("success", false);
+            response.put("message", "숙소 정보를 불러올 수 없습니다: " + e.getMessage());
+        }
+        
+        return response;
+    }
+    
+    // 숙소 상태 변경
+    @PostMapping("/houses/status")
+    @ResponseBody
+    public Map<String, Object> updateHouseStatus(@RequestBody Map<String, Object> request) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Long houseId = Long.valueOf(request.get("houseId").toString());
+            String status = request.get("status").toString();
+            
+            adminService.updateProductStatus(houseId, "house", status);
+            response.put("success", true);
+            response.put("message", "숙소 상태가 성공적으로 변경되었습니다.");
+        } catch (Exception e) {
+            log.error("숙소 상태 변경 실패: request={}", request, e);
+            response.put("success", false);
+            response.put("message", "숙소 상태 변경에 실패했습니다.");
+        }
+        
+        return response;
     }
     
     // 리뷰 관리
@@ -75,6 +295,25 @@ public class AdminController {
             log.error("회원 상태 업데이트 실패: memberId={}, status={}", memberId, status, e);
             return "error";
         }
+    }
+    
+    // 회원 상세보기
+    @GetMapping("/member/detail/{memberId}")
+    @ResponseBody
+    public Map<String, Object> getMemberDetail(@PathVariable(name = "memberId") Long memberId) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Map<String, Object> memberDetail = adminService.getMemberDetail(memberId);
+            response.put("success", true);
+            response.put("member", memberDetail);
+        } catch (Exception e) {
+            log.error("회원 상세보기 실패: memberId={}", memberId, e);
+            response.put("success", false);
+            response.put("message", "회원 정보를 불러올 수 없습니다.");
+        }
+        
+        return response;
     }
     
     // 판매자 상태 업데이트

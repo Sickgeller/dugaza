@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -32,6 +33,7 @@ public interface MemberMapper {
 //	@Select("SELECT * FROM MEMBER WHERE ID=#{id}")
 	public MemberVO selectMemberByUsername(String id);
 	@Select("SELECT * FROM MEMBER WHERE MEMBER_ID=#{memberId}")
+	@ResultMap("memberMap")
 	public MemberVO selectMember(Long memberId);
 	@Update("UPDATE MEMBER SET NAME=#{name,jdbcType=VARCHAR}, EMAIL=#{email,jdbcType=VARCHAR}, PHONE=#{phone,jdbcType=VARCHAR}, ADDRESS=#{address,jdbcType=VARCHAR}, ADDRESS_DETAIL=#{addressDetail,jdbcType=VARCHAR}, UPDATED_AT=SYSDATE WHERE MEMBER_ID=#{memberId,jdbcType=NUMERIC}")
 	public void updateMember(MemberVO member);

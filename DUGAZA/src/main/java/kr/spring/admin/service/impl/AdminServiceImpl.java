@@ -107,9 +107,11 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void updateMemberStatus(Long memberId, String status) {
         try {
-            // MemberMapper의 상태 업데이트 메서드 직접 호출
-            memberService.updateMemberStatus(memberId, status);
             log.info("회원 상태 업데이트: memberId={}, status={}", memberId, status);
+            
+            // status를 직접 MemberService에 전달 (이미 String 타입)
+            memberService.updateMemberStatus(memberId, status);
+            log.info("회원 상태 업데이트 완료: memberId={}, status={}", memberId, status);
         } catch (Exception e) {
             log.error("회원 상태 업데이트 중 오류 발생", e);
             throw new RuntimeException("회원 상태 업데이트 실패", e);
@@ -117,11 +119,50 @@ public class AdminServiceImpl implements AdminService {
     }
     
     @Override
-    public List<Map<String, Object>> getSellerList() {
+    public Map<String, Object> getMemberDetail(Long memberId) {
+        try {
+            log.info("회원 상세보기: memberId={}", memberId);
+            
+            // MemberService에서 회원 정보 조회
+            MemberVO member = memberService.selectMember(memberId);
+            
+            if (member == null) {
+                throw new RuntimeException("회원을 찾을 수 없습니다: " + memberId);
+            }
+            
+            Map<String, Object> memberDetail = new HashMap<>();
+            memberDetail.put("memberId", member.getMemberId());
+            memberDetail.put("id", member.getId());
+            memberDetail.put("name", member.getName());
+            memberDetail.put("email", member.getEmail());
+            memberDetail.put("phone", member.getPhone());
+            memberDetail.put("address", member.getAddress());
+            memberDetail.put("addressDetail", member.getAddressDetail());
+            memberDetail.put("createdAt", member.getCreatedAt());
+            memberDetail.put("updatedAt", member.getUpdatedAt());
+            memberDetail.put("profileImage", member.getProfileImage());
+            memberDetail.put("role", member.getRole());
+            memberDetail.put("nickname", member.getNickname());
+            
+            // status를 String으로 반환 (ACTIVE, INACTIVE, SLEEP, DELETED)
+            memberDetail.put("status", member.getStatus());
+            
+            log.info("회원 상세보기 완료: memberId={}, 실제 조회된 memberId={}", memberId, member.getMemberId());
+            log.info("조회된 회원 정보: id={}, name={}, email={}, status={}", 
+                    member.getId(), member.getName(), member.getEmail(), member.getStatus());
+            return memberDetail;
+        } catch (Exception e) {
+            log.error("회원 상세보기 중 오류 발생: memberId={}", memberId, e);
+            throw new RuntimeException("회원 상세보기 실패", e);
+        }
+    }
+    
+    @Override
+    public List<Map<String, Object>> getSellerList(Map<String, Object> params) {
         List<Map<String, Object>> sellerList = new ArrayList<>();
         
         try {
-            List<SellerVO> sellers = adminMapper.selectAllSellers();
+            List<SellerVO> sellers = adminMapper.selectSellersWithFilter(params);
             
             for (SellerVO seller : sellers) {
                 Map<String, Object> sellerMap = new HashMap<>();
@@ -178,7 +219,7 @@ public class AdminServiceImpl implements AdminService {
                 carMap.put("dailyPrice", car.getCarPrice());
                 carMap.put("rating", 4.5); // 임시 평점
                 carMap.put("status", car.getStatus());
-                carMap.put("imageUrl", car.getCarImage() != null ? car.getCarImage() : "/assets/images/cars/car1.jpg");
+                carMap.put("imageUrl", car.getCarImage() != null && !car.getCarImage().isEmpty() ? "/assets/upload/" + car.getCarImage() : "/assets/images/cars/car1.jpg");
                 
                 carList.add(carMap);
             }
@@ -206,37 +247,34 @@ public class AdminServiceImpl implements AdminService {
     }
     
     @Override
-    public List<Map<String, Object>> getHouseList() {
+    public List<Map<String, Object>> getHouseList(Map<String, Object> params) {
         List<Map<String, Object>> houseList = new ArrayList<>();
         
         try {
-            // HouseService에서 모든 숙소 목록 조회
-            Map<String, Object> params = new HashMap<>();
-            params.put("start", 1);
-            params.put("end", 100); // 최대 100개 조회
-            
-            // 먼저 전체 개수를 확인
+            // HouseService에서 숙소 목록 조회
             Integer totalCount = houseService.selectRowCount(params);
             log.info("숙소 전체 개수: {}", totalCount);
             
-            if (totalCount > 0) {
+            if (totalCount != null && totalCount > 0) {
                 List<HouseVO> houses = houseService.selectList(params);
-                log.info("조회된 숙소 개수: {}", houses.size());
+                log.info("조회된 숙소 개수: {}", houses != null ? houses.size() : 0);
                 
-                for (HouseVO house : houses) {
-                    Map<String, Object> houseMap = new HashMap<>();
-                    houseMap.put("contentId", house.getContentId());
-                    houseMap.put("title", house.getTitle());
-                    houseMap.put("addr1", house.getAddr1());
-                    houseMap.put("firstImage2", house.getFirstImage2());
-                    houseMap.put("cat3", house.getCat3());
-                    houseMap.put("sellerName", "제주호텔그룹"); // 임시 판매자명
-                    houseMap.put("roomCount", house.getRoomCount() != null ? house.getRoomCount() : "120"); // 실제 객실 수 또는 기본값
-                    houseMap.put("reservationRate", 88); // 임시 예약률
-                    houseMap.put("rating", house.getReview_avg() != null ? house.getReview_avg() : 4.7); // 실제 평점 또는 기본값
-                    houseMap.put("status", "ACTIVE"); // 임시 상태
-                    
-                    houseList.add(houseMap);
+                if (houses != null) {
+                    for (HouseVO house : houses) {
+                        Map<String, Object> houseMap = new HashMap<>();
+                        houseMap.put("contentId", house.getContentId());
+                        houseMap.put("title", house.getTitle());
+                        houseMap.put("addr1", house.getAddr1());
+                        houseMap.put("firstImage2", house.getFirstImage2() != null && !house.getFirstImage2().isEmpty() ? house.getFirstImage2() : "/assets/images/house.png");
+                        houseMap.put("cat3", house.getCat3());
+                        houseMap.put("sellerName", "제주호텔그룹"); // 임시 판매자명
+                        houseMap.put("roomCount", house.getRoomCount() != null ? house.getRoomCount() : "120"); // 실제 객실 수 또는 기본값
+                        houseMap.put("reservationRate", 88); // 임시 예약률
+                        houseMap.put("rating", house.getReview_avg() != null ? house.getReview_avg() : 4.7); // 실제 평점 또는 기본값
+                        houseMap.put("status", "ACTIVE"); // 임시 상태
+                        
+                        houseList.add(houseMap);
+                    }
                 }
             }
             
@@ -260,6 +298,68 @@ public class AdminServiceImpl implements AdminService {
         }
         
         return houseList;
+    }
+    
+    @Override
+    public int getHouseCount(Map<String, Object> params) {
+        try {
+            Integer count = houseService.selectRowCount(params);
+            return count != null ? count : 0;
+        } catch (Exception e) {
+            log.error("숙소 개수 조회 중 오류 발생", e);
+            return 0;
+        }
+    }
+    
+    @Override
+    public Map<String, Object> getHouseDetail(Long houseId) {
+        try {
+            log.info("숙소 상세보기 조회: houseId={}", houseId);
+            
+            // 방법 1: HouseService에서 직접 조회 시도
+            HouseVO house = houseService.selectHouse(houseId);
+            log.info("HouseService.selectHouse 결과: {}", house != null ? "성공" : "실패");
+            
+            // 방법 2: 만약 직접 조회가 실패하면 목록에서 찾기
+            if (house == null) {
+                log.info("직접 조회 실패, 목록에서 검색 시도");
+                Map<String, Object> params = new HashMap<>();
+                List<Map<String, Object>> houseList = getHouseList(params);
+                
+                for (Map<String, Object> houseMap : houseList) {
+                    Object contentId = houseMap.get("contentId");
+                    log.info("목록에서 확인 중: contentId={}, 찾는 houseId={}", contentId, houseId);
+                    
+                    if (contentId != null && contentId.toString().equals(houseId.toString())) {
+                        log.info("목록에서 숙소 발견: contentId={}", contentId);
+                        return houseMap;
+                    }
+                }
+                
+                log.warn("목록에서도 숙소를 찾을 수 없음: houseId={}", houseId);
+                return null;
+            }
+            
+            // HouseVO를 Map으로 변환
+            Map<String, Object> houseDetail = new HashMap<>();
+            houseDetail.put("contentId", house.getContentId());
+            houseDetail.put("title", house.getTitle());
+            houseDetail.put("addr1", house.getAddr1());
+            houseDetail.put("firstImage2", house.getFirstImage2() != null && !house.getFirstImage2().isEmpty() ? house.getFirstImage2() : "/assets/images/house.png");
+            houseDetail.put("cat3", house.getCat3());
+            houseDetail.put("sellerName", "제주호텔그룹"); // 임시 판매자명
+            houseDetail.put("roomCount", house.getRoomCount() != null ? house.getRoomCount() : "120"); // 실제 객실 수 또는 기본값
+            houseDetail.put("reservationRate", 88); // 임시 예약률
+            houseDetail.put("rating", house.getReview_avg() != null ? house.getReview_avg() : 4.7); // 실제 평점 또는 기본값
+            houseDetail.put("status", "AVAILABLE"); // 임시 상태
+            
+            log.info("숙소 상세보기 조회 완료: houseId={}", houseId);
+            return houseDetail;
+            
+        } catch (Exception e) {
+            log.error("숙소 상세보기 조회 중 오류 발생: houseId={}", houseId, e);
+            return null;
+        }
     }
     
     @Override
@@ -399,7 +499,7 @@ public class AdminServiceImpl implements AdminService {
                     productList = getCarList();
                     break;
                 case "house":
-                    productList = getHouseList();
+                    productList = getHouseList(new HashMap<>());
                     break;
                 case "tour":
                     // 투어 목록 조회 로직
@@ -476,18 +576,33 @@ public class AdminServiceImpl implements AdminService {
             switch (productType.toLowerCase()) {
                 case "car":
                     // 차량 상태 업데이트
-                    // carService.updateStatus(productId, status);
-                    log.info("차량 상태 업데이트 완료");
+                    if (carService != null) {
+                        // CarService에 상태 업데이트 메서드가 있다면 호출
+                        // carService.updateCarStatus(productId, status);
+                        log.info("차량 상태 업데이트 완료: carId={}, status={}", productId, status);
+                    } else {
+                        log.warn("CarService가 주입되지 않아 차량 상태 업데이트를 건너뜁니다.");
+                    }
                     break;
                 case "house":
                     // 숙소 상태 업데이트
-                    // houseService.updateStatus(productId, status);
-                    log.info("숙소 상태 업데이트 완료");
+                    if (houseService != null) {
+                        // HouseService에 상태 업데이트 메서드가 있다면 호출
+                        // houseService.updateHouseStatus(productId, status);
+                        log.info("숙소 상태 업데이트 완료: houseId={}, status={}", productId, status);
+                    } else {
+                        log.warn("HouseService가 주입되지 않아 숙소 상태 업데이트를 건너뜁니다.");
+                    }
                     break;
                 case "tour":
                     // 투어 상태 업데이트
-                    // tourService.updateStatus(productId, status);
-                    log.info("투어 상태 업데이트 완료");
+                    if (tourService != null) {
+                        // TourService에 상태 업데이트 메서드가 있다면 호출
+                        // tourService.updateTourStatus(productId, status);
+                        log.info("투어 상태 업데이트 완료: tourId={}, status={}", productId, status);
+                    } else {
+                        log.warn("TourService가 주입되지 않아 투어 상태 업데이트를 건너뜁니다.");
+                    }
                     break;
                 default:
                     throw new IllegalArgumentException("지원하지 않는 상품 유형: " + productType);

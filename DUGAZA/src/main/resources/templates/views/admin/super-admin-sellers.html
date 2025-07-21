@@ -93,30 +93,30 @@
                 </div>
             </div>
 
-            <!-- 판매자 검색 및 필터 -->
+            <!-- 검색 및 필터 -->
             <div class="content-section">
                 <div class="search-filter-container">
                     <div class="search-box">
-                        <input type="text" id="searchKeyword" placeholder="판매자명, 상호명, 이메일, 사업자번호 검색">
+                        <input type="text" id="searchKeyword" placeholder="판매자명, 상호명, 이메일, 사업자번호 검색" th:value="${keyword}">
                         <button onclick="searchSellers()"><i class="fas fa-search"></i></button>
                     </div>
                     <div class="filter-options">
                         <select id="sellerTypeFilter">
                             <option value="">판매자 유형</option>
-                            <option value="car">렌터카</option>
-                            <option value="house">숙소</option>
+                            <option value="CAR" th:selected="${sellerType == 'CAR'}">렌터카</option>
+                            <option value="HOUSE" th:selected="${sellerType == 'HOUSE'}">숙소</option>
                         </select>
                         <select id="statusFilter">
                             <option value="">상태</option>
-                            <option value="ACTIVE">활성</option>
-                            <option value="PENDING">승인대기</option>
-                            <option value="SUSPENDED">정지</option>
+                            <option value="ACTIVE" th:selected="${status == 'ACTIVE'}">활성</option>
+                            <option value="INACTIVE" th:selected="${status == 'INACTIVE'}">정지</option>
+                            <option value="SUSPENDED" th:selected="${status == 'SUSPENDED'}">일시정지</option>
                         </select>
                         <select id="sortFilter">
                             <option value="">정렬 기준</option>
-                            <option value="recent">최근 가입순</option>
-                            <option value="name">이름순</option>
-                            <option value="business">상호명순</option>
+                            <option value="name" th:selected="${sort == 'name'}">대표자명순</option>
+                            <option value="businessName" th:selected="${sort == 'businessName'}">상호명순</option>
+                            <option value="createdAt" th:selected="${sort == 'createdAt'}">가입일순</option>
                         </select>
                     </div>
                 </div>
@@ -252,9 +252,39 @@
             const keyword = document.getElementById('searchKeyword').value;
             const sellerType = document.getElementById('sellerTypeFilter').value;
             const status = document.getElementById('statusFilter').value;
+            const sort = document.getElementById('sortFilter').value;
             
-            // 실제 구현에서는 AJAX로 검색 결과를 가져와서 테이블을 업데이트
-            console.log('검색 조건:', { keyword, sellerType, status });
+            // URL 파라미터로 검색 조건 전달
+            const currentUrl = new URL(window.location);
+            
+            if (keyword) {
+                currentUrl.searchParams.set('keyword', keyword);
+            } else {
+                currentUrl.searchParams.delete('keyword');
+            }
+            
+            if (sellerType) {
+                currentUrl.searchParams.set('sellerType', sellerType);
+            } else {
+                currentUrl.searchParams.delete('sellerType');
+            }
+            
+            if (status) {
+                currentUrl.searchParams.set('status', status);
+            } else {
+                currentUrl.searchParams.delete('status');
+            }
+            
+            if (sort) {
+                currentUrl.searchParams.set('sort', sort);
+            } else {
+                currentUrl.searchParams.delete('sort');
+            }
+            
+            // 페이지를 1로 리셋
+            currentUrl.searchParams.set('page', '1');
+            
+            window.location.href = currentUrl.toString();
         }
 
         // 판매자 상세정보 보기

@@ -97,21 +97,21 @@
             <div class="content-section">
                 <div class="search-filter-container">
                     <div class="search-box">
-                        <input type="text" id="searchKeyword" placeholder="회원명, 이메일, 전화번호 검색">
+                        <input type="text" id="searchKeyword" placeholder="회원명, 이메일, 전화번호 검색" th:value="${keyword}">
                         <button onclick="searchMembers()"><i class="fas fa-search"></i></button>
                     </div>
                     <div class="filter-options">
                         <select id="statusFilter">
                             <option value="">회원 상태</option>
-                            <option value="1">활성 회원</option>
-                            <option value="2">휴면 회원</option>
-                            <option value="3">탈퇴 회원</option>
+                            <option value="ACTIVE" th:selected="${status == 'ACTIVE'}">활성 회원</option>
+                            <option value="INACTIVE" th:selected="${status == 'INACTIVE'}">정지 회원</option>
+                            <option value="SLEEP" th:selected="${status == 'SLEEP'}">휴면 회원</option>
+                            <option value="DELETED" th:selected="${status == 'DELETED'}">탈퇴 회원</option>
                         </select>
                         <select id="sortFilter">
                             <option value="">정렬 기준</option>
-                            <option value="recent">최근 가입순</option>
-                            <option value="name">이름순</option>
-                            <option value="email">이메일순</option>
+                            <option value="name" th:selected="${sort == 'name'}">이름순</option>
+                            <option value="email" th:selected="${sort == 'email'}">이메일순</option>
                         </select>
                     </div>
                 </div>
@@ -147,17 +147,16 @@
                                 <td th:text="${#dates.format(member.createdAt, 'yyyy.MM.dd')}">가입일</td>
                                 <td>
                                     <span th:if="${member.status == 'ACTIVE'}" class="status available">활성</span>
-                                    <span th:if="${member.status == 'INACTIVE'}" class="status pending">휴면</span>
-                                    <span th:if="${member.status == 'DELETE'}" class="status suspended">탈퇴</span>
+                                    <span th:if="${member.status == 'INACTIVE'}" class="status suspended">정지</span>
+                                    <span th:if="${member.status == 'SLEEP'}" class="status pending">휴면</span>
+                                    <span th:if="${member.status == 'DELETED'}" class="status suspended">삭제</span>
                                 </td>
                                 <td>
-                                    <button class="btn-icon" title="상세정보" th:onclick="'viewMemberDetail(' + ${member.memberId} + ')'">
-                                        <i class="fas fa-info-circle"></i>
+                                    <button class="btn-icon" title="상세보기" 
+                                            th:onclick="'showMemberDetail(' + ${member.memberId} + ')'">
+                                        <i class="fas fa-eye"></i>
                                     </button>
-                                    <button class="btn-icon" title="수정" th:onclick="'editMember(' + ${member.memberId} + ')'">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button th:if="${member.status == 'ACTIVE'}" class="btn-icon" title="휴면 처리" 
+                                    <button th:if="${member.status == 'ACTIVE'}" class="btn-icon" title="정지 처리" 
                                             th:onclick="'updateMemberStatus(' + ${member.memberId} + ', &quot;INACTIVE&quot;)'">
                                         <i class="fas fa-pause"></i>
                                     </button>
@@ -182,6 +181,48 @@
                     <button class="btn-page" th:if="${currentPage < pageCount}" th:onclick="'goToPage(' + ${currentPage + 1} + ')'">
                         <i class="fas fa-angle-right"></i>
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 회원 상세보기 모달 -->
+    <div id="memberDetailModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>회원 상세정보</h3>
+                <span class="close" onclick="closeMemberDetailModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="member-detail-info">
+                    <div class="detail-row">
+                        <label>회원 ID:</label>
+                        <span id="detailMemberId">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>아이디:</label>
+                        <span id="detailId">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>이름:</label>
+                        <span id="detailName">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>이메일:</label>
+                        <span id="detailEmail">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>전화번호:</label>
+                        <span id="detailPhone">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>상태:</label>
+                        <span id="detailStatus">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>가입일:</label>
+                        <span id="detailCreatedAt">-</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -230,15 +271,83 @@
         function searchMembers() {
             const keyword = document.getElementById('searchKeyword').value;
             const status = document.getElementById('statusFilter').value;
+            const sort = document.getElementById('sortFilter').value;
             
-            // 실제 구현에서는 AJAX로 검색 결과를 가져와서 테이블을 업데이트
-            console.log('검색 조건:', { keyword, status });
+            // URL 파라미터로 검색 조건 전달
+            const currentUrl = new URL(window.location);
+            
+            if (keyword) {
+                currentUrl.searchParams.set('keyword', keyword);
+            } else {
+                currentUrl.searchParams.delete('keyword');
+            }
+            
+            if (status) {
+                currentUrl.searchParams.set('status', status);
+            } else {
+                currentUrl.searchParams.delete('status');
+            }
+            
+            if (sort) {
+                currentUrl.searchParams.set('sort', sort);
+            } else {
+                currentUrl.searchParams.delete('sort');
+            }
+            
+            // 페이지를 1로 리셋
+            currentUrl.searchParams.set('page', '1');
+            
+            window.location.href = currentUrl.toString();
         }
 
-        // 회원 상세정보 보기
-        function viewMemberDetail(memberId) {
-            // 모달이나 새 페이지로 회원 상세정보 표시
-            console.log('회원 상세정보:', memberId);
+        // 회원 상세보기
+        function showMemberDetail(memberId) {
+            fetch(`/admin/member/detail/${memberId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.member) {
+                        const member = data.member;
+                        document.getElementById('detailMemberId').textContent = member.memberId || 'N/A';
+                        document.getElementById('detailId').textContent = member.id || 'N/A';
+                        document.getElementById('detailEmail').textContent = member.email || 'N/A';
+                        document.getElementById('detailName').textContent = member.name || 'N/A';
+                        document.getElementById('detailPhone').textContent = member.phone || 'N/A';
+                        document.getElementById('detailStatus').textContent = getStatusText(member.status) || 'N/A';
+                        document.getElementById('detailCreatedAt').textContent = member.createdAt || 'N/A';
+                        
+                        // 모달 표시
+                        document.getElementById('memberDetailModal').style.display = 'block';
+                    } else {
+                        alert('회원 정보를 불러올 수 없습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('회원 정보를 불러올 수 없습니다.');
+                });
+        }
+        
+        // 모달 닫기
+        function closeMemberDetailModal() {
+            document.getElementById('memberDetailModal').style.display = 'none';
+        }
+        
+        // 상태 텍스트 변환
+        function getStatusText(status) {
+            switch (status) {
+                case 'ACTIVE': return '활성';
+                case 'INACTIVE': return '정지';
+                case 'SLEEP': return '휴면';
+                case 'DELETED': return '삭제';
+                default: return status;
+            }
+        }
+        
+        // 날짜 포맷
+        function formatDate(dateString) {
+            if (!dateString) return '미기록';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ko-KR');
         }
 
         // 회원 수정

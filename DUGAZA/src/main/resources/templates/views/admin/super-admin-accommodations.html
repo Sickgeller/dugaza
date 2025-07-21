@@ -6,6 +6,8 @@
     <title>숙소 관리 - 관리자</title>
     <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
     <div class="admin-container">
@@ -24,7 +26,7 @@
                         <a href="#" class="dropdown-toggle"><i class="fas fa-boxes"></i><span>상품 관리</span></a>
                         <ul class="submenu">
                             <li><a th:href="@{/admin/cars}"><i class="fas fa-car"></i><span>렌터카</span></a></li>
-                            <li class="active"><a th:href="@{/house/admin_house}"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
+                            <li class="active"><a th:href="@{/admin/houses}"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
                         </ul>
                     </li>
                     <li><a th:href="@{/admin/reviews}"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
@@ -97,28 +99,28 @@
             <div class="content-section">
                 <div class="search-filter-container">
                     <div class="search-box">
-                        <input type="text" id="searchKeyword" placeholder="숙소명, 주소 검색">
+                        <input type="text" id="searchKeyword" placeholder="숙소명, 주소 검색" th:value="${keyword}">
                         <button onclick="searchHouses()"><i class="fas fa-search"></i></button>
                     </div>
                     <div class="filter-options">
                         <select id="categoryFilter">
                             <option value="">카테고리</option>
-                            <option value="hotel">호텔</option>
-                            <option value="motel">모텔</option>
-                            <option value="pension">펜션</option>
-                            <option value="guesthouse">게스트하우스</option>
+                            <option value="호텔" th:selected="${category == '호텔'}">호텔</option>
+                            <option value="펜션" th:selected="${category == '펜션'}">펜션</option>
+                            <option value="리조트" th:selected="${category == '리조트'}">리조트</option>
                         </select>
                         <select id="statusFilter">
                             <option value="">상태</option>
-                            <option value="active">운영중</option>
-                            <option value="maintenance">점검중</option>
-                            <option value="closed">폐업</option>
+                            <option value="AVAILABLE" th:selected="${status == 'AVAILABLE'}">운영중</option>
+                            <option value="INAVAILABLE" th:selected="${status == 'INAVAILABLE'}">운영정지</option>
+                            <option value="REPAIRED" th:selected="${status == 'REPAIRED'}">점검중</option>
+                            <option value="DELETED" th:selected="${status == 'DELETED'}">삭제됨</option>
                         </select>
                         <select id="sortFilter">
                             <option value="">정렬 기준</option>
-                            <option value="recent">최근 등록순</option>
-                            <option value="popular">인기순</option>
-                            <option value="rating">평점순</option>
+                            <option value="title" th:selected="${sort == 'title'}">숙소명순</option>
+                            <option value="rating" th:selected="${sort == 'rating'}">평점순</option>
+                            <option value="popular" th:selected="${sort == 'popular'}">인기순</option>
                         </select>
                     </div>
                 </div>
@@ -158,24 +160,19 @@
                                 <td th:text="${house.reservationRate} + '%'">88%</td>
                                 <td th:text="${house.rating} + ' ⭐'">4.7 ⭐</td>
                                 <td>
-                                    <span th:if="${house.status == 'ACTIVE'}" class="status available">영업중</span>
-                                    <span th:if="${house.status == 'SUSPENDED'}" class="status suspended">운영정지</span>
-                                    <span th:if="${house.status == 'MAINTENANCE'}" class="status pending">점검중</span>
+                                    <select class="status-select" th:data-house-id="${house.contentId}" onchange="updateHouseStatus(this)">
+                                        <option value="AVAILABLE" th:selected="${house.status == 'AVAILABLE'}">운영중</option>
+                                        <option value="INAVAILABLE" th:selected="${house.status == 'INAVAILABLE'}">운영정지</option>
+                                        <option value="REPAIRED" th:selected="${house.status == 'REPAIRED'}">점검중</option>
+                                        <option value="DELETED" th:selected="${house.status == 'DELETED'}">삭제됨</option>
+                                    </select>
                                 </td>
                                 <td>
                                     <button class="btn-icon" title="상세정보" th:onclick="'viewHouseDetail(' + ${house.contentId} + ')'">
                                         <i class="fas fa-info-circle"></i>
                                     </button>
-                                    <button class="btn-icon" title="수정" th:onclick="'editHouse(' + ${house.contentId} + ')'">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button th:if="${house.status == 'ACTIVE'}" class="btn-icon" title="운영정지" 
-                                            th:onclick="'updateHouseStatus(' + ${house.contentId} + ', &quot;SUSPENDED&quot;)'">
-                                        <i class="fas fa-ban"></i>
-                                    </button>
-                                    <button th:if="${house.status == 'SUSPENDED'}" class="btn-icon" title="운영재개" 
-                                            th:onclick="'updateHouseStatus(' + ${house.contentId} + ', &quot;ACTIVE&quot;)'">
-                                        <i class="fas fa-check"></i>
+                                    <button class="btn-icon" title="삭제" th:onclick="'deleteHouse(' + ${house.contentId} + ')'">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -183,48 +180,200 @@
                     </table>
                 </div>
                 <!-- 페이지네이션 -->
-                <div class="pagination" th:if="${page != null}">
-                    <div th:utext="${page}"></div>
+                <div class="pagination" th:if="${totalPages > 1}">
+                    <!-- 첫 페이지로 이동 -->
+                    <button class="btn-page" th:if="${currentPage > 1}" th:onclick="'goToPage(1)'">
+                        <i class="fas fa-angle-double-left"></i>
+                    </button>
+                    
+                    <!-- 이전 페이지 -->
+                    <button class="btn-page" th:if="${currentPage > 1}" th:onclick="'goToPage(' + ${currentPage - 1} + ')'">
+                        <i class="fas fa-angle-left"></i>
+                    </button>
+                    
+                    <!-- 페이지 번호들 -->
+                    <th:block th:with="start=${currentPage > 4 ? currentPage - 4 : 1}, end=${currentPage + 5 > totalPages ? totalPages : currentPage + 5}">
+                        <!-- 첫 페이지가 start보다 크면 첫 페이지와 ... 표시 -->
+                        <button class="btn-page" th:if="${start > 1}" th:onclick="'goToPage(1)'" th:text="1">1</button>
+                        <span class="pagination-ellipsis" th:if="${start > 2}">...</span>
+                        
+                        <!-- 실제 페이지 번호들 -->
+                        <button class="btn-page" th:each="pageNum : ${#numbers.sequence(start, end)}" 
+                                th:class="${pageNum == currentPage ? 'active' : ''}" 
+                                th:onclick="'goToPage(' + ${pageNum} + ')'" 
+                                th:text="${pageNum}">1</button>
+                        
+                        <!-- 마지막 페이지가 end보다 작으면 ... 표시와 마지막 페이지 -->
+                        <span class="pagination-ellipsis" th:if="${end < totalPages - 1}">...</span>
+                        <button class="btn-page" th:if="${end < totalPages}" th:onclick="'goToPage(' + ${totalPages} + ')'" th:text="${totalPages}">1</button>
+                    </th:block>
+                    
+                    <!-- 다음 페이지 -->
+                    <button class="btn-page" th:if="${currentPage < totalPages}" th:onclick="'goToPage(' + ${currentPage + 1} + ')'">
+                        <i class="fas fa-angle-right"></i>
+                    </button>
+                    
+                    <!-- 마지막 페이지로 이동 -->
+                    <button class="btn-page" th:if="${currentPage < totalPages}" th:onclick="'goToPage(' + ${totalPages} + ')'">
+                        <i class="fas fa-angle-double-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- 숙소 상세보기 모달 -->
+    <div id="houseDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>숙소 상세정보</h3>
+                <span class="close" onclick="closeHouseDetailModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="houseDetailContent">
+                <!-- 상세정보 내용이 여기에 로드됩니다 -->
+            </div>
+        </div>
+    </div>
+
     <script th:src="@{/assets/js/admin.js}"></script>
-    <script th:inline="javascript">
-        // CSRF 토큰 가져오기
-        var csrfToken = /*[[${_csrf.token}]]*/ '';
-        var csrfHeader = /*[[${_csrf.headerName}]]*/ '';
-        
-        // 숙소 상태 업데이트
-        function updateHouseStatus(houseId, status) {
-            if (confirm('정말로 이 숙소의 상태를 변경하시겠습니까?')) {
-                const headers = {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                };
-                
-                // CSRF 토큰이 있으면 헤더에 추가
-                if (csrfToken && csrfHeader) {
-                    headers[csrfHeader] = csrfToken;
+    <script>
+        // CSRF 토큰 설정
+        const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
+        const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
+
+        // 숙소 상세정보 보기
+        function viewHouseDetail(houseId) {
+            console.log('숙소 상세보기 요청:', houseId);
+            console.log('요청 URL:', `/admin/houses/${houseId}/detail`);
+            
+            fetch(`/admin/houses/${houseId}/detail`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [header]: token
                 }
-                
-                fetch('/admin/product/status', {
+            })
+            .then(response => {
+                console.log('응답 상태:', response.status);
+                console.log('응답 헤더:', response.headers);
+                return response.json();
+            })
+            .then(data => {
+                console.log('받은 데이터:', data);
+                if (data.success) {
+                    const house = data.house;
+                    console.log('숙소 정보:', house);
+                    const content = `
+                        <div class="house-detail">
+                            <div class="house-image">
+                                <img src="${house.firstImage2 || '/assets/images/house.png'}" alt="숙소 이미지">
+                            </div>
+                            <div class="house-info-detail">
+                                <h4>${house.title}</h4>
+                                <p><strong>주소:</strong> ${house.addr1}</p>
+                                <p><strong>판매자:</strong> ${house.sellerName}</p>
+                                <p><strong>카테고리:</strong> ${house.cat3}</p>
+                                <p><strong>객실 수:</strong> ${house.roomCount || '120'}실</p>
+                                <p><strong>예약률:</strong> ${house.reservationRate}%</p>
+                                <p><strong>평점:</strong> ${house.rating} ⭐</p>
+                                <p><strong>상태:</strong> ${getStatusText(house.status)}</p>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('houseDetailContent').innerHTML = content;
+                    document.getElementById('houseDetailModal').style.display = 'block';
+                    console.log('모달 표시 완료');
+                } else {
+                    console.error('API 응답 실패:', data.message);
+                    alert('숙소 정보를 불러오는데 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('숙소 정보를 불러오는데 실패했습니다.');
+            });
+        }
+
+        // 상태 텍스트 변환
+        function getStatusText(status) {
+            switch(status) {
+                case 'AVAILABLE': return '운영중';
+                case 'INAVAILABLE': return '운영정지';
+                case 'REPAIRED': return '점검중';
+                case 'DELETED': return '삭제됨';
+                default: return status;
+            }
+        }
+
+        // 모달 닫기
+        function closeHouseDetailModal() {
+            document.getElementById('houseDetailModal').style.display = 'none';
+        }
+
+        // 숙소 상태 업데이트
+        function updateHouseStatus(selectElement) {
+            const houseId = selectElement.getAttribute('data-house-id');
+            const newStatus = selectElement.value;
+            
+            if (confirm(`숙소 상태를 "${getStatusText(newStatus)}"로 변경하시겠습니까?`)) {
+                fetch('/admin/houses/status', {
                     method: 'POST',
-                    headers: headers,
-                    body: `productId=${houseId}&productType=house&status=${status}`
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [header]: token
+                    },
+                    body: JSON.stringify({
+                        houseId: houseId,
+                        status: newStatus
+                    })
                 })
-                .then(response => response.text())
-                .then(result => {
-                    if (result === 'success') {
-                        alert('숙소 상태가 성공적으로 업데이트되었습니다.');
-                        location.reload();
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('상태가 성공적으로 변경되었습니다.');
                     } else {
-                        alert('숙소 상태 업데이트에 실패했습니다.');
+                        alert('상태 변경에 실패했습니다.');
+                        // 원래 상태로 되돌리기
+                        location.reload();
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('숙소 상태 업데이트 중 오류가 발생했습니다.');
+                    alert('상태 변경 중 오류가 발생했습니다.');
+                    location.reload();
+                });
+            } else {
+                // 취소 시 원래 상태로 되돌리기
+                location.reload();
+            }
+        }
+
+        // 숙소 삭제 (상태를 DELETED로 변경)
+        function deleteHouse(houseId) {
+            if (confirm('정말로 이 숙소를 삭제하시겠습니까?')) {
+                fetch('/admin/houses/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [header]: token
+                    },
+                    body: JSON.stringify({
+                        houseId: houseId,
+                        status: 'DELETED'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('숙소가 삭제되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('삭제에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('삭제 중 오류가 발생했습니다.');
                 });
             }
         }
@@ -234,21 +383,54 @@
             const keyword = document.getElementById('searchKeyword').value;
             const category = document.getElementById('categoryFilter').value;
             const status = document.getElementById('statusFilter').value;
+            const sort = document.getElementById('sortFilter').value;
             
-            // 실제 구현에서는 AJAX로 검색 결과를 가져와서 테이블을 업데이트
-            console.log('검색 조건:', { keyword, category, status });
+            // URL 파라미터로 검색 조건 전달
+            const currentUrl = new URL(window.location);
+            
+            if (keyword) {
+                currentUrl.searchParams.set('keyword', keyword);
+            } else {
+                currentUrl.searchParams.delete('keyword');
+            }
+            
+            if (category) {
+                currentUrl.searchParams.set('category', category);
+            } else {
+                currentUrl.searchParams.delete('category');
+            }
+            
+            if (status) {
+                currentUrl.searchParams.set('status', status);
+            } else {
+                currentUrl.searchParams.delete('status');
+            }
+            
+            if (sort) {
+                currentUrl.searchParams.set('sort', sort);
+            } else {
+                currentUrl.searchParams.delete('sort');
+            }
+            
+            // 페이지를 1로 리셋
+            currentUrl.searchParams.set('page', '1');
+            
+            window.location.href = currentUrl.toString();
+        }
+        
+        // 페이지 이동
+        function goToPage(page) {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('page', page);
+            window.location.href = currentUrl.toString();
         }
 
-        // 숙소 상세정보 보기
-        function viewHouseDetail(houseId) {
-            // 모달이나 새 페이지로 숙소 상세정보 표시
-            console.log('숙소 상세정보:', houseId);
-        }
-
-        // 숙소 수정
-        function editHouse(houseId) {
-            // 숙소 수정 페이지로 이동
-            console.log('숙소 수정:', houseId);
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('houseDetailModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
         }
     </script>
 </body>

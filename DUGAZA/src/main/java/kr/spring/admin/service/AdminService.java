@@ -16,9 +16,14 @@ public interface AdminService {
     void updateMemberStatus(Long memberId, String status);
     
     /**
+     * 회원 상세보기
+     */
+    Map<String, Object> getMemberDetail(Long memberId);
+    
+    /**
      * 판매자 목록 조회
      */
-    List<Map<String, Object>> getSellerList();
+    List<Map<String, Object>> getSellerList(Map<String, Object> params);
     
     /**
      * 판매자 상태 수정
@@ -33,7 +38,17 @@ public interface AdminService {
     /**
      * 숙소 목록 조회
      */
-    List<Map<String, Object>> getHouseList();
+    List<Map<String, Object>> getHouseList(Map<String, Object> params);
+    
+    /**
+     * 숙소 개수 조회
+     */
+    int getHouseCount(Map<String, Object> params);
+    
+    /**
+     * 숙소 상세보기
+     */
+    Map<String, Object> getHouseDetail(Long houseId);
     
     /**
      * 리뷰 목록 조회

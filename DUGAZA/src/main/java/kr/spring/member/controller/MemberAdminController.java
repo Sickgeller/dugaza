@@ -49,15 +49,31 @@ public class MemberAdminController {
 	//회원목록
 	@GetMapping("/admin_member")
 	public String getList(
-			@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
-			@RequestParam(name = "keyfield", required = false) String keyfield,
+			@RequestParam(name = "page", defaultValue="1") int pageNum,
 			@RequestParam(name = "keyword", required = false) String keyword,
+			@RequestParam(name = "status", required = false) String status,
+			@RequestParam(name = "sort", required = false) String sort,
 			Model model) {
 		
 		Map<String,Object> map = 
 				new HashMap<String,Object>();
-		map.put("keyfield", keyfield);
-		map.put("keyword", keyword);
+		
+		// 검색 조건 설정
+		if (keyword != null && !keyword.trim().isEmpty()) {
+			map.put("keyword", keyword.trim());
+			// 기본적으로 전체 검색으로 설정
+			map.put("keyfield", "4");
+		}
+		
+		// 상태 필터 설정
+		if (status != null && !status.trim().isEmpty()) {
+			map.put("status", status);
+		}
+		
+		// 정렬 설정
+		if (sort != null && !sort.trim().isEmpty()) {
+			map.put("sort", sort);
+		}
 		
 		//전체/검색 레코드수
 		int count = memberService.selectRowCount(map);
@@ -73,9 +89,9 @@ public class MemberAdminController {
 		log.debug("<<회원목록 - count>> : {}",count);
 		
 		//페이지 처리
-		PagingUtil page = new PagingUtil(keyfield,keyword,
+		PagingUtil page = new PagingUtil(null, keyword,
 				                pageNum,count,20,10,
-				                         "admin_list");
+				                         "admin_member");
 		List<MemberVO> list = null;
 		if(count > 0) {
 			map.put("start", page.getStartRow());
@@ -92,8 +108,9 @@ public class MemberAdminController {
 		model.addAttribute("memberList", list);
 		model.addAttribute("pageCount", page.getTotalPage());
 		model.addAttribute("currentPage", pageNum);
-		model.addAttribute("keyfield", keyfield);
 		model.addAttribute("keyword", keyword);
+		model.addAttribute("status", status);
+		model.addAttribute("sort", sort);
 		
 		return "views/admin/super-admin-users";
 	}

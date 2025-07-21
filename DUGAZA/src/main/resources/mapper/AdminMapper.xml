@@ -75,6 +75,43 @@
         ORDER BY CREATED_AT DESC
     </select>
     
+    <!-- 검색 및 필터 조건으로 판매자 목록 조회 -->
+    <select id="selectSellersWithFilter" parameterType="map" resultMap="sellerMap">
+        SELECT 
+            SELLER_ID, ID, NAME, BUSINESS_NAME, EMAIL, LICENSE,
+            SELLER_TYPE, STATUS, ADDRESS, ADDRESS_DETAIL, PHONE,
+            SECONDARY_PHONE, ROLE, CREATED_AT, UPDATED_AT
+        FROM SELLER
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (NAME LIKE '%' || #{keyword} || '%' 
+                 OR BUSINESS_NAME LIKE '%' || #{keyword} || '%'
+                 OR EMAIL LIKE '%' || #{keyword} || '%'
+                 OR LICENSE LIKE '%' || #{keyword} || '%'
+                 OR PHONE LIKE '%' || #{keyword} || '%')
+        </if>
+        <if test="sellerType != null and sellerType != ''">
+            AND SELLER_TYPE = #{sellerType}
+        </if>
+        <if test="status != null and status != ''">
+            AND STATUS = #{status}
+        </if>
+        <choose>
+            <when test="sort == 'name'">
+                ORDER BY NAME ASC
+            </when>
+            <when test="sort == 'businessName'">
+                ORDER BY BUSINESS_NAME ASC
+            </when>
+            <when test="sort == 'createdAt'">
+                ORDER BY CREATED_AT DESC
+            </when>
+            <otherwise>
+                ORDER BY CREATED_AT DESC
+            </otherwise>
+        </choose>
+    </select>
+    
     <!-- 판매자 상태 업데이트 -->
     <update id="updateSellerStatus">
         UPDATE SELLER 

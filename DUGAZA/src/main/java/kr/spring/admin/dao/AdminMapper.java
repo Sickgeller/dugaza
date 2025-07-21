@@ -31,6 +31,11 @@ public interface AdminMapper {
     List<SellerVO> searchSellers(@Param("keyword") String keyword, @Param("searchType") String searchType);
     
     /**
+     * 검색 및 필터 조건으로 판매자 목록 조회
+     */
+    List<SellerVO> selectSellersWithFilter(Map<String, Object> params);
+    
+    /**
      * 판매자 상태 업데이트
      */
     void updateSellerStatus(@Param("sellerId") Long sellerId, @Param("status") String status);

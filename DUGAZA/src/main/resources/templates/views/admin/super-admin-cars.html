@@ -6,6 +6,8 @@
     <title>차량 관리 - 관리자</title>
     <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body>
     <div class="admin-container">
@@ -24,7 +26,7 @@
                         <a href="#" class="dropdown-toggle"><i class="fas fa-boxes"></i><span>상품 관리</span></a>
                         <ul class="submenu">
                             <li class="active"><a th:href="@{/admin/cars}"><i class="fas fa-car"></i><span>렌터카</span></a></li>
-                            <li><a th:href="@{/house/admin_house}"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
+                            <li><a th:href="@{/admin/houses}"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
                         </ul>
                     </li>
                     <li><a th:href="@{/admin/reviews}"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
@@ -97,24 +99,25 @@
             <div class="content-section">
                 <div class="search-filter-container">
                     <div class="search-box">
-                        <input type="text" placeholder="차량명, 판매자명 검색">
-                        <button><i class="fas fa-search"></i></button>
+                        <input type="text" id="searchKeyword" placeholder="차량명, 판매자명 검색">
+                        <button onclick="searchCars()"><i class="fas fa-search"></i></button>
                     </div>
                     <div class="filter-options">
-                        <select>
+                        <select id="carTypeFilter">
                             <option value="">차량 종류</option>
                             <option value="small">소형차</option>
                             <option value="medium">중형차</option>
                             <option value="large">대형차</option>
                             <option value="suv">SUV</option>
                         </select>
-                        <select>
+                        <select id="statusFilter">
                             <option value="">상태</option>
-                            <option value="available">대여 가능</option>
-                            <option value="rented">대여 중</option>
-                            <option value="maintenance">점검 중</option>
+                            <option value="AVAILABLE">대여 가능</option>
+                            <option value="INAVAILABLE">대여 불가</option>
+                            <option value="REPAIRED">점검 중</option>
+                            <option value="DELETED">삭제됨</option>
                         </select>
-                        <select>
+                        <select id="sortFilter">
                             <option value="">정렬 기준</option>
                             <option value="recent">최근 등록순</option>
                             <option value="popular">인기순</option>
@@ -144,7 +147,7 @@
                             <tr th:each="car : ${carList}">
                                 <td>
                                     <div class="car-info">
-                                        <img th:src="${car.imageUrl != null ? car.imageUrl : '/assets/images/cars/car1.jpg'}" alt="차량 이미지">
+                                        <img th:src="${car.imageUrl != null and car.imageUrl != '' ? car.imageUrl : '/assets/images/cars/car1.jpg'}" alt="차량 이미지">
                                         <div>
                                             <strong th:text="${car.carName}">차량명</strong>
                                             <small th:text="${car.year} + '년식'">연식</small>
@@ -157,16 +160,16 @@
                                 <td th:text="'₩' + ${#numbers.formatInteger(car.dailyPrice, 3, 'COMMA')}">일일요금</td>
                                 <td th:text="${car.rating} + ' ⭐'">평점</td>
                                 <td>
-                                    <span th:if="${car.status == 'AVAILABLE'}" class="status available">대여 가능</span>
-                                    <span th:if="${car.status == 'RENTED'}" class="status rented">대여 중</span>
-                                    <span th:if="${car.status == 'MAINTENANCE'}" class="status suspended">점검 중</span>
+                                    <select class="status-select" th:data-car-id="${car.carId}" onchange="updateCarStatus(this)">
+                                        <option value="AVAILABLE" th:selected="${car.status == 'AVAILABLE'}">대여 가능</option>
+                                        <option value="INAVAILABLE" th:selected="${car.status == 'INAVAILABLE'}">대여 불가</option>
+                                        <option value="REPAIRED" th:selected="${car.status == 'REPAIRED'}">점검 중</option>
+                                        <option value="DELETED" th:selected="${car.status == 'DELETED'}">삭제됨</option>
+                                    </select>
                                 </td>
                                 <td>
                                     <button class="btn-icon" title="상세정보" th:onclick="'viewCarDetail(' + ${car.carId} + ')'">
                                         <i class="fas fa-info-circle"></i>
-                                    </button>
-                                    <button class="btn-icon" title="수정" th:onclick="'editCar(' + ${car.carId} + ')'">
-                                        <i class="fas fa-edit"></i>
                                     </button>
                                     <button class="btn-icon" title="삭제" th:onclick="'deleteCar(' + ${car.carId} + ')'">
                                         <i class="fas fa-trash"></i>
@@ -189,10 +192,16 @@
                                 <td>휘발유</td>
                                 <td>₩50,000</td>
                                 <td>4.8 ⭐</td>
-                                <td><span class="status available">대여 가능</span></td>
+                                <td>
+                                    <select class="status-select" onchange="updateCarStatus(this)">
+                                        <option value="AVAILABLE" selected>대여 가능</option>
+                                        <option value="INAVAILABLE">대여 불가</option>
+                                        <option value="REPAIRED">점검 중</option>
+                                        <option value="DELETED">삭제됨</option>
+                                    </select>
+                                </td>
                                 <td>
                                     <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
-                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
                                     <button class="btn-icon" title="삭제"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
@@ -215,25 +224,148 @@
         </div>
     </div>
 
+    <!-- 차량 상세보기 모달 -->
+    <div id="carDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>차량 상세정보</h3>
+                <span class="close" onclick="closeCarDetailModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="carDetailContent">
+                <!-- 상세정보 내용이 여기에 로드됩니다 -->
+            </div>
+        </div>
+    </div>
+
     <script th:src="@{/assets/js/admin.js}"></script>
     <script>
+        // CSRF 토큰 설정
+        const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
+        const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
+
         // 차량 상세정보 보기
         function viewCarDetail(carId) {
-            // 모달이나 새 페이지로 차량 상세정보 표시
-            console.log('차량 상세정보:', carId);
+            fetch(`/admin/cars/${carId}/detail`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [header]: token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const car = data.car;
+                    const content = `
+                        <div class="car-detail">
+                            <div class="car-image">
+                                <img src="${car.imageUrl || '/assets/images/cars/car1.jpg'}" alt="차량 이미지">
+                            </div>
+                            <div class="car-info-detail">
+                                <h4>${car.carName}</h4>
+                                <p><strong>연식:</strong> ${car.year}년식</p>
+                                <p><strong>판매자:</strong> ${car.sellerName}</p>
+                                <p><strong>차량 종류:</strong> ${car.carType}</p>
+                                <p><strong>연료:</strong> ${car.fuelType}</p>
+                                <p><strong>일일 요금:</strong> ₩${car.dailyPrice?.toLocaleString()}</p>
+                                <p><strong>평점:</strong> ${car.rating} ⭐</p>
+                                <p><strong>상태:</strong> ${getStatusText(car.status)}</p>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('carDetailContent').innerHTML = content;
+                    document.getElementById('carDetailModal').style.display = 'block';
+                } else {
+                    alert('차량 정보를 불러오는데 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('차량 정보를 불러오는데 실패했습니다.');
+            });
         }
 
-        // 차량 수정
-        function editCar(carId) {
-            // 차량 수정 페이지로 이동
-            console.log('차량 수정:', carId);
+        // 상태 텍스트 변환
+        function getStatusText(status) {
+            switch(status) {
+                case 'AVAILABLE': return '대여 가능';
+                case 'INAVAILABLE': return '대여 불가';
+                case 'REPAIRED': return '점검 중';
+                case 'DELETED': return '삭제됨';
+                default: return status;
+            }
         }
 
-        // 차량 삭제
+        // 모달 닫기
+        function closeCarDetailModal() {
+            document.getElementById('carDetailModal').style.display = 'none';
+        }
+
+        // 차량 상태 업데이트
+        function updateCarStatus(selectElement) {
+            const carId = selectElement.getAttribute('data-car-id');
+            const newStatus = selectElement.value;
+            
+            if (confirm(`차량 상태를 "${getStatusText(newStatus)}"로 변경하시겠습니까?`)) {
+                fetch('/admin/cars/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [header]: token
+                    },
+                    body: JSON.stringify({
+                        carId: carId,
+                        status: newStatus
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('상태가 성공적으로 변경되었습니다.');
+                    } else {
+                        alert('상태 변경에 실패했습니다.');
+                        // 원래 상태로 되돌리기
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('상태 변경 중 오류가 발생했습니다.');
+                    location.reload();
+                });
+            } else {
+                // 취소 시 원래 상태로 되돌리기
+                location.reload();
+            }
+        }
+
+        // 차량 삭제 (상태를 DELETED로 변경)
         function deleteCar(carId) {
             if (confirm('정말로 이 차량을 삭제하시겠습니까?')) {
-                // 차량 삭제 로직
-                console.log('차량 삭제:', carId);
+                fetch('/admin/cars/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [header]: token
+                    },
+                    body: JSON.stringify({
+                        carId: carId,
+                        status: 'DELETED'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('차량이 삭제되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('삭제에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('삭제 중 오류가 발생했습니다.');
+                });
             }
         }
 
@@ -242,9 +374,23 @@
             const keyword = document.getElementById('searchKeyword').value;
             const carType = document.getElementById('carTypeFilter').value;
             const status = document.getElementById('statusFilter').value;
+            const sort = document.getElementById('sortFilter').value;
             
-            // 실제 구현에서는 AJAX로 검색 결과를 가져와서 테이블을 업데이트
-            console.log('검색 조건:', { keyword, carType, status });
+            const params = new URLSearchParams();
+            if (keyword) params.append('keyword', keyword);
+            if (carType) params.append('carType', carType);
+            if (status) params.append('status', status);
+            if (sort) params.append('sort', sort);
+            
+            window.location.href = `/admin/cars?${params.toString()}`;
+        }
+
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('carDetailModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
         }
     </script>
 </body>
