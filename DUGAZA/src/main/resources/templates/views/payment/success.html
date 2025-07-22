@@ -53,7 +53,7 @@
 
         // 결제 성공 비즈니스 로직을 구현하세요.
         // orderId의 가장 앞 두 자리를 추출합니다.
-		const paymentPendingId = orderId.substring(0, 2); // 결과: "12"
+		const paymentPendingId = orderId.substring(0, 3); // 결과: "12"
 		
 		// 추출된 paymentPendingId를 사용하여 URL을 구성합니다.
 		window.location.href = '/payment/process/' + paymentPendingId;

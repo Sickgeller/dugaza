@@ -66,13 +66,13 @@
 	    SELECT a.*, rownum rnum
 	    FROM (
 	      SELECT 
-	        c.content_id, c.title, c.addr1, c.addr2, c.first_image, c.updated_at,  
+	        c.content_id, c.title, c.addr1, c.addr2, c.first_image, c.updated_at, c.content_type_id, 
 	       	NVL(ROUND(AVG(r.rating), 1), 0.0) AS avg_review,
 	        COUNT(r.review_id) AS review_count
 	      FROM tour_content c
 	      LEFT JOIN reviews r ON c.content_id = r.content_id
 	      <include refid="tourSearch"/>
-	      GROUP BY c.content_id, c.title, c.addr1, c.addr2, c.first_image, c.updated_at <!-- 필요한 컬럼 명시 -->
+	      GROUP BY c.content_id, c.title, c.addr1, c.addr2, c.first_image, c.updated_at, c.content_type_id <!-- 필요한 컬럼 명시 -->
 	      ORDER BY c.updated_at DESC NULLS LAST
 	    ) a
 	  )

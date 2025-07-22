@@ -915,6 +915,42 @@
             roomTypeButtons = $('#roomTypeButtons');
             reservationBtn = $('#reservationBtn');
             
+            // 최소 체크인 날짜를 오늘로 설정
+            const today = new Date().toISOString().split('T')[0];
+            checkInDate.attr('min', today);
+            
+            // 날짜 변경 시 예약 가능 여부 확인
+            checkInDate.on('change', function() {
+                if (checkInDate.val() && checkOutDate.val() && guestCount.val()) {
+                    checkRoomAvailability();
+                }
+                calculatePrice();
+            });
+            
+            checkOutDate.on('change', function() {
+                if (checkInDate.val() && checkOutDate.val() && guestCount.val()) {
+                    checkRoomAvailability();
+                }
+                calculatePrice();
+            });
+            
+            // 인원 변경 시 예약 가능 여부 확인
+            guestCount.on('change', function() {
+                if (checkInDate.val() && checkOutDate.val() && guestCount.val()) {
+                    checkRoomAvailability();
+                }
+                calculatePrice();
+            });
+            
+         	// 예약 버튼 클릭
+            reservationBtn.on('click', function() {
+                if (!validateForm()) {
+                    return;
+                }
+                
+                showConfirmModal();
+            });
+            
             initializeRoomData();
         });
         
@@ -1048,35 +1084,9 @@
                 roomOptions.append(roomGroup);
             }
             
-            // 최소 체크인 날짜를 오늘로 설정
-            const today = new Date().toISOString().split('T')[0];
-            checkInDate.attr('min', today);
             
             // 페이지 로드 시 객실 데이터 초기화
             // initializeRoomData(); // 이 부분은 이미 위에서 페이지 로드 시 호출되었으므로 제거
-            
-            // 날짜 변경 시 예약 가능 여부 확인
-            checkInDate.on('change', function() {
-                if (checkInDate.val() && checkOutDate.val() && guestCount.val()) {
-                    checkRoomAvailability();
-                }
-                calculatePrice();
-            });
-            
-            checkOutDate.on('change', function() {
-                if (checkInDate.val() && checkOutDate.val() && guestCount.val()) {
-                    checkRoomAvailability();
-                }
-                calculatePrice();
-            });
-            
-            // 인원 변경 시 예약 가능 여부 확인
-            guestCount.on('change', function() {
-                if (checkInDate.val() && checkOutDate.val() && guestCount.val()) {
-                    checkRoomAvailability();
-                }
-                calculatePrice();
-            });
             
             // 객실 선택 이벤트
             $(document).on('click', '.room-option', function() {
@@ -1287,14 +1297,6 @@
                 return diffDays;
             }
             
-            // 예약 버튼 클릭
-            reservationBtn.on('click', function() {
-                if (!validateForm()) {
-                    return;
-                }
-                
-                showConfirmModal();
-            });
             
             // 폼 검증
             function validateForm() {
@@ -1420,7 +1422,6 @@
                     }
                 });
             });
-        });
     </script>
 </main>
 </body>
