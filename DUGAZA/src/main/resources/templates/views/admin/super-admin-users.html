@@ -1,40 +1,45 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout_admin}">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원 관리 - 슈퍼 관리자</title>
+    <title>회원 관리 - 관리자</title>
     <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <div class="admin-container">
-        <!-- 메인 콘텐츠 -->
-        <div class="main-content" layout:fragment="content">
-            <!-- 헤더 -->
-            <div class="content-header">
-                <div class="header-left">
-                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
-                    <h2>회원 관리</h2>
-                </div>
-                <div class="user-info">
-                    <span>관리자님</span>
-                    <img th:src="@{/assets/images/face.png}" alt="프로필 이미지">
-                </div>
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>관리자</h1>
+                <p>시스템 관리자 대시보드</p>
             </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a th:href="@{/admin}"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li class="active"><a th:href="@{/member/admin_member}"><i class="fas fa-users"></i><span>회원 관리</span></a></li>
+                    <li><a th:href="@{/admin/sellers}"><i class="fas fa-store"></i><span>판매자 관리</span></a></li>
+                    <li>
+                        <a href="#" class="dropdown-toggle"><i class="fas fa-boxes"></i><span>상품 관리</span></a>
+                        <ul class="submenu">
+                            <li><a th:href="@{/admin/cars}"><i class="fas fa-car"></i><span>렌터카</span></a></li>
+                            <li><a th:href="@{/house/admin_house}"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
+                        </ul>
+                    </li>
+                    <li><a th:href="@{/admin/reviews}"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a th:href="@{/admin/qna/list}"><i class="fas fa-flag"></i><span>문의 관리</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div th:replace="~{fragments/header :: admin-header}"></div>
 
             <!-- 회원 통계 -->
             <div class="content-section">
-                <div class="section-header">
-                    <h3>회원 통계</h3>
-                    <div class="period-selector">
-                       <!--  <button class="active">일간</button>
-                        <button>주간</button>
-                        <button>월간</button> -->
-                    </div>
-                </div>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon">
@@ -42,8 +47,8 @@
                         </div>
                         <div class="stat-info">
                             <h3>전체 회원</h3>
-                            <p th:text="${count} + '명'"></p>
-                            <!-- <span class="stat-change increase">+123명 (전일 대비)</span> -->
+                            <p th:text="${count} + '명'">0명</p>
+                            <span class="stat-change">전체 회원</span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -52,7 +57,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>신규 가입</h3>
-                            <p th:text="${newCount} + '명'"></p>
+                            <p th:text="${newCount} + '명'">0명</p>
                             <span class="stat-change increase">(이번 달)</span>
                         </div>
                     </div>
@@ -62,7 +67,8 @@
                         </div>
                         <div class="stat-info">
                             <h3>탈퇴</h3>
-                            <p th:text="${withdrawnCount} + '명'"></p>
+                            <p th:text="${withdrawnCount} + '명'">0명</p>
+                            <span class="stat-change">전체</span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -71,115 +77,282 @@
                         </div>
                         <div class="stat-info">
                             <h3>휴면</h3>
-                            <p th:text="${humanCount} + '명'"></p>
+                            <p th:text="${humanCount} + '명'">0명</p>
                             <span class="stat-change">전체</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 회원 관리 -->
+            <!-- 검색 및 필터 -->
             <div class="content-section">
-                <div class="section-header">
-                    <h3>회원 관리</h3>
-                    <div class="management-tools">
-                        <div class="search-box">
-                            <input type="text" placeholder="회원 검색...">
-                            <button><i class="fas fa-search"></i></button>
-                        </div>
-                        <div class="filter-box">
-                            <select>
-                                <option value="all">전체 회원</option>
-                                <option value="active">활성 회원</option>
-                                <option value="human">휴면 회원</option>
-                                <option value="suspended">정지 회원</option>
-                            </select>
-                        </div>
-                        <button class="btn-primary">
-                            <i class="fas fa-download"></i> 회원 목록 내보내기
-                        </button>
+                <div class="search-filter-container">
+                    <div class="search-box">
+                        <input type="text" id="searchKeyword" placeholder="회원명, 이메일, 전화번호 검색" th:value="${keyword}">
+                        <button onclick="searchMembers()"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="filter-options">
+                        <select id="statusFilter">
+                            <option value="">회원 상태</option>
+                            <option value="ACTIVE" th:selected="${status == 'ACTIVE'}">활성 회원</option>
+                            <option value="INACTIVE" th:selected="${status == 'INACTIVE'}">정지 회원</option>
+                            <option value="SLEEP" th:selected="${status == 'SLEEP'}">휴면 회원</option>
+                            <option value="DELETED" th:selected="${status == 'DELETED'}">탈퇴 회원</option>
+                        </select>
+                        <select id="sortFilter">
+                            <option value="">정렬 기준</option>
+                            <option value="name" th:selected="${sort == 'name'}">이름순</option>
+                            <option value="email" th:selected="${sort == 'email'}">이메일순</option>
+                        </select>
                     </div>
                 </div>
+            </div>
 
-                <!-- 회원 목록 -->
+            <!-- 회원 목록 -->
+            <div class="content-section">
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
                                 <th>회원 정보</th>
+                                <th>이메일</th>
+                                <th>전화번호</th>
                                 <th>가입일</th>
-                                <th>최근 접속일</th>
-                                <th>예약 건수</th>
-                                <th>리뷰 수</th>
-                                <th>신고 수</th>
                                 <th>상태</th>
                                 <th>관리</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr th:each="member : ${list}">
+                        <tbody id="memberTableBody">
+                            <tr th:each="member : ${memberList}">
                                 <td>
-                                    <div class="user-info">
+                                    <div class="member-info">
                                         <img th:src="@{/assets/images/face.png}" alt="회원 프로필">
-                                        <div class="user-details">
-                                            <h4 th:text="${member.name}"></h4>
-                                            <span th:text="${member.email}"></span>
+                                        <div>
+                                            <strong th:text="${member.name}">회원명</strong>
+                                            <small th:text="${member.id}">아이디</small>
                                         </div>
                                     </div>
                                 </td>
-                                <td th:text="${#dates.format(member.createdAt, 'yyyy-MM-dd')}"></td>
-                                <td>2024-02-15</td>
-                                <td>12건</td>
-                                <td>5개</td>
-                                <td>0건</td>
-                                <td><span class="status active" th:text="${member.stringStatus}"></span></td>
+                                <td th:text="${member.email}">이메일</td>
+                                <td th:text="${member.phone}">전화번호</td>
+                                <td th:text="${#dates.format(member.createdAt, 'yyyy.MM.dd')}">가입일</td>
                                 <td>
-                                    <button class="btn-icon" title="상세보기"><i class="fas fa-info-circle"></i></button>
-                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
-                                    <button class="btn-icon" title="정지" ><i class="fas fa-ban"></i></button>
+                                    <span th:if="${member.status == 'ACTIVE'}" class="status available">활성</span>
+                                    <span th:if="${member.status == 'INACTIVE'}" class="status suspended">정지</span>
+                                    <span th:if="${member.status == 'SLEEP'}" class="status pending">휴면</span>
+                                    <span th:if="${member.status == 'DELETED'}" class="status suspended">삭제</span>
+                                </td>
+                                <td>
+                                    <button class="btn-icon" title="상세보기" 
+                                            th:onclick="'showMemberDetail(' + ${member.memberId} + ')'">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button th:if="${member.status == 'ACTIVE'}" class="btn-icon" title="정지 처리" 
+                                            th:onclick="'updateMemberStatus(' + ${member.memberId} + ', &quot;INACTIVE&quot;)'">
+                                        <i class="fas fa-pause"></i>
+                                    </button>
+                                    <button th:if="${member.status == 'INACTIVE'}" class="btn-icon" title="활성화" 
+                                            th:onclick="'updateMemberStatus(' + ${member.memberId} + ', &quot;ACTIVE&quot;)'">
+                                        <i class="fas fa-play"></i>
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-
                 <!-- 페이지네이션 -->
-                <div class="pagination">
-                    <button class="btn-page"><i class="fas fa-chevron-left"></i></button>
-                    <button class="btn-page active">1</button>
-                    <button class="btn-page">2</button>
-                    <button class="btn-page">3</button>
-                    <button class="btn-page"><i class="fas fa-chevron-right"></i></button>
+                <div class="pagination" th:if="${pageCount > 1}">
+                    <button class="btn-page" th:if="${currentPage > 1}" th:onclick="'goToPage(' + ${currentPage - 1} + ')'">
+                        <i class="fas fa-angle-left"></i>
+                    </button>
+                    <button class="btn-page" th:each="pageNum : ${#numbers.sequence(1, pageCount)}" 
+                            th:class="${pageNum == currentPage ? 'active' : ''}" 
+                            th:onclick="'goToPage(' + ${pageNum} + ')'" 
+                            th:text="${pageNum}">1</button>
+                    <button class="btn-page" th:if="${currentPage < pageCount}" th:onclick="'goToPage(' + ${currentPage + 1} + ')'">
+                        <i class="fas fa-angle-right"></i>
+                    </button>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- 회원 활동 분석 -->
-            <div class="content-section">
-                <div class="section-header">
-                    <h3>회원 활동 분석</h3>
-                    <div class="chart-controls">
-                        <div class="date-range">
-                            <input type="date" class="date-picker">
-                            <span>~</span>
-                            <input type="date" class="date-picker">
-                        </div>
-                        <div class="chart-type">
-                            <button class="active">선형</button>
-                            <button>막대</button>
-                            <button>영역</button>
-                        </div>
+    <!-- 회원 상세보기 모달 -->
+    <div id="memberDetailModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>회원 상세정보</h3>
+                <span class="close" onclick="closeMemberDetailModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="member-detail-info">
+                    <div class="detail-row">
+                        <label>회원 ID:</label>
+                        <span id="detailMemberId">-</span>
                     </div>
-                </div>
-                <div class="chart-container">
-                    <!-- 차트가 들어갈 자리 -->
-                    <div class="placeholder-chart" style="height: 300px; background-color: #f5f5f5; display: flex; align-items: center; justify-content: center;">
-                        <span>차트 영역</span>
+                    <div class="detail-row">
+                        <label>아이디:</label>
+                        <span id="detailId">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>이름:</label>
+                        <span id="detailName">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>이메일:</label>
+                        <span id="detailEmail">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>전화번호:</label>
+                        <span id="detailPhone">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>상태:</label>
+                        <span id="detailStatus">-</span>
+                    </div>
+                    <div class="detail-row">
+                        <label>가입일:</label>
+                        <span id="detailCreatedAt">-</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="../js/admin.js"></script>
+    <script th:src="@{/assets/js/admin.js}"></script>
+    <script th:inline="javascript">
+        // CSRF 토큰 가져오기
+        var csrfToken = /*[[${_csrf.token}]]*/ '';
+        var csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+        
+        // 회원 상태 업데이트
+        function updateMemberStatus(memberId, status) {
+            if (confirm('정말로 이 회원의 상태를 변경하시겠습니까?')) {
+                const headers = {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                };
+                
+                // CSRF 토큰이 있으면 헤더에 추가
+                if (csrfToken && csrfHeader) {
+                    headers[csrfHeader] = csrfToken;
+                }
+                
+                fetch('/admin/member/status', {
+                    method: 'POST',
+                    headers: headers,
+                    body: `memberId=${memberId}&status=${status}`
+                })
+                .then(response => response.text())
+                .then(result => {
+                    if (result === 'success') {
+                        alert('회원 상태가 성공적으로 업데이트되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('회원 상태 업데이트에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('회원 상태 업데이트 중 오류가 발생했습니다.');
+                });
+            }
+        }
+
+        // 회원 검색
+        function searchMembers() {
+            const keyword = document.getElementById('searchKeyword').value;
+            const status = document.getElementById('statusFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+            
+            // URL 파라미터로 검색 조건 전달
+            const currentUrl = new URL(window.location);
+            
+            if (keyword) {
+                currentUrl.searchParams.set('keyword', keyword);
+            } else {
+                currentUrl.searchParams.delete('keyword');
+            }
+            
+            if (status) {
+                currentUrl.searchParams.set('status', status);
+            } else {
+                currentUrl.searchParams.delete('status');
+            }
+            
+            if (sort) {
+                currentUrl.searchParams.set('sort', sort);
+            } else {
+                currentUrl.searchParams.delete('sort');
+            }
+            
+            // 페이지를 1로 리셋
+            currentUrl.searchParams.set('page', '1');
+            
+            window.location.href = currentUrl.toString();
+        }
+
+        // 회원 상세보기
+        function showMemberDetail(memberId) {
+            fetch(`/admin/member/detail/${memberId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.member) {
+                        const member = data.member;
+                        document.getElementById('detailMemberId').textContent = member.memberId || 'N/A';
+                        document.getElementById('detailId').textContent = member.id || 'N/A';
+                        document.getElementById('detailEmail').textContent = member.email || 'N/A';
+                        document.getElementById('detailName').textContent = member.name || 'N/A';
+                        document.getElementById('detailPhone').textContent = member.phone || 'N/A';
+                        document.getElementById('detailStatus').textContent = getStatusText(member.status) || 'N/A';
+                        document.getElementById('detailCreatedAt').textContent = member.createdAt || 'N/A';
+                        
+                        // 모달 표시
+                        document.getElementById('memberDetailModal').style.display = 'block';
+                    } else {
+                        alert('회원 정보를 불러올 수 없습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('회원 정보를 불러올 수 없습니다.');
+                });
+        }
+        
+        // 모달 닫기
+        function closeMemberDetailModal() {
+            document.getElementById('memberDetailModal').style.display = 'none';
+        }
+        
+        // 상태 텍스트 변환
+        function getStatusText(status) {
+            switch (status) {
+                case 'ACTIVE': return '활성';
+                case 'INACTIVE': return '정지';
+                case 'SLEEP': return '휴면';
+                case 'DELETED': return '삭제';
+                default: return status;
+            }
+        }
+        
+        // 날짜 포맷
+        function formatDate(dateString) {
+            if (!dateString) return '미기록';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ko-KR');
+        }
+
+        // 회원 수정
+        function editMember(memberId) {
+            // 회원 수정 페이지로 이동
+            console.log('회원 수정:', memberId);
+        }
+
+        // 페이지 이동
+        function goToPage(page) {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('page', page);
+            window.location.href = currentUrl.toString();
+        }
+    </script>
 </body>
 </html> 

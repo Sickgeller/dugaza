@@ -64,6 +64,11 @@ public class MemberServiceImpl implements MemberService{
 	public void updateProfile(MemberVO member) {
 		memberMapper.updateProfile(member);
 	}
+	
+	@Override
+	public void updateMemberStatus(Long memberId, String status) {
+		memberMapper.updateMemberStatus(memberId, status);
+	}
 
 	@Override
 	public Integer selectRowCount(Map<String, Object> map) {
@@ -99,6 +104,53 @@ public class MemberServiceImpl implements MemberService{
 	public Integer selectHumanMemberCount() {
 		return memberMapper.selectHumanMemberCount();
 	}
+	
+    @Override
+    public Long getMemberIdByUsername(String username) {
+        return memberMapper.findMemberIdByUsername(username);
+    }
+    
+    @Override
+    public MemberVO findByEmail(String email) {
+        return memberMapper.findByEmail(email);
+    }
+    
+    @Override
+    public MemberVO findByKakaoId(Long kakaoId) {
+        return memberMapper.findByKakaoId(kakaoId);
+    }
+    
+    @Override
+    public void registerMember(MemberVO member) {
+        member.setMemberId(memberMapper.selectMemberId());
+        member.setStatus("ACTIVE");
+        member.setRole("USER");
+        memberMapper.insertMember(member);
+    }
+    
+    @Override
+    public void registerKakaoMember(MemberVO member) {
+        member.setMemberId(memberMapper.selectMemberId());
+        member.setStatus("ACTIVE");
+        member.setRole("USER");
+        memberMapper.insertKakaoMember(member);
+    }
+    
+    @Override
+    public boolean isAccountLinked(Long memberId) {
+        MemberVO member = memberMapper.selectMember(memberId);
+        return member != null && member.getKakaoId() != null;
+    }
+    
+    @Override
+    public void unlinkKakaoAccount(Long memberId) {
+        memberMapper.unlinkKakaoAccount(memberId);
+    }
+    
+    @Override
+    public void linkKakaoAccount(Long memberId, Long kakaoId) {
+        memberMapper.linkKakaoAccount(memberId, kakaoId);
+    }
 
 }
 

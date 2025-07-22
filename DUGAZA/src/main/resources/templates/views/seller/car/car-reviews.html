@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리뷰 관리</title>
+    <link rel="stylesheet" th:href="@{/assets/css/seller.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div th:replace="~{fragments/car_seller_sidebar :: carSideBar}"></div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>리뷰 관리</h2>
+                </div>
+                <div class="user-info">
+                    <span th:text="${seller.name} + '님'">홍길동님</span>
+                    <img th:src="@{/assets/images/users/profile1.jpg}" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 리뷰 통계 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>리뷰 현황</h3>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>총 리뷰</h3>
+                            <p id="totalReviews">0건</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>평균 평점</h3>
+                            <p id="avgRating">0.0점</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-thumbs-up"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>긍정 리뷰</h3>
+                            <p id="positiveReviews">0건</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-thumbs-down"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>부정 리뷰</h3>
+                            <p id="negativeReviews">0건</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 차량별 리뷰 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>차량별 리뷰</h3>
+                    <div class="filter-options">
+                        <select id="carFilter" onchange="filterReviews()">
+                            <option value="">모든 차량</option>
+                            <option th:each="car : ${cars}" th:value="${car.carId}" th:text="${car.carName}">차량명</option>
+                        </select>
+                        <select id="ratingFilter" onchange="filterReviews()">
+                            <option value="">모든 평점</option>
+                            <option value="5">5점</option>
+                            <option value="4">4점</option>
+                            <option value="3">3점</option>
+                            <option value="2">2점</option>
+                            <option value="1">1점</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="review-list">
+                    <div th:if="${#lists.isEmpty(cars)}" class="no-reviews">
+                        등록된 차량이 없습니다.
+                    </div>
+                    
+                    <div th:each="car : ${cars}" class="car-reviews" th:id="'car-' + ${car.carId}">
+                        <div class="review-card">
+                            <div class="review-header">
+                                <div class="reviewer-info">
+                                    <img th:src="@{/assets/images/users/default-profile.jpg}" alt="차량 이미지">
+                                    <div class="user-details">
+                                        <span class="user-name" th:text="${car.carName}">차량명</span>
+                                        <span class="review-date" th:text="${car.carType} + ' | ' + ${car.carNumber}">차량정보</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="reviews-list">
+                                <div th:if="${#lists.isEmpty(car.reviews)}" class="no-reviews">
+                                    이 차량에 대한 리뷰가 없습니다.
+                                </div>
+                                
+                                <div th:each="review : ${car.reviews}" class="review-item" th:data-rating="${review.rating}">
+                                    <div class="review-header">
+                                        <div class="reviewer-info">
+                                            <img th:src="@{/assets/images/users/default-profile.jpg}" alt="리뷰어 프로필">
+                                            <div class="user-details">
+                                                <span class="user-name" th:text="'고객 ' + ${review.memberId}">고객명</span>
+                                                <span class="review-date" th:text="${#dates.format(review.createdAt, 'yyyy-MM-dd')}">리뷰일</span>
+                                            </div>
+                                        </div>
+                                        <div class="review-rating">
+                                            <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                                                <i class="fas fa-star" th:classappend="${i <= review.rating} ? ' active' : ''"></i>
+                                            </th:block>
+                                            <span th:text="${review.rating} + '점'">5점</span>
+                                        </div>
+                                    </div>
+                                    <div class="review-content">
+                                        <p th:text="${review.content}">리뷰 내용이 여기에 표시됩니다.</p>
+                                    </div>
+                                    <div class="review-actions">
+                                        <button class="btn-primary" th:onclick="'replyToReview(' + ${review.reviewId} + ')'">답변하기</button>
+                                        <button class="btn-icon" title="삭제" th:onclick="'deleteReview(' + ${review.reviewId} + ')'">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/assets/js/customjs.js}"></script>
+    <script>
+        function filterReviews() {
+            const carFilter = document.getElementById('carFilter').value;
+            const ratingFilter = document.getElementById('ratingFilter').value;
+            
+            const carReviews = document.querySelectorAll('.car-reviews');
+            carReviews.forEach(carReview => {
+                const carId = carReview.id.replace('car-', '');
+                const shouldShowCar = !carFilter || carId === carFilter;
+                
+                if (shouldShowCar) {
+                    carReview.style.display = '';
+                    
+                    const reviewItems = carReview.querySelectorAll('.review-item');
+                    reviewItems.forEach(reviewItem => {
+                        const rating = reviewItem.getAttribute('data-rating');
+                        const shouldShowRating = !ratingFilter || rating === ratingFilter;
+                        reviewItem.style.display = shouldShowRating ? '' : 'none';
+                    });
+                } else {
+                    carReview.style.display = 'none';
+                }
+            });
+        }
+
+        function replyToReview(reviewId) {
+            const reply = prompt('답변을 입력하세요:');
+            if (reply) {
+                // 답변 등록 API 호출
+                fetch(`/seller/car/reviews/${reviewId}/reply`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ reply: reply })
+                }).then(response => {
+                    if (response.ok) {
+                        alert('답변이 등록되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('답변 등록에 실패했습니다.');
+                    }
+                });
+            }
+        }
+
+        function deleteReview(reviewId) {
+            if (confirm('이 리뷰를 삭제하시겠습니까?')) {
+                // 리뷰 삭제 API 호출
+                fetch(`/seller/car/reviews/${reviewId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        alert('리뷰가 삭제되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('리뷰 삭제에 실패했습니다.');
+                    }
+                });
+            }
+        }
+
+        // 페이지 로드 시 통계 계산
+        document.addEventListener('DOMContentLoaded', function() {
+            const reviews = document.querySelectorAll('.review-item');
+            const totalReviews = reviews.length;
+            let totalRating = 0;
+            let positiveReviews = 0;
+            let negativeReviews = 0;
+
+            reviews.forEach(review => {
+                const rating = parseInt(review.getAttribute('data-rating'));
+                totalRating += rating;
+                
+                if (rating >= 4) {
+                    positiveReviews++;
+                } else if (rating <= 2) {
+                    negativeReviews++;
+                }
+            });
+
+            const avgRating = totalReviews > 0 ? (totalRating / totalReviews).toFixed(1) : '0.0';
+
+            document.getElementById('totalReviews').textContent = totalReviews + '건';
+            document.getElementById('avgRating').textContent = avgRating + '점';
+            document.getElementById('positiveReviews').textContent = positiveReviews + '건';
+            document.getElementById('negativeReviews').textContent = negativeReviews + '건';
+        });
+    </script>
+</body>
+</html> 

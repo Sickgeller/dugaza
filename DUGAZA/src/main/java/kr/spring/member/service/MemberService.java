@@ -6,6 +6,7 @@ import java.util.Map;
 import kr.spring.member.vo.MemberVO;
 
 public interface MemberService {
+	Long getMemberIdByUsername(String username);
 	public void insertMember(MemberVO member);
 	public MemberVO selectIdCheck(String id);
 	public MemberVO selectCheckMember(String id);
@@ -17,6 +18,8 @@ public interface MemberService {
 	public void updateRadomPassword(MemberVO member);
 	//프로필 이미지 업데이트
 	public void updateProfile(MemberVO member);
+	//회원 상태 업데이트
+	public void updateMemberStatus(Long memberId, String status);
 
 	//회원관리 - 관리자
 	public Integer selectRowCount(Map<String,Object> map);
@@ -26,6 +29,19 @@ public interface MemberService {
 	public Integer selectNewMemberCount();
 	public Integer selectWithdrawnMemberCount();
 	public Integer selectHumanMemberCount();
+	
+	// 카카오 로그인 관련
+	public MemberVO findByEmail(String email);
+	public MemberVO findByKakaoId(Long kakaoId);
+	public void registerMember(MemberVO member);
+	
+	// 계정 통합 관련
+	public boolean isAccountLinked(Long memberId);
+	public void unlinkKakaoAccount(Long memberId);
+	public void linkKakaoAccount(Long memberId, Long kakaoId);
+	
+	// 카카오 회원 등록
+	public void registerKakaoMember(MemberVO member);
 }
 
 

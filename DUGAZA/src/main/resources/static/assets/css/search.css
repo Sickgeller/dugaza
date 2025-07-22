@@ -1,0 +1,141 @@
+/* 전체 검색 섹션 여백 */
+.search-section {
+    padding: 2rem 0;
+    text-align: center;
+    background-color: #f5f5f5;
+}
+
+/* 검색창 */
+.search-container {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+    padding: 5px 15px;
+    background-color: white;
+}
+
+.search-container input[type="text"] {
+    border: none;
+    outline: none;
+    padding: 10px;
+    width: 300px;
+    font-size: 1rem;
+}
+
+.search-btn {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-left: 10px;
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+/* 카테고리 블록 */
+.category-block {
+    margin: 40px 0 100px 0;
+    padding: 0 20px;
+}
+
+/* 카테고리 제목과 더보기 버튼 */
+.category-header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.category-header h2 {
+    font-size: 1.5rem;
+}
+
+.more-btn {
+    font-size: 1.0rem;
+    text-decoration: none;
+    color: #007BFF;
+    margin-left: 50px;
+}
+
+/* 카드 영역 그리드: 가로 3개씩 */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+/* 카드 전체 */
+.search-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.search-card:hover {
+    transform: translateY(-5px);
+}
+
+/* 이미지 영역 */
+.card-image {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+h2{
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+/* 찜 버튼 */
+.like-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+/* 카드 텍스트 */
+.card-content {
+    padding: 15px;
+}
+
+.card-content h3 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+}
+
+.card-content p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+@media (max-width: 992px) {
+    .card-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .search-container input[type="text"] {
+        width: 180px;
+    }
+}

@@ -1,294 +1,395 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layout_admin}">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관리자 페이지 - 드가자닷컴</title>
-    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>관리자 대시보드 - 드가자닷컴</title>
     <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>관리자</h1>
+                <p>시스템 관리자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><a th:href="@{/admin}"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li><a th:href="@{/member/admin_member}"><i class="fas fa-users"></i><span>회원 관리</span></a></li>
+                    <li><a th:href="@{/admin/sellers}"><i class="fas fa-store"></i><span>판매자 관리</span></a></li>
+                    <li>
+                        <a href="#" class="dropdown-toggle"><i class="fas fa-boxes"></i><span>상품 관리</span></a>
+                        <ul class="submenu">
+                            <li><a th:href="@{/admin/cars}"><i class="fas fa-car"></i><span>렌터카</span></a></li>
+                            <li><a th:href="@{/house/admin_house}"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
+                        </ul>
+                    </li>
+                    <li><a th:href="@{/admin/reviews}"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a th:href="@{/admin/qna/list}"><i class="fas fa-flag"></i><span>문의 관리</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
         <!-- 메인 콘텐츠 -->
-        <main class="admin-main" layout:fragment="content">
-            <header class="admin-header">
-                <h1 id="page-title">대시보드</h1>
-                <div class="admin-user">
-                    <span>관리자님</span>
-                    <button class="logout-btn">로그아웃</button>
-                </div>
-            </header>
- 
-            <!-- 대시보드 섹션 -->
-            <section id="dashboard" class="admin-section active">
-                <div class="dashboard-cards">
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>총 사용자</h3>
-                            <p class="card-number">1,234</p>
-                            <span class="card-change positive">+5.2%</span>
-                        </div>
-                    </div>
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>오늘 예약</h3>
-                            <p class="card-number">89</p>
-                            <span class="card-change positive">+12.1%</span>
-                        </div>
-                    </div>
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-won-sign"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>오늘 매출</h3>
-                            <p class="card-number">₩2,450,000</p>
-                            <span class="card-change negative">-3.4%</span>
-                        </div>
-                    </div>
-                    <div class="dashboard-card">
-                        <div class="card-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <div class="card-content">
-                            <h3>월 매출</h3>
-                            <p class="card-number">₩45,230,000</p>
-                            <span class="card-change positive">+8.7%</span>
-                        </div>
-                    </div>
-                </div>
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div th:replace="~{fragments/header :: admin-header}"></div>
 
-                <div class="dashboard-charts">
-                    <div class="chart-container">
-                        <h3>월별 매출 현황</h3>
-                        <div class="chart-placeholder">
-                            <canvas id="salesChart" width="400" height="200"></canvas>
-                        </div>
-                    </div>
-                    <div class="recent-bookings">
-                        <h3>최근 예약</h3>
-                        <div class="booking-list">
-                            <div class="booking-item">
-                                <div class="booking-info">
-                                    <h4>경복궁 투어</h4>
-                                    <p>김철수 - 2024.01.15</p>
-                                </div>
-                                <div class="booking-status confirmed">확정</div>
-                            </div>
-                            <div class="booking-item">
-                                <div class="booking-info">
-                                    <h4>부산 고속버스</h4>
-                                    <p>이영희 - 2024.01.15</p>
-                                </div>
-                                <div class="booking-status pending">대기</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 예약 관리 섹션 -->
-            <section id="bookings" class="admin-section">
+            <!-- 승인 대기 차량 목록 -->
+            <div class="content-section">
                 <div class="section-header">
-                    <div class="filters">
-                        <select class="filter-select">
-                            <option>전체 예약</option>
-                            <option>확정</option>
-                            <option>대기</option>
-                            <option>취소</option>
-                        </select>
-                        <input type="date" class="filter-date">
-                        <button class="filter-btn">필터 적용</button>
+                    <h3>승인 대기 차량</h3>
+                    <p>새로 등록된 차량들의 승인을 처리하세요.</p>
+                </div>
+                
+                <div class="pending-cars-container">
+                    <div id="pendingCarsList" class="pending-cars-grid">
+                        <!-- 승인 대기 차량들이 여기에 동적으로 로드됩니다 -->
+                    </div>
+                    
+                    <div id="noPendingCars" class="no-data" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <p>승인 대기 중인 차량이 없습니다.</p>
                     </div>
                 </div>
-                <div class="table-container">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>예약번호</th>
-                                <th>고객명</th>
-                                <th>상품명</th>
-                                <th>예약일</th>
-                                <th>금액</th>
-                                <th>상태</th>
-                                <th>관리</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>B20240115001</td>
-                                <td>김철수</td>
-                                <td>서울-부산 고속버스</td>
-                                <td>2024.01.15</td>
-                                <td>₩45,900</td>
-                                <td><span class="status confirmed">확정</span></td>
-                                <td>
-                                    <button class="btn-sm view-btn">보기</button>
-                                    <button class="btn-sm edit-btn">수정</button>
-                                    <button class="btn-sm cancel-btn">취소</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>T20240115002</td>
-                                <td>이영희</td>
-                                <td>경복궁 투어</td>
-                                <td>2024.01.15</td>
-                                <td>₩25,000</td>
-                                <td><span class="status pending">대기</span></td>
-                                <td>
-                                    <button class="btn-sm view-btn">보기</button>
-                                    <button class="btn-sm edit-btn">수정</button>
-                                    <button class="btn-sm cancel-btn">취소</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+            </div>
 
-            <!-- 사용자 관리 섹션 -->
-            <section id="users" class="admin-section">
+            <!-- 승인 대기 숙소 목록 -->
+            <div class="content-section">
                 <div class="section-header">
-                    <button class="add-btn">+ 사용자 추가</button>
-                    <div class="search-box">
-                        <input type="text" placeholder="사용자 검색...">
-                        <button class="search-btn"><i class="fas fa-search"></i></button>
+                    <h3>승인 대기 숙소</h3>
+                    <p>새로 신청된 숙소들의 승인을 처리하세요.</p>
+                </div>
+                
+                <div class="pending-houses-container">
+                    <div id="pendingHousesList" class="pending-houses-grid">
+                        <!-- 승인 대기 숙소들이 여기에 동적으로 로드됩니다 -->
+                    </div>
+                    
+                    <div id="noPendingHouses" class="no-data" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <p>승인 대기 중인 숙소가 없습니다.</p>
                     </div>
                 </div>
-                <div class="table-container">
-                    <table class="admin-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>이름</th>
-                                <th>이메일</th>
-                                <th>가입일</th>
-                                <th>예약수</th>
-                                <th>상태</th>
-                                <th>관리</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>U001</td>
-                                <td>김철수</td>
-                                <td>kim@example.com</td>
-                                <td>2023.12.01</td>
-                                <td>5</td>
-                                <td><span class="status active">활성</span></td>
-                                <td>
-                                    <button class="btn-sm edit-btn">수정</button>
-                                    <button class="btn-sm block-btn">차단</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>U002</td>
-                                <td>이영희</td>
-                                <td>lee@example.com</td>
-                                <td>2023.11.15</td>
-                                <td>12</td>
-                                <td><span class="status active">활성</span></td>
-                                <td>
-                                    <button class="btn-sm edit-btn">수정</button>
-                                    <button class="btn-sm block-btn">차단</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- 상품 관리 섹션 -->
-            <section id="tours" class="admin-section">
-                <div class="section-header">
-                    <button class="add-btn">+ 상품 추가</button>
-                </div>
-                <div class="products-grid">
-                    <div class="product-card">
-                        <img src="../images/tour/gyeongbokgung-main.jpg" alt="경복궁">
-                        <div class="product-info">
-                            <h3>경복궁 투어</h3>
-                            <p>₩25,000</p>
-                            <div class="product-actions">
-                                <button class="btn-sm edit-btn">수정</button>
-                                <button class="btn-sm delete-btn">삭제</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="product-card">
-                        <img src="../images/tour/haeundae.jpg" alt="해운대">
-                        <div class="product-info">
-                            <h3>해운대 투어</h3>
-                            <p>₩35,000</p>
-                            <div class="product-actions">
-                                <button class="btn-sm edit-btn">수정</button>
-                                <button class="btn-sm delete-btn">삭제</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 통계 섹션 -->
-            <section id="stats" class="admin-section">
-                <div class="stats-overview">
-                    <div class="stat-card">
-                        <h3>일별 예약 현황</h3>
-                        <canvas id="dailyChart" width="300" height="150"></canvas>
-                    </div>
-                    <div class="stat-card">
-                        <h3>인기 상품 TOP 5</h3>
-                        <div class="top-products">
-                            <div class="product-stat">
-                                <span>경복궁 투어</span>
-                                <span>234회</span>
-                            </div>
-                            <div class="product-stat">
-                                <span>부산 고속버스</span>
-                                <span>189회</span>
-                            </div>
-                            <div class="product-stat">
-                                <span>제주도 투어</span>
-                                <span>156회</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 설정 섹션 -->
-            <section id="settings" class="admin-section">
-                <div class="settings-form">
-                    <h3>사이트 설정</h3>
-                    <form>
-                        <div class="form-group">
-                            <label>사이트 이름</label>
-                            <input type="text" value="드가자닷컴">
-                        </div>
-                        <div class="form-group">
-                            <label>고객센터 번호</label>
-                            <input type="text" value="1588-1588">
-                        </div>
-                        <div class="form-group">
-                            <label>이메일</label>
-                            <input type="email" value="admin@degaja.com">
-                        </div>
-                        <button type="submit" class="save-btn">설정 저장</button>
-                    </form>
-                </div>
-            </section>
-        </main>
+            </div>
+        </div>
     </div>
 
-    <script src="../js/admin.js"></script>
+    <script th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/assets/js/customjs.js}"></script>
+    <script>
+        // CSRF 토큰 설정 - null 체크 추가
+        const tokenElement = document.querySelector('meta[name="_csrf"]');
+        const headerElement = document.querySelector('meta[name="_csrf_header"]');
+        const token = tokenElement ? tokenElement.getAttribute('content') : '';
+        const header = headerElement ? headerElement.getAttribute('content') : '';
+        
+        // 페이지 로드 시 승인 대기 차량 목록 조회
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded 이벤트 발생');
+            loadPendingCars();
+            loadPendingHouses();
+        });
+        
+        // 백업 로딩 메커니즘 (DOMContentLoaded가 작동하지 않을 경우)
+        setTimeout(function() {
+            console.log('타임아웃 후 로딩 시도');
+            loadPendingCars();
+            loadPendingHouses();
+        }, 1000);
+        
+        // 승인 대기 차량 목록 조회
+        function loadPendingCars() {
+            console.log('승인 대기 차량 목록 조회 시작');
+            
+            // 헤더 설정
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // CSRF 토큰이 있으면 헤더에 추가
+            if (header && token) {
+                headers[header] = token;
+            }
+            
+            fetch('/admin/pending-cars', {
+                method: 'GET',
+                headers: headers
+            })
+            .then(response => {
+                console.log('차량 목록 응답 상태:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('차량 목록 데이터:', data);
+                if (data.success) {
+                    displayPendingCars(data.cars);
+                } else {
+                    console.error('승인 대기 차량 목록 조회 실패:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('차량 목록 네트워크 오류:', error);
+            });
+        }
+        
+        // 승인 대기 차량 목록 표시
+        function displayPendingCars(cars) {
+            const container = document.getElementById('pendingCarsList');
+            const noDataDiv = document.getElementById('noPendingCars');
+            
+            if (cars.length === 0) {
+                container.style.display = 'none';
+                noDataDiv.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'grid';
+            noDataDiv.style.display = 'none';
+            
+            container.innerHTML = cars.map(car => `
+                <div class="pending-car-card">
+                    <div class="car-image">
+                        <img src="${car.imageUrl}" alt="${car.carName}">
+                    </div>
+                    <div class="car-info">
+                        <h4>${car.carName}</h4>
+                        <p><strong>판매자:</strong> ${car.sellerName}</p>
+                        <p><strong>차종:</strong> ${car.carType}</p>
+                        <p><strong>연식:</strong> ${car.year}년</p>
+                        <p><strong>색상:</strong> ${car.carColor}</p>
+                        <p><strong>연료:</strong> ${car.fuelType}</p>
+                        <p><strong>승차정원:</strong> ${car.carSeats}명</p>
+                        <p><strong>일일 대여료:</strong> ₩${car.dailyPrice.toLocaleString()}</p>
+                        <p><strong>차량번호:</strong> ${car.carNumber}</p>
+                    </div>
+                    <div class="car-actions">
+                        <button onclick="approveCar(${car.carId})" class="btn-approve">
+                            <i class="fas fa-check"></i> 승인
+                        </button>
+                        <button onclick="rejectCar(${car.carId})" class="btn-reject">
+                            <i class="fas fa-times"></i> 거절
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 차량 승인
+        function approveCar(carId) {
+            if (!confirm('이 차량을 승인하시겠습니까?')) {
+                return;
+            }
+            
+            // 헤더 설정
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // CSRF 토큰이 있으면 헤더에 추가
+            if (header && token) {
+                headers[header] = token;
+            }
+            
+            fetch(`/admin/cars/${carId}/approve`, {
+                method: 'POST',
+                headers: headers
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('차량이 성공적으로 승인되었습니다.');
+                    loadPendingCars(); // 목록 새로고침
+                } else {
+                    alert('차량 승인에 실패했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('차량 승인 중 오류가 발생했습니다.');
+            });
+        }
+        
+        // 차량 거절
+        function rejectCar(carId) {
+            if (!confirm('이 차량을 거절하시겠습니까?')) {
+                return;
+            }
+            
+            // 헤더 설정
+            const headers = {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            };
+            
+            // CSRF 토큰이 있으면 헤더에 추가
+            if (header && token) {
+                headers[header] = token;
+            }
+            
+            fetch(`/admin/cars/${carId}/status`, {
+                method: 'POST',
+                headers: headers,
+                body: `status=DELETED`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('차량이 거절되었습니다.');
+                    loadPendingCars(); // 목록 새로고침
+                } else {
+                    alert('차량 거절에 실패했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('차량 거절 중 오류가 발생했습니다.');
+            });
+        }
+
+        // 승인 대기 숙소 목록 조회
+        function loadPendingHouses() {
+            console.log('승인 대기 숙소 목록 조회 시작');
+            
+            // 헤더 설정
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // CSRF 토큰이 있으면 헤더에 추가
+            if (header && token) {
+                headers[header] = token;
+            }
+            
+            fetch('/admin/pending-houses', {
+                method: 'GET',
+                headers: headers
+            })
+            .then(response => {
+                console.log('숙소 목록 응답 상태:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('숙소 목록 데이터:', data);
+                if (data.success) {
+                    displayPendingHouses(data.data);
+                } else {
+                    console.error('승인 대기 숙소 목록 조회 실패:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('숙소 목록 네트워크 오류:', error);
+            });
+        }
+        
+        // 승인 대기 숙소 목록 표시
+        function displayPendingHouses(houses) {
+            const container = document.getElementById('pendingHousesList');
+            const noDataDiv = document.getElementById('noPendingHouses');
+            
+            if (houses.length === 0) {
+                container.style.display = 'none';
+                noDataDiv.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'grid';
+            noDataDiv.style.display = 'none';
+            
+            container.innerHTML = houses.map(house => `
+                <div class="pending-house-card">
+                    <div class="house-info">
+                        <h4>${house.houseTitle}</h4>
+                        <p><strong>판매자:</strong> ${house.sellerName}</p>
+                        <p><strong>이메일:</strong> ${house.sellerEmail}</p>
+                        <p><strong>주소:</strong> ${house.houseAddress}</p>
+                        <p><strong>신청일:</strong> ${new Date(house.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div class="house-actions">
+                        <button onclick="approveHouse(${house.houseId}, ${house.sellerId})" class="btn-approve">
+                            <i class="fas fa-check"></i> 승인
+                        </button>
+                        <button onclick="rejectHouse(${house.houseId}, ${house.sellerId})" class="btn-reject">
+                            <i class="fas fa-times"></i> 거절
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 숙소 승인
+        function approveHouse(houseId, sellerId) {
+            if (!confirm('이 숙소를 승인하시겠습니까?')) {
+                return;
+            }
+            
+            // 헤더 설정
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // CSRF 토큰이 있으면 헤더에 추가
+            if (header && token) {
+                headers[header] = token;
+            }
+            
+            fetch(`/admin/houses/${houseId}/approve?sellerId=${sellerId}`, {
+                method: 'POST',
+                headers: headers
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('숙소가 성공적으로 승인되었습니다.');
+                    loadPendingHouses(); // 목록 새로고침
+                } else {
+                    alert('숙소 승인에 실패했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('숙소 승인 중 오류가 발생했습니다.');
+            });
+        }
+        
+        // 숙소 거절
+        function rejectHouse(houseId, sellerId) {
+            if (!confirm('이 숙소를 거절하시겠습니까?')) {
+                return;
+            }
+            
+            // 헤더 설정
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // CSRF 토큰이 있으면 헤더에 추가
+            if (header && token) {
+                headers[header] = token;
+            }
+            
+            fetch(`/admin/houses/${houseId}/reject?sellerId=${sellerId}`, {
+                method: 'POST',
+                headers: headers
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('숙소가 거절되었습니다.');
+                    loadPendingHouses(); // 목록 새로고침
+                } else {
+                    alert('숙소 거절에 실패했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('숙소 거절 중 오류가 발생했습니다.');
+            });
+        }
+    </script>
 </body>
 </html> 

@@ -26,9 +26,9 @@ public class TourController {
 
 	// 관광지 메인 화면 호출
 	@GetMapping("")
-	public String tourMain(@RequestParam(defaultValue="1") int pageNum,
-						   @RequestParam(defaultValue="0") int category,
-						   @RequestParam(defaultValue = "") String keyword,
+	public String tourMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
+						   @RequestParam(name = "category", defaultValue="0") int category,
+						   @RequestParam(name = "keyword", defaultValue = "") String keyword,
 						   Model model) {
 		int count = tourService.selectRowCount();
 
@@ -46,6 +46,7 @@ public class TourController {
 			map.put("keyword", keyword);
 			list = tourService.selectList(map);
 		}
+		model.addAttribute("keyword", keyword);
 		model.addAttribute("count", count);
 		model.addAttribute("list", list);
 		model.addAttribute("page", page.getPage());
@@ -53,4 +54,16 @@ public class TourController {
 
 		return "views/sample/tour";
 	}
+	
+	// 항목 자세히 보기 - TouristAttractionController로 직접 연결하도록 변경
+	/*
+	@GetMapping("/detail")
+	public String tourDetail(@RequestParam(name = "contentId") Long contentId, Model model) {
+	    int typeId = tourService.selectContentTypeId(contentId);
+	    ContentTypeAdd contentType = ContentTypeAdd.fromId(typeId);
+
+	    return "redirect:/" + contentType.getName() + "/detail?contentId=" + contentId;
+	}
+	*/
+
 }

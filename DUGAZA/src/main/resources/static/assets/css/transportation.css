@@ -50,6 +50,22 @@
     line-height: 1.5;
 }
 
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 10px;
+    background-color: #6c757d;
+    color: white;
+}
+
+.status-badge.available {
+    background-color: #28a745;
+    color: white;
+}
+
 /* Popular Routes Section */
 .popular-routes {
     background: #f8f9fa;

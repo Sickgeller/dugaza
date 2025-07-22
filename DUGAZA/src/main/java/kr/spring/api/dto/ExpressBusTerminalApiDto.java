@@ -8,4 +8,6 @@ import lombok.Data;
 public class ExpressBusTerminalApiDto {
     private String terminalId;
     private String terminalName;
+    private String address;
+    private Long cityCode;
 }

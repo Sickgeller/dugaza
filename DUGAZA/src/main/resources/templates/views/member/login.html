@@ -17,9 +17,23 @@
                     <p>여행으로 드가자</p>
                 </div>
                 <form th:action="@{/auth/login}" method="post" class="login-form">
+                    <!-- 사용자 타입 구분을 위한 숨겨진 필드 -->
+                    <input type="hidden" name="userType" value="member">
+                    
+                    <!-- 회원가입 성공 메시지 표시 -->
+                    <div th:if="${registerSuccess}" class="alert alert-success">
+                        <p th:text="${registerSuccess}">회원가입이 완료되었습니다!</p>
+                    </div>
+                    
                     <!-- 에러 메시지 표시 -->
                     <div th:if="${param.error}" class="alert alert-danger">
-                        <p>아이디 또는 비밀번호가 올바르지 않습니다.</p>
+                        <p th:if="${param.reason != null and param.reason[0] == 'invalid_user_type'}">
+                            일반 회원 로그인 페이지입니다. 판매자이신 경우 
+                            <a th:href="@{/seller/login}" class="alert-link">판매자 로그인</a>을 이용해주세요.
+                        </p>
+                        <p th:unless="${param.reason != null and param.reason[0] == 'invalid_user_type'}">
+                            아이디 또는 비밀번호가 올바르지 않습니다.
+                        </p>
                     </div>
                     <div th:if="${param.logout}" class="alert alert-success">
                         <p>로그아웃되었습니다.</p>
@@ -47,20 +61,6 @@
                         <a href="#" class="forgot-password">비밀번호 찾기</a>
                     </div>
                     <button type="submit" class="btn-login">로그인</button>
-                    <div class="social-login">
-                        <p>소셜 계정으로 로그인</p>
-                        <div class="social-buttons">
-                            <button type="button" class="btn-social kakao">
-                                <i class="fas fa-comment"></i> 카카오 로그인
-                            </button>
-                            <button type="button" class="btn-social naver">
-                                <i class="fas fa-n"></i> 네이버 로그인
-                            </button>
-                            <button type="button" class="btn-social google">
-                                <i class="fab fa-google"></i> 구글 로그인
-                            </button>
-                        </div>
-                    </div>
                     <div class="login-footer">
                         <div class="footer-links">
                             <a href="#">이용약관</a>

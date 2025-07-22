@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/content-detail.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <main class="detail-main" layout:fragment="content">
+        <div class="detail-container">
+            <!-- 정보가 없을 때 표시할 메시지 -->
+            <div class="no-detail-notice" th:if="${info == null}">
+                <div class="notice-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h2>정보를 찾을 수 없습니다</h2>
+                    <p>요청하신 관광지 정보가 존재하지 않거나 일시적으로 사용할 수 없습니다.</p>
+                </div>
+            </div>
+            
+            <div class="detail-header" th:if="${info != null}">
+                <div class="detail-title">
+                    <h1 th:text="${info.title}"></h1>
+                    <div class="detail-meta">
+                        <span class="rating" th:if="${status != null}"><i class="fas fa-star" th:text="${#numbers.formatDecimal(status.averageRating, 0, 1)}"></i></span>
+                        <span class="reviews" th:if="${status != null}" th:text="${'(리뷰 ' + status.totalCount + ')'}">(리뷰 0)</span>
+                        <span class="location" th:if="${info.addr1 != null}"><i class="fas fa-map-marker-alt" th:text="${info.addr1}"></i></span>
+                    </div>
+                </div>
+                <button class="like-btn"><i class="fas fa-heart"></i> 찜하기</button>
+            </div>
+
+            <div class="detail-gallery" th:if="${info != null and info.firstImage != null}">
+                <div class="main-image">
+                    <img th:src="${info.firstImage}" th:alt="${info.title + ' 대표 이미지'}">
+                </div>
+            </div>
+
+            <div class="detail-content" th:if="${info != null}">
+                <!-- 관광지 정보 섹션 -->
+                <section class="info-section">
+                    <h2>관광지 정보</h2>
+                    <div class="info-grid">
+                        <div class="info-item" th:if="${info.useTime != null}">
+                            <h3><i class="fas fa-clock"></i> 이용시간</h3>
+                            <p th:text="${info.useTime}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.restDate != null}">
+                            <h3><i class="fas fa-calendar-times"></i> 휴무일</h3>
+                            <p th:text="${info.restDate}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.openDate != null}">
+                            <h3><i class="fas fa-calendar-plus"></i> 개장일</h3>
+                            <p th:text="${info.openDate}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.useSeason != null}">
+                            <h3><i class="fas fa-sun"></i> 이용가능 계절</h3>
+                            <p th:text="${info.useSeason}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.accomCount != null}">
+                            <h3><i class="fas fa-users"></i> 수용 인원</h3>
+                            <p th:text="${info.accomCount + '명'}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.parking != null}">
+                            <h3><i class="fas fa-parking"></i> 주차 정보</h3>
+                            <p th:text="${info.parking}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.infoCenter != null}">
+                            <h3><i class="fas fa-info-circle"></i> 관광안내소</h3>
+                            <p th:text="${info.infoCenter}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.expGuide != null}">
+                            <h3><i class="fas fa-map"></i> 체험 안내</h3>
+                            <p th:text="${info.expGuide}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.expageRange != null}">
+                            <h3><i class="fas fa-child"></i> 체험 가능 연령</h3>
+                            <p th:text="${info.expageRange}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.chkCreditCard != null and info.chkCreditCard == '1'}">
+                            <h3><i class="fas fa-credit-card"></i> 결제</h3>
+                            <p>신용카드 사용 가능</p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.chkBabyCarriage != null and info.chkBabyCarriage == '1'}">
+                            <h3><i class="fas fa-baby-carriage"></i> 유모차</h3>
+                            <p>유모차 대여 가능</p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.chkPet != null and info.chkPet == '1'}">
+                            <h3><i class="fas fa-paw"></i> 반려동물</h3>
+                            <p>반려동물 동반 가능</p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.heritage1 != null and info.heritage1 == 1}">
+                            <h3><i class="fas fa-landmark"></i> 세계문화유산</h3>
+                            <p><span class="heritage-badge world-cultural">세계문화유산</span></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.heritage2 != null and info.heritage2 == 1}">
+                            <h3><i class="fas fa-mountain"></i> 세계자연유산</h3>
+                            <p><span class="heritage-badge world-natural">세계자연유산</span></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.heritage3 != null and info.heritage3 == 1}">
+                            <h3><i class="fas fa-scroll"></i> 세계기록유산</h3>
+                            <p><span class="heritage-badge world-documentary">세계기록유산</span></p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 기본 정보 섹션 -->
+                <section class="basic-info-section">
+                    <h2>기본 정보</h2>
+                    <div class="info-grid">
+                        <div class="info-item" th:if="${info.tel != null}">
+                            <h3><i class="fas fa-phone"></i> 전화번호</h3>
+                            <p th:text="${info.tel}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.addr1 != null}">
+                            <h3><i class="fas fa-map-marker-alt"></i> 주소</h3>
+                            <p th:text="${info.addr1}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.addr2 != null}">
+                            <h3><i class="fas fa-map-marker-alt"></i> 상세주소</h3>
+                            <p th:text="${info.addr2}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.zipcode != null}">
+                            <h3><i class="fas fa-mail-bulk"></i> 우편번호</h3>
+                            <p th:text="${info.zipcode}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.createdAt != null}">
+                            <h3><i class="fas fa-calendar-plus"></i> 등록일</h3>
+                            <p th:text="${#dates.format(info.createdAt, 'yyyy-MM-dd')}"></p>
+                        </div>
+
+                        <div class="info-item" th:if="${info.updatedAt != null}">
+                            <h3><i class="fas fa-calendar-check"></i> 수정일</h3>
+                            <p th:text="${#dates.format(info.updatedAt, 'yyyy-MM-dd')}"></p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 위치 섹션 -->
+                <section class="map-section" th:if="${info.mapX != null and info.mapY != null}">
+                    <h2>위치</h2>
+                    <div class="map-container">
+                        <div class="map-placeholder" id="map"></div>
+                        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0004c4e85aaef62938a2afa572f9f526"></script>
+                        <script th:inline="javascript">
+                            var container = document.getElementById('map');
+                            var options = {
+                                center: new kakao.maps.LatLng(/*[[${info.mapY}]]*/, /*[[${info.mapX}]]*/),
+                                level: 3
+                            };
+                    
+                            var map = new kakao.maps.Map(container, options);
+                            
+                            var markerPosition = new kakao.maps.LatLng(/*[[${info.mapY}]]*/, /*[[${info.mapX}]]*/); 
+
+                            var marker = new kakao.maps.Marker({
+                                position: markerPosition
+                            });
+
+                            marker.setMap(map);
+                        </script>       
+                    </div>
+                    <div class="location-info">
+                        <span th:if="${not #strings.isEmpty(info.addr1) or not #strings.isEmpty(info.addr2)}"
+                              th:text="${#strings.defaultString(info.addr1, '') + ' ' + #strings.defaultString(info.addr2, '')}">
+                        </span>
+                    </div>
+                </section>
+
+                <!-- 리뷰 섹션 -->
+                <section class="review-section" th:if="${status != null}">
+                    <div class="review-header">
+                        <h2>리뷰</h2>
+                    </div>
+                    <div class="review-stats">
+                        <div class="rating-average">
+                            <div class="rating-number" th:text="${#numbers.formatDecimal(status.averageRating, 0, 1)}"></div>
+                            <div class="rating-stars" th:data-rating="${status.averageRating}"></div>
+                            <div class="rating-count" th:text="${status.totalCount + '개의 리뷰'}"></div>
+                        </div>
+                        <div class="rating-bars">
+                            <div class="rating-bar">
+                                <span class="stars">5점</span>
+                                <div class="bar-container">
+                                    <div class="bar" th:style="'width:' + ${status.fiveStarRatio} + '%'"></div>
+                                </div>
+                                <span class="percentage" th:text="${#numbers.formatDecimal(status.fiveStarRatio, 0, 1) + '%'}">0%</span>
+                            </div>
+                            <div class="rating-bar">
+                                <span class="stars">4점</span>
+                                <div class="bar-container">
+                                    <div class="bar" th:style="'width:' + ${status.fourStarRatio} + '%'"></div>
+                                </div>
+                                <span class="percentage" th:text="${#numbers.formatDecimal(status.fourStarRatio, 0, 1) + '%'}">0%</span>
+                            </div>
+                            <div class="rating-bar">
+                                <span class="stars">3점</span>
+                                <div class="bar-container">
+                                    <div class="bar" th:style="'width:' + ${status.threeStarRatio} + '%'"></div>
+                                </div>
+                                <span class="percentage" th:text="${#numbers.formatDecimal(status.threeStarRatio, 0, 1) + '%'}">0%</span>
+                            </div>
+                            <div class="rating-bar">
+                                <span class="stars">2점</span>
+                                <div class="bar-container">
+                                    <div class="bar" th:style="'width:' + ${status.twoStarRatio} + '%'"></div>
+                                </div>
+                                <span class="percentage" th:text="${#numbers.formatDecimal(status.twoStarRatio, 0, 1) + '%'}">0%</span>
+                            </div>
+                            <div class="rating-bar">
+                                <span class="stars">1점</span>
+                                <div class="bar-container">
+                                    <div class="bar" th:style="'width:' + ${status.oneStarRatio} + '%'"></div>
+                                </div>
+                                <span class="percentage" th:text="${#numbers.formatDecimal(status.oneStarRatio, 0, 1) + '%'}">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="review-form-wrapper">
+                        <h3>리뷰 작성</h3>
+                        <form th:action="@{/touristAttraction/saveReview}" method="post">
+                            <input type="hidden" name="contentId" th:value="${info.contentId}" />
+                    
+                            <div class="form-group rating-input">
+                                <label>별점</label>
+                                <div class="star-rating-input">
+                                    <input type="hidden" name="rating" id="rating-value" value="0" />
+                                    <i class="far fa-star" data-value="1"></i>
+                                    <i class="far fa-star" data-value="2"></i>
+                                    <i class="far fa-star" data-value="3"></i>
+                                    <i class="far fa-star" data-value="4"></i>
+                                    <i class="far fa-star" data-value="5"></i>
+                                </div>
+                            </div>
+                    
+                            <div class="form-group">
+                                <label for="content">내용</label>
+                                <textarea name="review" id="content" class="form-control" required rows="5" placeholder="리뷰 내용을 작성하세요"></textarea>
+                            </div>
+                    
+                            <div class="form-group">
+                                <button type="submit" class="submit-review-btn">리뷰 등록</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="review-list">
+                        <div class="review-item" th:each="review : ${reviewList}">
+                            <div class="review-user">
+                                <img src="../images/users/profile3.jpg" alt="사용자 프로필">
+                                <div class="user-info">
+                                    <h4 th:text="${review.id}"></h4>
+                                    <div class="rating-stars" th:data-rating="${review.rating}"></div>
+                                </div>
+                                <span class="review-date" th:text="${review.createdAt}"></span>
+                            </div>
+                            <p class="review-text" th:text="${review.review}"></p>
+                        </div>
+                    </div>
+
+                    <div class="review-pagination">
+                        <div class="page-numbers">
+                            <a href="#" class="active">1</a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <script>
+            // 별점 입력 기능
+            const stars = document.querySelectorAll('.star-rating-input i');
+            const ratingInput = document.getElementById('rating-value');
+        
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    const rating = parseInt(star.getAttribute('data-value'));
+                    ratingInput.value = rating;
+        
+                    stars.forEach(s => {
+                        s.classList.remove('fas');
+                        s.classList.add('far');
+                    });
+        
+                    for (let i = 0; i < rating; i++) {
+                        stars[i].classList.remove('far');
+                        stars[i].classList.add('fas');
+                    }
+                });
+            });
+
+            // 별점 표시 기능
+            document.querySelectorAll('.rating-stars').forEach(container => {
+                const rating = parseFloat(container.dataset.rating);
+                const fullStars = Math.floor(rating);
+                const decimal = rating - fullStars;
+                const halfStar = decimal >= 0.25 && decimal < 0.75 ? 1 : 0;
+                const roundUp = decimal >= 0.75 ? 1 : 0;
+                const emptyStars = 5 - fullStars - halfStar - roundUp;
+
+                let starsHtml = '';
+
+                for (let i = 0; i < fullStars + roundUp; i++) {
+                    starsHtml += '<i class="fas fa-star"></i>';
+                }
+                if (halfStar) {
+                    starsHtml += '<i class="fas fa-star-half-alt"></i>';
+                }
+                for (let i = 0; i < emptyStars; i++) {
+                    starsHtml += '<i class="far fa-star"></i>';
+                }
+
+                container.innerHTML = starsHtml;
+            });
+        </script>
+    </main>
+</body>
+</html> 

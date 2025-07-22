@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_mypage}">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지 - 결제</title>
+    <th:block layout:fragment="css">
+        <style>
+            .payment-container {
+                padding: 2rem;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            
+            .payment-layout {
+                display: flex;
+                gap: 2rem;
+                align-items: flex-start;
+            }
+            
+            .payment-content {
+                flex: 1;
+                min-width: 0;
+            }
+            
+            .payment-sidebar {
+                width: 350px;
+                flex-shrink: 0;
+            }
+            
+            .page-header {
+                margin-bottom: 2rem;
+            }
+            
+            .page-header h1 {
+                color: #333;
+                margin-bottom: 0.5rem;
+            }
+            
+            .reservation-section {
+                background: white;
+                border-radius: 10px;
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            
+            .section-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+                color: #333;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .reservation-item {
+                display: flex;
+                align-items: center;
+                padding: 1rem;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                margin-bottom: 1rem;
+                background: #fafafa;
+            }
+            
+            .reservation-item:hover {
+                background: #f5f5f5;
+                border-color: #007bff;
+            }
+            
+            .reservation-checkbox {
+                margin-right: 1rem;
+            }
+            
+            .reservation-info {
+                flex: 1;
+            }
+            
+            .reservation-title {
+                font-weight: 600;
+                color: #333;
+                margin-bottom: 0.25rem;
+            }
+            
+            .reservation-details {
+                color: #666;
+                font-size: 0.9rem;
+            }
+            
+            .reservation-price {
+                font-weight: 600;
+                color: #007bff;
+                font-size: 1.1rem;
+            }
+            
+            .payment-summary {
+                background: white;
+                border-radius: 10px;
+                padding: 1.5rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                position: sticky;
+                top: 2rem;
+            }
+            
+            .summary-title {
+                font-size: 1.25rem;
+                font-weight: 600;
+                margin-bottom: 1rem;
+                color: #333;
+            }
+            
+            .summary-item {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .summary-item.total {
+                font-weight: bold;
+                font-size: 1.2rem;
+                color: #007bff;
+                border-top: 2px solid #007bff;
+                border-bottom: none;
+                padding-top: 1rem;
+            }
+            
+            .payment-actions {
+                margin-top: 1.5rem;
+            }
+            
+            .btn {
+                padding: 0.75rem 1.5rem;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: 500;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 0.5rem;
+            }
+            
+            .btn-primary {
+                background: #007bff;
+                color: white;
+            }
+            
+            .btn-primary:hover {
+                background: #0056b3;
+            }
+            
+            .btn-secondary {
+                background: #6c757d;
+                color: white;
+            }
+            
+            .btn-secondary:hover {
+                background: #545b62;
+            }
+            
+            .empty-state {
+                text-align: center;
+                padding: 4rem 2rem;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            
+            .empty-state i {
+                font-size: 4rem;
+                color: #ddd;
+                margin-bottom: 1rem;
+            }
+            
+            .empty-state h3 {
+                color: #666;
+                margin-bottom: 0.5rem;
+            }
+            
+            .empty-state p {
+                color: #999;
+                margin-bottom: 2rem;
+            }
+            
+            .selected-count {
+                background: #e3f2fd;
+                color: #1976d2;
+                padding: 0.5rem 1rem;
+                border-radius: 5px;
+                margin-bottom: 1rem;
+                font-weight: 500;
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="payment-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1>결제</h1>
+                <p>결제되지 않은 예약들을 선택하고 결제하세요.</p>
+            </div>
+            
+            <div class="payment-layout">
+                <div class="payment-content">
+                    <!-- 차량 예약 섹션 -->
+                    <div class="reservation-section" th:if="${not unpaidCarReservations.isEmpty()}">
+                        <h3 class="section-title">
+                            <i class="fas fa-car"></i>
+                            차량 예약
+                        </h3>
+                        <div th:each="reservation : ${unpaidCarReservations}" class="reservation-item">
+                            <input type="checkbox" class="reservation-checkbox" 
+                                   th:value="${reservation.reservationId}" 
+                                   th:data-type="'car'"
+                                   th:data-price="${reservation.price}"
+                                   onchange="updateSummary()">
+                            <div class="reservation-info">
+                                <div class="reservation-title" th:text="${reservation.carName}">차량명</div>
+                                <div class="reservation-details">
+                                    <span th:text="${#temporals.format(reservation.startDate, 'yyyy-MM-dd HH:mm')}">시작일</span>
+                                    ~ 
+                                    <span th:text="${#temporals.format(reservation.endDate, 'yyyy-MM-dd HH:mm')}">종료일</span>
+                                </div>
+                            </div>
+                            <div class="reservation-price" th:text="${#numbers.formatInteger(reservation.price, 3, 'COMMA')} + '원'">가격</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 숙소 예약 섹션 -->
+                    <div class="reservation-section" th:if="${not unpaidHouseReservations.isEmpty()}">
+                        <h3 class="section-title">
+                            <i class="fas fa-bed"></i>
+                            숙소 예약
+                        </h3>
+                        <div th:each="reservation : ${unpaidHouseReservations}" class="reservation-item">
+                            <input type="checkbox" class="reservation-checkbox" 
+                                   th:value="${reservation.houseReservationId}" 
+                                   th:data-type="'house'"
+                                   th:data-price="${reservation.price}"
+                                   onchange="updateSummary()">
+                            <div class="reservation-info">
+                                <div class="reservation-title" th:text="${houseMap.get(reservation.houseId) != null ? houseMap.get(reservation.houseId).title : '숙소명 없음'}">숙소명</div>
+                                <div class="reservation-details">
+                                    <span th:text="${#temporals.format(reservation.reservationStart, 'yyyy-MM-dd HH:mm')}">시작일</span>
+                                    ~ 
+                                    <span th:text="${#temporals.format(reservation.reservationEnd, 'yyyy-MM-dd HH:mm')}">종료일</span>
+                                </div>
+                            </div>
+                            <div class="reservation-price" th:text="(${#numbers.formatInteger(reservation.price, 3, 'COMMA')} + '원')">가격</div>
+                            
+
+                        </div>
+                    </div>
+                    
+                    <!-- 빈 상태 -->
+                    <div class="empty-state" th:if="${unpaidCarReservations.isEmpty() and unpaidHouseReservations.isEmpty()}">
+                        <i class="fas fa-credit-card"></i>
+                        <h3>결제할 예약이 없습니다</h3>
+                        <p>아직 결제되지 않은 예약이 없습니다. 새로운 예약을 만들어보세요!</p>
+                        <a th:href="@{/house}" class="btn btn-primary">숙소 예약하기</a>
+                        <a th:href="@{/car/search}" class="btn btn-secondary" style="margin-left: 0.5rem;">차량 예약하기</a>
+                    </div>
+                </div>
+                
+                <!-- 결제 요약 -->
+                <div class="payment-sidebar" th:if="${not unpaidCarReservations.isEmpty() or not unpaidHouseReservations.isEmpty()}">
+                    <div class="payment-summary">
+                        <h3 class="summary-title">결제 요약</h3>
+                        
+                        <div class="selected-count" id="selectedCount">
+                            선택된 예약: 0개
+                        </div>
+                        
+                        <div class="summary-item">
+                            <span>총 금액:</span>
+                            <span id="totalPrice">0원</span>
+                        </div>
+                        <div class="summary-item" id="discountItem" style="display: none;">
+                            <span>할인:</span>
+                            <span id="discountAmount">0원</span>
+                        </div>
+                        <div class="summary-item total">
+                            <span>최종 결제 금액:</span>
+                            <span id="finalPrice">0원</span>
+                        </div>
+                        
+                        <div class="payment-actions">
+                            <button class="btn btn-primary" id="processPaymentBtn" onclick="processPayment()" disabled>
+                                <i class="fas fa-credit-card"></i> 결제하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block layout:fragment="script">
+        <script>
+            function updateSummary() {
+                const checkboxes = document.querySelectorAll('.reservation-checkbox:checked');
+                const selectedCount = checkboxes.length;
+                
+                // 선택된 예약 개수 표시
+                document.getElementById('selectedCount').textContent = `선택된 예약: ${selectedCount}개`;
+                
+                // 총 금액 계산
+                let totalPrice = 0;
+                checkboxes.forEach(checkbox => {
+                    totalPrice += parseInt(checkbox.dataset.price || 0);
+                });
+                
+                // 할인 계산
+                let discountAmount = 0;
+                if (selectedCount >= 3) {
+                    discountAmount = Math.floor(totalPrice * 0.05); // 5% 할인
+                } else if (selectedCount >= 2) {
+                    discountAmount = Math.floor(totalPrice * 0.03); // 3% 할인
+                }
+                
+                const finalPrice = totalPrice - discountAmount;
+                
+                // UI 업데이트
+                document.getElementById('totalPrice').textContent = totalPrice.toLocaleString() + '원';
+                document.getElementById('finalPrice').textContent = finalPrice.toLocaleString() + '원';
+                
+                if (discountAmount > 0) {
+                    document.getElementById('discountItem').style.display = 'flex';
+                    document.getElementById('discountAmount').textContent = '-' + discountAmount.toLocaleString() + '원';
+                } else {
+                    document.getElementById('discountItem').style.display = 'none';
+                }
+                
+                // 결제 버튼 활성화/비활성화
+                const processPaymentBtn = document.getElementById('processPaymentBtn');
+                if (selectedCount > 0) {
+                    processPaymentBtn.disabled = false;
+                } else {
+                    processPaymentBtn.disabled = true;
+                }
+            }
+            
+            function processPayment() {
+                const checkboxes = document.querySelectorAll('.reservation-checkbox:checked');
+                if (checkboxes.length === 0) {
+                    alert('결제할 예약을 선택해주세요.');
+                    return;
+                }
+                
+                const reservationIds = Array.from(checkboxes).map(checkbox => checkbox.value);
+                
+                if (confirm('선택한 예약들을 결제하시겠습니까?')) {
+                    fetch('/api/payment-pending/create', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            reservationIds: reservationIds
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('결제 대기가 생성되었습니다. 30분 내에 결제를 완료해주세요.');
+                            window.location.href = '/payment/pending';
+                        } else {
+                            alert('결제 대기 생성에 실패했습니다: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('오류가 발생했습니다.');
+                    });
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html> 

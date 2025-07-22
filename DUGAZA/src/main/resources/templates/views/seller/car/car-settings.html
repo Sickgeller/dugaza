@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>설정</title>
+    <link rel="stylesheet" th:href="@{/assets/css/seller.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div th:replace="~{fragments/car_seller_sidebar :: carSideBar}"></div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>설정</h2>
+                </div>
+                <div class="user-info">
+                    <span th:text="${seller.name} + '님'">홍길동님</span>
+                    <img th:src="@{/assets/images/users/profile1.jpg}" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 설정 섹션 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>계정 설정</h3>
+                </div>
+                
+                <form th:action="@{/seller/car/settings/update}" method="post" class="settings-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="companyName">회사명</label>
+                            <input type="text" id="companyName" name="companyName" th:value="${seller.name}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="businessNumber">사업자등록번호</label>
+                            <input type="text" id="businessNumber" name="businessNumber" th:value="${seller.businessNumber}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">연락처</label>
+                            <input type="tel" id="phone" name="phone" th:value="${seller.phone}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">이메일</label>
+                            <input type="email" id="email" name="email" th:value="${seller.email}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">주소</label>
+                            <input type="text" id="address" name="address" th:value="${seller.address}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bankAccount">계좌번호</label>
+                            <input type="text" id="bankAccount" name="bankAccount" placeholder="입금받을 계좌번호">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> 설정 저장
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 알림 설정 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>알림 설정</h3>
+                </div>
+                
+                <div class="settings-list">
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>예약 알림</h4>
+                            <p>새로운 예약이 들어올 때 알림을 받습니다.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>리뷰 알림</h4>
+                            <p>새로운 리뷰가 등록될 때 알림을 받습니다.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>매출 알림</h4>
+                            <p>일일 매출 요약을 받습니다.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>이메일 알림</h4>
+                            <p>중요한 알림을 이메일로 받습니다.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 보안 설정 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>보안 설정</h3>
+                </div>
+                
+                <div class="security-actions">
+                    <a href="/seller/car/settings/password" class="btn-secondary">
+                        <i class="fas fa-key"></i> 비밀번호 변경
+                    </a>
+                    <a href="/seller/car/settings/2fa" class="btn-secondary">
+                        <i class="fas fa-shield-alt"></i> 2단계 인증 설정
+                    </a>
+                    <a href="/seller/car/settings/sessions" class="btn-secondary">
+                        <i class="fas fa-desktop"></i> 로그인 세션 관리
+                    </a>
+                </div>
+            </div>
+
+            <!-- 데이터 관리 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>데이터 관리</h3>
+                </div>
+                
+                <div class="data-actions">
+                    <button class="btn-secondary" onclick="exportData()">
+                        <i class="fas fa-download"></i> 데이터 내보내기
+                    </button>
+                    <button class="btn-secondary" onclick="backupData()">
+                        <i class="fas fa-save"></i> 백업 생성
+                    </button>
+                    <button class="btn-danger" onclick="deleteAccount()">
+                        <i class="fas fa-trash-alt"></i> 계정 삭제
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/assets/js/customjs.js}"></script>
+    <script>
+        function exportData() {
+            if (confirm('모든 데이터를 내보내시겠습니까?')) {
+                // 데이터 내보내기 로직
+                alert('데이터 내보내기가 시작되었습니다.');
+            }
+        }
+
+        function backupData() {
+            if (confirm('백업을 생성하시겠습니까?')) {
+                // 백업 생성 로직
+                alert('백업이 생성되었습니다.');
+            }
+        }
+
+        function deleteAccount() {
+            if (confirm('정말로 계정을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                if (confirm('마지막 확인: 계정을 삭제하시겠습니까?')) {
+                    // 계정 삭제 로직
+                    alert('계정이 삭제되었습니다.');
+                    window.location.href = '/seller/logout';
+                }
+            }
+        }
+
+        // 토글 스위치 기능
+        document.querySelectorAll('.switch input').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const settingName = this.closest('.setting-item').querySelector('h4').textContent;
+                console.log(`${settingName} 설정이 ${this.checked ? '활성화' : '비활성화'}되었습니다.`);
+            });
+        });
+    </script>
+
+    <style>
+        .settings-form {
+            max-width: 800px;
+        }
+
+        .settings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .setting-info h4 {
+            margin: 0 0 5px 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .setting-info p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* 토글 스위치 스타일 */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #3498db;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .security-actions, .data-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</body>
+</html> 

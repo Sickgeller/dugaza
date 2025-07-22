@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>통합 검색 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/search.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+<main layout:fragment="content">
+    <section class="search-section">
+        <form th:action="@{/search}" method="get">
+            <div class="search-container">
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="어디로 떠나시나요?">
+                <button type="submit" class="search-btn">검색</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- 카테고리별 검색 결과 -->
+    <section class="search-results">
+
+        <!-- 반복: 관광지 / 행사 / 숙소 / 맛집 -->
+        <div th:each="category : ${groupedResults}" class="category-block">
+            <div class="category-header">
+                <h2 th:text="${displayNames[category.key] + ' (' + groupedCounts[category.key] + '건)'}"></h2>
+                <a th:href="@{'/' + ${category.key} + '?keyword=' + ${keyword}}" class="more-btn">더 보기 ></a>
+            </div>
+
+            <div class="card-grid">
+                <article class="search-card" th:each="item : ${category.value}">
+            		<a th:href="@{'/' + ${category.key} + '/detail?contentId=' + ${item.contentId}}">
+                    <!-- <a th:href="@{/{type}/detail(contentId=${item.contentId}) (type=${category.type})}"> -->
+                        <div class="card-image">
+                            <img th:src="${item.firstImage != null ? item.firstImage : '/assets/images/house.png'}" alt="썸네일">
+                            <button class="like-btn"
+                                    th:data-content-id="${item.contentId}"
+                                    th:data-content-type="${item.contentTypeId}">
+                            </button>
+                        </div>
+                        <div class="card-content">
+                            <h3 th:text="${item.title}">제목</h3>
+                            <p th:text="${item.addr1}">주소</p>
+                        </div>
+	                </a>
+                </article>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<th:block layout:fragment="script">
+    <script th:src="@{/assets/js/wishlist.js}"></script>
+</th:block>
+</body>
+</html>

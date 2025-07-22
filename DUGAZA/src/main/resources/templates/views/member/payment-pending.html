@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_mypage}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+    <title>마이페이지 - 결제 대기</title>
+    <th:block layout:fragment="css">
+        <style>
+            .payment-pending-container {
+                padding: 2rem;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            
+            .page-header {
+                margin-bottom: 2rem;
+            }
+            
+            .page-header h1 {
+                color: #333;
+                margin-bottom: 0.5rem;
+            }
+            
+            .payment-pending-item {
+                background: white;
+                border-radius: 10px;
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                border-left: 4px solid #007bff;
+            }
+            
+            .payment-pending-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .payment-pending-id {
+                font-weight: bold;
+                color: #007bff;
+            }
+            
+            .payment-status {
+                padding: 0.25rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.875rem;
+                font-weight: 500;
+            }
+            
+            .status-pending {
+                background: #fff3cd;
+                color: #856404;
+            }
+            
+            .status-expired {
+                background: #f8d7da;
+                color: #721c24;
+            }
+            
+            .expiry-timer {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                color: #dc3545;
+                font-weight: 500;
+            }
+            
+            .expiry-timer i {
+                font-size: 1.1rem;
+            }
+            
+            .payment-summary {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .summary-item {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.5rem 0;
+            }
+            
+            .summary-item.total {
+                font-weight: bold;
+                font-size: 1.1rem;
+                color: #007bff;
+                border-top: 1px solid #f0f0f0;
+                padding-top: 1rem;
+            }
+            
+            .payment-actions {
+                display: flex;
+                gap: 1rem;
+                justify-content: flex-end;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: 500;
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .btn-primary {
+                background: #007bff;
+                color: white;
+            }
+            
+            .btn-secondary {
+                background: #6c757d;
+                color: white;
+            }
+            
+            .btn-danger {
+                background: #dc3545;
+                color: white;
+            }
+            
+            .empty-payment-pending {
+                text-align: center;
+                padding: 4rem 2rem;
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            
+            .empty-payment-pending i {
+                font-size: 4rem;
+                color: #ddd;
+                margin-bottom: 1rem;
+            }
+            
+            .empty-payment-pending h3 {
+                color: #666;
+                margin-bottom: 0.5rem;
+            }
+            
+            .empty-payment-pending p {
+                color: #999;
+                margin-bottom: 2rem;
+            }
+            
+            /* 포함된 예약 정보 스타일 */
+            .reservation-details {
+                margin: 1.5rem 0;
+                padding: 1rem;
+                background: #f8f9fa;
+                border-radius: 8px;
+                border-left: 3px solid #007bff;
+            }
+            
+            .reservation-details h4 {
+                margin-bottom: 1rem;
+                color: #333;
+                font-size: 1.1rem;
+                font-weight: 600;
+            }
+            
+            .reservation-items {
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .reservation-item-detail {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem;
+                background: white;
+                border-radius: 6px;
+                border: 1px solid #e0e0e0;
+            }
+            
+            .item-info {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+                flex: 1;
+            }
+            
+            .item-type {
+                font-size: 0.8rem;
+                color: #007bff;
+                font-weight: 600;
+                text-transform: uppercase;
+            }
+            
+            .item-name {
+                font-weight: 600;
+                color: #333;
+            }
+            
+            .item-dates {
+                color: #666;
+                font-size: 0.9rem;
+            }
+            
+            .item-price {
+                font-weight: 600;
+                color: #007bff;
+                text-align: right;
+            }
+            
+            /* 알림 메시지 스타일 */
+            .alert {
+                padding: 1rem;
+                margin-bottom: 1.5rem;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .alert-danger {
+                background-color: #f8d7da;
+                border: 1px solid #f5c6cb;
+                color: #721c24;
+            }
+            
+            .alert-success {
+                background-color: #d4edda;
+                border: 1px solid #c3e6cb;
+                color: #155724;
+            }
+            
+            .alert i {
+                font-size: 1.1rem;
+            }
+        </style>
+    </th:block>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="payment-pending-container">
+            <!-- 페이지 헤더 -->
+            <div class="page-header">
+                <h1>결제 대기</h1>
+                <p>결제 대기 중인 예약들을 확인하고 결제하세요.</p>
+            </div>
+            
+            <!-- 알림 메시지 -->
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span th:text="${error}">에러 메시지</span>
+            </div>
+            
+            <div th:if="${message}" class="alert alert-success" role="alert">
+                <i class="fas fa-check-circle"></i>
+                <span th:text="${message}">성공 메시지</span>
+            </div>
+            
+            <div th:if="${paymentPendings == null or paymentPendings.isEmpty()}" class="empty-payment-pending">
+                <i class="fas fa-clock"></i>
+                <h3>결제 대기 중인 예약이 없습니다</h3>
+                <p>아직 결제 대기 중인 예약이 없습니다. 새로운 예약을 만들어보세요!</p>
+                <a th:href="@{/house}" class="btn btn-primary">숙소 예약하기</a>
+                <a th:href="@{/car/search}" class="btn btn-secondary" style="margin-left: 0.5rem;">차량 예약하기</a>
+            </div>
+            
+            <div th:if="${paymentPendings != null and not paymentPendings.isEmpty()}">
+                <div th:each="paymentPending : ${paymentPendings}" class="payment-pending-item">
+                    <div class="payment-pending-header">
+                        <div>
+                            <span class="payment-pending-id" th:text="'결제 대기 #' + ${paymentPending.paymentPendingId}">결제 대기 #123</span>
+                            <span class="payment-status status-pending">대기 중</span>
+                        </div>
+                        <div class="expiry-timer">
+                            <i class="fas fa-clock"></i>
+                            <span th:text="${#temporals.format(paymentPending.expiresAt, 'HH:mm:ss')}">29:45</span> 후 만료
+                        </div>
+                    </div>
+                    
+                    <div class="payment-summary">
+                        <div class="summary-item">
+                            <span>총 금액:</span>
+                            <span th:text="${#numbers.formatInteger(paymentPending.totalPrice, 3, 'COMMA')} + '원'">300,000원</span>
+                        </div>
+                        <div class="summary-item" th:if="${paymentPending.discountAmount > 0}">
+                            <span>할인:</span>
+                            <span th:text="'-' + ${#numbers.formatInteger(paymentPending.discountAmount, 3, 'COMMA')} + '원'">-10,000원</span>
+                        </div>
+                        <div class="summary-item total">
+                            <span>최종 결제 금액:</span>
+                            <span th:text="${#numbers.formatInteger(paymentPending.finalPrice, 3, 'COMMA')} + '원'">290,000원</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 포함된 예약 정보 -->
+                    <div class="reservation-details" th:if="${paymentPendingDetails != null and paymentPendingDetails.get(paymentPending.paymentPendingId) != null}">
+                        <h4>포함된 예약</h4>
+                        <div class="reservation-items">
+                            <div th:each="detail : ${paymentPendingDetails.get(paymentPending.paymentPendingId)}" class="reservation-item-detail">
+                                <div class="item-info">
+                                    <span class="item-type" th:text="${detail.type}">숙소</span>
+                                    <span class="item-name" th:text="${detail.name}">상품명</span>
+                                </div>
+                                <div class="item-dates">
+                                    <span th:text="${#temporals.format(detail.startDate, 'yyyy-MM-dd')}">시작일</span>
+                                    ~ 
+                                    <span th:text="${#temporals.format(detail.endDate, 'yyyy-MM-dd')}">종료일</span>
+                                </div>
+                                <div class="item-price" th:text="${#numbers.formatInteger(detail.price, 3, 'COMMA')} + '원'">가격</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-actions">
+                        <button th:if="${paymentPending.status == 0}" 
+                                class="btn btn-danger" 
+                                th:onclick="'cancelPaymentPending(' + ${paymentPending.paymentPendingId} + ')'">
+                            <i class="fas fa-times"></i> 취소
+                        </button>
+                        <!-- <button th:if="${paymentPending.status == 0}" 
+                                class="btn btn-primary" 
+                                th:onclick="'processPayment(' + ${paymentPending.paymentPendingId} + ')'">
+                            <i class="fas fa-credit-card"></i> 결제하기
+                        </button> -->
+                        <form th:action="@{/payment/checkout}" method="post">
+						    <input type="hidden" name="paymentPendingId" th:value="${paymentPending.paymentPendingId}" />
+						    <input type="hidden" name="amount" th:value="${paymentPending.finalPrice}" />
+						    <button type="submit" class="btn btn-primary">결제하기</button>
+						</form>    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <th:block layout:fragment="script">
+        <script>
+            function processPayment(paymentPendingId) {
+                if (confirm('정말로 결제하시겠습니까?')) {
+                    fetch(`/api/payment-pending/${paymentPendingId}/process`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('결제가 완료되었습니다.');
+                            location.reload();
+                        } else {
+                            alert('결제에 실패했습니다: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('오류가 발생했습니다.');
+                    });
+                }
+            }
+            
+            function cancelPaymentPending(paymentPendingId) {
+                if (confirm('정말로 이 결제 대기를 취소하시겠습니까?')) {
+                    fetch(`/api/payment-pending/${paymentPendingId}/cancel`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('결제 대기가 취소되었습니다.');
+                            location.reload();
+                        } else {
+                            alert('취소에 실패했습니다: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('오류가 발생했습니다.');
+                    });
+                }
+            }
+            
+            // 만료 타이머 업데이트 (1초마다)
+            setInterval(function() {
+                const timers = document.querySelectorAll('.expiry-timer span');
+                timers.forEach(timer => {
+                    const timeText = timer.textContent;
+                    const [hours, minutes, seconds] = timeText.split(':').map(Number);
+                    
+                    if (seconds > 0) {
+                        timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${(seconds - 1).toString().padStart(2, '0')}`;
+                    } else if (minutes > 0) {
+                        timer.textContent = `${hours.toString().padStart(2, '0')}:${(minutes - 1).toString().padStart(2, '0')}:59`;
+                    } else if (hours > 0) {
+                        timer.textContent = `${(hours - 1).toString().padStart(2, '0')}:59:59`;
+                    } else {
+                        // 만료됨
+                        location.reload();
+                    }
+                });
+            }, 1000);
+        </script>
+    </th:block>
+</body>
+</html> 

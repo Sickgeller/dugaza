@@ -14,7 +14,8 @@ data-config:
     express-bus:
       base-url: http://apis.data.go.kr/1613000/ExpBusInfoService
     kakao:
-      base-url: https://dapi.kakao.com
-      service-key: 83d842dabcdca653c2f46d1d81847c60
+      base-url: https://kauth.kakao.com
+      rest-api-key: 83d842dabcdca653c2f46d1d81847c60
+      client-secret: PvMWZQdMVE2NpvysdeTdRmam3Xbvk7Nm
       search:
         base-url:

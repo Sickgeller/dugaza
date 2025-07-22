@@ -44,13 +44,21 @@ public class MemberRestController {
         //회원가입
         memberService.insertMember(memberVO);
         //결과 메시지 처리
-        model.addAttribute("accessTitle", "회원가입");
+        model.addAttribute("accessTitle", "회원가입 완료");
         model.addAttribute("accessMsg",
-                "회원가입이 완료되었습니다.");
-        model.addAttribute("accessBtn", "홈으로");
-        model.addAttribute("accessUrl",
-                request.getContextPath()+"/");
+                "환영합니다! 회원가입이 성공적으로 완료되었습니다.\n\n" +
+                "이제 다양한 관광 서비스를 이용하실 수 있습니다.\n" +
+                "숙소 예약, 차량 렌트, 관광지 정보 등을 확인해보세요.");
+        model.addAttribute("accessBtn", "메인으로");
+        model.addAttribute("accessUrl", request.getContextPath()+"/");
+        model.addAttribute("isSeller", false);
         return "views/common/resultView";
+    }
+    @GetMapping("/checkId")
+    @ResponseBody
+    public String checkId(@RequestParam(name = "id") String id) {
+        MemberVO memberVO = memberService.selectIdCheck(id);
+        return memberVO != null ? "duplicate" : "usable";
     }
 
 //    private final JavaMailSenderImpl javaMailSenderImpl;

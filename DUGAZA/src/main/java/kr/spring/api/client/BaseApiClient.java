@@ -103,7 +103,7 @@ public class BaseApiClient{
         }
 
         try {
-            // API 호출 시도
+            // API 호출 시도 
             log.debug("WebClient 요청 시작: {}", uri);
             String response = webClient.get()
                     .uri(uri)

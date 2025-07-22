@@ -3,7 +3,7 @@ package kr.spring.api.dto;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+
 
 @Data
 @Builder
@@ -20,7 +20,7 @@ public class TouristAttrationDetailApiDto {
     private Long heritage2;
     private Long heritage3;
     private String infoCenter;
-    private LocalDateTime openDate;
+    private String openDate;
     private String parking;
     private String restDate;
     private String useSeason;

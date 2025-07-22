@@ -17,14 +17,12 @@
             <p class="hero-subtitle">당신의 완벽한 여행을 위한 모든 것</p>
             
             <div class="search-box">
-                <form class="search-form" onsubmit="return false;">
+                <form class="search-form" th:action="@{/search}" method="get">
                     <div class="search-input">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="어디로 여행을 가시나요?">
+                        <input type="text" placeholder="어디로 여행을 가시나요?" name="keyword">
                     </div>
-                    <button type="submit" class="search-button">
-                        검색
-                    </button>
+                    <input type="submit" class="search-button" value="검색">
                 </form>
             </div>
         </div>

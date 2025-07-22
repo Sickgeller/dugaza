@@ -70,27 +70,54 @@ public class SecurityConfig {
     /**
      * 웹 애플리케이션용 Security Filter Chain
      */
+    
     @Bean
     @Order(2)
+    public SecurityFilterChain sellerSecurity(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/seller/**") // seller 경로에만 적용
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/seller/login", "/seller/register/**","/seller/registerProc").permitAll()
+                .anyRequest().hasAnyRole("SELLER", "CAR", "HOUSE")
+            )
+            .formLogin(form -> form
+                .loginPage("/seller/login")
+                .loginProcessingUrl("/seller/login")
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .successHandler(successHandler)
+                .failureHandler(failureHandler)
+                .permitAll()
+            )
+            .logout(logout -> logout.logoutUrl("/seller/logout"));
+        return http.build();
+    }
+    @Bean
+    @Order(3)
     public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
         
         return http
                 .securityMatcher("/**")
                 .authorizeHttpRequests(authorize -> authorize
-//                    .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**", "/favicon.*").permitAll() // 정적 리소스 허용
-//                    .requestMatchers("/", "/member/login", "/member/register", "/member/registerUser").permitAll() // 인증 없이 접근 가능한 페이지
-//                    .requestMatchers("/views/common/**").permitAll() // 공통 페이지들(추후 추가)
-//                    .requestMatchers("/seller/login", "/seller/register").permitAll()
-//                    .requestMatchers("/seller/**").hasRole("CAR", "HOUSE") // 판매자 전용 페이지
-//                    .requestMatchers("/admin/**").hasRole("ADMIN")// 관리자 전용 페이지
-//                    // API 제외한 나머지 요청은 인증 필요
-//                    .requestMatchers("/api/**").denyAll() // API는 별도 필터체인에서 처리
-//                    .anyRequest().authenticated()
-                                .anyRequest().permitAll() // 개발하는 동안은 모두 허용
+                    .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**", "/favicon.*").permitAll() // 정적 리소스 허용
+                    .requestMatchers("/", "/member/login", "/member/register", "/member/registerUser").permitAll() // 인증 없이 접근 가능한 페이지
+                    .requestMatchers("/views/common/**").permitAll() // 공통 페이지들
+                    .requestMatchers("/touristAttraction/**").permitAll()
+                    .requestMatchers("/event/**").permitAll()
+                    .requestMatchers("/house/**").permitAll()
+                    .requestMatchers("/search/**").permitAll()
+                    .requestMatchers("/restaurant/**").permitAll()
+                    .requestMatchers("/about/**","/privacy/**","/terms/**","/community/**").permitAll()
+                    .requestMatchers("/transportation/**").permitAll() // 교통 관련 페이지 및 API 허용
+                    .requestMatchers("/seller/login/**", "/seller/register/**","/seller/registerProc").permitAll() // 판매자 로그인/가입 페이지
+                    .requestMatchers("/seller/**").hasAnyRole("SELLER", "CAR", "HOUSE") // 판매자 전용 페이지
+                    .requestMatchers("/admin/**").hasRole("ADMIN")// 관리자 전용 페이지
+                    // API 제외한 나머지 요청은 인증 필요
+                    .requestMatchers("/api/**").denyAll() // API는 별도 필터체인에서 처리
+                    .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                     .loginPage("/member/login")
-                        .loginPage("/seller/login")
                     .loginProcessingUrl("/auth/login")
                     .usernameParameter("username")
                     .passwordParameter("password")
@@ -120,7 +147,9 @@ public class SecurityConfig {
                     .alwaysRemember(false) // 체크박스 선택 시에만 remember-me 활성화
                 )
                 .authenticationProvider(authenticationProvider()) // 명시적 AuthenticationProvider 설정
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> csrf
+                    .ignoringRequestMatchers("/transportation/bus/search", "/api/**", "/admin/**")
+                )
                 .build();
     }
 
@@ -128,24 +157,22 @@ public class SecurityConfig {
      * REST API용 Security Filter Chain 역할별로
      * API부분은 따로 시작부분 수정해야함
      */
-//    @Bean
-//    @Order(1)
-//    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
-//
-//        return http
-//                .securityMatcher("/api/**")
-//                .authorizeHttpRequests(authorize -> authorize
-//                    .requestMatchers("/api/public/**").permitAll()
-//                    .requestMatchers("/api/user/**").hasRole("USER")
-//                    .requestMatchers("/api/seller/**").hasRole("SELLER")
-//                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
-//                    .anyRequest().authenticated()
-//                )
-//                .authenticationProvider(authenticationProvider()) // 명시적 AuthenticationProvider 설정
-//                .csrf(csrf -> csrf.disable())
-//                .httpBasic(basic -> {}) // REST API는 Basic Auth 사용
-//                .build();
-//    } // 개발하는동안은 모두허용
+    @Bean
+    @Order(1)
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
+
+        return http
+                .securityMatcher("/api/**")
+                .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers("/api/public/**").permitAll()
+                    .requestMatchers("/api/user/**").hasRole("USER")
+                    .requestMatchers("/api/seller/**").hasRole("SELLER")
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .anyRequest().authenticated()
+                )
+                .authenticationProvider(authenticationProvider()) // 명시적 AuthenticationProvider 설정
+                .build();
+    } // 개발하는동안은 모두허용
 
     @Bean
     public PasswordEncoder passwordEncoder() {

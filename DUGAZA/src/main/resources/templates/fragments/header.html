@@ -14,7 +14,10 @@
                         <a class="nav-link" th:href="@{/}">홈</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/tour}">여행</a>
+                        <a class="nav-link" th:href="@{/touristAttraction}">관광지</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/event}">행사</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/house}">숙소</a>
@@ -43,7 +46,7 @@
                             <span class="badge bg-info ms-1" sec:authorize="hasRole('SELLER')">사업자</span>
                             <span class="badge bg-primary ms-1" sec:authorize="hasRole('MEMBER')">회원</span>
                         </span>
-                        <a th:href="@{/member/mypage}" class="btn btn-outline-primary me-2">마이페이지</a>
+                        <a th:href="@{/member/dashboard}" class="btn btn-outline-primary me-2">마이페이지</a>
                         <a th:href="@{/admin}" class="btn btn-outline-warning me-2" sec:authorize="hasRole('ADMIN')">관리자</a>
                         <a th:href="@{/seller/dashboard}" class="btn btn-outline-info me-2" sec:authorize="hasRole('SELLER')">사업자 대시보드</a>
                         <form th:action="@{/member/logout}" method="post" style="display: inline;">
@@ -55,5 +58,17 @@
         </div>
     </nav>
 </header>
+
+<!-- Admin 페이지용 헤더 -->
+<div th:fragment="admin-header" class="content-header">
+    <div class="header-left">
+        <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+        <h2 th:text="${pageTitle ?: '관리자'}">관리자</h2>
+    </div>
+    <div class="user-info">
+        <span>관리자님</span>
+        <img src="../images/users/profile1.jpg" alt="프로필 이미지">
+    </div>
+</div>
 
 

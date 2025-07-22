@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>차량 예약 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/car-reservation.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+        * {
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <main layout:fragment="content">
+        <div class="reservation-container">
+            <div class="reservation-header">
+                <h1><i class="fas fa-calendar-check"></i> 차량 예약</h1>
+                <p>차량 정보를 확인하고 예약 정보를 입력해주세요</p>
+            </div>
+
+            <!-- 차량 정보 요약 -->
+            <div class="car-summary">
+                <div class="car-image">
+                    <img th:src="${car.carImage != null ? '/assets/images/cars/' + car.carImage : '/assets/images/default-car.jpg'}" 
+                         th:alt="${car.carName}" onerror="this.src='/assets/images/default-car.jpg'">
+                </div>
+                <div class="car-info">
+                    <h2 th:text="${car?.carName != null ? car.carName : '차량명'}">현대 아반떼</h2>
+                    <div class="car-details">
+                        <span class="badge badge-type" th:text="${car?.carType != null ? car.carType : '중형차'}">중형차</span>
+                        <span class="badge badge-fuel" th:text="${car?.carFuel != null ? car.carFuel : '휘발유'}">휘발유</span>
+                        <span class="badge badge-seats" th:text="${car?.carSeats != null ? car.carSeats + '인승' : '5인승'}">5인승</span>
+                    </div>
+                    <div class="car-features">
+                        <span class="feature" th:if="${car?.carYear != null}" th:text="${car.carYear} + '년식'">2023년식</span>
+                        <span class="feature" th:if="${car?.carColor != null}" th:text="${car.carColor}">흰색</span>
+                        <span class="feature" th:if="${car?.carNumber != null}" th:text="${car.carNumber}">12가3456</span>
+                    </div>
+                    <div class="daily-rate">
+                        <span class="price" th:text="${car?.carPrice != null ? #numbers.formatInteger(car.carPrice, 3, 'COMMA') + '원' : '50,000원'}">50,000원</span>
+                        <span class="unit">/일</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 예약 폼 -->
+            <form th:action="@{/car/reservation}" method="post" class="reservation-form">
+                <input type="hidden" name="carId" th:value="${car.carId}">
+                
+                <div class="form-section">
+                    <h3><i class="fas fa-calendar"></i> 예약 일정</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pickupDate">수령 날짜</label>
+                            <input type="date" id="pickupDate" name="pickupDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pickupTime">수령 시간</label>
+                            <select id="pickupTime" name="pickupTime" required>
+                                <option value="">시간 선택</option>
+                                <option value="09:00">09:00</option>
+                                <option value="10:00">10:00</option>
+                                <option value="11:00">11:00</option>
+                                <option value="12:00">12:00</option>
+                                <option value="13:00">13:00</option>
+                                <option value="14:00">14:00</option>
+                                <option value="15:00">15:00</option>
+                                <option value="16:00">16:00</option>
+                                <option value="17:00">17:00</option>
+                                <option value="18:00">18:00</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="returnDate">반납 날짜</label>
+                            <input type="date" id="returnDate" name="returnDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="returnTime">반납 시간</label>
+                            <select id="returnTime" name="returnTime" required>
+                                <option value="">시간 선택</option>
+                                <option value="09:00">09:00</option>
+                                <option value="10:00">10:00</option>
+                                <option value="11:00">11:00</option>
+                                <option value="12:00">12:00</option>
+                                <option value="13:00">13:00</option>
+                                <option value="14:00">14:00</option>
+                                <option value="15:00">15:00</option>
+                                <option value="16:00">16:00</option>
+                                <option value="17:00">17:00</option>
+                                <option value="18:00">18:00</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-map-marker-alt"></i> 수령/반납 장소</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pickupLocationCode">수령 장소</label>
+                            <select id="pickupLocationCode" name="pickupLocationCode" required>
+                                <option value="">수령 장소를 선택하세요</option>
+                                <option th:each="location : ${locationCodes}" 
+                                        th:value="${location.locationCode}" 
+                                        th:text="${location.locationDetail}">
+                                    서울 (강남역)
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="returnLocationCode">반납 장소</label>
+                            <select id="returnLocationCode" name="returnLocationCode" required>
+                                <option value="">반납 장소를 선택하세요</option>
+                                <option th:each="location : ${locationCodes}" 
+                                        th:value="${location.locationCode}" 
+                                        th:text="${location.locationDetail}">
+                                    부산 (부산역)
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-user"></i> 운전자 정보</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="driverName">운전자 이름</label>
+                            <input type="text" id="driverName" name="driverName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="driverLicense">운전면허번호</label>
+                            <input type="text" id="driverLicense" name="driverLicense" 
+                                   placeholder="예: 12-345678-90" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phoneNumber">연락처</label>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" 
+                                   placeholder="예: 010-1234-5678" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">이메일</label>
+                            <input type="email" id="email" name="email" 
+                                   placeholder="예: user@example.com" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-comment"></i> 추가 요청사항</h3>
+                    <div class="form-group">
+                        <label for="specialRequests">특별 요청사항 (선택사항)</label>
+                        <textarea id="specialRequests" name="specialRequests" rows="4" 
+                                  placeholder="차량 수령 시 특별히 요청하실 사항이 있으시면 입력해주세요"></textarea>
+                    </div>
+                </div>
+
+                <div class="reservation-summary">
+                    <h3><i class="fas fa-calculator"></i> 예약 요약</h3>
+                    <div class="summary-details">
+                        <div class="summary-item">
+                            <span class="label">대여 기간:</span>
+                            <span class="value" id="rentalPeriod">-</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">일일 요금:</span>
+                            <span class="value" th:text="${car?.carPrice != null ? #numbers.formatInteger(car.carPrice, 3, 'COMMA') + '원' : '50,000원'}">50,000원</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">총 요금:</span>
+                            <span class="value" id="totalPrice">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="reserve-btn">
+                        <i class="fas fa-check"></i> 예약 완료
+                    </button>
+                    <a th:href="@{/car/search}" class="cancel-btn">
+                        <i class="fas fa-times"></i> 취소
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // 최소 날짜 설정
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('pickupDate').min = today;
+        document.getElementById('returnDate').min = today;
+
+        // 수령일 변경 시 반납일 최소값 설정 및 요금 계산
+        document.getElementById('pickupDate').addEventListener('change', function() {
+            const pickupDate = this.value;
+            const returnDateInput = document.getElementById('returnDate');
+            returnDateInput.min = pickupDate;
+            
+            if (returnDateInput.value && returnDateInput.value <= pickupDate) {
+                returnDateInput.value = '';
+            }
+            calculateTotal();
+        });
+
+        document.getElementById('returnDate').addEventListener('change', calculateTotal);
+
+        function calculateTotal() {
+            const pickupDate = document.getElementById('pickupDate').value;
+            const returnDate = document.getElementById('returnDate').value;
+            const dailyRate = [[${car?.carPrice != null ? car.carPrice : 50000}]]; // 서버에서 가져온 실제 값 사용
+
+            if (pickupDate && returnDate) {
+                const start = new Date(pickupDate);
+                const end = new Date(returnDate);
+                const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                
+                if (days > 0) {
+                    document.getElementById('rentalPeriod').textContent = days + '일';
+                    document.getElementById('totalPrice').textContent = 
+                        (days * dailyRate).toLocaleString() + '원';
+                } else {
+                    document.getElementById('rentalPeriod').textContent = '-';
+                    document.getElementById('totalPrice').textContent = '-';
+                }
+            }
+        }
+    </script>
+</body>
+</html> 

@@ -1,23 +1,29 @@
 package kr.spring.util;
 
 public class PagingUtil {
-	private int startRow;	 // 한 페이지에서 보여줄 게시글의 시작 번호
-	private int endRow;	 // 한 페이지에서 보여줄 게시글의 끝 번호
-	private StringBuffer page;// 페이지 표시 문자열
+	private int startRow;	 
+	private int endRow;	 
+	private StringBuffer page;
+
+    private int currentPage;
+    private int count;
+    private int rowCount;
+    private int totalPage;
+    private int startPage;
+    private int endPage;
+    private int pageCount;
 
 	/**
 	 * keyfield : 검색 필드
 	 * keyword : 검색어
 	 * currentPage : 현재페이지
 	 * count : 전체 게시물 수
-	 * rowCount : 한 페이지의  게시물의 수
+	 * rowCount : 한 페이지의  게시물의 수 
 	 * pageCount : 한 화면에 보여줄 페이지 수
 	 * pageUrl : 호출 페이지 url
 	 * addKey : 부가적인 key ("&num=23"형식으로 전달할 것)
 	 * */
 	public PagingUtil(int currentPage,int count, int rowCount) {
-		//ajax 작업을 할 때 페이지 번호가 보여지는 것이 아니라 다음글 보기 버튼을 누르면 다음 페이지가 보여지는 형식의 작업을
-		//할 때 목록 데이터를 호출하기 위해 사용(startRow,endRow 를 구하기 위한 용도로만 사용)
 		this(null,null,currentPage,count,rowCount,0,null,null);
 	}
 	public PagingUtil(int currentPage, int count, int rowCount,
@@ -35,46 +41,44 @@ public class PagingUtil {
 	public PagingUtil(String keyfield, String keyword, int currentPage, int count, int rowCount,
 			int pageCount,String pageUrl,String addKey) {
 
+        this.count = count;
+        this.rowCount = rowCount;
+        this.currentPage = currentPage;
+        this.pageCount = pageCount;
+
 		if(count >= 0) {
 			String sub_url = "";
-			if(keyword != null) sub_url = "&keyfield="+keyfield+"&keyword="+keyword;
+			if(keyword != null && !"".equals(keyword)) sub_url = "&keyfield="+keyfield+"&keyword="+keyword;
 			if(addKey != null) sub_url += addKey;
 
-			// 전체 페이지 수
-			int totalPage = (int) Math.ceil((double) count / rowCount);
+			totalPage = (int) Math.ceil((double) count / rowCount);
 			if (totalPage == 0) {
 				totalPage = 1;
 			}
-			// 현재 페이지가 전체 페이지 수보다 크면 전체 페이지 수로 설정
-			if (currentPage > totalPage) {
-				currentPage = totalPage;
+			if (this.currentPage > totalPage) {
+				this.currentPage = totalPage;
 			}
-			// 현재 페이지의 처음과 마지막 글의 번호 가져오기.
-			startRow = (currentPage - 1) * rowCount + 1;
-			endRow = currentPage * rowCount;
+			startRow = (this.currentPage - 1) * rowCount + 1;
+			endRow = this.currentPage * rowCount;
 			
-			// 이전 block 페이지
 			page = new StringBuffer();
 			if(pageCount > 0) {
-				// 시작 페이지와 마지막 페이지 값 구하기.
-				int startPage = (int) ((currentPage - 1) / pageCount) * pageCount + 1;
-				int endPage = startPage + pageCount - 1;
-				// 마지막 페이지가 전체 페이지 수보다 크면 전체 페이지 수로 설정
+				startPage = (int) ((this.currentPage - 1) / pageCount) * pageCount + 1;
+				endPage = startPage + pageCount - 1;
 				if (endPage > totalPage) {
 					endPage = totalPage;
 				}
 				
-				if (currentPage > pageCount) {
+				if (this.currentPage > pageCount) {
 					page.append("<a href="+pageUrl+"?pageNum="+ (startPage - 1) + sub_url +">");
 					page.append("[이전]");
 					page.append("</a>");
 				}
-				//페이지 번호.현재 페이지는 빨간색으로 강조하고 링크를 제거.
 				for (int i = startPage; i <= endPage; i++) {
 					if (i > totalPage) {
 						break;
 					}
-					if (i == currentPage) {
+					if (i == this.currentPage) {
 						page.append("&nbsp;<b><span style='color:red;'>");
 						page.append(i);
 						page.append("</span></b>");
@@ -87,7 +91,6 @@ public class PagingUtil {
 					}
 					page.append("&nbsp;");
 				}
-				// 다음 block 페이지
 				if (totalPage - startPage >= pageCount) {
 					page.append("<a href="+pageUrl+"?pageNum="+ (endPage + 1) + sub_url +">");
 					page.append("[다음]");
@@ -98,6 +101,7 @@ public class PagingUtil {
 			}
 		}
 	}
+
 	public StringBuffer getPage() {
 		return page;
 	}
@@ -107,4 +111,10 @@ public class PagingUtil {
 	public int getEndRow() {
 		return endRow;
 	}
+    public int getCurrentPage() { return currentPage; }
+    public int getCount() { return count; }
+    public int getTotalPage() { return totalPage; }
+    public int getStartPage() { return startPage; }
+    public int getEndPage() { return endPage; }
+    public int getPageCount() { return pageCount; }
 }

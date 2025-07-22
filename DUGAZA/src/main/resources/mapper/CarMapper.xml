@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.car.dao.CarMapper">
+    <resultMap id="carMap" type="kr.spring.car.vo.CarVO">
+        <id property="carId" column="CAR_ID"/>
+        <result property="sellerId" column="SELLER_ID"/>
+        <result property="carName" column="CAR_NAME"/>
+        <result property="carType" column="CAR_TYPE"/>
+        <result property="carNumber" column="CAR_NUMBER"/>
+        <result property="carYear" column="CAR_YEAR"/>
+        <result property="carColor" column="CAR_COLOR"/>
+        <result property="carFuel" column="CAR_FUEL"/>
+        <result property="carSeats" column="CAR_SEATS"/>
+        <result property="carPrice" column="CAR_PRICE"/>
+        <result property="carImage" column="CAR_IMAGE"/>
+        <result property="status" column="STATUS"/>
+
+        <!-- 위치 정보 -->
+        <result property="locationCode" column="LOCATION_CODE"/>
+        <result property="locationName" column="LOCATION_NAME"/>
+
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+    </resultMap>
+
+    <resultMap id="reservationMap" type="kr.spring.car.vo.CarReservationVO">
+        <id property="reservationId" column="RESERVATION_ID"/>
+        <result property="carId" column="CAR_ID"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="startDate" column="START_DATE" jdbcType="TIMESTAMP"/>
+        <result property="endDate" column="END_DATE" jdbcType="TIMESTAMP"/>
+        <result property="status" column="STATUS"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+        <result property="price" column="PRICE"/>
+        
+        <!-- 차량 정보 -->
+        <result property="carName" column="CAR_NAME"/>
+        <result property="carType" column="CAR_TYPE"/>
+        <result property="carPrice" column="CAR_PRICE"/>
+        
+        <association property="car" javaType="kr.spring.car.vo.CarVO">
+            <id property="carId" column="CAR_ID"/>
+            <result property="carName" column="CAR_NAME"/>
+            <result property="carType" column="CAR_TYPE"/>
+            <result property="carPrice" column="CAR_PRICE"/>
+        </association>
+    </resultMap>
+
+    <insert id="insertCar" parameterType="kr.spring.car.vo.CarVO">
+        <selectKey keyProperty="carId" resultType="long" order="BEFORE">
+            SELECT CAR_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO CAR (
+            CAR_ID, SELLER_ID, CAR_NAME, CAR_TYPE, CAR_NUMBER, CAR_YEAR, CAR_COLOR, 
+            CAR_FUEL, CAR_SEATS, CAR_PRICE, CAR_IMAGE, STATUS, 
+            LOCATION_CODE, CREATED_AT, UPDATED_AT
+        ) VALUES (
+            #{carId,jdbcType=NUMERIC}, #{sellerId,jdbcType=NUMERIC}, #{carName}, #{carType}, 
+            #{carNumber}, #{carYear}, #{carColor}, #{carFuel}, #{carSeats}, #{carPrice}, 
+            #{carImage,jdbcType=VARCHAR}, #{status}, 
+            1, SYSDATE, SYSDATE
+        )
+    </insert>
+
+    <update id="updateCar" parameterType="kr.spring.car.vo.CarVO">
+        UPDATE CAR SET
+            CAR_NAME = #{carName},
+            CAR_TYPE = #{carType},
+            CAR_NUMBER = #{carNumber},
+            CAR_YEAR = #{carYear},
+            CAR_COLOR = #{carColor},
+            CAR_FUEL = #{carFuel},
+            CAR_SEATS = #{carSeats},
+            CAR_PRICE = #{carPrice},
+            CAR_IMAGE = #{carImage},
+            STATUS = #{status},
+            LOCATION_CODE = #{locationCode,jdbcType=NUMERIC},
+            UPDATED_AT = SYSDATE
+        WHERE CAR_ID = #{carId}
+    </update>
+
+    <delete id="deleteCar" parameterType="long">
+        DELETE FROM CAR WHERE CAR_ID = #{carId}
+    </delete>
+
+    <select id="selectCar" parameterType="long" resultMap="carMap">
+        SELECT 
+            c.*,
+            lc.LOCATION_NAME
+        FROM CAR c
+        LEFT JOIN CAR_LOCATION_CODE lc ON c.LOCATION_CODE = lc.LOCATION_CODE
+        WHERE c.CAR_ID = #{carId}
+    </select>
+
+    <select id="selectCarListBySeller" parameterType="long" resultMap="carMap">
+        SELECT 
+            c.*,
+            lc.LOCATION_NAME
+        FROM CAR c
+        LEFT JOIN CAR_LOCATION_CODE lc ON c.LOCATION_CODE = lc.LOCATION_CODE
+        WHERE c.SELLER_ID = #{sellerId} 
+        ORDER BY c.CREATED_AT DESC
+    </select>
+
+    <select id="selectAllCars" resultMap="carMap">
+        SELECT 
+            c.*,
+            lc.LOCATION_NAME,
+            s.BUSINESS_NAME as SELLER_NAME
+        FROM CAR c
+        LEFT JOIN CAR_LOCATION_CODE lc ON c.LOCATION_CODE = lc.LOCATION_CODE
+        LEFT JOIN SELLER s ON c.SELLER_ID = s.SELLER_ID
+        ORDER BY c.CREATED_AT DESC
+    </select>
+
+    <!-- 위치별 차량 검색 -->
+    <select id="selectCarsByLocation" parameterType="int" resultMap="carMap">
+        SELECT 
+            c.*,
+            lc.LOCATION_NAME
+        FROM CAR c
+        LEFT JOIN CAR_LOCATION_CODE lc ON c.LOCATION_CODE = lc.LOCATION_CODE
+        WHERE c.LOCATION_CODE = #{locationCode} 
+        AND c.STATUS = 'AVAILABLE'
+        ORDER BY c.CAR_PRICE ASC
+    </select>
+
+    <!-- 수령 위치별 차량 검색 (단순화) -->
+    <select id="selectCarsByPickupAndReturn" parameterType="map" resultMap="carMap">
+        SELECT 
+            c.*,
+            lc.LOCATION_NAME
+        FROM CAR c
+        LEFT JOIN CAR_LOCATION_CODE lc ON c.LOCATION_CODE = lc.LOCATION_CODE
+        WHERE c.LOCATION_CODE = #{pickupLocationCode}
+        AND c.STATUS = 'AVAILABLE'
+        ORDER BY c.CAR_PRICE ASC
+    </select>
+
+    <!-- 예약 가능한 차량 검색 (날짜 기반) -->
+    <select id="selectAvailableCarsByDate" parameterType="map" resultMap="carMap">
+        SELECT 
+            c.*,
+            lc.LOCATION_NAME
+        FROM CAR c
+        LEFT JOIN CAR_LOCATION_CODE lc ON c.LOCATION_CODE = lc.LOCATION_CODE
+        WHERE c.LOCATION_CODE = #{pickupLocationCode}
+        AND c.STATUS = 'AVAILABLE'
+        AND c.CAR_ID NOT IN (
+            SELECT DISTINCT cr.CAR_ID
+            FROM CAR_RESERVATION cr
+            WHERE cr.STATUS IN ('RESERVED', 'CONFIRMED')
+            AND (
+                (cr.START_DATE &lt;= #{returnDate} AND cr.END_DATE &gt;= #{pickupDate})
+                OR (cr.START_DATE &gt;= #{pickupDate} AND cr.START_DATE &lt; #{returnDate})
+                OR (cr.END_DATE &gt; #{pickupDate} AND cr.END_DATE &lt;= #{returnDate})
+            )
+        )
+        ORDER BY c.CAR_PRICE ASC
+    </select>
+
+    <!-- 예약 관련 쿼리들 -->
+    <insert id="insertReservation" parameterType="kr.spring.car.vo.CarReservationVO">
+        <selectKey keyProperty="reservationId" resultType="long" order="BEFORE">
+            SELECT CAR_RESERVATION_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO CAR_RESERVATION (
+            RESERVATION_ID, CAR_ID, MEMBER_ID, START_DATE, END_DATE, STATUS, 
+            PICK_UP_LOCATION_CODE, RETURN_LOCATION_CODE, PRICE, CREATED_AT, UPDATED_AT
+        ) VALUES (
+            #{reservationId}, #{carId}, #{memberId}, #{startDate}, #{endDate}, 
+            'RESERVED', #{pickupLocationCode}, #{returnLocationCode}, #{price}, SYSDATE, SYSDATE
+        )
+    </insert>
+
+    <select id="selectReservationsByMember" parameterType="long" resultMap="reservationMap">
+        SELECT 
+            cr.*,
+            c.CAR_NAME,
+            c.CAR_TYPE,
+            c.CAR_PRICE
+        FROM CAR_RESERVATION cr
+        LEFT JOIN CAR c ON cr.CAR_ID = c.CAR_ID
+        WHERE cr.MEMBER_ID = #{memberId}
+        ORDER BY cr.CREATED_AT DESC
+    </select>
+
+    <select id="selectReservation" parameterType="long" resultMap="reservationMap">
+        SELECT 
+            cr.*,
+            c.CAR_NAME,
+            c.CAR_TYPE,
+            c.CAR_PRICE
+        FROM CAR_RESERVATION cr
+        LEFT JOIN CAR c ON cr.CAR_ID = c.CAR_ID
+        WHERE cr.RESERVATION_ID = #{reservationId}
+    </select>
+
+    <update id="updateReservation" parameterType="kr.spring.car.vo.CarReservationVO">
+        UPDATE CAR_RESERVATION SET
+            CAR_ID = #{carId},
+            MEMBER_ID = #{memberId},
+            START_DATE = #{startDate},
+            END_DATE = #{endDate},
+            STATUS = #{status},
+            PRICE = #{price},
+            UPDATED_AT = SYSDATE
+        WHERE RESERVATION_ID = #{reservationId}
+    </update>
+
+    <delete id="deleteReservation" parameterType="long">
+        DELETE FROM CAR_RESERVATION WHERE RESERVATION_ID = #{reservationId}
+    </delete>
+
+    <!-- 차량 예약 중복 체크 -->
+    <select id="checkCarReservationConflict" resultType="int">
+        SELECT COUNT(*)
+        FROM CAR_RESERVATION
+        WHERE CAR_ID = #{carId}
+        AND STATUS IN ('RESERVED', 'CONFIRMED') <!-- 예약된 상태와 확정된 상태 -->
+        AND (
+            (START_DATE &lt;= #{returnDate} AND END_DATE &gt;= #{pickupDate})
+            OR (START_DATE &gt;= #{pickupDate} AND START_DATE &lt; #{returnDate})
+            OR (END_DATE &gt; #{pickupDate} AND END_DATE &lt;= #{returnDate})
+        )
+    </select>
+    
+    <!-- 차량 상태 업데이트 -->
+    <update id="updateCarStatus" parameterType="map">
+        UPDATE CAR SET
+            STATUS = #{status},
+            UPDATED_AT = SYSDATE
+        WHERE CAR_ID = #{carId}
+    </update>
+</mapper> 

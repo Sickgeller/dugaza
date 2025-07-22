@@ -6,53 +6,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>맛집 - 드가자닷컴</title>
-    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
     <link rel="stylesheet" th:href="@{/assets/css/restaurant.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script type="text/javascript" th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
-<body>
+<body th:data-is-login="${#authentication.principal != 'anonymousUser'}">
     <main class="restaurant-main" layout:fragment="content">
-    <form id="searchForm" method="get" action="/restaurant">
-        <section class="search-section">
-            <div class="search-container">
-                <div class="search-box">
-                    <div class="search-input">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="	지역, 음식점 또는 음식 검색" name="keyword" id="keyword">
-                        <script type="text/javascript">
-                        $(function() {
-                        	  // 탭 자동 삽입 (보일 때만)
-                        	  $('#keyword').on('input', function() {
-                        	    let val = $(this).val();
-                        	    if (!val.startsWith('\t')) {
-                        	      $(this).val('\t' + val);
-                        	    }
-                        	  });
-
-                        	  // 전송 전 탭 제거
-                        	  $('#searchForm').on('submit', function() {
-                        	    let input = $('#keyword');
-                        	    let val = input.val();
-                        	    if (val.startsWith('\t')) {
-                        	      input.val(val.substring(1)); // 탭 제거
-                        	    }
-                        	  });
-                        	});
-                        </script>
+        <form th:action="@{/restaurant}" method="get">
+            <section class="search-section">
+                <div class="search-container">
+                    <div class="search-box">
+                        <input type="text" placeholder="맛집 검색" name="keyword" th:value="${keyword}">
+                        <button type="submit" class="search-btn">검색</button>
                     </div>
-                    <button class="search-btn">검색</button>
                 </div>
-                <div class="filter-tags">
-                    <button class="tag active">전체</button>
-                    <button class="tag">한식</button>
-                    <button class="tag">중식</button>
-                    <button class="tag">일식</button>
-                    <button class="tag">양식</button>
-                    <button class="tag">카페/디저트</button>
-                </div>
-            </div>
-        </section>
+            </section>
         </form>
 
         <section class="restaurant-list">
@@ -71,90 +40,79 @@
             <div class="restaurant-grid">
                 <article class="restaurant-card" th:each="restaurant : ${list}">
                     <div class="restaurant-image">
-                        <img th:src="${restaurant.firstImage != null ? restaurant.firstImage : '/assets/images/house.png'}" alt="삼겹살">
-                        <div class="restaurant-badge">한식</div>
-                        <button class="like-btn"><i class="fas fa-heart"></i></button>
-                    </div>
-                    <div class="restaurant-content">
-                        <h3 th:text="${restaurant.title}"></h3>
-                        <div class="restaurant-meta">
-                            <span class="rating"><i class="fas fa-star"></i> 4.8</span>
-                            <span class="reviews">(리뷰 238)</span>
-                            <span class="location" th:text="${restaurant.addr1}"></span>
+                            <a th:href="@{/restaurant/detail(contentId=${restaurant.contentId})}">
+                                <img th:src="${restaurant.firstImage != null ? restaurant.firstImage : '/assets/images/house.png'}" alt="맛집">
+                                <div class="restaurant-badge"></div>
+                            </a>
+                            <button class="like-btn" th:data-content-id="${restaurant.contentId}" th:data-content-type="${restaurant.contentTypeId}">
+                                <i th:class="${restaurant.wished ? 'fas fa-heart' : 'far fa-heart'}" th:style="${restaurant.wished ? 'color: red;' : ''}"></i>
+                            </button>
                         </div>
-                        <p class="restaurant-description">
-                            최고급 생삼겹살과 특제 소스로 유명한 맛집
-                        </p>
-                        <div class="restaurant-tags">
-                            <span>#삼겹살</span>
-                            <span>#회식추천</span>
-                            <span>#특제소스</span>
+                        <div class="restaurant-content">
+                            <a th:href="@{/restaurant/detail(contentId=${restaurant.contentId})}">
+                                <h3 th:text="${restaurant.title}"></h3>
+                                <div class="restaurant-meta">
+                                    <span class="rating"><i class="fas fa-star"></i><span th:text="${restaurant.avgReview}"></span></span>
+                                   <span class="reviews">(리뷰 <span th:text="${restaurant.countReview}"></span>)</span>
+                                    <span class="location" th:text="${restaurant.addr1}"></span>
+                                </div>
+                            </a>
                         </div>
-                    </div>
                 </article>
-
-                <!-- <article class="restaurant-card">
-                    <div class="restaurant-image">
-                        <img src="../images/restaurant/sushi.jpg" alt="스시">
-                        <div class="restaurant-badge">일식</div>
-                        <button class="like-btn"><i class="fas fa-heart"></i></button>
-                    </div>
-                    <div class="restaurant-content">
-                        <h3>스시 오마카세</h3>
-                        <div class="restaurant-meta">
-                            <span class="rating"><i class="fas fa-star"></i> 4.9</span>
-                            <span class="reviews">(리뷰 156)</span>
-                            <span class="location">서울 서초구</span>
-                        </div>
-                        <p class="restaurant-description">
-                            신선한 재료로 만드는 프리미엄 오마카세
-                        </p>
-                        <div class="restaurant-tags">
-                            <span>#오마카세</span>
-                            <span>#데이트</span>
-                            <span>#프리미엄</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="restaurant-card">
-                    <div class="restaurant-image">
-                        <img src="../images/restaurant/pasta.jpg" alt="파스타">
-                        <div class="restaurant-badge">양식</div>
-                        <button class="like-btn"><i class="fas fa-heart"></i></button>
-                    </div>
-                    <div class="restaurant-content">
-                        <h3>이탈리안 키친</h3>
-                        <div class="restaurant-meta">
-                            <span class="rating"><i class="fas fa-star"></i> 4.7</span>
-                            <span class="reviews">(리뷰 412)</span>
-                            <span class="location">서울 용산구</span>
-                        </div>
-                        <p class="restaurant-description">
-                            수제 파스타와 피자가 맛있는 이탈리안 레스토랑
-                        </p>
-                        <div class="restaurant-tags">
-                            <span>#파스타</span>
-                            <span>#피자</span>
-                            <span>#와인</span>
-                        </div>
-                    </div>
-                </article> -->
-
             </div>
-
-            <div class="pagination">
-                <button class="prev-btn"><i class="fas fa-chevron-left"></i></button>
-                <div class="page-numbers">
-                    <a href="#" class="active">1</a>
-                    <a href="#">2</a>
-                    <a href="#">3</a>
-                    <a href="#">4</a>
-                    <a href="#">5</a>
-                </div>
-                <button class="next-btn"><i class="fas fa-chevron-right"></i></button>
+ 
+            <div class="pagination" th:utext="${page}">
             </div>
-        </section>
+        </section> 
     </main>
+    
+    <th:block layout:fragment="script">
+        <script type="text/javascript" th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+        <script>
+            $(document).on('click', '.like-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var contentId = $(this).data("content-id");
+                var contentTypeId = $(this).data("content-type");
+                var heartIcon = $(this).find("i");
+
+                // CSRF 토큰과 헤더 이름을 메타 태그에서 읽어옵니다.
+                const csrfToken = $('meta[name="_csrf"]').attr('content');
+                const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+                // 로그인 여부 확인 (body 태그의 data-is-login 속성 사용)
+                const isLogin = $('body').data('is-login');
+                if (isLogin !== true) {
+                    alert('로그인이 필요한 서비스입니다.');
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/wishlist/toggle",
+                    data: {
+                        contentId: contentId,
+                        contentTypeId: contentTypeId
+                    },
+                    beforeSend: function(xhr) {
+                        if (csrfHeader && csrfToken) {
+                            xhr.setRequestHeader(csrfHeader, csrfToken);
+                        }
+                    },
+                    success: function(response) {
+                        if (response.wished) {
+                            heartIcon.removeClass("far").addClass("fas").css("color", "red");
+                        } else {
+                            heartIcon.removeClass("fas").addClass("far").css("color", "");
+                        }
+                    },
+                    error: function() {
+                        alert("찜 상태를 변경하는 데 실패했습니다.");
+                    }
+                });
+            });
+        </script>
+    </th:block>
 </body>
 </html> 

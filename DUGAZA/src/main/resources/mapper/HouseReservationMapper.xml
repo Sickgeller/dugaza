@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.reservation.dao.HouseReservationMapper">
+
+    <resultMap id="houseReservationResultMap" type="kr.spring.reservation.vo.HouseReservationVO">
+        <id property="houseReservationId" column="RESERVATION_ID"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="houseId" column="HOUSE_ID"/>
+        <result property="roomId" column="ROOM_ID"/>
+        <result property="reservationStart" column="RESERVATION_START"/>
+        <result property="reservationEnd" column="RESERVATION_END"/>
+        <result property="reservationCount" column="RESERVATION_COUNT"/>
+        <result property="price" column="PRICE"/>
+        <result property="status" column="STATUS"/>
+    </resultMap>
+
+    <select id="findBySellerId" resultMap="houseReservationResultMap">
+        SELECT * FROM (
+                          SELECT ROWNUM AS RN, A.*
+                          FROM (
+                                   SELECT
+                                       HR.RESERVATION_ID,
+                                       HR.MEMBER_ID,
+                                       HR.HOUSE_ID,
+                                       HR.ROOM_ID,
+                                       HRI.ROOM_NAME,
+                                       HRI.PRICE AS ROOM_PRICE,
+                                       HR.RESERVATION_START,
+                                       HR.RESERVATION_END,
+                                       HR.RESERVATION_COUNT,
+                                       HR.PRICE AS RESERVATION_PRICE,
+                                       HR.STATUS AS RESERVATION_STATUS
+                                   FROM HOUSE_RESERVATION HR
+                                            JOIN HOUSE_ROOM_INFO HRI ON HR.ROOM_ID = HRI.ROOM_ID
+                                   WHERE EXISTS (
+                                       SELECT 1
+                                       FROM HOUSE_SELLER_DETAIL HSD
+                                       WHERE HSD.HOUSE_ID = HR.HOUSE_ID
+                                         AND HSD.SELLER_ID = #{sellerId}
+                                   )
+                                   ORDER BY HR.RESERVATION_ID DESC
+                               ) A
+                          WHERE ROWNUM &lt;= #{endRow}
+                      )
+        WHERE RN &gt;= #{startRow}
+    </select>
+
+    <insert id="insertReservation" parameterType="kr.spring.reservation.vo.HouseReservationVO">
+        INSERT INTO HOUSE_RESERVATION (
+            RESERVATION_ID,
+            MEMBER_ID,
+            HOUSE_ID,
+            ROOM_ID,
+            RESERVATION_START,
+            RESERVATION_END,
+            RESERVATION_COUNT,
+            PRICE,
+            STATUS
+        ) VALUES (
+                     HOUSE_RESERVATION_SEQ.nextval,
+                     #{memberId},
+                     #{houseId},
+                     #{roomId},
+                     #{reservationStart},
+                     #{reservationEnd},
+                     #{reservationCount},
+                     #{price},
+                     #{status}
+                 )
+    </insert>
+
+    <!-- 예약 중복 체크 -->
+    <select id="checkReservationConflict" resultType="int">
+        SELECT COUNT(*)
+        FROM HOUSE_RESERVATION
+        WHERE ROOM_ID = #{roomId}
+        AND STATUS IN (0, 1) <!-- 0: 예약 대기, 1: 투숙중 -->
+        AND (
+            (RESERVATION_START &lt;= TO_TIMESTAMP(#{reservationEnd}, 'YYYY-MM-DD"T"HH24:MI:SS') 
+             AND RESERVATION_END &gt;= TO_TIMESTAMP(#{reservationStart}, 'YYYY-MM-DD"T"HH24:MI:SS'))
+            OR (RESERVATION_START &gt;= TO_TIMESTAMP(#{reservationStart}, 'YYYY-MM-DD"T"HH24:MI:SS') 
+                AND RESERVATION_START &lt; TO_TIMESTAMP(#{reservationEnd}, 'YYYY-MM-DD"T"HH24:MI:SS'))
+            OR (RESERVATION_END &gt; TO_TIMESTAMP(#{reservationStart}, 'YYYY-MM-DD"T"HH24:MI:SS') 
+                AND RESERVATION_END &lt;= TO_TIMESTAMP(#{reservationEnd}, 'YYYY-MM-DD"T"HH24:MI:SS'))
+        )
+    </select>
+
+    <select id="selectReservationsByMember" parameterType="long" resultMap="houseReservationResultMap">
+        SELECT *
+        FROM HOUSE_RESERVATION
+        WHERE MEMBER_ID = #{memberId}
+        ORDER BY RESERVATION_START DESC
+    </select>
+
+    <select id="selectReservation" parameterType="long" resultMap="houseReservationResultMap">
+        SELECT *
+        FROM HOUSE_RESERVATION
+        WHERE RESERVATION_ID = #{reservationId}
+    </select>
+
+    <update id="updateReservation" parameterType="kr.spring.reservation.vo.HouseReservationVO">
+        UPDATE HOUSE_RESERVATION SET
+            MEMBER_ID = #{memberId},
+            HOUSE_ID = #{houseId},
+            ROOM_ID = #{roomId},
+            RESERVATION_START = #{reservationStart},
+            RESERVATION_END = #{reservationEnd},
+            RESERVATION_COUNT = #{reservationCount},
+            PRICE = #{price},
+            STATUS = #{status}
+        WHERE RESERVATION_ID = #{houseReservationId}
+    </update>
+
+    <delete id="deleteReservation" parameterType="long">
+        DELETE FROM HOUSE_RESERVATION WHERE RESERVATION_ID = #{reservationId}
+    </delete>
+
+</mapper>

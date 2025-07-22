@@ -21,21 +21,24 @@
                         <i class="fas fa-train"></i>
                     </div>
                     <h2>기차</h2>
-                    <p>KTX, ITX, 무궁화호 등<br>기차 예약</p>
+                    <p>KTX, ITX, 무궁화호 등<br>기차 조회</p>
+                    <span class="status-badge">조회</span>
                 </a>
                 <a th:href="@{/transportation/bus}" class="option-card">
                     <div class="icon">
                         <i class="fas fa-bus"></i>
                     </div>
                     <h2>버스</h2>
-                    <p>고속버스, 시외버스<br>예약</p>
+                    <p>고속버스, 시외버스<br>조회</p>
+                    <span class="status-badge">조회</span>
                 </a>
-                <a href="../seller/car/car-rental.html" class="option-card">
+                <a th:href="@{/car/search}" class="option-card">
                     <div class="icon">
                         <i class="fas fa-car"></i>
                     </div>
                     <h2>렌터카</h2>
                     <p>전국 렌터카<br>예약</p>
+                    <span class="status-badge available">예약가능</span>
                 </a>
             </div>
         </section>
@@ -48,6 +51,7 @@
                     <div class="transport-types">
                         <span><i class="fas fa-train"></i> KTX 2시간 30분</span>
                         <span><i class="fas fa-bus"></i> 고속버스 4시간 30분</span>
+                        <span><i class="fas fa-car"></i> 렌터카 4시간</span>
                     </div>
                 </div>
                 <div class="route-card">
@@ -55,6 +59,7 @@
                     <div class="transport-types">
                         <span><i class="fas fa-train"></i> KTX 2시간</span>
                         <span><i class="fas fa-bus"></i> 고속버스 3시간</span>
+                        <span><i class="fas fa-car"></i> 렌터카 2시간 30분</span>
                     </div>
                 </div>
                 <div class="route-card">
@@ -62,6 +67,7 @@
                     <div class="transport-types">
                         <span><i class="fas fa-train"></i> KTX 1시간 30분</span>
                         <span><i class="fas fa-bus"></i> 고속버스 2시간 45분</span>
+                        <span><i class="fas fa-car"></i> 렌터카 2시간</span>
                     </div>
                 </div>
             </div>

@@ -12,7 +12,7 @@
     <script type="text/javascript" th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
 </head>
 <body>
-    <main class="accommodation-main" layout:fragment="content">
+    <div class="accommodation-main" layout:fragment="content">
         <section class="search-section">
         <form id="searchForm" method="get" action="/house">
             <div class="search-container">
@@ -21,92 +21,85 @@
                         <label>위치</label>
                         <div class="search-input">
                             <i class="fas fa-map-marker-alt"></i>
-                            <input type="text" placeholder="어디로 가시나요?" name="keyword">
+                            <input type="text" placeholder="어디로 가시나요?" name="keyword" th:value="${keyword}">
                         </div>
                     </div>
                     <div class="search-group">
                         <label>체크인</label>
                         <div class="search-input">
                             <i class="fas fa-calendar"></i>
-                            <input type="date">
+                            <input type="date" name="checkIn" th:value="${param.checkIn}">
                         </div>
                     </div>
                     <div class="search-group">
                         <label>체크아웃</label>
                         <div class="search-input">
                             <i class="fas fa-calendar"></i>
-                            <input type="date">
+                            <input type="date" name="checkOut" th:value="${param.checkOut}">
                         </div>
                     </div>
                     <div class="search-group">
                         <label>인원</label>
                         <div class="search-input">
                             <i class="fas fa-user"></i>
-                            <select>
-                                <option value="1">1명</option>
-                                <option value="2">2명</option>
-                                <option value="3">3명</option>
-                                <option value="4">4명</option>
-                                <option value="5">5명 이상</option>
+                            <select name="numberOfGuests">
+                                <option value="1" th:selected="${#strings.equals(param.numberOfGuests, '1')}">1명</option>
+                                <option value="2" th:selected="${#strings.equals(param.numberOfGuests, '2')}">2명</option>
+                                <option value="3" th:selected="${#strings.equals(param.numberOfGuests, '3')}">3명</option>
+                                <option value="4" th:selected="${#strings.equals(param.numberOfGuests, '4')}">4명</option>
+                                <option value="5" th:selected="${#strings.equals(param.numberOfGuests, '5')}">5명 이상</option>
                             </select>
                         </div>
                     </div>
                     <button class="search-btn">검색</button>
                 </div>
-                <div class="filter-tags">
-                    <button class="tag active" value="0" name="tag" type="button">전체</button>
-                    <button class="tag" value="1" name="tag" type="button">호텔</button>
-                    <button class="tag" value="2" name="tag" type="button">펜션</button>
-                    <button class="tag" value="3" name="tag" type="button">리조트</button>
-                    <button class="tag" value="4" name="tag" type="button">게스트하우스</button>
-                    <button class="tag" value="5" name="tag" type="button">한옥</button>
-                </div>
-                <input type="hidden" name="tag" value="" id="tag">
-                <script type="text/javascript">
-                $(function() {
-                	  $('.tag').on('click', function(event) {
-                	    // 선택된 값 hidden input에 저장
-                	    $('#tag').val($(this).val());
-
-                	    // 모든 버튼에서 'active' 제거
-                	    $('.tag').removeClass('active');
-
-                	    // 클릭한 버튼에만 'active' 추가
-                	    $(this).addClass('active');
-                	  });
-                	});
-
-                </script>
+                <!-- <div class="filter-tags">
+                    <a th:href="@{/house(keyword=${param.keyword})}" th:classappend="${cat3 == null || cat3 == ''} ? 'active'" class="tag">전체</a>
+                    <a th:href="@{/house(cat3='B02010100', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02010100')} ? 'active'" class="tag">호텔</a>
+                    <a th:href="@{/house(cat3='B02010700', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02010700')} ? 'active'" class="tag">펜션</a>
+                    <a th:href="@{/house(cat3='B02010500', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02010500')} ? 'active'" class="tag">콘도/리조트</a>
+                    <a th:href="@{/house(cat3='B02011100', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02011100')} ? 'active'" class="tag">게스트하우스</a>
+                    <a th:href="@{/house(cat3='B02011600', keyword=${param.keyword})}" th:classappend="${#strings.equals(cat3, 'B02011600')} ? 'active'" class="tag">한옥</a>
+                </div> -->
             </div>
            </form>
         </section>
 
-        <section class="accommodation-list">
+        <section class="accommodation-list" id="accommodation-list">
             <div class="list-header">
                 <h2>추천 숙소</h2>
-                <div class="sort-options">
-                    <select>
-                        <option>추천순</option>
-                        <option>가격 낮은순</option>
-                        <option>가격 높은순</option>
-                        <option>평점순</option>
-                        <option>리뷰순</option>
-                    </select>
-                </div>
+                <form id="sortForm" method="get" action="/house">
+                    <input type="hidden" name="keyword" th:value="${param.keyword}">
+                    <input type="hidden" name="cat3" th:value="${param.cat3}">
+                    <input type="hidden" name="checkIn" th:value="${param.checkIn}">
+                    <input type="hidden" name="checkOut" th:value="${param.checkOut}">
+                    <input type="hidden" name="numberOfGuests" th:value="${param.numberOfGuests}">
+                    <div class="sort-options">
+                        <select name="sort" onchange="this.form.submit()">
+                            <option value="latest" th:selected="${sort == 'latest'}">추천순</option>
+                            <option value="price_asc" th:selected="${sort == 'price_asc'}">가격 낮은순</option>
+                            <option value="price_desc" th:selected="${sort == 'price_desc'}">가격 높은순</option>
+                            <option value="rating" th:selected="${sort == 'rating'}">평점순</option>
+                            <option value="reviews" th:selected="${sort == 'reviews'}">리뷰순</option>
+                        </select>
+                    </div>
+                </form>
             </div>
 
             <div class="accommodation-grid">
                 <article class="accommodation-card" th:each="house : ${list}">
+                 <a th:href="@{/house/detail(contentId=${house.contentId})}">
                     <div class="accommodation-image">
                         <img th:src="${house.firstImage != null ? house.firstImage : '/assets/images/house.png'}" alt="호텔">
-                        <div class="accommodation-badge">호텔</div>
-                        <button class="like-btn"><i class="fas fa-heart"></i></button>
+                        <button class="like-btn" th:data-content-id="${house.contentId}" th:data-content-type="${house.contentTypeId}"><i th:class="${house.wished} ? 'fas fa-heart' : 'far fa-heart'" th:style="${house.wished} ? 'color: red;'"></i></button>
                     </div>
                     <div class="accommodation-content">
                         <h3 th:text="${house.title}"></h3>
+                        <div class="accommodation-meta" style="margin-bottom: 0;">
+                            <span class="rating"><i class="fas fa-star"></i> <span th:text="${#numbers.formatDecimal(house.review_avg, 1, 1)}"></span></span>
+                            <span class="reviews">(리뷰 <span th:text="${house.review_count}"></span>)</span>
+                        </div>
                         <div class="accommodation-meta">
-                            <span class="rating"><i class="fas fa-star"></i> 4.8</span>
-                            <span class="reviews">(리뷰 523)</span>
                             <span class="location" th:text="${house.addr1}"></span>
                         </div>
                         <p class="accommodation-description">
@@ -124,109 +117,62 @@
                             <span th:if="${house.sports == '1'}"><i class="fas fa-volleyball-ball"></i> 스포츠 시설</span>
                         </div>
                         <div class="accommodation-price">
-                            <span class="price">180,000원</span>
+                            <span class="price" th:text="${house.price != null ? #numbers.formatInteger(house.price, 1, 'COMMA') + '원' : '가격 정보 없음'}"></span>
                             <span class="unit">/ 1박</span>
                         </div>
                     </div>
+                    </a>
                 </article>
-
-                <!-- <article class="accommodation-card">
-                    <div class="accommodation-image">
-                        <img src="../images/accommodation/pension.jpg" alt="펜션">
-                        <div class="accommodation-badge">펜션</div>
-                        <button class="like-btn"><i class="fas fa-heart"></i></button>
-                    </div>
-                    <div class="accommodation-content">
-                        <h3>힐링 펜션</h3>
-                        <div class="accommodation-meta">
-                            <span class="rating"><i class="fas fa-star"></i> 4.7</span>
-                            <span class="reviews">(리뷰 238)</span>
-                            <span class="location">가평군</span>
-                        </div>
-                        <p class="accommodation-description">
-                            자연 속 프라이빗 풀빌라, 완벽한 휴식을 위한 공간
-                        </p>
-                        <div class="accommodation-features">
-                            <span><i class="fas fa-swimming-pool"></i> 수영장</span>
-                            <span><i class="fas fa-parking"></i> 주차가능</span>
-                            <span><i class="fas fa-campground"></i> BBQ</span>
-                        </div>
-                        <div class="accommodation-price">
-                            <span class="price">250,000원</span>
-                            <span class="unit">/ 1박</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="accommodation-card">
-                    <div class="accommodation-image">
-                        <img src="../images/accommodation/hanok.jpg" alt="한옥">
-                        <div class="accommodation-badge">한옥</div>
-                        <button class="like-btn"><i class="fas fa-heart"></i></button>
-                    </div>
-                    <div class="accommodation-content">
-                        <h3>전통 한옥스테이</h3>
-                        <div class="accommodation-meta">
-                            <span class="rating"><i class="fas fa-star"></i> 4.9</span>
-                            <span class="reviews">(리뷰 156)</span>
-                            <span class="location">전주시</span>
-                        </div>
-                        <p class="accommodation-description">
-                            전통과 현대가 조화로운 프리미엄 한옥스테이
-                        </p>
-                        <div class="accommodation-features">
-                            <span><i class="fas fa-bed"></i> 온돌방</span>
-                            <span><i class="fas fa-coffee"></i> 다과제공</span>
-                            <span><i class="fas fa-tshirt"></i> 한복체험</span>
-                        </div>
-                        <div class="accommodation-price">
-                            <span class="price">150,000원</span>
-                            <span class="unit">/ 1박</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="accommodation-card">
-                    <div class="accommodation-image">
-                        <img src="../images/accommodation/guesthouse.jpg" alt="게스트하우스">
-                        <div class="accommodation-badge">게스트하우스</div>
-                        <button class="like-btn"><i class="fas fa-heart"></i></button>
-                    </div>
-                    <div class="accommodation-content">
-                        <h3>서울 게스트하우스</h3>
-                        <div class="accommodation-meta">
-                            <span class="rating"><i class="fas fa-star"></i> 4.6</span>
-                            <span class="reviews">(리뷰 342)</span>
-                            <span class="location">서울 홍대</span>
-                        </div>
-                        <p class="accommodation-description">
-                            여행자들의 교류가 있는 아늑한 게스트하우스
-                        </p>
-                        <div class="accommodation-features">
-                            <span><i class="fas fa-wifi"></i> 무료 WiFi</span>
-                            <span><i class="fas fa-coffee"></i> 조식포함</span>
-                            <span><i class="fas fa-users"></i> 공용라운지</span>
-                        </div>
-                        <div class="accommodation-price">
-                            <span class="price">30,000원</span>
-                            <span class="unit">/ 1박</span>
-                        </div>
-                    </div>
-                </article> -->
             </div>
 
-            <div class="pagination">
-                <button class="prev-btn"><i class="fas fa-chevron-left"></i></button>
+            <div class="pagination" th:if="${count > 0}">
+                <a th:href="@{/house/list(pageNum=${page.startPage - 1},keyword=${param.keyword},cat3=${param.cat3},checkIn=${param.checkIn},checkOut=${param.checkOut},numberOfGuests=${param.numberOfGuests})}" th:if="${page.startPage > 1}" class="prev-btn"><i class="fas fa-chevron-left"></i></a>
                 <div class="page-numbers">
-                    <a href="#" class="active">1</a>
-                    <a href="#">2</a>
-                    <a href="#">3</a>
-                    <a href="#">4</a>
-                    <a href="#">5</a>
+                    <th:block th:each="i : ${#numbers.sequence(page.startPage, page.endPage)}">
+                    <a th:href="@{/house/list(pageNum=${i},keyword=${param.keyword},cat3=${param.cat3},checkIn=${param.checkIn},checkOut=${param.checkOut},numberOfGuests=${param.numberOfGuests})}" th:classappend="${page.currentPage == i} ? 'active'" th:text="${i}"></a>
+                    </th:block>
                 </div>
-                <button class="next-btn"><i class="fas fa-chevron-right"></i></button>
+                <a th:href="@{/house/list(pageNum=${page.endPage + 1},keyword=${param.keyword},cat3=${param.cat3},checkIn=${param.checkIn},checkOut=${param.checkOut},numberOfGuests=${param.numberOfGuests})}" th:if="${page.endPage < page.totalPage}" class="next-btn"><i class="fas fa-chevron-right"></i></a>
             </div>
         </section>
-    </main>
+
+        <script>
+            $(document).on('click', '.like-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var contentId = $(this).data("content-id");
+                var contentTypeId = $(this).data("content-type");
+                var heartIcon = $(this).find("i");
+
+                $.ajax({
+                    type: "POST",
+                    url: "/wishlist/toggle",
+                    data: {
+                        contentId: contentId,
+                        contentTypeId: contentTypeId
+                    },
+                    success: function(response) {
+                        if (response.wished) {
+                            heartIcon.removeClass("far").addClass("fas").css("color", "red");
+                        } else {
+                            heartIcon.removeClass("fas").addClass("far").css("color", "");
+                        }
+                    },
+                    error: function() {
+                        alert("찜 상태를 변경하는 데 실패했습니다.");
+                    }
+                });
+            });
+
+            $(document).on('click', '.pagination a', function(e) {
+                e.preventDefault();
+                var url = $(this).attr('href');
+                $('#accommodation-list').load(url, function() {
+                    $('html, body').animate({ scrollTop: 0 }, 100);
+                });  
+            });
+        </script>
+    </div>
 </body>
 </html> 

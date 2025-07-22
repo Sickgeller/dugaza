@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리뷰 관리 - 관리자</title>
+    <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>관리자</h1>
+                <p>시스템 관리자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a th:href="@{/admin}"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li><a th:href="@{/member/admin_member}"><i class="fas fa-users"></i><span>회원 관리</span></a></li>
+                    <li><a th:href="@{/admin/sellers}"><i class="fas fa-store"></i><span>판매자 관리</span></a></li>
+                    <li>
+                        <a href="#" class="dropdown-toggle"><i class="fas fa-boxes"></i><span>상품 관리</span></a>
+                        <ul class="submenu">
+                            <li><a th:href="@{/admin/cars}"><i class="fas fa-car"></i><span>렌터카</span></a></li>
+                            <li><a th:href="@{/admin/houses}"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="active"><a th:href="@{/admin/reviews}"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a th:href="@{/admin/qna/list}"><i class="fas fa-flag"></i><span>문의 관리</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div th:replace="~{fragments/header :: admin-header}"></div>
+
+            <!-- 리뷰 통계 -->
+            <div class="content-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>총 리뷰</h3>
+                            <p>12,456개</p>
+                            <span class="stat-change increase">+234개 (이번 주)</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-thumbs-up"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>평균 평점</h3>
+                            <p>4.3</p>
+                            <span class="stat-change increase">+0.1</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>신고된 리뷰</h3>
+                            <p>23개</p>
+                            <span class="stat-change">검토 필요</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>삭제된 리뷰</h3>
+                            <p>156개</p>
+                            <span class="stat-change">이번 달</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 검색 및 필터 -->
+            <div class="content-section">
+                <div class="search-filter-container">
+                    <div class="search-box">
+                        <input type="text" placeholder="리뷰 내용, 작성자 검색">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="filter-options">
+                        <select>
+                            <option value="">상품 유형</option>
+                            <option value="car">렌터카</option>
+                            <option value="house">숙소</option>
+                        </select>
+                        <select>
+                            <option value="">평점</option>
+                            <option value="5">5점</option>
+                            <option value="4">4점</option>
+                            <option value="3">3점</option>
+                            <option value="2">2점</option>
+                            <option value="1">1점</option>
+                        </select>
+                        <select>
+                            <option value="">상태</option>
+                            <option value="active">활성</option>
+                            <option value="reported">신고됨</option>
+                            <option value="hidden">숨김</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 리뷰 목록 -->
+            <div class="content-section">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>리뷰 정보</th>
+                                <th>상품</th>
+                                <th>작성자</th>
+                                <th>평점</th>
+                                <th>작성일</th>
+                                <th>상태</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reviewTableBody">
+                            <tr th:each="review : ${reviewList}">
+                                <td>
+                                    <div class="review-info">
+                                        <div class="review-content">
+                                            <strong th:text="${review.title != null ? review.title : '리뷰'}">리뷰 제목</strong>
+                                            <p th:text="${review.content}">리뷰 내용</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${review.productName}">상품명</td>
+                                <td th:text="${review.author}">작성자</td>
+                                <td th:text="${review.rating} + ' ⭐'">평점</td>
+                                <td th:text="${review.createdAt}">작성일</td>
+                                <td>
+                                    <span th:if="${review.status == 'ACTIVE'}" class="status available">활성</span>
+                                    <span th:if="${review.status == 'INACTIVE'}" class="status suspended">비활성</span>
+                                    <span th:if="${review.status == 'REPORTED'}" class="status reported">신고됨</span>
+                                    <span th:if="${review.status == 'HIDDEN'}" class="status hidden">숨김</span>
+                                </td>
+                                <td>
+                                    <button class="btn-icon" title="상세보기" th:onclick="'viewReviewDetail(' + ${review.reviewId} + ')'">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button th:if="${review.status == 'ACTIVE'}" class="btn-icon" title="비활성화" 
+                                            th:onclick="'updateReviewStatus(' + ${review.reviewId} + ', &quot;INACTIVE&quot;)'">
+                                        <i class="fas fa-eye-slash"></i>
+                                    </button>
+                                    <button th:if="${review.status == 'INACTIVE'}" class="btn-icon" title="활성화" 
+                                            th:onclick="'updateReviewStatus(' + ${review.reviewId} + ', &quot;ACTIVE&quot;)'">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-icon" title="삭제" th:onclick="'deleteReview(' + ${review.reviewId} + ')'">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- 임시 데이터 (실제 데이터가 없을 때) -->
+                            <tr th:if="${#lists.isEmpty(reviewList)}">
+                                <td>
+                                    <div class="review-info">
+                                        <div class="review-content">
+                                            <strong>정말 좋은 경험이었습니다!</strong>
+                                            <p>차량 상태가 깨끗하고 서비스도 친절했습니다. 다음에도 이용하고 싶어요.</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>현대 아반떼 (렌터카)</td>
+                                <td>김철수</td>
+                                <td>5 ⭐</td>
+                                <td>2024.01.15</td>
+                                <td><span class="status available">활성</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세보기"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-icon" title="숨김"><i class="fas fa-eye-slash"></i></button>
+                                    <button class="btn-icon" title="삭제"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+                    <button class="btn-page"><i class="fas fa-angle-double-left"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-left"></i></button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page">2</button>
+                    <button class="btn-page">3</button>
+                    <button class="btn-page">4</button>
+                    <button class="btn-page">5</button>
+                    <button class="btn-page"><i class="fas fa-angle-right"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-double-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/js/admin.js}"></script>
+    <script th:inline="javascript">
+        // CSRF 토큰 가져오기
+        var csrfToken = /*[[${_csrf.token}]]*/ '';
+        var csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+        
+        // 리뷰 상태 업데이트
+        function updateReviewStatus(reviewId, status) {
+            if (confirm('정말로 이 리뷰의 상태를 변경하시겠습니까?')) {
+                const headers = {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                };
+                
+                // CSRF 토큰이 있으면 헤더에 추가
+                if (csrfToken && csrfHeader) {
+                    headers[csrfHeader] = csrfToken;
+                }
+                
+                fetch('/admin/review/status', {
+                    method: 'POST',
+                    headers: headers,
+                    body: `reviewId=${reviewId}&status=${status}`
+                })
+                .then(response => response.text())
+                .then(result => {
+                    if (result === 'success') {
+                        alert('리뷰 상태가 성공적으로 업데이트되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('리뷰 상태 업데이트에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('리뷰 상태 업데이트 중 오류가 발생했습니다.');
+                });
+            }
+        }
+
+        // 리뷰 상세정보 보기
+        function viewReviewDetail(reviewId) {
+            // 모달이나 새 페이지로 리뷰 상세정보 표시
+            console.log('리뷰 상세정보:', reviewId);
+        }
+
+        // 리뷰 삭제
+        function deleteReview(reviewId) {
+            if (confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
+                // 리뷰 삭제 로직
+                console.log('리뷰 삭제:', reviewId);
+            }
+        }
+
+        // 리뷰 검색
+        function searchReviews() {
+            const keyword = document.getElementById('searchKeyword').value;
+            const productType = document.getElementById('productTypeFilter').value;
+            const rating = document.getElementById('ratingFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            
+            // 실제 구현에서는 AJAX로 검색 결과를 가져와서 테이블을 업데이트
+            console.log('검색 조건:', { keyword, productType, rating, status });
+        }
+    </script>
+</body>
+</html> 

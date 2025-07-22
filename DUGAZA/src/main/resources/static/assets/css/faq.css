@@ -103,7 +103,114 @@
 }
 
 .accordion-button {
-  font-size: 1.15rem; /* 글씨 크기 키움 (기본이 1rem임) */
-  font-weight: 400;  /* 필요하면 글씨 굵기도 살짝 줘봐 */
+  font-size: 1.15rem;
+  font-weight: 400;  
 }
+
+/*1:1 문의하기 버튼*/
+.inquiry-btn-container {
+  margin-top: 1rem;
+  margin-bottom: 40px;
+  text-align: right;
+}
+
+.inquiry-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.inquiry-btn:hover {
+  background-color: #0056b3;
+}
+/**/
+/* 팝업 오버레이 */
+.qna-popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 팝업 내부 */
+.qna-content {
+  background: white;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.qna-content h2 {
+  margin-top: 0;
+}
+
+/* 폼 스타일 */
+#qnaForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#qnaForm input[type="text"],
+#qnaForm select,
+#qnaForm textarea {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  resize: vertical;
+}
+
+#qnaForm textarea {
+  min-height: 150px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.form-actions button {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form-actions button[type="submit"] {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.form-actions button[type="submit"]:hover {
+  background-color: #218838;
+}
+
+.form-actions button[type="button"] {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.form-actions button[type="button"]:hover {
+  background-color: #5a6268;
+}
+
+
+
 
