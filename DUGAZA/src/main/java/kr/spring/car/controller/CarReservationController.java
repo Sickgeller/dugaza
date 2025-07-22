@@ -170,6 +170,22 @@ public class CarReservationController {
             if (reservation != null) {
                 // 차량 정보도 함께 조회
                 CarVO car = carService.getCar(reservation.getCarId());
+                
+                // 위치 코드를 위치명으로 변환
+                if (reservation.getPickupLocationCode() != null) {
+                    CarLocationCodeVO pickupLocation = locationCodeMapper.selectLocationCode(reservation.getPickupLocationCode());
+                    if (pickupLocation != null) {
+                        reservation.setPickupLocation(pickupLocation.getLocationDetail());
+                    }
+                }
+                
+                if (reservation.getReturnLocationCode() != null) {
+                    CarLocationCodeVO returnLocation = locationCodeMapper.selectLocationCode(reservation.getReturnLocationCode());
+                    if (returnLocation != null) {
+                        reservation.setReturnLocation(returnLocation.getLocationDetail());
+                    }
+                }
+                
                 model.addAttribute("reservation", reservation);
                 model.addAttribute("car", car);
             } else {

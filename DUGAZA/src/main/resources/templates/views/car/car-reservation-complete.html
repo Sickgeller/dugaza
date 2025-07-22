@@ -162,11 +162,23 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">수령일:</span>
-                    <span class="info-value" th:text="${reservation?.startDate}">2025-07-17</span>
+                    <span class="info-value" th:text="${#temporals.format(reservation?.startDate, 'yyyy-MM-dd')}">2025-07-17</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">반납일:</span>
-                    <span class="info-value" th:text="${reservation?.endDate}">2025-07-18</span>
+                    <span class="info-value" th:text="${#temporals.format(reservation?.endDate, 'yyyy-MM-dd')}">2025-07-18</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">수령 위치:</span>
+                    <span class="info-value" th:text="${reservation?.pickupLocation != null ? reservation.pickupLocation : '위치 정보 없음'}">서울역</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">반납 위치:</span>
+                    <span class="info-value" th:text="${reservation?.returnLocation != null ? reservation.returnLocation : '위치 정보 없음'}">서울역</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">총 요금:</span>
+                    <span class="info-value" th:text="${reservation?.price != null ? #numbers.formatInteger(reservation.price, 3, 'COMMA') + '원' : '요금 정보 없음'}" style="font-weight: bold; color: #007bff;">100,000원</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">운전자:</span>

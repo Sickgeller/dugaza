@@ -127,6 +127,17 @@ public class CarServiceImpl implements CarService {
             throw new RuntimeException("해당 기간에 이미 예약이 존재합니다.");
         }
         
+        // 차량 정보 조회하여 가격 계산
+        CarVO car = carMapper.selectCar(reservationDTO.getCarId());
+        if (car == null) {
+            throw new RuntimeException("차량 정보를 찾을 수 없습니다.");
+        }
+        
+        // 대여 기간 계산
+        long rentalDays = java.time.temporal.ChronoUnit.DAYS.between(
+            reservationDTO.getPickupDate(), reservationDTO.getReturnDate());
+        int totalPrice = car.getCarPrice() * (int) rentalDays;
+        
         // 예약 정보를 VO로 변환
         CarReservationVO reservation = new CarReservationVO();
         reservation.setCarId(reservationDTO.getCarId());
@@ -134,6 +145,9 @@ public class CarServiceImpl implements CarService {
         reservation.setStartDate(reservationDTO.getPickupDate().atStartOfDay());
         reservation.setEndDate(reservationDTO.getReturnDate().atStartOfDay());
         reservation.setStatus("RESERVED");
+        reservation.setPickupLocationCode(reservationDTO.getPickupLocationCode());
+        reservation.setReturnLocationCode(reservationDTO.getReturnLocationCode());
+        reservation.setPrice(totalPrice);
         
         // 예약 생성
         carMapper.insertReservation(reservation);

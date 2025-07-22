@@ -166,10 +166,11 @@
             SELECT CAR_RESERVATION_SEQ.NEXTVAL FROM DUAL
         </selectKey>
         INSERT INTO CAR_RESERVATION (
-            RESERVATION_ID, CAR_ID, MEMBER_ID, START_DATE, END_DATE, STATUS, CREATED_AT, UPDATED_AT
+            RESERVATION_ID, CAR_ID, MEMBER_ID, START_DATE, END_DATE, STATUS, 
+            PICK_UP_LOCATION_CODE, RETURN_LOCATION_CODE, PRICE, CREATED_AT, UPDATED_AT
         ) VALUES (
             #{reservationId}, #{carId}, #{memberId}, #{startDate}, #{endDate}, 
-            'RESERVED', SYSDATE, SYSDATE
+            'RESERVED', #{pickupLocationCode}, #{returnLocationCode}, #{price}, SYSDATE, SYSDATE
         )
     </insert>
 
