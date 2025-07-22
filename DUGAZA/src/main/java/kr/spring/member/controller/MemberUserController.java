@@ -326,6 +326,7 @@ public class MemberUserController {
 	/**
 	 * 찜 목록 페이지
 	 */
+	
 	@GetMapping("/wishlist")
 	public String wishlist(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
 		try {
@@ -349,6 +350,7 @@ public class MemberUserController {
 			return "views/common/error";
 		}
 	}
+	
 	
 	/**
 	 * 리뷰 관리 페이지
