@@ -25,9 +25,9 @@ import kr.spring.auth.security.CustomUserDetails;
 // 마이페이지 관련 서비스들 추가
 import kr.spring.car.service.CarReservationService;
 import kr.spring.car.vo.CarReservationVO;
+import kr.spring.common.ContentTypeid;
 import kr.spring.house.service.HouseService;
 import kr.spring.house.vo.HouseVO;
-<<<<<<< HEAD
 import kr.spring.member.service.MemberService;
 import kr.spring.member.vo.MemberVO;
 import kr.spring.payment.service.PaymentPendingService;
@@ -37,27 +37,20 @@ import kr.spring.qnaQuestion.service.QnaQuestionService;
 import kr.spring.qnaQuestion.vo.QnaQuestionVO;
 import kr.spring.reservation.service.HouseReservationService;
 import kr.spring.reservation.vo.HouseReservationVO;
+import kr.spring.restaurant.service.RestaurantService;
+import kr.spring.restaurant.vo.RestaurantVO;
 import kr.spring.review.base.service.BaseReviewService;
 import kr.spring.review.base.vo.BaseReviewVO;
+import kr.spring.tour.service.TourService;
+import kr.spring.tour.vo.TourVO;
 import kr.spring.util.FileUtil;
 import kr.spring.util.ValidationUtil;
 import kr.spring.wishlist.service.WishListService;
-import kr.spring.wishlist.vo.WishItemVO;
+import kr.spring.wishlist.vo.WishListVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-=======
-import kr.spring.tour.service.TourService;
-import kr.spring.tour.vo.TourVO;
-import kr.spring.restaurant.service.RestaurantService;
-import kr.spring.restaurant.vo.RestaurantVO;
-import kr.spring.common.ContentTypeid;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import org.springframework.web.bind.annotation.PathVariable;
->>>>>>> branch 'main' of https://github.com/joojungho/DUGAZA.git
+
 
 @Slf4j
 @Controller
@@ -343,12 +336,7 @@ public class MemberUserController {
 			}
 			
 			Long memberId = member.getMemberId();
-<<<<<<< HEAD
-			// 임시로 빈 리스트 사용
-			List<WishItemVO> wishList = wishListService.selectWishListByMemberId(memberId);
-			
-			model.addAttribute("wishList", wishList);
-=======
+
 			List<WishListVO> wishList = wishListService.getWishListByMemberId(memberId);
 			log.info("찜 목록 조회 - memberId: {}, 조회된 찜 개수: {}", memberId, wishList.size());
 
@@ -416,7 +404,6 @@ public class MemberUserController {
 			}
 
 			model.addAttribute("detailedWishList", detailedWishList);
->>>>>>> branch 'main' of https://github.com/joojungho/DUGAZA.git
 			model.addAttribute("currentMenu", "wishlist");
 			
 			return "views/member/wishlist";

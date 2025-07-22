@@ -50,8 +50,8 @@
                         <div class="restaurant-content">
                             <h3 th:text="${restaurant.title}"></h3>
                             <div class="restaurant-meta">
-                                <span class="rating"><i class="fas fa-star"></i> 4.8</span>
-                                <span class="reviews">(리뷰 238)</span>
+                                <span class="rating"><i class="fas fa-star"></i><span th:text="${restaurant.avgReview}"></span></span>
+                               <span class="reviews">(리뷰 <span th:text="${restaurant.countReview}"></span>)</span>
                                 <span class="location" th:text="${restaurant.addr1}"></span>
                             </div>
                         </div>

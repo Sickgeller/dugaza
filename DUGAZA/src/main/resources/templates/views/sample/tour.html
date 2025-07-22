@@ -56,7 +56,8 @@
                                 <h3 th:text="${tour.title}"></h3>
                                 <div class="tour-meta">
                                     <span class="location"><i class="fas fa-map-marker-alt" th:text="${tour.addr1}"></i></span>
-                                    <span class="rating"><i class="fas fa-star"></i> 4.5</span>
+                                    <span class="rating"><i class="fas fa-star"></i><span th:text="${tour.avgReview}"></span></span>
+                                   <span class="reviews">(리뷰 <span th:text="${tour.countReview}"></span>)</span>
                                 </div>
                                 <div class="tour-footer">
                                     <span class="detail-btn">자세히 보기</span>

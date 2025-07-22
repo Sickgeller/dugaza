@@ -35,6 +35,8 @@ public class TourVO {
     // 찜 상태 필드 추가
     private boolean wished;           // 찜 여부
     private Integer review_count;     // 리뷰 수
+    private Integer countReview;
+    private Double avgReview;
     private Double review_avg;        // 리뷰 평점
     private Long price;               // 가격
     
