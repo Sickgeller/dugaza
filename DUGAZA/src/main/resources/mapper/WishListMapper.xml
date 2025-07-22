@@ -19,7 +19,7 @@
 		) VALUES(
 			WISHLIST_SEQ.NEXTVAL,
 			#{memberId},
-			#{contentType},
+			#{contentType, jdbcType=NUMERIC},
 			#{contentId},
 			SYSDATE
 		)
@@ -27,46 +27,21 @@
 	
 	<delete id="deleteList" parameterType="kr.spring.wishlist.vo.WishListVO">
 		DELETE FROM WISHLIST
-		WHERE MEMBER_ID = #{memberId} AND CONTENT_ID = #{contentId} AND CONTENT_TYPE = #{contentType}
+		WHERE MEMBER_ID = #{memberId} AND CONTENT_ID = #{contentId} AND CONTENT_TYPE = #{contentType, jdbcType=NUMERIC}
 	</delete>
 	
 	<select id="selectWishList" parameterType="kr.spring.wishlist.vo.WishListVO" resultMap="wishListMap">
 		SELECT 
 			*
 		FROM WISHLIST
-		WHERE MEMBER_ID = #{memberId} AND CONTENT_ID = #{contentId} AND CONTENT_TYPE = #{contentType} AND ROWNUM = 1
+		WHERE MEMBER_ID = #{memberId} AND CONTENT_ID = #{contentId} AND CONTENT_TYPE = #{contentType, jdbcType=NUMERIC} AND ROWNUM = 1
 	</select>
 	
-<select id="selectWishListByMemberId" resultMap="wishListMap">
-SELECT w.wishlist_id,
-       w.member_id,
-       CASE w.content_type
-            WHEN 32 THEN 'HOUSE'
-            WHEN 15 THEN 'CAR'
-            ELSE 'UNKNOWN'
-       END AS contentType,
-       w.content_id,
-       r.room_id,
-       r.room_name AS title,
-       r.description,
-       r.image1 AS imageUrl,
-       r.price,
-       r.room_size,
-       r.minimum_capacity,
-       r.maximum_capacity
-FROM wishlist w
-LEFT JOIN house_room_info r
-  ON w.content_type = 32 AND w.content_id = r.house_id
-LEFT JOIN car c
-  ON w.content_type = 15 AND w.content_id = c.car_id
-WHERE w.member_id = #{memberId}
-</select>
-
-
-
-
-
-
-
+	<select id="getWishListCountByMemberId" parameterType="Long" resultType="int">
+		SELECT COUNT(*) FROM WISHLIST WHERE MEMBER_ID = #{memberId}
+	</select>
 	
+	<select id="getWishListByMemberId" parameterType="Long" resultMap="wishListMap">
+		SELECT * FROM WISHLIST WHERE MEMBER_ID = #{memberId} ORDER BY CREATED_AT DESC
+	</select>
 </mapper>

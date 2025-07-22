@@ -1,8 +1,6 @@
 package kr.spring.wishlist.controller;
 
-import java.security.Principal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.wishlist.service.WishListService;
-import kr.spring.wishlist.vo.WishItemVO;
 import kr.spring.wishlist.vo.WishListVO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,23 +51,4 @@ public class WishListController {
 
 	    return ResponseEntity.ok(response);
 	}
-	/*
-	@GetMapping("/member/wishlist")
-    public String getWishList(Model model, Principal principal) {
-        CustomUserDetails userDetails =
-                (CustomUserDetails) ((Authentication) principal).getPrincipal();
-        Long memberId = userDetails.getMember().getMemberId();
-
-        List<WishItemVO> wishList = wishListService.selectWishListByMemberId(memberId);
-
-        log.info("찜 목록: {}", wishList);
-
-        model.addAttribute("wishList", wishList);
-
-        // templates/views/member/wishlist.html
-        return "views/member/wishlist";
-	}
-	*/
-
-
 }

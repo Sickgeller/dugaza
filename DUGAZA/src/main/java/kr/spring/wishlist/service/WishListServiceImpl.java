@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import kr.spring.wishlist.dao.WishListMapper;
-import kr.spring.wishlist.vo.WishItemVO;
 import kr.spring.wishlist.vo.WishListVO;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,14 +47,16 @@ public class WishListServiceImpl implements WishListService{
 	public WishListVO selectWishList(WishListVO vo) {
 		return wishListMapper.selectWishList(vo);
 	}
-	
+
 	@Override
-	public List<WishItemVO> selectWishListByMemberId(Long memberId) {
-	    return wishListMapper.selectWishListByMemberId(memberId);
+	public int getWishListCountByMemberId(Long memberId) {
+		return wishListMapper.getWishListCountByMemberId(memberId);
 	}
 
-
-
+	@Override
+	public List<WishListVO> getWishListByMemberId(Long memberId) {
+		return wishListMapper.getWishListByMemberId(memberId);
+	}
 	
 }
 

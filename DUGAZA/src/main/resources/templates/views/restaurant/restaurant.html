@@ -25,7 +25,7 @@
         </form>
 
         <section class="restaurant-list">
-            <!-- <div class="list-header">
+            <div class="list-header">
                 <h2>추천 맛집</h2>
                 <div class="sort-options">
                     <select>
@@ -35,7 +35,7 @@
                         <option>거리순</option>
                     </select>
                 </div>
-            </div> -->
+            </div>
 
             <div class="restaurant-grid">
                 <article class="restaurant-card" th:each="restaurant : ${list}">
@@ -50,8 +50,8 @@
                         <div class="restaurant-content">
                             <h3 th:text="${restaurant.title}"></h3>
                             <div class="restaurant-meta">
-                                <span class="rating"><i class="fas fa-star"></i><span th:text="${restaurant.avgReview}"></span></span>
-                                <span class="reviews">(리뷰 <span th:text="${restaurant.countReview}"></span>)</span>
+                                <span class="rating"><i class="fas fa-star"></i> 4.8</span>
+                                <span class="reviews">(리뷰 238)</span>
                                 <span class="location" th:text="${restaurant.addr1}"></span>
                             </div>
                         </div>
