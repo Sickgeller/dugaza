@@ -107,6 +107,7 @@ public class SecurityConfig {
                     .requestMatchers("/house/**").permitAll()
                     .requestMatchers("/search/**").permitAll()
                     .requestMatchers("/restaurant/**").permitAll()
+                    .requestMatchers("/about/**","/privacy/**","/terms/**","/community/**").permitAll()
                     .requestMatchers("/transportation/**").permitAll() // 교통 관련 페이지 및 API 허용
                     .requestMatchers("/seller/login/**", "/seller/register/**","/seller/registerProc").permitAll() // 판매자 로그인/가입 페이지
                     .requestMatchers("/seller/**").hasAnyRole("SELLER", "CAR", "HOUSE") // 판매자 전용 페이지
