@@ -24,10 +24,6 @@
                             <i class="fas fa-user"></i>
                             <input type="text" id="id" th:field="*{id}" placeholder="아이디를 입력하세요" required>
                         </div>
-                        <div class="id-check-container">
-                            <button type="button" id="checkIdBtn" class="btn-check">중복확인</button>
-                            <div id="idCheckMsg" class="check-message"></div>
-                        </div>
                         <div class="notice">※ 아이디는 4~12자의 영문자와 숫자만 사용 가능합니다.</div>
                         <div class="error-message" th:if="${#fields.hasErrors('id')}" th:errors="*{id}"></div>
                     </div>
