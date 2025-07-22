@@ -1,6 +1,14 @@
 package kr.spring.api.client;
 
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.JsonNode;
+
 import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.dto.TrainCityApiDto;
 import kr.spring.api.dto.TrainKindApiDto;
@@ -8,12 +16,6 @@ import kr.spring.api.dto.TrainRouteApiDto;
 import kr.spring.api.dto.TrainStationApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Component
 @Slf4j

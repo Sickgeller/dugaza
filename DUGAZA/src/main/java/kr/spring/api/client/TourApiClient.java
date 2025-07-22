@@ -1,16 +1,18 @@
 package kr.spring.api.client;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import kr.spring.aop.LogExecutionTime;
-import kr.spring.api.dto.TourApiDto;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import kr.spring.aop.LogExecutionTime;
+import kr.spring.api.dto.TourApiDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component

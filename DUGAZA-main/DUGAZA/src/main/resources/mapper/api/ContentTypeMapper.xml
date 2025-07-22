@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.api.mapper.ContentTypeMapper">
+
+    <!-- TOUR_CONTENT_CODE 테이블에서 모든 콘텐츠 타입 코드 정보를 조회 -->
+    <select id="findAllContentTypeCodes" resultType="java.lang.Long">
+        SELECT
+            TOUR_CONTENT_ID
+        FROM
+            TOUR_CATEGORY_CODE
+    </select>
+    
+    <!-- 특정 카테고리 코드에 해당하는 콘텐츠 타입 코드 조회 -->
+    <select id="findContentTypeCodeByCategoryCode" resultType="java.lang.Long">
+        SELECT
+            TOUR_CONTENT_ID
+        FROM
+            TOUR_CATEGORY_CODE
+        WHERE 
+            CATEGORY_CODE = #{categoryCode}
+    </select>
+    
+    <!-- 카테고리 코드의 contentTypeId 업데이트 -->
+    <update id="updateCategoryContentTypeId">
+        UPDATE
+            SERVICE_CATEGORY
+        SET 
+            CONTENT_TYPE_ID = #{contentTypeId,jdbcType=NUMERIC},
+            UPDATED_AT = SYSDATE
+        WHERE 
+            CATEGORY_CODE = #{categoryCode}
+        AND CODE_LEVEL = 3
+    </update>
+    
+    <!-- 소분류(code_level=3)인 카테고리 코드 목록 조회 -->
+    <select id="findLevel3CategoryCodes" resultType="java.lang.String">
+        SELECT 
+            CATEGORY_CODE
+        FROM
+            SERVICE_CATEGORY
+        WHERE 
+            CODE_LEVEL = 3
+    </select>
+    
+    <!-- TOUR_CONTENT 테이블에서 CAT3와 CONTENT_TYPE_ID 매핑 조회 -->
+    <select id="findCat3ToContentTypeIdMappings" resultType="java.util.Map">
+        SELECT DISTINCT
+            CAT3 as categoryCode,
+            CONTENT_TYPE_ID as contentTypeId
+        FROM
+            TOUR_CONTENT
+        WHERE
+            CAT3 IS NOT NULL
+        AND CONTENT_TYPE_ID IS NOT NULL
+    </select>
+    
+    <!-- 모든 소분류 카테고리의 contentTypeId를 일괄 업데이트 -->
+    <update id="bulkUpdateContentTypeIds">
+        UPDATE SERVICE_CATEGORY sc
+        SET sc.CONTENT_TYPE_ID = (
+            SELECT tc.CONTENT_TYPE_ID
+            FROM TOUR_CONTENT tc
+            WHERE tc.CAT3 = sc.CATEGORY_CODE
+            AND ROWNUM = 1
+        ),
+        sc.UPDATED_AT = SYSDATE
+        WHERE sc.CODE_LEVEL = 3
+        AND EXISTS (
+            SELECT 1
+            FROM TOUR_CONTENT tc
+            WHERE tc.CAT3 = sc.CATEGORY_CODE
+        )
+    </update>
+    
+</mapper> 

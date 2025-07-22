@@ -1,0 +1,125 @@
+spring:
+  application:
+    name: SpringPage
+
+  thymeleaf:
+    prefix: classpath:templates/
+    suffix: .html
+    check-template-location: true
+    mode: HTML
+    cache: false #캐시를 사용하지 않음
+
+  web:
+    resources:
+      static-locations: classpath:/static/, classpath:/public/, classpath:/resources/, classpath:/META-INF/resources/
+      cache:
+        period: 0
+
+  datasource: #DB 접속
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: ${data-config.db-url}
+    username: ${data-config.db-username}
+    password: ${data-config.db-password}
+#    url: jdbc:oracle:thin:@localhost:1521:xe
+#    username: tmp_oracle
+#    password: 1234
+    hikari: #커넥션풀
+      connection-timeout: 30000 #클라이언트가 pool에 connection을 요청하는데 기다리는 최대시간을 설정 30초
+      maximum-pool-size: 10 #최대 커넥션 개수 설정
+      max-lifetime: 1800000
+
+  messages: #메시지
+    basename: messages.member,messages.JH,messages.JH2,messages.CH,messages.DW,messages.YB
+    encoding: UTF-8
+
+  devtools: #정적 자원(html, css, js) 수정 시 새로고침 없이 바로 적용
+    livereload:
+      enabled: true
+
+    restart: #컨트롤러, 모델단이 바뀌었을 때 프로젝트 재시작 설정 (정확히는 classpath에 있는 모든 파일)
+      enabled: true
+
+  servlet:
+    multipart:
+      max-file-size: 50MB #파일 한 개당 최대 사이즈
+      max-request-size: 50MB #요청당 최대 파일 크기
+
+  mail: # JavaMail 설정 (기존 javamail에서 변경)
+    host: smtp.gmail.com
+    port: 587
+    username: ${data-config.google-mail-url}
+    password: ${data-config.google-mail-password}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.ssl.trust: smtp.gmail.com
+      mail.transport.protocol: smtp
+      mail.debug: true
+    default-encoding: utf-8
+
+  config:
+    import: classpath:data-config.yml
+
+mybatis: #mybatis 설정
+  mapper-locations:
+    - classpath:mapper/*.xml
+    - classpath:mapper/**/*.xml
+    - classpath:mapper/api/*.xml
+    - classpath:kr/spring/api/mapper/*.xml
+    - classpath:kr/spring/**/dao/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
+    call-setters-on-nulls: true
+    jdbc-type-for-null: VARCHAR
+  type-aliases-package: kr.spring.api.dto,kr.spring.member.vo,kr.spring.faq.vo,kr.spring.room.dto
+
+logging: #로그 지정
+  level:
+    root: info
+    kr.spring: debug
+    kr.spring.aop: debug
+    kr.spring.api.client: debug
+    kr.spring.api.controller: debug
+    kr.spring.api.service: debug
+    kr.spring.auth.security: debug
+    kr.spring.review: trace
+    org.mybatis: trace
+    org.apache.ibatis: debug
+    org.springframework.security: debug
+    org.springframework.security.web.authentication.rememberme: debug
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  session:
+    persistent: false # 세션 영속화 비활성화(톰캣 재시작 시 세션 파일 복원 안함)
+    timeout: 3600 # 세션 타임아웃(초)
+
+# rememberMeKey 명확하게 지정
+# (이미 data-config.yml에 hayden으로 지정되어 있음)
+data-config:
+  rememberMe-key: remember-me
+
+# api 설정을 spring과 같은 레벨(최상위)로 이동
+api:
+  service-key: ${data-config.api.service-key}
+  tour:
+    base-url: ${data-config.api.tour.base-url}
+  train:
+    base-url: ${data-config.api.train.base-url}
+  express-bus:
+    base-url: ${data-config.api.express-bus.base-url}
+  kakao:
+    base-url: ${data-config.api.kakao.base-url}
+
+
+

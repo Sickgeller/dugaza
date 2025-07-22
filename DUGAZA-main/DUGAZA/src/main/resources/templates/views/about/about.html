@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout_basic}">
+
+<head>
+<meta charset="UTF-8">
+<title>DUGAZA 회사 소개</title>
+<link rel="stylesheet" th:href="@{/assets/css/about.css}">
+</head>
+
+<body>
+	<div layout:fragment="content">
+
+		<!-- 이미지 꽉차는 섹션 -->
+		<section class="image-section"
+			style="background-image: url('/assets/images/dugaza-hero.jpg');">
+			<div class="section-text">
+				<h2>
+					DUGAZA.COM<br>든든한 여행 파트너로서, 전 세계 고객에게 최적의 여행 경험을 제공합니다.
+				</h2>
+			</div>
+		</section>
+
+		<!-- 텍스트는 래퍼로 감쌈 -->
+		<div class="wrapper">
+			<div class="highlight-text">회사 소개</div>
+			<section class="about-section">
+				<p>드가자닷컴은 39개 국가 및 지역에서 24개 언어, 35개 현지 통화로 이용할 수 있는 글로벌 원스톱 여행
+					서비스 기업입니다.</p>
+				<p>드가자닷컴은 전세계 220개 국가 및 지역의 3,400개 공항을 연결하는 600개 이상의 항공사와 170만 개
+					이상의 호텔로 구성된 광범위한 호텔 및 항공편 네트워크를 보유하고 있습니다.</p>
+				<p>드가자닷컴은 세계 최고 수준의 연중무휴 24시간 다국어 고객 서비스를 제공하고 있으며, 에든버러, 도쿄,
+					서울에 위치한 추가적인 고객센터를 통해 전세계 수백만 고객에게 '최고의 여행 경험'을 제공하기 위해 노력하고 있습니다.
+					다음 여행은 트립닷컴과 함께 하세요.</p>
+				<br> <br>
+			</section>
+		</div>
+
+		<!-- 다음 섹션 이미지 -->
+		<section class="image-section"
+			style="background-image: url('/assets/images/sustainability.jpg');">
+			<div class="section-text">
+				<h2>지속가능성</h2>
+				<p>드가자닷컴 그룹은 환경 중심 경영 실천, 지역사회 상생 활동, 가족 친화적 프로그램, 주주 친화적 협업을
+					통하여 지속가능성을 위해 최선을 다하고 있습니다</p>
+			</div>
+		</section>
+		<br> <br>
+
+		<!-- 지역사회 -->
+		<div class="wrapper">
+			<div class="highlight-text">지역사회친화</div>
+			<section class="about-section">
+				<h2>SOS 서비스 및 당사의 CSR 활동</h2>
+				<p style="font-size: 26px; font-weight: bold;">- 글로벌 SOS 서비스</p>
+				<p>'글로벌 SOS 서비스'는 전세계 사용자에게 번역 및 분실 수하물 지원과 같은 긴급 지원 서비스를 제공합니다.</p>
+				<p style="font-size: 26px; font-weight: bold;">- 환경 중심</p>
+				<p>드가자닷컴 그룹은 도움이 필요한 지역사회를 지원하고 젊은 세대를 육성하는 데 전념합니다. 기부와 자원봉사를
+					포함한 다양한 지역사회 이니셔티브를 통해 지역 자선단체를 지원하고 지속 가능한 관광 문화를 장려함으로써 긍정적인 영향을
+					창출하기 위해 노력합니다.</p>
+				<br>
+			</section>
+		</div>
+
+		<section class="image-section"
+			style="background-image: url('/assets/images/environment.jpg');">
+			<div class="wrapper">
+				<div class="section-text" style="text-align: left;">
+					<h2>환경 중심</h2>
+					<p style="font-size: 26px; font-weight: bold;">- 당사의 탄소 중립 목표</p>
+					<p>2050년까지 전 사업 부문에서 탄소 중립을 달성하고, 2022년(기준연도) 대비 47.5%의 스코프
+						1(직접 발생 온실가스 배출량) 및 스코프 2(기업의 에너지 구매로 발생하는 간접 온실가스 배출량) 온실가스 배출량을
+						감축하는 한편, 2030년까지 스코프 3(기타 간접 온실가스 배출량)을 효과적으로 측정 및 감축하여 지구 온도 상승
+						1.5°C 제한 목표를 달성하고 SBTi를 지원하여 2050년까지 탄소 중립을 달성하기 위해 최선을 다하고 있습니다.</p>
+				</div>
+			</div>
+		</section>
+
+		<div class="wrapper">
+			<div class="highlight-text">가족 친화</div>
+
+			<section class="about-section">
+				<h2>직원과 가족의 안녕을 지원하기 위한 노력</h2>
+				<img src="/assets/images/family.jpg" alt="가족 이미지">
+				<p style="font-size: 26px; font-weight: bold;">- 육아 지원금</p>
+				<p>회사는 직원들의 가족계획을 지원하고 워라밸을 장려하기 위해 미화 1억 3천만 달러 이상의 보조금을 지급할
+					계획입니다.</p>
+				<p style="font-size: 26px; font-weight: bold;">- 하이브리드 근무 규정</p>
+				<p>드가자닷컴 그룹은 글로벌 혼합 근무 방식 모델을 채택하여 직원들에게 매주 지정된 요일에 유연하게 원격 근무를
+					할 수 있게 합니다.</p>
+			</section>
+		</div>
+
+		<div class="wrapper">
+			<div class="highlight-text">주주 친화</div>
+
+			<section class="about-section">
+				<h2>책임감 있는 여행을 위한 ESG 거버넌스 및 애드보커시</h2>
+				<img src="/assets/images/juju.jpg" alt="주주 이미지">
+				<p>드가자닷컴 그룹은 기업의 사회적 책임 이니셔티브를 추진하기 위해 주정호 CEO가 이끄는 ESG 경영위원회를
+					설립하는 등 포괄적인 지속가능성 관리 시스템을 구축했습니다.</p>
+				<p>드가자닷컴 그룹은 책임감 있는 여행 경험을 제공하기 위해 다양한 파트너와 적극적으로 협력하고 있습니다.</p>
+			</section>
+		</div>
+	</div>
+</body>
+</html>

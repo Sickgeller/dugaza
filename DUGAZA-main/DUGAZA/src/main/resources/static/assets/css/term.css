@@ -1,0 +1,38 @@
+.terms-wrapper {
+	max-width: 1000px;
+	margin: 50px auto;
+	padding: 40px;
+	background: #fff;
+	border-radius: 8px;
+	line-height: 1.8;
+	color: #222;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.terms-wrapper h1 {
+	text-align: center;
+	color: #0056b3;
+	font-size: 28px;
+	margin-bottom: 5px;
+}
+
+.terms-wrapper .date {
+	text-align: center;
+	font-size: 14px;
+	color: #666;
+	margin-bottom: 30px;
+}
+
+.terms-wrapper h2 {
+	font-size: 18px; 
+	font-weight: bold;
+	margin-top: 30px;
+	margin-bottom: 10px;
+}
+
+.terms-wrapper p {
+	font-size: 15px;
+	color: #333;
+	margin-bottom: 15px;
+	text-align: left;
+}

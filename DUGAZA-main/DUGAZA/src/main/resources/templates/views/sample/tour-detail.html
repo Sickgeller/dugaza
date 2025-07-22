@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${info.title}"></title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+     <link rel="stylesheet" th:href="@{/assets/css/tour-detail.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <main class="detail-main" layout:fragment="content">
+        <div class="detail-container">
+            <div class="detail-header">
+                <div class="detail-title">
+                    <h1 th:text="${info.title}"></h1>
+                    <div class="detail-meta">
+                        <span class="location"><i class="fas fa-map-marker-alt" th:text="${info.addr1}"></i></span>
+                        <span class="rating"><i class="fas fa-star"></i> 4.5</span>
+                        <span class="reviews"><i class="fas fa-comment"></i> 리뷰 2,345개</span>
+                    </div>
+                </div>
+                <button class="like-btn"><i class="fas fa-heart"></i> 찜하기</button>
+            </div>
+
+            <div class="detail-gallery">
+                <div class="main-image">
+                    <img th:src="${info.firstImage}" alt="경복궁 대표 이미지">
+                </div>
+            </div>
+
+            <div class="detail-content">
+                <section class="info-section">
+    <h2>상세 정보</h2>
+    <div class="info-grid">
+
+        <div class="info-item" th:if="${info.useTime != null or info.useSeason != null or info.restDate != null}">
+            <h3><i class="fas fa-clock"></i> 운영시간</h3>
+            <p th:if="${info.useSeason != null}" th:text="'사용 가능 시즌: ' + ${info.useSeason}"></p>
+            <p th:if="${info.useTime != null}" th:text="'이용 시간: ' + ${info.useTime}"></p>
+            <p th:if="${info.restDate != null}" th:text="'휴무일: ' + ${info.restDate}"></p>
+        </div>
+
+        <div class="info-item" th:if="${info.openDate != null}">
+            <h3><i class="fas fa-door-open"></i> 개장일</h3>
+            <p th:text="${info.openDate}"></p>
+        </div>
+
+        <div class="info-item" th:if="${info.accomCount != null}">
+            <h3><i class="fas fa-users"></i> 수용 인원</h3>
+            <p th:text="${info.accomCount} + '명'"> </p>
+        </div>
+
+        <div class="info-item" th:if="${info.chkCreditCard != null}">
+            <h3><i class="fas fa-credit-card"></i> 결제 수단</h3>
+            <p th:text="${info.chkCreditCard == '1'} ? '신용카드 결제 가능' : '신용카드 결제 불가'"></p>
+        </div>
+
+        <div class="info-item" th:if="${info.chkBabyCarriage != null}">
+            <h3><i class="fas fa-baby-carriage"></i> 유모차</h3>
+            <p th:text="${info.chkBabyCarriage == '1'} ? '유모차 대여 가능' : '유모차 대여 불가'"></p>
+        </div>
+
+        <div class="info-item" th:if="${info.chkPet != null}">
+            <h3><i class="fas fa-dog"></i> 반려동물</h3>
+            <p th:text="${info.chkPet == '1'} ? '반려동물 동반 가능' : '불가'"></p>
+        </div>
+
+        <div class="info-item" th:if="${info.expageRange != null or info.expGuide != null}">
+            <h3><i class="fas fa-child"></i> 체험 정보</h3>
+            <p th:if="${info.expageRange != null}" th:text="'체험 가능 연령: ' + ${info.expageRange}"></p>
+            <p th:if="${info.expGuide != null}" th:text="'체험 안내: ' + ${info.expGuide}"></p>
+        </div>
+
+        <div class="info-item" th:if="!${info.heritage1 != null or info.heritage2 != null or info.heritage3 != null or 
+        info.heritage1 != 0 or info.heritage2 != 0 or info.heritage3 != 0}">
+            <h3><i class="fas fa-landmark"></i> 세계유산 여부</h3>
+            <ul>
+                <li th:if="${info.heritage1 == 1}">세계 문화 유산</li>
+                <li th:if="${info.heritage2 == 1}">세계 자연 유산</li>
+                <li th:if="${info.heritage3 == 1}">세계 기록 유산</li>
+            </ul>
+        </div>
+
+        <div class="info-item" th:if="${info.infoCenter != null}">
+            <h3><i class="fas fa-info-circle"></i> 안내 센터</h3>
+            <p th:text="${info.infoCenter}"></p>
+        </div>
+
+        <div class="info-item" th:if="${info.parking != null}">
+            <h3><i class="fas fa-parking"></i> 주차</h3>
+            <p th:text="${info.parking}"></p>
+        </div>
+
+    </div>
+</section>
+
+                <!-- <section class="description-section">
+                    <h2>소개</h2>
+                    <p>경복궁은 조선시대 건립된 조선의 법궁(法宮)으로, 조선의 정치와 문화의 중심지였습니다. 1395년 태조 이성계가 창건하였고, 1592년 임진왜란으로 불타 없어졌다가, 1867년 흥선대원군의 주도로 중건되었습니다.</p>
+                    <p>현재는 근정전, 경회루, 향원정 등 주요 전각들이 복원되어 있으며, 매일 정기적으로 수문장 교대의식이 진행되고 있습니다. 또한 야간 특별 관람도 운영되어 아름다운 야경을 감상할 수 있습니다.</p>
+                </section> -->
+
+                <section class="map-section">
+                    <h2>위치</h2>
+                  	<span th:if="${not #strings.isEmpty(info.addr1) or not #strings.isEmpty(info.addr2)}"
+      				th:text="${#strings.defaultString(info.addr1, '') + ' ' + #strings.defaultString(info.addr2, '')}">
+					</span>
+                    <div class="map-container">
+                        <!-- 지도가 들어갈 자리 -->
+                        <div class="map-placeholder" id="map"></div>
+                        <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0004c4e85aaef62938a2afa572f9f526"></script>
+						<script th:inline="javascript">
+							var container = document.getElementById('map');
+							var options = {
+								center: new kakao.maps.LatLng(/*[[${info.mapY}]]*/, /*[[${info.mapX}]]*/),
+								level: 3
+							};
+					
+							var map = new kakao.maps.Map(container, options);
+							
+							// 마커가 표시될 위치입니다 
+							var markerPosition  = new kakao.maps.LatLng(/*[[${info.mapY}]]*/, /*[[${info.mapX}]]*/); 
+
+							// 마커를 생성합니다
+							var marker = new kakao.maps.Marker({
+							    position: markerPosition
+							});
+
+							// 마커가 지도 위에 표시되도록 설정합니다
+							marker.setMap(map);
+						</script>
+                    </div>
+                </section>
+
+                <section class="review-section">
+                    <h2>리뷰</h2>
+                    <div class="review-item">
+                        <div class="review-header">
+                            <img src="../images/users/profile1.jpg" alt="사용자 프로필">
+                            <div class="user-info">
+                                <h3>김여행</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                            </div>
+                            <span class="review-date">2024.03.15</span>
+                        </div>
+                        <p>정말 아름다운 곳이에요! 특히 야경이 멋졌습니다.</p>
+                        <div class="review-images">
+                            <img src="../images/tour/gyeongbokgung-1.jpg" alt="리뷰 이미지 1">
+                            <img src="../images/tour/gyeongbokgung-2.jpg" alt="리뷰 이미지 2">
+                            <img src="../images/tour/gyeongbokgung-3.jpg" alt="리뷰 이미지 3">
+                        </div>
+                    </div>
+                    <div class="review-item">
+                        <div class="review-header">
+                            <img src="../images/users/profile2.jpg" alt="사용자 프로필">
+                            <div class="user-info">
+                                <h3>박관광</h3>
+                                <div class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <span class="review-date">2024.03.14</span>
+                        </div>
+                        <p>가이드분이 친절하시고 설명도 자세히 해주셔서 좋았어요.</p>
+                        <div class="review-images">
+                            <img src="../images/tour/gyeongbokgung-4.jpg" alt="리뷰 이미지 1">
+                            <img src="../images/tour/gyeongbokgung-2.jpg" alt="리뷰 이미지 2">
+                        </div>
+                    </div>
+                    <div class="pagination">
+                        <button><i class="fas fa-chevron-left"></i></button>
+                        <div class="numbers">
+                            <button class="active">1</button>
+                            <button>2</button>
+                            <button>3</button>
+                            <button>4</button>
+                            <button>5</button>
+                        </div>
+                        <button><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</body>
+</html> 

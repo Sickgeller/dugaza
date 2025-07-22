@@ -1,13 +1,14 @@
 package kr.spring.api.client;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import kr.spring.api.dto.CulturalCenterDetailApiDto;
-import kr.spring.api.dto.LeportsDetailApiDto;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.net.URI;
+
 import org.springframework.stereotype.Component;
 
-import java.net.URI;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import kr.spring.api.dto.CulturalCenterDetailApiDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Component

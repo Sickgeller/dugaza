@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	layout:decorate="~{layouts/layout_basic}">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>커뮤니티 상세 글 보기 - 드가자닷컴</title>
+<link rel="stylesheet" th:href="@{/assets/css/style.css}">
+<link rel="stylesheet" th:href="@{/assets/css/community-detail.css}">
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+	<main class="community-main" layout:fragment="content">
+		<div class="community-container">
+
+			<!-- 제목 -->
+			<div class="post-title-section">
+				<h1 th:text="${post.title}">제목</h1>
+				<div class="post-meta">
+					<span><i class="fas fa-user"></i> <strong
+						th:text="${post.writer}">작성자</strong></span> <span>・</span> <span><i
+						class="fas fa-tag"></i> <strong th:text="${post.category}">카테고리</strong></span>
+					<span>・</span> <span><i class="fas fa-clock"></i> <strong
+						th:text="${#dates.format(post.regdate, 'yyyy.MM.dd HH:mm')}">작성일</strong></span>
+
+					<!-- 오른쪽 끝에 수정/삭제 -->
+					<span style="float: right;" sec:authorize="isAuthenticated()"
+						th:if="${isOwner}"> <a
+						th:href="@{/community/edit(id=${post.id})}" class="edit-btn">수정</a>
+						<a th:href="@{/community/delete(id=${post.id})}"
+						class="delete-btn" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</a>
+					</span>
+				</div>
+
+			</div>
+
+			<hr>
+
+			<!-- 본문 -->
+			<div class="post-content-section">
+				<img th:src="@{'/upload/' + ${post.filename}}" alt="여행 사진">
+				<div class="post-content" th:text="${post.content}">내용</div>
+				<div class="post-stats">
+
+					<div sec:authorize="isAuthenticated()">
+						<button type="button" id="likeBtn" th:data-liked="${liked}">
+							<i id="likeIcon"
+								th:classappend="${liked} ? 'fas fa-heart' : 'far fa-heart'"
+								th:style="${liked} ? 'color: red;' : ''"></i> <strong
+								id="likeCount" th:text="${post.likeCount}">0</strong> 좋아요
+						</button>
+					</div>
+
+					<div sec:authorize="isAnonymous()">
+						<button type="button" id="likeBtnGuest">
+							<i class="far fa-heart"></i> <strong th:text="${post.likeCount}">0</strong>
+							좋아요
+						</button>
+					</div>
+
+					<span>・</span> <span><i class="fas fa-comment"></i> <strong
+						th:text="${post.commentCount}">0</strong> 댓글</span> <span>・</span> <span><i
+						class="fas fa-eye"></i> <strong th:text="${post.viewCount}">0</strong>
+						조회</span>
+				</div>
+			</div>
+
+
+			<hr>
+
+			<!-- 댓글 목록 -->
+			<div class="post-comments-section">
+				<h3>
+					댓글 <span th:text="${#lists.size(replyList)}">0</span>
+				</h3>
+
+				<div th:if="${#lists.isEmpty(replyList)}">
+					<p>등록된 댓글이 없습니다.</p>
+				</div>
+
+				<div th:each="reply : ${replyList}" class="comment-item">
+					<div class="comment-meta">
+						<strong th:text="${post.writer}">작성자</strong> <span>・</span> <span
+							th:text="${#dates.format(reply.regdate, 'yyyy.MM.dd HH:mm')}">작성일</span>
+					</div>
+					<div class="comment-content" th:text="${reply.content}">댓글 내용</div>
+				</div>
+			</div>
+
+			<hr>
+
+			<!-- 댓글 작성 -->
+			<div class="post-reply-section">
+				<h3>댓글 달기</h3>
+
+				<div sec:authorize="isAuthenticated()">
+					<form method="post" action="/community/reply">
+						<input type="hidden" name="postId" th:value="${post.id}">
+						<textarea name="content" rows="4" placeholder="댓글을 입력하세요"
+							style="width: 100%;"></textarea>
+						<div class="reply-actions">
+							<button type="submit" class="reply-btn">댓글 작성</button>
+						</div>
+					</form>
+				</div>
+
+				<div sec:authorize="isAnonymous()">
+					<p>
+						댓글을 작성하려면 <a href="/login">로그인</a>이 필요합니다.
+					</p>
+				</div>
+			</div>
+
+		</div>
+
+		<script>
+const postId = [[${post.id}]];
+
+// 로그인 상태
+const likeBtn = document.getElementById('likeBtn');
+if (likeBtn) {
+    likeBtn.addEventListener('click', function () {
+        fetch('/community/like?id=' + postId, {
+            method: 'POST'
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('likeCount').textContent = data.likeCount;
+
+            const icon = document.getElementById('likeIcon');
+            if (data.liked) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                icon.style.color = 'red';
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                icon.style.color = '';
+            }
+        });
+    });
+}
+
+// 비로그인 상태
+const likeBtnGuest = document.getElementById('likeBtnGuest');
+if (likeBtnGuest) {
+    likeBtnGuest.addEventListener('click', function () {
+        alert('좋아요를 누르려면 로그인해주세요!');
+    });
+}
+</script>
+
+
+	</main>
+</body>
+</html>

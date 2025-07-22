@@ -1,15 +1,17 @@
 package kr.spring.api.client;
 
+import java.net.URI;
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.JsonNode;
+
 import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.dto.ExpressBusCityApiDto;
 import kr.spring.api.dto.ExpressBusGradeApiDto;
 import kr.spring.api.dto.ExpressBusTerminalApiDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
-import java.net.URI;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

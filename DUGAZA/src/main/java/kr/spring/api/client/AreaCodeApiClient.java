@@ -1,15 +1,17 @@
 package kr.spring.api.client;
 
+import java.net.URI;
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.JsonNode;
+
 import kr.spring.aop.LogExecutionTime;
 import kr.spring.api.dto.AreaCodeApiDto;
 import kr.spring.api.dto.SigunguCodeApiDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
-import java.net.URI;
-import java.util.List;
 
 @Slf4j
 @Component

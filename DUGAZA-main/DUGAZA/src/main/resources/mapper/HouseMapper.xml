@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="kr.spring.house.dao.HouseMapper">
+<!-- <resultMap id="contentMap" type="kr.spring.tour.vo.TourVO">
+    <result property="areaCode" column="AREA_CODE" />
+    <result property="cat1" column="CAT1" />
+    <result property="cat2" column="CAT2" />
+    <result property="cat3" column="CAT3" />
+    <result property="contentId" column="CONTENT_ID" />
+    <result property="contentTypeId" column="CONTENT_TYPE_ID" />
+    <result property="firstImage" column="FIRST_IMAGE" />
+    <result property="firstImage2" column="FIRST_IMAGE2" />
+    <result property="cpyrhtDivCd" column="CPYRHT_DIV_CD" />
+    <result property="mapX" column="MAP_X" />
+    <result property="mapY" column="MAP_Y" />
+    <result property="sigunguCode" column="SIGUNGU_CODE" />
+    <result property="createdAt" column="CREATED_AT" />
+    <result property="updatedAt" column="UPDATED_AT" />
+    <result property="showFlag" column="SHOW_FLAG" />
+</resultMap> -->
+<resultMap id="houseMap" type="kr.spring.house.vo.HouseVO">
+    <result property="areaCode" column="AREA_CODE" />
+    <result property="cat1" column="CAT1" />
+    <result property="cat2" column="CAT2" />
+    <result property="cat3" column="CAT3" />
+    <result property="contentId" column="CONTENT_ID" />
+    <result property="contentTypeId" column="CONTENT_TYPE_ID" />
+    <result property="firstImage" column="FIRST_IMAGE" />
+    <result property="firstImage2" column="FIRST_IMAGE2" />
+    <result property="cpyrhtDivCd" column="CPYRHT_DIV_CD" />
+    <result property="mapX" column="MAP_X" />
+    <result property="mapY" column="MAP_Y" />
+    <result property="sigunguCode" column="SIGUNGU_CODE" />
+    <result property="createdAt" column="CREATED_AT" />
+    <result property="updatedAt" column="UPDATED_AT" />
+    <result property="showFlag" column="SHOW_FLAG" />
+    <result property="title" column="TITLE" />
+    <result property="addr1" column="ADDR1" />
+    <result property="addr2" column="ADDR2" />
+    <result property="zipcode" column="ZIPCODE" />
+    <result property="tel" column="TEL" />
+    <result property="accomCountLodging" column="ACCOM_COUNT_LODGING" />
+    <result property="checkInTime" column="CHECK_IN_TIME" />
+    <result property="checkOutTime" column="CHECK_OUT_TIME" />
+    <result property="chkCooking" column="CHK_COOKING" />
+    <result property="foodPlace" column="FOOD_PLACE" />
+    <result property="infoCenterLodging" column="INFO_CENTER_LODGING" />
+    <result property="parkingLodging" column="PARKING_LODGING" />
+    <result property="pickup" column="PICKUP" />
+    <result property="roomCount" column="ROOM_COUNT" />
+    <result property="reservationLodging" column="RESERVATION_LODGING" />
+    <result property="reservationUrl" column="RESERVATION_URL" />
+    <result property="roomType" column="ROOM_TYPE" />
+    <result property="scaleLodging" column="SCALE_LODGING" />
+    <result property="subFacility" column="SUB_FACILITY" />
+    <result property="barbecue" column="BARBECUE" />
+    <result property="beauty" column="BEAUTY" />
+    <result property="beverage" column="BEVERAGE" />
+    <result property="bicycle" column="BICYCLE" />
+    <result property="campfire" column="CAMPFIRE" />
+    <result property="fitness" column="FITNESS" />
+    <result property="karaoke" column="KARAOKE" />
+    <result property="publicBath" column="PUBLIC_BATH" />
+    <result property="publicPc" column="PUBLIC_PC" />
+    <result property="sauna" column="SAUNA" />
+    <result property="seminar" column="SEMINAR" />
+    <result property="sports" column="SPORTS" />
+    <result property="refundRegulation" column="REFUND_REGULATION" />
+</resultMap>
+	<sql id="houseSearch">
+			<if test="category != null and category != 0">
+				AND content_type_id = #{category}	
+			</if>
+			<if test="keyword != null and keyword != ''">
+				AND (title LIKE '%' || #{keyword} || '%' OR
+				addr1 LIKE '%' || #{keyword} || '%' OR
+				addr2 LIKE '%' || #{keyword} || '%') 
+			</if>
+            <if test="cat3 != null and cat3 != ''">
+                AND cat3 = #{cat3}
+            </if>
+	</sql>
+	<!-- 전체/검색 레코드수 (숙박:32번) -->
+	<select id="selectRowCount" resultType="integer">
+		SELECT
+		  COUNT(*)
+		FROM tour_content WHERE content_type_id = 32
+		<include refid="houseSearch"/>                          
+	</select>
+	
+	<!-- 전체/검색 목록 -->
+	<!-- <select id="selectList" parameterType="map"
+	                        resultMap="houseMap">
+		SELECT
+		  *
+		FROM (SELECT
+		        a.*,
+		        rownum rnum
+		      FROM (SELECT
+		              *
+		            FROM tour_content c WHERE c.content_type_id = 32
+		            <include refid="houseSearch"/> 
+		            ORDER BY c.updated_at DESC NULLS LAST)a)
+	<![CDATA[
+		WHERE rnum >= #{start, jdbcType=INTEGER} AND rnum <= #{end, jdbcType=INTEGER}
+	]]>	             
+	</select> -->
+	
+	<!-- 전체/검색 목록 -->
+	<select id="selectList" parameterType="map"
+	                        resultMap="houseMap">
+		SELECT
+		  AREA_CODE, CAT1, CAT2, CAT3, CONTENT_ID, CONTENT_TYPE_ID, FIRST_IMAGE, FIRST_IMAGE2, CPYRHT_DIV_CD, MAP_X, MAP_Y, SIGUNGU_CODE, CREATED_AT, UPDATED_AT, SHOW_FLAG, TITLE, ADDR1, ADDR2, ZIPCODE, TEL,
+		  ACCOM_COUNT_LODGING, CHECK_IN_TIME, CHECK_OUT_TIME, CHK_COOKING, FOOD_PLACE, INFO_CENTER_LODGING, PARKING_LODGING, PICKUP, ROOM_COUNT, RESERVATION_LODGING, RESERVATION_URL, ROOM_TYPE, SCALE_LODGING, SUB_FACILITY, BARBECUE, BEAUTY, BEVERAGE, BICYCLE, CAMPFIRE, FITNESS, KARAOKE, PUBLIC_BATH, PUBLIC_PC, SAUNA, SEMINAR, SPORTS, REFUND_REGULATION, rnum
+		FROM (
+		    SELECT
+		        tc.AREA_CODE, tc.CAT1, tc.CAT2, tc.CAT3, tc.CONTENT_ID, tc.CONTENT_TYPE_ID, tc.FIRST_IMAGE, tc.FIRST_IMAGE2, tc.CPYRHT_DIV_CD, tc.MAP_X, tc.MAP_Y, tc.SIGUNGU_CODE, tc.CREATED_AT, tc.UPDATED_AT, tc.SHOW_FLAG, tc.TITLE, tc.ADDR1, tc.ADDR2, tc.ZIPCODE, tc.TEL,
+		        hd.ACCOM_COUNT_LODGING, hd.CHECK_IN_TIME, hd.CHECK_OUT_TIME, hd.CHK_COOKING, hd.FOOD_PLACE, hd.INFO_CENTER_LODGING, hd.PARKING_LODGING, hd.PICKUP, hd.ROOM_COUNT, hd.RESERVATION_LODGING, hd.RESERVATION_URL, hd.ROOM_TYPE, hd.SCALE_LODGING, hd.SUB_FACILITY, hd.BARBECUE, hd.BEAUTY, hd.BEVERAGE, hd.BICYCLE, hd.CAMPFIRE, hd.FITNESS, hd.KARAOKE, hd.PUBLIC_BATH, hd.PUBLIC_PC, hd.SAUNA, hd.SEMINAR, hd.SPORTS, hd.REFUND_REGULATION,
+		        ROW_NUMBER() OVER (ORDER BY tc.updated_at DESC NULLS LAST) AS rnum
+		    FROM tour_content tc LEFT JOIN house_detail hd ON tc.content_id = hd.content_id
+		    WHERE tc.content_type_id = 32
+		    <include refid="houseSearch"/> 
+		) a
+	<![CDATA[
+		WHERE rnum >= #{start, jdbcType=INTEGER} AND rnum <= #{end, jdbcType=INTEGER}
+	]]>	             
+	</select>
+	
+	<!-- 숙소 항목 -->
+    <select id="selectHouse" parameterType="long" resultMap="houseMap">
+        SELECT
+            *
+        FROM house_detail
+                 JOIN tour_content USING(content_id)
+        WHERE content_id=#{id}
+    </select>
+
+	<select id="selectHouseWithSellerId" parameterType="long" resultMap="houseMap">
+		SELECT
+			*
+		FROM house_detail hd
+        join house_seller_detail hsd
+		on hd.content_id = hsd.house_id
+		WHERE hsd.seller_id = ${id}
+	</select>
+</mapper>
+

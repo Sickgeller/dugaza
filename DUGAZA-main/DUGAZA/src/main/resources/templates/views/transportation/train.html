@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기차 예약 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/train.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <main layout:fragment="content">
+        <section class="booking-section">
+            <div class="booking-container">
+                <h1>기차 예약</h1>
+                <div class="train-types">
+                    <label class="train-type">
+                        <input type="checkbox" checked>
+                        <span>KTX</span>
+                    </label>
+                    <label class="train-type">
+                        <input type="checkbox" checked>
+                        <span>ITX-새마을</span>
+                    </label>
+                    <label class="train-type">
+                        <input type="checkbox" checked>
+                        <span>무궁화호</span>
+                    </label>
+                </div>
+                <form class="booking-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>출발역</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <input type="text" placeholder="출발역을 선택하세요">
+                            </div>
+                        </div>
+                        <div class="swap-button">
+                            <button type="button">
+                                <i class="fas fa-exchange-alt"></i>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label>도착역</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <input type="text" placeholder="도착역을 선택하세요">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>가는 날</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-calendar"></i>
+                                <input type="date">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>인원</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user"></i>
+                                <select>
+                                    <option value="1">1명</option>
+                                    <option value="2">2명</option>
+                                    <option value="3">3명</option>
+                                    <option value="4">4명</option>
+                                    <option value="5">5명</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="search-button">열차 조회하기</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="search-results">
+            <h2>검색 결과</h2>
+            <div class="results-container">
+                <div class="train-card">
+                    <div class="train-info">
+                        <span class="train-type ktx">KTX</span>
+                        <div class="time-info">
+                            <div class="departure">
+                                <h3>06:00</h3>
+                                <p>서울역</p>
+                            </div>
+                            <div class="duration">
+                                <i class="fas fa-arrow-right"></i>
+                                <span>2시간 30분</span>
+                            </div>
+                            <div class="arrival">
+                                <h3>08:30</h3>
+                                <p>부산역</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="price-info">
+                        <p class="price">59,800원</p>
+                        <p class="seats">잔여 45석</p>
+                        <button class="book-button">예약하기</button>
+                    </div>
+                </div>
+
+                <div class="train-card">
+                    <div class="train-info">
+                        <span class="train-type itx">ITX-새마을</span>
+                        <div class="time-info">
+                            <div class="departure">
+                                <h3>07:00</h3>
+                                <p>서울역</p>
+                            </div>
+                            <div class="duration">
+                                <i class="fas fa-arrow-right"></i>
+                                <span>3시간 15분</span>
+                            </div>
+                            <div class="arrival">
+                                <h3>10:15</h3>
+                                <p>부산역</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="price-info">
+                        <p class="price">42,600원</p>
+                        <p class="seats">잔여 78석</p>
+                        <button class="book-button">예약하기</button>
+                    </div>
+                </div>
+
+                <div class="train-card">
+                    <div class="train-info">
+                        <span class="train-type mugunghwa">무궁화호</span>
+                        <div class="time-info">
+                            <div class="departure">
+                                <h3>08:00</h3>
+                                <p>서울역</p>
+                            </div>
+                            <div class="duration">
+                                <i class="fas fa-arrow-right"></i>
+                                <span>4시간 45분</span>
+                            </div>
+                            <div class="arrival">
+                                <h3>12:45</h3>
+                                <p>부산역</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="price-info">
+                        <p class="price">28,600원</p>
+                        <p class="seats">잔여 124석</p>
+                        <button class="book-button">예약하기</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html> 

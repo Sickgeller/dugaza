@@ -1,6 +1,5 @@
 package kr.spring.api.client;
 
-import lombok.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 

@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.review.base.dao.BaseReviewMapper">
+
+    <resultMap id="reviewResultMap" type="kr.spring.review.base.vo.BaseReviewVO">
+        <id property="reviewId" column="REVIEW_ID" jdbcType="NUMERIC" />
+        <result property="memberId" column="MEMBER_ID" jdbcType="NUMERIC" />
+        <result property="contentId" column="CONTENT_ID" jdbcType="NUMERIC" />
+        <result property="reservationId" column="RESERVATION_ID" jdbcType="NUMERIC" />
+        <result property="rating" column="RATING" jdbcType="DOUBLE" />
+        <result property="status" column="STATUS" jdbcType="NUMERIC" />
+        <result property="review" column="REVIEW" jdbcType="VARCHAR" />
+        <result property="createdAt" column="CREATED_AT" jdbcType="TIMESTAMP" />
+        <result property="updatedAt" column="UPDATED_AT" jdbcType="TIMESTAMP" />
+        <result property="contentTypeId" column="CONTENT_TYPE_ID" jdbcType="NUMERIC" />
+        <result property="id" column="ID" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <resultMap id="reviewStatisticsResultMap" type="kr.spring.review.base.vo.ReviewStatisticsVO">
+        <result property="averageRating" column="AVERAGERATING" />
+        <result property="totalCount" column="TOTALCOUNT" />
+        <result property="recentCount" column="RECENTCOUNT" />
+        <result property="fiveStarCount" column="FIVESTARCOUNT" />
+        <result property="fourStarCount" column="FOURSTARCOUNT" />
+        <result property="threeStarCount" column="THREESTARCOUNT" />
+        <result property="twoStarCount" column="TWOSTARCOUNT" />
+        <result property="oneStarCount" column="ONESTARCOUNT" />
+        <result property="fiveStarRatio" column="FIVESTARRATIO" />
+        <result property="fourStarRatio" column="FOURSTARRATIO" />
+        <result property="threeStarRatio" column="THREESTARRATIO" />
+        <result property="twoStarRatio" column="TWOSTARRATIO" />
+        <result property="oneStarRatio" column="ONESTARRATIO" />
+    </resultMap>
+
+    <!-- 판매자별 리뷰 조회 -->
+    <select id="findHouseReviewBySellerId" resultMap="reviewResultMap" parameterType="map">
+        SELECT * FROM (
+            SELECT ROWNUM AS RN, R.*
+            FROM (
+                SELECT
+                    TO_NUMBER(R.REVIEW_ID) as REVIEW_ID,
+                    TO_NUMBER(R.MEMBER_ID) as MEMBER_ID,
+                    TO_NUMBER(R.CONTENT_ID) as CONTENT_ID,
+                    TO_NUMBER(R.RESERVATION_ID) as RESERVATION_ID,
+                    TO_NUMBER(NVL(R.RATING, 0)) as RATING,
+                    TO_NUMBER(NVL(R.STATUS, 1)) as STATUS,
+                    NVL(R.REVIEW, '') as REVIEW,
+                    R.CREATED_AT,
+                    R.UPDATED_AT,
+                    TO_NUMBER(R.CONTENT_TYPE_ID) as CONTENT_TYPE_ID,
+                    TO_CHAR(M.ID) as ID
+                FROM REVIEWS R
+                JOIN MEMBER M ON M.MEMBER_ID = R.MEMBER_ID
+                WHERE EXISTS (
+                    SELECT 1
+                    FROM HOUSE_SELLER_DETAIL HSD
+                    WHERE HSD.HOUSE_ID = R.CONTENT_ID
+                      AND HSD.SELLER_ID = #{sellerId}
+                )
+                AND R.CONTENT_TYPE_ID = 32
+                ORDER BY R.CREATED_AT DESC, R.REVIEW_ID DESC
+            ) R
+            WHERE ROWNUM &lt;= #{endRow}
+        )
+        WHERE RN &gt;= #{startRow}
+    </select>
+    
+    <!-- 숙소별 리뷰 조회 -->
+    <select id="findHouseReviewByHouseId" resultMap="reviewResultMap" parameterType="map">
+        SELECT * FROM (
+            SELECT ROWNUM AS RN, R.*
+            FROM (
+                SELECT
+                    TO_NUMBER(R.REVIEW_ID) as REVIEW_ID,
+                    TO_NUMBER(R.MEMBER_ID) as MEMBER_ID,
+                    TO_NUMBER(R.CONTENT_ID) as CONTENT_ID,
+                    TO_NUMBER(R.RESERVATION_ID) as RESERVATION_ID,
+                    TO_NUMBER(NVL(R.RATING, 0)) as RATING,
+                    TO_NUMBER(NVL(R.STATUS, 1)) as STATUS,
+                    NVL(R.REVIEW, '') as REVIEW,
+                    R.CREATED_AT,
+                    R.UPDATED_AT,
+                    TO_NUMBER(R.CONTENT_TYPE_ID) as CONTENT_TYPE_ID,
+                    TO_CHAR(M.ID) as ID
+                FROM REVIEWS R
+                JOIN MEMBER M ON M.MEMBER_ID = R.MEMBER_ID
+                WHERE R.CONTENT_ID = #{houseId}
+                <!-- AND R.CONTENT_TYPE_ID = 32 -->
+                ORDER BY R.CREATED_AT DESC, R.REVIEW_ID DESC
+            ) R
+            WHERE ROWNUM &lt;= #{endRow}
+        )
+        WHERE RN &gt;= #{startRow}
+    </select>
+
+    <!-- 전체 리뷰 통계 조회 -->
+    <select id="getReviewStatistics" resultMap="reviewStatisticsResultMap">
+        SELECT 
+            ROUND(AVG(rating), 2) as averageRating,
+            COUNT(*) as totalCount,
+            COUNT(CASE WHEN created_at >= SYSDATE - 30 THEN 1 END) as recentCount,
+            COUNT(CASE WHEN rating = 5 THEN 1 END) as fiveStarCount,
+            COUNT(CASE WHEN rating = 4 THEN 1 END) as fourStarCount,
+            COUNT(CASE WHEN rating = 3 THEN 1 END) as threeStarCount,
+            COUNT(CASE WHEN rating = 2 THEN 1 END) as twoStarCount,
+            COUNT(CASE WHEN rating = 1 THEN 1 END) as oneStarCount,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN rating = 5 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as fiveStarRatio,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN rating = 4 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as fourStarRatio,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN rating = 3 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as threeStarRatio,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN rating = 2 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as twoStarRatio,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN rating = 1 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as oneStarRatio
+        FROM REVIEWS
+        WHERE status = 1
+        AND content_type_id = 32
+    </select>
+    
+    <!-- 판매자별 리뷰 통계 조회 -->
+    <select id="getReviewStatisticsBySeller" resultMap="reviewStatisticsResultMap">
+        SELECT 
+            ROUND(AVG(r.rating), 2) as averageRating,
+            COUNT(*) as totalCount,
+            COUNT(CASE WHEN r.created_at >= SYSDATE - 30 THEN 1 END) as recentCount,
+            COUNT(CASE WHEN r.rating = 5 THEN 1 END) as fiveStarCount,
+            COUNT(CASE WHEN r.rating = 4 THEN 1 END) as fourStarCount,
+            COUNT(CASE WHEN r.rating = 3 THEN 1 END) as threeStarCount,
+            COUNT(CASE WHEN r.rating = 2 THEN 1 END) as twoStarCount,
+            COUNT(CASE WHEN r.rating = 1 THEN 1 END) as oneStarCount,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN r.rating = 5 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as fiveStarRatio,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN r.rating = 4 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as fourStarRatio,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN r.rating = 3 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as threeStarRatio,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN r.rating = 2 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as twoStarRatio,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN r.rating = 1 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as oneStarRatio
+        FROM REVIEWS r
+        INNER JOIN house_seller_detail hsd ON r.content_id = hsd.house_id
+        WHERE r.status = 1 
+        AND hsd.seller_id = #{sellerId}
+        AND r.content_type_id = 32
+    </select>
+    
+    <!-- 숙소별 리뷰 통계 조회 -->
+    <select id="getReviewStatisticsByHouse" resultMap="reviewStatisticsResultMap">
+        SELECT 
+            ROUND(AVG(rating), 2) as averageRating,
+            COUNT(*) as totalCount,
+            COUNT(CASE WHEN created_at >= SYSDATE - 30 THEN 1 END) as recentCount,
+            COUNT(CASE WHEN rating = 5 THEN 1 END) as fiveStarCount,
+            COUNT(CASE WHEN rating = 4 THEN 1 END) as fourStarCount,
+            COUNT(CASE WHEN rating = 3 THEN 1 END) as threeStarCount,
+            COUNT(CASE WHEN rating = 2 THEN 1 END) as twoStarCount,
+            COUNT(CASE WHEN rating = 1 THEN 1 END) as oneStarCount,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN rating = 5 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as fiveStarRatio,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN rating = 4 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as fourStarRatio,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN rating = 3 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as threeStarRatio,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN rating = 2 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as twoStarRatio,
+            CASE 
+                WHEN COUNT(*) > 0 THEN ROUND(COUNT(CASE WHEN rating = 1 THEN 1 END) * 100.0 / COUNT(*), 1)
+                ELSE 0 
+            END as oneStarRatio
+        FROM REVIEWS
+        WHERE content_id = #{houseId} AND status = 1
+        <!-- AND content_type_id = 32 -->
+    </select>
+    
+    <!-- 월별 리뷰 트렌드 조회 (최근 6개월) -->
+    <select id="getMonthlyReviewTrend" resultType="java.util.Map">
+        SELECT 
+            TO_CHAR(created_at, 'YYYY-MM') as month,
+            COUNT(*) as count
+        FROM REVIEWS
+        WHERE created_at >= ADD_MONTHS(SYSDATE, -6)
+        AND status = 1
+        AND content_type_id = 32
+        GROUP BY TO_CHAR(created_at, 'YYYY-MM')
+        ORDER BY month DESC
+    </select>
+    
+    <!-- 최근 30일 리뷰 수 조회 -->
+    <select id="getRecentReviewCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM REVIEWS
+        WHERE created_at >= SYSDATE - 30
+        AND status = 1
+        AND content_type_id = 32
+    </select>
+
+    <!-- 리뷰 등록 -->
+    <insert id="writeReview" parameterType="kr.spring.review.base.vo.BaseReviewVO">
+        INSERT INTO REVIEWS(
+            REVIEW_ID,
+            MEMBER_ID,
+            CONTENT_ID,
+            RESERVATION_ID,
+            RATING,
+            STATUS,
+            REVIEW,
+            CREATED_AT,
+            UPDATED_AT,
+            CONTENT_TYPE_ID)
+        VALUES(
+            review_seq.nextval,
+            #{memberId, jdbcType=NUMERIC},
+            #{contentId},
+            #{reservationId, jdbcType=NUMERIC},
+            #{rating},
+            #{status, jdbcType=NUMERIC},
+            #{review},
+            SYSDATE,
+            SYSDATE,
+            #{contentTypeId, jdbcType=NUMERIC}
+        )	
+    </insert>
+</mapper> 

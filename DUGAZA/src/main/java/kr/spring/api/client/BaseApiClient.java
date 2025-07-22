@@ -1,20 +1,5 @@
 package kr.spring.api.client;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.spring.aop.LogExecutionTime;
-import kr.spring.api.config.ApiConfig;
-import kr.spring.api.dto.ApiLogDto;
-import kr.spring.api.util.ApiLogUtil;
-import lombok.extern.java.Log;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import jakarta.annotation.PostConstruct;
-
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -22,6 +7,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import kr.spring.aop.LogExecutionTime;
+import kr.spring.api.config.ApiConfig;
+import kr.spring.api.dto.ApiLogDto;
+import kr.spring.api.util.ApiLogUtil;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component

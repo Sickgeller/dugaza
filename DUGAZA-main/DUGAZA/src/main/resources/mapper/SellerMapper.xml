@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.seller.dao.SellerMapper">
+    
+    <resultMap type="kr.spring.seller.vo.SellerVO" id="sellerMap">
+        <id property="sellerId" column="SELLER_ID"/>
+        <result property="id" column="ID"/>
+        <result property="password" column="PASSWORD"/>
+        <result property="businessName" column="BUSINESS_NAME"/>
+        <result property="name" column="NAME"/>
+        <result property="phone" column="PHONE"/>
+        <result property="secondaryPhone" column="SECONDARY_PHONE" jdbcType="VARCHAR"/>
+        <result property="email" column="EMAIL"/>
+        <result property="address" column="ADDRESS"/>
+        <result property="addressDetail" column="ADDRESS_DETAIL"/>
+        <result property="license" column="LICENSE"/>
+        <result property="sellerType" column="SELLER_TYPE"/>
+        <result property="status" column="STATUS"/>
+        <result property="role" column="ROLE"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+    </resultMap>
+    
+    <insert id="insertSeller" parameterType="kr.spring.seller.vo.SellerVO">
+        INSERT INTO SELLER (
+            SELLER_ID, ID, PASSWORD, BUSINESS_NAME, NAME, PHONE, 
+            SECONDARY_PHONE, EMAIL, ADDRESS, ADDRESS_DETAIL, LICENSE,
+            SELLER_TYPE, STATUS, ROLE, CREATED_AT, UPDATED_AT
+        ) VALUES (
+            #{sellerId}, #{id}, #{password}, #{businessName}, #{name}, #{phone}, 
+            #{secondaryPhone,jdbcType=VARCHAR}, #{email}, #{address}, #{addressDetail}, #{license},
+            #{sellerType}, #{status}, #{role}, SYSDATE, SYSDATE
+        )
+    </insert>
+    
+    <select id="selectSeller" parameterType="string" resultMap="sellerMap">
+        SELECT 
+            *
+        FROM SELLER 
+        WHERE ID = #{id}
+    </select>
+    
+    <select id="selectSellerByEmail" parameterType="string" resultMap="sellerMap">
+        SELECT 
+            *
+        FROM SELLER 
+        WHERE EMAIL = #{email}
+    </select>
+    
+    <update id="updateSeller" parameterType="kr.spring.seller.vo.SellerVO">
+        UPDATE SELLER SET
+            BUSINESS_NAME = #{businessName},
+            NAME = #{name},
+            PHONE = #{phone},
+            SECONDARY_PHONE = #{secondaryPhone,jdbcType=VARCHAR},
+            EMAIL = #{email},
+            ADDRESS = #{address},
+            ADDRESS_DETAIL = #{addressDetail},
+            LICENSE = #{license},
+            UPDATED_AT = SYSDATE
+        WHERE SELLER_ID = #{sellerId}
+    </update>
+    
+    <update id="updatePassword">
+        UPDATE SELLER SET
+            PASSWORD = #{newPassword},
+            UPDATED_AT = SYSDATE
+        WHERE SELLER_ID = #{sellerId}
+    </update>
+    
+    <select id="getCurrentPassword" parameterType="long" resultType="string">
+        SELECT PASSWORD
+        FROM SELLER
+        WHERE SELLER_ID = #{sellerId}
+    </select>
+    
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
