@@ -20,31 +20,52 @@
             .page-header h1 {
                 color: #333;
                 margin-bottom: 0.5rem;
+                font-size: 2rem;
+                font-weight: bold;
+            }
+            
+            .page-header p {
+                color: #666;
+                font-size: 1rem;
             }
             
             .wishlist-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-                gap: 1.5rem;
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 2rem;
+                padding: 1rem 0;
             }
             
             .wishlist-item {
                 background: white;
-                border-radius: 10px;
+                border-radius: 12px;
                 overflow: hidden;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                border: 1px solid #f0f0f0;
             }
             
             .wishlist-item:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                transform: translateY(-4px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             }
             
             .item-image {
                 width: 100%;
-                height: 200px;
+                height: 220px;
                 object-fit: cover;
+                background-color: #f8f9fa;
+                display: block;
+            }
+            
+            .item-image-placeholder {
+                width: 100%;
+                height: 220px;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #adb5bd;
             }
             
             .item-content {
@@ -52,51 +73,66 @@
             }
             
             .item-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
                 margin-bottom: 1rem;
             }
             
             .item-title {
-                font-size: 1.2rem;
-                font-weight: bold;
-                color: #333;
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: #212529;
                 margin-bottom: 0.5rem;
+                line-height: 1.4;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
             }
             
             .item-type {
-                padding: 0.25rem 0.75rem;
-                border-radius: 15px;
-                font-size: 0.8rem;
-                font-weight: bold;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
+                padding: 0.375rem 0.75rem;
+                border-radius: 20px;
+                font-size: 0.75rem;
+                font-weight: 600;
+                margin-bottom: 0.75rem;
             }
             
             .type-house {
                 background: #e3f2fd;
-                color: #1976d2;
+                color: #1565c0;
             }
             
-            .type-car {
-                background: #f3e5f5;
-                color: #7b1fa2;
+            .type-restaurant {
+                background: #e0f2f1;
+                color: #00695c;
+            }
+            
+            .type-general {
+                background: #fff3e0;
+                color: #ef6c00;
             }
             
             .item-description {
-                color: #666;
-                font-size: 0.9rem;
-                margin-bottom: 1rem;
+                color: #6c757d;
+                font-size: 0.875rem;
                 line-height: 1.5;
+                margin-bottom: 1rem;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
             }
             
             .item-details {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 1rem;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1rem;
                 padding: 1rem 0;
-                border-top: 1px solid #f0f0f0;
-                border-bottom: 1px solid #f0f0f0;
+                margin-bottom: 1rem;
+                border-top: 1px solid #e9ecef;
+                border-bottom: 1px solid #e9ecef;
             }
             
             .detail-item {
@@ -104,78 +140,167 @@
             }
             
             .detail-label {
-                font-size: 0.8rem;
-                color: #666;
+                font-size: 0.75rem;
+                color: #6c757d;
                 margin-bottom: 0.25rem;
+                font-weight: 500;
             }
             
             .detail-value {
-                font-weight: bold;
-                color: #333;
+                font-weight: 600;
+                color: #212529;
+                font-size: 0.875rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.25rem;
             }
             
             .item-price {
-                font-size: 1.3rem;
-                font-weight: bold;
-                color: #007bff;
+                font-size: 1.375rem;
+                font-weight: 700;
+                color: #0d6efd;
                 text-align: center;
-                margin-bottom: 1rem;
+                margin-bottom: 1.25rem;
+                padding: 0.5rem;
+                background: rgba(13, 110, 253, 0.05);
+                border-radius: 8px;
             }
             
             .item-actions {
                 display: flex;
-                gap: 0.5rem;
+                gap: 0.75rem;
             }
             
             .btn {
                 flex: 1;
-                padding: 0.75rem;
+                padding: 0.75rem 1rem;
                 border: none;
-                border-radius: 5px;
+                border-radius: 8px;
                 cursor: pointer;
                 text-decoration: none;
-                font-size: 0.9rem;
-                transition: all 0.3s ease;
+                font-size: 0.875rem;
+                font-weight: 500;
+                transition: all 0.2s ease;
                 text-align: center;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
             }
             
             .btn-primary {
-                background: #007bff;
+                background: #0d6efd;
                 color: white;
+                border: 2px solid #0d6efd;
             }
             
-            .btn-primary:hover {
-                background: #0056b3;
+            .btn-primary:hover:not(:disabled) {
+                background: #0b5ed7;
+                border-color: #0b5ed7;
+                transform: translateY(-1px);
             }
             
             .btn-danger {
                 background: #dc3545;
                 color: white;
+                border: 2px solid #dc3545;
             }
             
-            .btn-danger:hover {
+            .btn-danger:hover:not(:disabled) {
                 background: #c82333;
+                border-color: #c82333;
+                transform: translateY(-1px);
+            }
+            
+            .btn-outline {
+                background: transparent;
+                color: #0d6efd;
+                border: 2px solid #0d6efd;
+            }
+            
+            .btn-outline:hover {
+                background: #0d6efd;
+                color: white;
             }
             
             .empty-wishlist {
                 text-align: center;
-                padding: 3rem;
-                color: #666;
+                padding: 4rem 2rem;
+                color: #6c757d;
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.08);
             }
             
             .empty-wishlist i {
-                font-size: 4rem;
-                color: #ddd;
-                margin-bottom: 1rem;
+                font-size: 5rem;
+                color: #dee2e6;
+                margin-bottom: 1.5rem;
             }
             
             .empty-wishlist h3 {
                 margin-bottom: 1rem;
-                color: #333;
+                color: #495057;
+                font-size: 1.5rem;
+                font-weight: 600;
             }
             
             .empty-wishlist p {
                 margin-bottom: 2rem;
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+            
+            .loading-spinner {
+                display: inline-block;
+                width: 1rem;
+                height: 1rem;
+                border: 2px solid transparent;
+                border-top: 2px solid currentColor;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+            
+            .error-item {
+                background: #f8f9fa;
+                border: 1px dashed #dee2e6;
+                text-align: center;
+                padding: 2rem;
+                color: #6c757d;
+            }
+            
+            /* 반응형 디자인 */
+            @media (max-width: 768px) {
+                .wishlist-container {
+                    padding: 1rem;
+                }
+                
+                .wishlist-grid {
+                    grid-template-columns: 1fr;
+                    gap: 1rem;
+                }
+                
+                .item-actions {
+                    flex-direction: column;
+                }
+                
+                .btn {
+                    width: 100%;
+                }
+                
+                .item-details {
+                    grid-template-columns: 1fr;
+                    gap: 0.5rem;
+                }
             }
         </style>
     </th:block>
@@ -189,59 +314,120 @@
                 <p>관심 있는 상품들을 모아보세요.</p>
             </div>
             
-            <div th:if="${wishList.isEmpty()}" class="empty-wishlist">
+            <!-- 빈 찜 목록 -->
+            <div th:if="${#lists.isEmpty(detailedWishList)}" class="empty-wishlist">
                 <i class="fas fa-heart"></i>
                 <h3>찜 목록이 비어있습니다</h3>
-                <p>아직 찜한 상품이 없습니다. 마음에 드는 상품을 찜해보세요!</p>
-                <a th:href="@{/house}" class="btn btn-primary">숙소 둘러보기</a>
-                <a th:href="@{/car/search}" class="btn btn-outline" style="margin-left: 0.5rem;">차량 둘러보기</a>
+                <p>아직 찜한 상품이 없습니다.<br>마음에 드는 상품을 찜해보세요!</p>
+                <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                    <a th:href="@{/house}" class="btn btn-primary">숙소 둘러보기</a>
+                    <a th:href="@{/car/search}" class="btn btn-outline">차량 둘러보기</a>
+                </div>
             </div>
             
-            <div th:if="${not wishList.isEmpty()}" class="wishlist-grid">
-                <div th:each="item : ${wishList}" class="wishlist-item">
-                    <img th:if="${item.imageUrl}" th:src="${item.imageUrl}" alt="상품 이미지" class="item-image">
-                    <div th:unless="${item.imageUrl}" class="item-image" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-image" style="color: #ccc; font-size: 3rem;"></i>
-                    </div>
-                    
-                    <div class="item-content">
-                        <div class="item-header">
-                            <div>
-                                <div class="item-title" th:text="${item.title}">상품명</div>
-                                <div class="item-description" th:text="${item.description}">상품 설명</div>
+            <!-- 찜 목록 그리드 -->
+            <div th:if="${!#lists.isEmpty(detailedWishList)}" class="wishlist-grid">
+                <div th:each="wishItem : ${detailedWishList}" class="wishlist-item">
+                    <!-- 정상적인 상품 정보가 있는 경우 -->
+                    <th:block th:if="${wishItem.detail != null}">
+                        <!-- 상품 이미지 -->
+                        <div th:if="${wishItem.detail.firstImage}" class="item-image-container">
+                            <img th:src="${wishItem.detail.firstImage}" 
+                                 th:alt="${wishItem.detail.title + ' 이미지'}" 
+                                 class="item-image"
+                                 loading="lazy"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="item-image-placeholder" style="display: none;">
+                                <i class="fas fa-image fa-3x"></i>
                             </div>
-                            <span th:class="${item.contentType == 'HOUSE' ? 'item-type type-house' : 'item-type type-car'}">
-                                <i th:class="${item.contentType == 'HOUSE' ? 'fas fa-bed' : 'fas fa-car'}"></i>
-                                <span th:text="${item.contentType == 'HOUSE' ? '숙소' : '차량'}">타입</span>
-                            </span>
+                        </div>
+                        <div th:unless="${wishItem.detail.firstImage}" class="item-image-placeholder">
+                            <i class="fas fa-image fa-3x"></i>
                         </div>
                         
-                        <div class="item-details">
-                            <div class="detail-item">
-                                <div class="detail-label">평점</div>
-                                <div class="detail-value">
-                                    <i class="fas fa-star" style="color: #ffc107;"></i>
-                                    <span th:text="${item.rating}">4.5</span>
+                        <div class="item-content">
+                            <div class="item-header">
+                                <!-- 상품 타입 표시 -->
+                                <th:block th:with="
+                                    contentTypeId=${wishItem.wishList.contentType},
+                                    typeInfo=${T(java.util.Map).of(
+                                        12, T(java.util.Map).of('name', '관광명소', 'class', 'type-general', 'icon', 'fas fa-map-marker-alt'),
+                                        14, T(java.util.Map).of('name', '문화시설', 'class', 'type-general', 'icon', 'fas fa-building'),
+                                        15, T(java.util.Map).of('name', '행사/축제', 'class', 'type-general', 'icon', 'fas fa-calendar-alt'),
+                                        25, T(java.util.Map).of('name', '여행코스', 'class', 'type-general', 'icon', 'fas fa-route'),
+                                        28, T(java.util.Map).of('name', '레포츠', 'class', 'type-general', 'icon', 'fas fa-swimmer'),
+                                        32, T(java.util.Map).of('name', '숙소', 'class', 'type-house', 'icon', 'fas fa-bed'),
+                                        38, T(java.util.Map).of('name', '쇼핑', 'class', 'type-general', 'icon', 'fas fa-shopping-bag'),
+                                        39, T(java.util.Map).of('name', '식당', 'class', 'type-restaurant', 'icon', 'fas fa-utensils')
+                                    )},
+                                    currentType=${typeInfo.get(contentTypeId) ?: T(java.util.Map).of('name', '기타', 'class', 'type-general', 'icon', 'fas fa-question-circle')}">
+                                    <span th:class="'item-type ' + ${currentType.get('class')}">
+                                        <i th:class="${currentType.get('icon')}"></i>
+                                        <span th:text="${currentType.get('name')}">타입</span>
+                                    </span>
+                                </th:block>
+                                
+                                <div class="item-title" th:text="${wishItem.detail.title}">상품명</div>
+                                <div class="item-description" th:text="${wishItem.detail.overview ?: wishItem.detail.title}">상품 설명</div>
+                            </div>
+                            
+                            <!-- 상품 상세 정보 -->
+                            <div class="item-details">
+                                <div class="detail-item">
+                                    <div class="detail-label">평점</div>
+                                    <div class="detail-value">
+                                        <i class="fas fa-star" style="color: #ffc107;"></i>
+                                        <span th:text="${wishItem.detail.review_avg != null and wishItem.detail.review_avg > 0 ? #numbers.formatDecimal(wishItem.detail.review_avg, 1, 1) : '(0)'}">(0)</span>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">리뷰</div>
+                                    <div class="detail-value" th:text="${wishItem.detail.review_count != null and wishItem.detail.review_count > 0 ? wishItem.detail.review_count + '개' : '(0)'}">(0)</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">지역</div>
+                                    <div class="detail-value" th:text="${#strings.length(wishItem.detail.addr1 ?: '') > 0 ? #strings.abbreviate(wishItem.detail.addr1, 10) : 'N/A'}">N/A</div>
                                 </div>
                             </div>
-                            <div class="detail-item">
-                                <div class="detail-label">리뷰</div>
-                                <div class="detail-value" th:text="${item.reviewCount} + '개'">10개</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">위치</div>
-                                <div class="detail-value" th:text="${item.location}">서울</div>
+                            
+                            <!-- 가격 정보 -->
+                            <div class="item-price" th:text="${wishItem.detail.price != null and wishItem.detail.price > 0 ? #numbers.formatInteger(wishItem.detail.price, 3, 'COMMA') + '원' : '가격 정보 없음'}">가격 정보</div>
+                            
+                            <!-- 액션 버튼 -->
+                            <div class="item-actions">
+                                <!-- 상세보기 버튼 (contentType에 따라 다른 URL) -->
+                                <a th:href="@{/house/detail(contentId=${wishItem.wishList.contentId})}" 
+                                   th:if="${wishItem.wishList.contentType == 32}" 
+                                   class="btn btn-primary">
+                                    상세보기
+                                </a>
+                                <a th:href="@{/restaurant/detail(contentId=${wishItem.wishList.contentId})}" 
+                                   th:if="${wishItem.wishList.contentType == 39}" 
+                                   class="btn btn-primary">
+                                    상세보기
+                                </a>
+                                <a th:href="@{/tour/detail(contentId=${wishItem.wishList.contentId})}" 
+                                   th:if="${wishItem.wishList.contentType != 32 and wishItem.wishList.contentType != 39}" 
+                                   class="btn btn-primary">
+                                    상세보기
+                                </a>
+                                
+                                
                             </div>
                         </div>
-                        
-                        <div class="item-price" th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'">가격</div>
-                        
-                        <div class="item-actions">
-                            <a th:href="@{/house/detail(contentId=${item.contentId})}" th:if="${item.contentType == 'HOUSE'}" class="btn btn-primary">상세보기</a>
-                            <a th:href="@{/car/detail(carId=${item.contentId})}" th:if="${item.contentType == 'CAR'}" class="btn btn-primary">상세보기</a>
-                            <button class="btn btn-danger" th:onclick="'removeFromWishlist(' + ${item.contentId} + ', \'' + ${item.contentType} + '\')'">찜 해제</button>
+                    </th:block>
+                    
+                    <!-- 상품 정보를 불러올 수 없는 경우 -->
+                    <th:block th:unless="${wishItem.detail != null}">
+                        <div class="error-item">
+                            <div class="item-content">
+                                <i class="fas fa-exclamation-triangle fa-2x" style="color: #ffc107; margin-bottom: 1rem;"></i>
+                                <div class="item-title">정보를 불러올 수 없는 항목</div>
+                                <div class="item-description">이 항목의 상세 정보를 불러오는 데 문제가 발생했습니다.</div>
+                                
+                            </div>
                         </div>
-                    </div>
+                    </th:block>
                 </div>
             </div>
         </div>
@@ -249,34 +435,87 @@
     
     <th:block layout:fragment="script">
         <script>
-            function removeFromWishlist(contentId, contentType) {
-                if (confirm('정말로 찜 목록에서 삭제하시겠습니까?')) {
-                    fetch('/wish/toggle', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            contentType: contentType,
-                            contentId: contentId
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.liked === false) {
-                            location.reload();
-                        } else {
-                            alert('찜 해제에 실패했습니다.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('오류가 발생했습니다.');
+            // 페이지 로드 상태 체크
+            let pageLoadComplete = false;
+            
+            // DOMContentLoaded 이벤트와 load 이벤트 모두 체크
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeWishlistPage();
+            });
+            
+            window.addEventListener('load', function() {
+                pageLoadComplete = true;
+                console.log('Page fully loaded');
+            });
+            
+            function initializeWishlistPage() {
+                try {
+                    // CSRF 토큰 가져오기 (여러 방식 시도)
+                    const csrfToken = getCsrfToken();
+                    const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content') || 'X-CSRF-TOKEN';
+                    
+                    console.log('CSRF Token found:', !!csrfToken);
+                    
+                    // 찜 해제 버튼들에 이벤트 리스너 추가
+                    // const wishlistButtons = document.querySelectorAll('.remove-wishlist-btn');
+                    // console.log('Found wishlist buttons:', wishlistButtons.length);
+                    
+                    // wishlistButtons.forEach(button => {
+                    //     button.addEventListener('click', function(e) {
+                    //         e.preventDefault();
+                    //         e.stopPropagation();
+                    //         
+                    //         const contentId = this.getAttribute('data-content-id');
+                    //         const contentType = this.getAttribute('data-content-type');
+                    //         _removeFromWishlistInternal(contentId, contentType, this);
+                    //     });
+                    // });
+                    
+                    // 이미지 로드 오류 처리
+                    document.querySelectorAll('.item-image').forEach(img => {
+                        img.addEventListener('error', function() {
+                            this.style.display = 'none';
+                            const placeholder = this.parentNode.querySelector('.item-image-placeholder');
+                            if (placeholder) {
+                                placeholder.style.display = 'flex';
+                            }
+                        });
                     });
+                    
+                } catch (error) {
+                    console.error('Error initializing wishlist page:', error);
                 }
             }
+            
+            function getCsrfToken() {
+                // 여러 방식으로 CSRF 토큰 검색
+                let token = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+                if (!token) {
+                    token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                }
+                if (!token) {
+                    token = document.querySelector('input[name="_csrf"]')?.value;
+                }
+                return token;
+            }
+            
+            
+            
+            // 페이지 언로드 시 진행 중인 요청 취소
+            window.addEventListener('beforeunload', function() {
+                // 진행 중인 fetch 요청들이 있다면 취소할 수 있도록 준비
+                console.log('Page unloading...');
+            });
+            
+            // 에러 발생 시 전역 에러 핸들러
+            window.addEventListener('error', function(e) {
+                console.error('Global error:', e.error);
+            });
+            
+            window.addEventListener('unhandledrejection', function(e) {
+                console.error('Unhandled promise rejection:', e.reason);
+            });
         </script>
     </th:block>
 </body>
-</html> 
+</html>

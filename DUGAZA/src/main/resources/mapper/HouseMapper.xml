@@ -244,10 +244,37 @@
 	<!-- 숙소 항목 -->
     <select id="selectHouse" parameterType="long" resultMap="houseMap">
         SELECT
-            *
-        FROM house_detail
-                 JOIN tour_content USING(content_id)
-        WHERE content_id=#{id}
+            tc.*,
+            hd.*,
+            NVL(b.review_avg, 0.0) as review_avg,
+            NVL(b.review_count, 0) as review_count,
+            c.price,
+            NVL(d.wish_count, 0) as wish_count
+        FROM tour_content tc
+        LEFT JOIN house_detail hd ON tc.content_id = hd.content_id
+        LEFT JOIN (
+            SELECT
+                content_id,
+                ROUND(AVG(rating),1) as review_avg,
+                COUNT(*) as review_count
+            FROM REVIEWS
+            GROUP BY content_id
+        ) b ON tc.content_id = b.content_id
+        LEFT JOIN (
+            SELECT
+                house_id,
+                MIN(price) as price
+            FROM HOUSE_ROOM_INFO
+            GROUP BY house_id
+        ) c ON tc.content_id = c.house_id
+        LEFT JOIN (
+            SELECT
+                CONTENT_ID,
+                COUNT(*) as wish_count
+            FROM WISHLIST
+            GROUP BY CONTENT_ID
+        ) d ON tc.content_id = d.content_id
+        WHERE tc.content_id = #{id}
     </select>
 
 	<select id="selectHousesWithSellerId" parameterType="long" resultMap="houseMap">

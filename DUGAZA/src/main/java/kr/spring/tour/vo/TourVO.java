@@ -30,14 +30,13 @@ public class TourVO {
     private Date createdAt;  		  // 생성일
     private Date updatedAt;  		  // 수정일
     private Integer showFlag;         // 표시 여부 (1: 표시, 0: 비표시)
+    private String overview;          // 개요
     
     // 찜 상태 필드 추가
     private boolean wished;           // 찜 여부
-    
-    // 리뷰 평균 점수
-    private Double avgReview;
-    // 리뷰 개수
-    private Integer countReview;
+    private Integer review_count;     // 리뷰 수
+    private Double review_avg;        // 리뷰 평점
+    private Long price;               // 가격
     
     public String getContentTypeName() {
         return ContentType.getNameById(this.contentTypeId);

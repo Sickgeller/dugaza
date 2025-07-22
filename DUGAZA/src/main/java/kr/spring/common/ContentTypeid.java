@@ -23,4 +23,12 @@ public enum ContentTypeid {
         return code;
     }
 
+    public static ContentTypeid fromCode(int code) {
+        for (ContentTypeid type : ContentTypeid.values()) {
+            if (type.getCode() == code) {
+                return type;
+            }
+        }
+        return null;
+    }
 }

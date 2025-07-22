@@ -46,6 +46,11 @@ import kr.spring.qnaQuestion.vo.QnaQuestionVO;
 import kr.spring.payment.service.PaymentService;
 import kr.spring.house.service.HouseService;
 import kr.spring.house.vo.HouseVO;
+import kr.spring.tour.service.TourService;
+import kr.spring.tour.vo.TourVO;
+import kr.spring.restaurant.service.RestaurantService;
+import kr.spring.restaurant.vo.RestaurantVO;
+import kr.spring.common.ContentTypeid;
 
 import java.util.List;
 import java.util.Map;
@@ -68,6 +73,8 @@ public class MemberUserController {
 	private final QnaQuestionService qnaService;
 	private final PaymentService paymentService;
 	private final HouseService houseService;
+	private final TourService tourService;
+	private final RestaurantService restaurantService;
 	
 	//회원가입 폼 호출
 	@GetMapping("/register")
@@ -235,7 +242,7 @@ public class MemberUserController {
 			int paymentPendingCount = paymentPendings.size();
 			
 			// 찜 목록 수 (임시로 0 사용 - WishListService에 count 메서드가 없음)
-			int wishListCount = 0;
+			int wishListCount = wishListService.getWishListCountByMemberId(memberId);
 			
 			// 리뷰 수 (임시로 0 사용 - BaseReviewService에 member별 조회 메서드가 없음)
 			int reviewCount = 0;
@@ -326,7 +333,6 @@ public class MemberUserController {
 	/**
 	 * 찜 목록 페이지
 	 */
-	
 	@GetMapping("/wishlist")
 	public String wishlist(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
 		try {
@@ -336,10 +342,73 @@ public class MemberUserController {
 			}
 			
 			Long memberId = member.getMemberId();
-			// 임시로 빈 리스트 사용
-			List<WishListVO> wishList = new ArrayList<>();
-			
-			model.addAttribute("wishList", wishList);
+			List<WishListVO> wishList = wishListService.getWishListByMemberId(memberId);
+			log.info("찜 목록 조회 - memberId: {}, 조회된 찜 개수: {}", memberId, wishList.size());
+
+			List<Map<String, Object>> detailedWishList = new ArrayList<>();
+			for (WishListVO wish : wishList) {
+				log.info("처리 중인 찜 항목 - wishListId: {}, contentType: {}, contentId: {}", wish.getWishListId(), wish.getContentType(), wish.getContentId());
+				Map<String, Object> item = new HashMap<>();
+				item.put("wishList", wish); // WishListVO 자체를 추가
+
+				// contentType에 따라 상세 정보 조회
+				if (wish.getContentType() != null) {
+					ContentTypeid contentType = ContentTypeid.fromCode(wish.getContentType().intValue());
+					if (contentType != null) {
+						switch (contentType) {
+                            case TOURIST_ATTRACTION:
+							case CULTURAL_CENTER:
+                            case EVENT:
+                            case TRIP_COURSE:
+                            case LEPORTS:
+                            case SHOPPING:
+                                try {
+                                    TourVO tour = tourService.selectTourContent(wish.getContentId());
+                                    log.info("상세 정보 조회 성공 - contentType: {}, contentId: {}, title: {}", contentType, wish.getContentId(), tour.getTitle());
+                                    item.put("detail", tour);
+                                } catch (Exception e) {
+                                    log.error("Tour 정보 조회 중 오류 발생 - contentType: {}, contentId: {}", contentType, wish.getContentId(), e);
+                                    item.put("detail", null);
+                                }
+                                break;
+                            case HOUSE:
+                                try {
+                                    HouseVO house = houseService.selectHouse(wish.getContentId());
+                                    log.info("상세 정보 조회 성공 - contentType: {}, contentId: {}, title: {}", contentType, wish.getContentId(), house.getTitle());
+                                    item.put("detail", house);
+                                } catch (Exception e) {
+                                    log.error("House 정보 조회 중 오류 발생 - contentType: {}, contentId: {}", contentType, wish.getContentId(), e);
+                                    item.put("detail", null);
+                                }
+                                break;
+                            case RESTAURANT:
+                                try {
+                                    RestaurantVO restaurant = restaurantService.selectRestaurantWithApi(wish.getContentId());
+                                    log.info("상세 정보 조회 성공 - contentType: {}, contentId: {}, title: {}", contentType, wish.getContentId(), restaurant.getTitle());
+                                    item.put("detail", restaurant);
+                                } catch (Exception e) {
+                                    log.error("Restaurant 정보 조회 중 오류 발생 - contentType: {}, contentId: {}", contentType, wish.getContentId(), e);
+                                    item.put("detail", null);
+                                }
+                                break;
+                            default:
+                                log.warn("알 수 없는 contentTypeId: {}", wish.getContentType());
+                                item.put("detail", null); // 상세 정보가 없는 경우 null로 설정
+                                break;
+                        }
+					} else {
+						log.warn("ContentTypeid.fromCode({}) 결과가 null입니다.", wish.getContentType());
+						item.put("detail", null); // 상세 정보가 없는 경우 null로 설정
+					}
+				} else {
+					log.warn("찜 항목의 contentType이 null입니다. wishListId: {}", wish.getWishListId());
+					item.put("detail", null); // 상세 정보가 없는 경우 null로 설정
+				}
+				detailedWishList.add(item);
+				log.info("detailedWishList에 항목 추가됨. 현재 크기: {}", detailedWishList.size());
+			}
+
+			model.addAttribute("detailedWishList", detailedWishList);
 			model.addAttribute("currentMenu", "wishlist");
 			
 			return "views/member/wishlist";
@@ -350,7 +419,6 @@ public class MemberUserController {
 			return "views/common/error";
 		}
 	}
-	
 	
 	/**
 	 * 리뷰 관리 페이지
