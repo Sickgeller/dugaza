@@ -70,8 +70,30 @@ public class SecurityConfig {
     /**
      * 웹 애플리케이션용 Security Filter Chain
      */
+    
     @Bean
     @Order(2)
+    public SecurityFilterChain sellerSecurity(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/seller/**") // seller 경로에만 적용
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/seller/login", "/seller/register/**","/seller/registerProc").permitAll()
+                .anyRequest().hasAnyRole("SELLER", "CAR", "HOUSE")
+            )
+            .formLogin(form -> form
+                .loginPage("/seller/login")
+                .loginProcessingUrl("/seller/login")
+                .usernameParameter("username")
+                .passwordParameter("password")
+                .successHandler(successHandler)
+                .failureHandler(failureHandler)
+                .permitAll()
+            )
+            .logout(logout -> logout.logoutUrl("/seller/logout"));
+        return http.build();
+    }
+    @Bean
+    @Order(3)
     public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
         
         return http
