@@ -1,57 +1,49 @@
 package kr.spring.member.controller;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import kr.spring.member.service.MemberService;
-import kr.spring.member.vo.MemberVO;
 import kr.spring.auth.security.CustomUserDetails;
-import kr.spring.util.FileUtil;
-import kr.spring.util.ValidationUtil;
-import lombok.extern.slf4j.Slf4j;
-import kr.spring.seller.vo.SellerVO;
-
 // 마이페이지 관련 서비스들 추가
 import kr.spring.car.service.CarReservationService;
 import kr.spring.car.vo.CarReservationVO;
-import kr.spring.reservation.service.HouseReservationService;
-import kr.spring.reservation.vo.HouseReservationVO;
-import kr.spring.payment.service.PaymentPendingService;
-import kr.spring.payment.vo.PaymentPendingVO;
-import kr.spring.wishlist.service.WishListService;
-import kr.spring.wishlist.vo.WishListVO;
-import kr.spring.review.base.service.BaseReviewService;
-import kr.spring.review.base.vo.BaseReviewVO;
-import kr.spring.qnaQuestion.service.QnaQuestionService;
-import kr.spring.qnaQuestion.vo.QnaQuestionVO;
-import kr.spring.payment.service.PaymentService;
 import kr.spring.house.service.HouseService;
 import kr.spring.house.vo.HouseVO;
-
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import org.springframework.web.bind.annotation.PathVariable;
+import kr.spring.member.service.MemberService;
+import kr.spring.member.vo.MemberVO;
+import kr.spring.payment.service.PaymentPendingService;
+import kr.spring.payment.service.PaymentService;
+import kr.spring.payment.vo.PaymentPendingVO;
+import kr.spring.qnaQuestion.service.QnaQuestionService;
+import kr.spring.qnaQuestion.vo.QnaQuestionVO;
+import kr.spring.reservation.service.HouseReservationService;
+import kr.spring.reservation.vo.HouseReservationVO;
+import kr.spring.review.base.service.BaseReviewService;
+import kr.spring.review.base.vo.BaseReviewVO;
+import kr.spring.util.FileUtil;
+import kr.spring.util.ValidationUtil;
+import kr.spring.wishlist.service.WishListService;
+import kr.spring.wishlist.vo.WishItemVO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
@@ -337,7 +329,7 @@ public class MemberUserController {
 			
 			Long memberId = member.getMemberId();
 			// 임시로 빈 리스트 사용
-			List<WishListVO> wishList = new ArrayList<>();
+			List<WishItemVO> wishList = wishListService.selectWishListByMemberId(memberId);
 			
 			model.addAttribute("wishList", wishList);
 			model.addAttribute("currentMenu", "wishlist");
