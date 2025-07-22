@@ -13,6 +13,7 @@ public class WishItemVO {
     private Integer reviewCount;
     private String location;
     private Integer price;
+    
 
     public void setContentTypeFromInt(Integer contentTypeInt) {
         if (contentTypeInt == 32) {

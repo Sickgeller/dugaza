@@ -19,9 +19,9 @@ public class CommunityReplyController {
     private final CommunityReplyService replyService;
     private final MemberService memberService;
 
-    /**
-     * 댓글 작성
-     */
+    
+     // 댓글 작성
+     
     @PostMapping("/reply")
     public String writeReply(CommunityReplyVO reply, Principal principal) {
         // 로그인 사용자 ID를 댓글에 셋팅
@@ -32,9 +32,9 @@ public class CommunityReplyController {
         return "redirect:/community/detail?id=" + reply.getPostId();
     }
 
-    /**
-     * 댓글 삭제
-     */
+    
+     // 댓글 삭제
+     
     @PostMapping("/reply/delete")
     public String deleteReply(Long replyId) {
         Long postId = replyService.getReply(replyId).getPostId();
@@ -42,9 +42,9 @@ public class CommunityReplyController {
         return "redirect:/community/detail?id=" + postId;
     }
 
-    /**
-     * 댓글 수정
-     */
+    
+     // 댓글 수정
+     
     @PostMapping("/reply/update")
     public String updateReply(CommunityReplyVO reply) {
         replyService.updateReply(reply);

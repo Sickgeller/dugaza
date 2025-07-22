@@ -48,7 +48,7 @@ public class CommunityController {
 
 
 
- // 📄 커뮤니티 메인
+ // 커뮤니티 메인
     @GetMapping({"", "/"})
     public String communityMain(
             @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
@@ -101,7 +101,7 @@ public class CommunityController {
 
 
 
-    // 📄 글 상세
+    // 글 상세
     @GetMapping("/detail")
     public String detail(@RequestParam("id") Long id, Model model, Principal principal) {
         log.info("Community detail page requested for id={}", id);
@@ -128,7 +128,7 @@ public class CommunityController {
             isOwner = post.getMemberId().equals(memberId);
             liked = communityService.isLiked(id, memberId);
 
-            // ✅ 현재 로그인 사용자 ID를 모델에 추가
+            // 현재 로그인 사용자 ID를 모델에 추가
             model.addAttribute("currentUserId", memberId);
         }
 
@@ -140,7 +140,7 @@ public class CommunityController {
 
 
 
-    // ✍ 글쓰기 폼
+    // 글쓰기 폼
     @GetMapping("/write")
     @PreAuthorize("isAuthenticated()")
     public String writeForm(Model model) {
@@ -148,7 +148,7 @@ public class CommunityController {
         return "views/sample/community-write";
     }
 
-    // ✍ 글 작성
+    // 글 작성
     @PostMapping("/write")
     @PreAuthorize("isAuthenticated()")
     public String writePost(CommunityPostVO postVO,
