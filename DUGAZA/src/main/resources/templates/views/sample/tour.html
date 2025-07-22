@@ -45,14 +45,16 @@
             <section class="tour-list">
                 <div class="tour-grid">
                     <article class="tour-card" th:each="tour : ${list}">
-                        <a th:href="@{/touristAttraction/detail(contentId=${tour.contentId})}">
-                            <div class="tour-image">
+                        <div class="tour-image">
+                            <a th:href="@{/touristAttraction/detail(contentId=${tour.contentId})}">
                                 <img th:src="${tour.firstImage != null ? tour.firstImage : '/assets/images/tour-icon.png'}" alt="여행명소">
-                                <button class="like-btn" th:data-content-id="${tour.contentId}" th:data-content-type="${tour.contentTypeId}">
-                                    <i th:class="${tour.wished ? 'fas fa-heart' : 'far fa-heart'}" th:style="${tour.wished ? 'color: red;' : ''}"></i>
-                                </button>
-                            </div>
-                            <div class="tour-content">
+                            </a>
+                            <button class="like-btn" th:data-content-id="${tour.contentId}" th:data-content-type="${tour.contentTypeId}">
+                                <i th:class="${tour.wished ? 'fas fa-heart' : 'far fa-heart'}" th:style="${tour.wished ? 'color: red;' : ''}"></i>
+                            </button>
+                        </div>
+                        <div class="tour-content">
+                            <a th:href="@{/touristAttraction/detail(contentId=${tour.contentId})}">
                                 <h3 th:text="${tour.title}"></h3>
                                 <div class="tour-meta">
                                     <span class="location"><i class="fas fa-map-marker-alt" th:text="${tour.addr1}"></i></span>
@@ -62,8 +64,8 @@
                                 <div class="tour-footer">
                                     <span class="detail-btn">자세히 보기</span>
                                 </div>
-                            </div>
-                        </a>
+                            </a>
+                        </div>
                     </article>
                 </div>
  
@@ -73,7 +75,52 @@
     </main>
     
     <th:block layout:fragment="script">
-        <script th:src="@{/assets/js/wishlist.js}"></script>
+        <script type="text/javascript" th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+        <script>
+            $(document).on('click', '.like-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var contentId = $(this).data("content-id");
+                var contentTypeId = $(this).data("content-type");
+                var heartIcon = $(this).find("i");
+
+                // CSRF 토큰과 헤더 이름을 메타 태그에서 읽어옵니다.
+                const csrfToken = $('meta[name="_csrf"]').attr('content');
+                const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+                // 로그인 여부 확인 (body 태그의 data-is-login 속성 사용)
+                const isLogin = $('body').data('is-login');
+                if (isLogin !== true) {
+                    alert('로그인이 필요한 서비스입니다.');
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/wishlist/toggle",
+                    data: {
+                        contentId: contentId,
+                        contentTypeId: contentTypeId
+                    },
+                    beforeSend: function(xhr) {
+                        if (csrfHeader && csrfToken) {
+                            xhr.setRequestHeader(csrfHeader, csrfToken);
+                        }
+                    },
+                    success: function(response) {
+                        if (response.wished) {
+                            heartIcon.removeClass("far").addClass("fas").css("color", "red");
+                        } else {
+                            heartIcon.removeClass("fas").addClass("far").css("color", "");
+                        }
+                    },
+                    error: function() {
+                        alert("찜 상태를 변경하는 데 실패했습니다.");
+                    }
+                });
+            });
+        </script>
     </th:block>
 </body>
 </html> 
