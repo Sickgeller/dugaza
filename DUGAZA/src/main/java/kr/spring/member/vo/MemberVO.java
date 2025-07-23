@@ -1,46 +1,46 @@
 package kr.spring.member.vo;
 
-import java.sql.Date;
-import java.util.List;
-
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
-import kr.spring.auth.vo.RoleVO;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
 public class MemberVO {
+
 	private Long memberId;
-	@Pattern(regexp="^[A-Za-z0-9]{4,12}$")
-	private String id;
+	@NotNull
+	@Pattern(regexp = "^[a-z0-9]{4,12}$" , message = "아이디는 4~12자, 소문자와 숫자로 구성되어야합니다.")
+	private String loginId;
+	@NotNull
+	@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,16}$", message = "비밀번호는 소문자,대문자,숫자로 이루어진 10~20자")
 	private String password;
-	private String name;
+	@NotNull
+	@Email
 	private String email;
+	@NotNull
+	private String name;
+	@NotNull
+	@Pattern(regexp = "^01[016789]-\\d{3,4}-\\d{4}$")
 	private String phone;
+	@NotNull(message = "주소를 입력해주세요")
 	private String address;
 	private String addressDetail;
-	private String status;
-	private String role;
-	private Date createdAt;
-	private Date updatedAt;
-	private String profileImage;
-	
-	// 카카오 로그인 관련 필드
-	private Long kakaoId; // 카카오 고유 ID (NULL이면 이메일 가입자, 있으면 카카오 가입자)
-	private String nickname; // 닉네임
-	
-	// 사용자가 가진 역할들 (다중 역할 지원)
-	private List<RoleVO> userRoles;
-	
-	// 역할 문자로 출력
-	public String getStringStatus() {
-		switch (this.status) {
-		case "ACTIVE": return "일반";
-		case "SUSPEND": return "정지";
-		case "HUMAN": return "휴먼";
-		case "WITHDRAWN": return "탈퇴";
-		default: return "오류";
-		}
-	}
+	@NotNull(message = "성별을 입력해주세요")
+	private String gender;
+	private String profileImageUrl;
+	private int status;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	private int role;
+
+	private Long kakaoId;
+
+
 }
 
 /*

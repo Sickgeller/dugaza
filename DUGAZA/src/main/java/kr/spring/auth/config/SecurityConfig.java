@@ -1,9 +1,11 @@
 package kr.spring.auth.config;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import kr.spring.auth.security.CustomAccessDeniedHandler;
+import kr.spring.auth.security.CustomLogoutSuccessHandler;
+import kr.spring.auth.security.CustomOAuth2UserService;
+import kr.spring.auth.security.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +16,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,43 +24,25 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
-
-import kr.spring.auth.security.CustomAccessDeniedHandler;
-import kr.spring.auth.security.CustomLogoutSuccessHandler;
-import kr.spring.auth.security.UserDetailsService;
-
-import lombok.extern.slf4j.Slf4j;
+import javax.sql.DataSource;
 
 @Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
     
     @Value("${data-config.rememberMe-key}")
     private String rememberMeKey;
 
-    @Autowired
-    @Qualifier("dataSource")
-    private DataSource dataSource;
-    
-    @Autowired
-    private UserDetailsService userDetailsService;
-    
-    @Autowired
-    @Qualifier("customSuccessHandler")
-    private AuthenticationSuccessHandler successHandler;
-    
-    @Autowired
-    @Qualifier("customFailureHandler")
-    private AuthenticationFailureHandler failureHandler;
-    
-    @Autowired
-    private CustomAccessDeniedHandler customAccessDeniedHandler;
-    
-    @Autowired
-    @Qualifier("customLogoutSuccessHandler")
-    private CustomLogoutSuccessHandler logoutSuccessHandler;
+    private final DataSource dataSource;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final AuthenticationSuccessHandler successHandler;
+    private final AuthenticationFailureHandler failureHandler;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomLogoutSuccessHandler logoutSuccessHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) 
@@ -70,30 +53,8 @@ public class SecurityConfig {
     /**
      * 웹 애플리케이션용 Security Filter Chain
      */
-    
     @Bean
     @Order(2)
-    public SecurityFilterChain sellerSecurity(HttpSecurity http) throws Exception {
-        http
-            .securityMatcher("/seller/**") // seller 경로에만 적용
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/seller/login", "/seller/register/**","/seller/registerProc").permitAll()
-                .anyRequest().hasAnyRole("SELLER", "CAR", "HOUSE")
-            )
-            .formLogin(form -> form
-                .loginPage("/seller/login")
-                .loginProcessingUrl("/seller/login")
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .successHandler(successHandler)
-                .failureHandler(failureHandler)
-                .permitAll()
-            )
-            .logout(logout -> logout.logoutUrl("/seller/logout"));
-        return http.build();
-    }
-    @Bean
-    @Order(3)
     public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
         
         return http
@@ -107,9 +68,8 @@ public class SecurityConfig {
                     .requestMatchers("/house/**").permitAll()
                     .requestMatchers("/search/**").permitAll()
                     .requestMatchers("/restaurant/**").permitAll()
-                    .requestMatchers("/about/**","/privacy/**","/terms/**","/community/**").permitAll()
                     .requestMatchers("/transportation/**").permitAll() // 교통 관련 페이지 및 API 허용
-                    .requestMatchers("/seller/login/**", "/seller/register/**","/seller/registerProc").permitAll() // 판매자 로그인/가입 페이지
+                    .requestMatchers("/seller/login", "/seller/register").permitAll() // 판매자 로그인/가입 페이지
                     .requestMatchers("/seller/**").hasAnyRole("SELLER", "CAR", "HOUSE") // 판매자 전용 페이지
                     .requestMatchers("/admin/**").hasRole("ADMIN")// 관리자 전용 페이지
                     // API 제외한 나머지 요청은 인증 필요
@@ -133,6 +93,12 @@ public class SecurityConfig {
                     .deleteCookies("JSESSIONID", "remember-me")  // 쿠키 삭제
                     .permitAll()  // 로그아웃 URL에 모든 사용자 접근 허용
                 )
+                .oauth2Login(auth -> auth
+                        .userInfoEndpoint(
+                                userInfo -> userInfo.userService(customOAuth2UserService)
+                        )
+                        .successHandler(successHandler)
+                        .failureHandler(failureHandler))
                 .exceptionHandling(exception -> exception
                     .accessDeniedHandler(customAccessDeniedHandler)
                 )
@@ -140,7 +106,7 @@ public class SecurityConfig {
                     .key(rememberMeKey)
                     .tokenRepository(persistentTokenRepository())
                     .tokenValiditySeconds(60 * 60 * 24 * 7) // 7일
-                    .userDetailsService(userDetailsService)
+                    .userDetailsService(customUserDetailsService)
                     .useSecureCookie(false) // HTTPS가 아닌 환경에서도 쿠키 사용 가능
                     .rememberMeParameter("remember-me") // 파라미터 이름 명시
                     .rememberMeCookieName("remember-me") // 쿠키 이름 명시
@@ -172,7 +138,7 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider()) // 명시적 AuthenticationProvider 설정
                 .build();
-    } // 개발하는동안은 모두허용
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -186,7 +152,7 @@ public class SecurityConfig {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setUserDetailsService(customUserDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

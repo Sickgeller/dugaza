@@ -49,7 +49,7 @@ public class HouseController {
 	private final ReviewStatisticsService reviewStatisticsService;
 	private final WishListService wishListService;
 	private final RoomService roomService;
-	private final SellerService sellerService;
+//	private final SellerService sellerService;
 	private final TourService tourService;
 
 	@GetMapping("")
@@ -174,7 +174,7 @@ public class HouseController {
         }
 
         // seller 정보 조회
-        HouseSellerDetailVO sellerDetail = sellerService.getSellerByHouseId(contentId);
+//        HouseSellerDetailVO sellerDetail = sellerService.getSellerByHouseId(contentId);
         
         // room 정보 조회 (페이징 적용)
         List<RoomDetailVO> roomList = roomService.getRoomsByHouseId(contentId, page, pageSize);
@@ -182,14 +182,14 @@ public class HouseController {
         
         // room이 있으면 seller 정보도 다시 조회
         if (roomList != null && !roomList.isEmpty()) {
-            sellerDetail = sellerService.getSellerByHouseId(contentId);
+//            sellerDetail = sellerService.getSellerByHouseId(contentId);
         }
 
         model.addAttribute("info",vo);
         model.addAttribute("reviewList",reviewList);
         model.addAttribute("status", status);
         model.addAttribute("wish", db_wish);
-        model.addAttribute("sellerDetail", sellerDetail);
+//        model.addAttribute("sellerDetail", sellerDetail);
         model.addAttribute("roomList", roomList);
         model.addAttribute("totalRooms", totalRooms);
         model.addAttribute("currentPage", page);

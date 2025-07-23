@@ -3,6 +3,8 @@ package kr.spring.member.service;
 import java.util.List;
 import java.util.Map;
 
+import kr.spring.member.enums.MemberRole;
+import kr.spring.member.enums.MemberStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +49,7 @@ public class MemberServiceImpl implements MemberService{
 	public void updatePassword(MemberVO member) {
 		memberMapper.updatePassword(member);
 		// 설정되어 있는 자동로그인 기능 해제(모든 브라우저에 설정된 자동로그인 해제)
-		memberMapper.deleteRememberMe(member.getId());
+		memberMapper.deleteRememberMe(member.getLoginId());
 	}
 
 	@Override
@@ -123,16 +125,14 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void registerMember(MemberVO member) {
         member.setMemberId(memberMapper.selectMemberId());
-        member.setStatus("ACTIVE");
-        member.setRole("USER");
+        member.setStatus(MemberStatus.ACTIVE.getValue());
+        member.setRole(MemberRole.MEMBER.getValue());
         memberMapper.insertMember(member);
     }
     
     @Override
     public void registerKakaoMember(MemberVO member) {
         member.setMemberId(memberMapper.selectMemberId());
-        member.setStatus("ACTIVE");
-        member.setRole("USER");
         memberMapper.insertKakaoMember(member);
     }
     

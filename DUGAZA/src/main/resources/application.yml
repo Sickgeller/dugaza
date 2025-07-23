@@ -2,6 +2,23 @@ spring:
   application:
     name: SpringPage
 
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${data-config.api.kakao.rest-api-key}
+            client-secret: ${data-config.api.kakao.client-secret}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            authorization-grant-type: authorization_code
+            scope: profile_nickname, account_email
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
   thymeleaf:
     prefix: classpath:templates/
     suffix: .html

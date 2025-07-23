@@ -1,39 +1,39 @@
 package kr.spring.auth.security;
 
+import kr.spring.member.enums.MemberRole;
+import kr.spring.member.enums.MemberStatus;
 import kr.spring.member.vo.MemberVO;
 import kr.spring.seller.vo.SellerVO;
-import kr.spring.auth.vo.RoleVO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
     
-    private MemberVO member;
+    private final MemberVO member;
     private SellerVO seller;
-    
     // 일반 회원용 생성자
     public CustomUserDetails(MemberVO member) {
         this.member = member;
     }
-    
-    // 판매자용 생성자
-    public CustomUserDetails(SellerVO seller) {
+
+    public CustomUserDetails(MemberVO member, SellerVO seller) {
         this.seller = seller;
+        this.member = member;
     }
-    
-    // 판매자인지 확인
-    public boolean isSeller() {
-        return seller != null;
-    }
-    
+
+
     // 일반 회원인지 확인
     public boolean isMember() {
         return member != null;
+    }
+
+    public boolean isSeller(){
+        return member.getRole() == MemberRole.SELLER.getValue();
     }
     
     // 판매자 정보 반환
@@ -49,50 +49,24 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        
-        if (isSeller()) {
-            String basicRole = seller.getRole();
-            if("SELLER".equals(basicRole)){
-                authorities.add(new SimpleGrantedAuthority("ROLE_SELLER"));
+
+        for(MemberRole role : MemberRole.values()){
+            if(role.getValue() == member.getRole()){
+                authorities.add(new SimpleGrantedAuthority(role.getRole()));
             }
-        } else if (isMember()) {
-            // 기본 역할 추가
-            String basicRole = member.getRole();
-            if ("ADMIN".equals(basicRole)) {
-                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-            } else {
-                authorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
-            }
-            
-            // 추가 역할들 처리 (다중 역할 지원) 나중에 추가할지 말지 고민좀 해봄
-//            if (member.getUserRoles() != null) {
-//                for (RoleVO role : member.getUserRoles()) {
-//                    authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
-//                }
-//            }
         }
-        
         return authorities;
     }
     
     @Override
     public String getPassword() {
-        if (isSeller()) {
-            return seller.getPassword();
-        } else if (isMember()) {
-            return member.getPassword();
-        }
-        return null;
+       return member.getPassword();
     }
     
     @Override
     public String getUsername() {
-        if (isSeller()) {
-            return seller.getId();
-        } else if (isMember()) {
-            return member.getId();
-        }
-        return null;
+      return member.getLoginId();
+
     }
     
     @Override
@@ -102,12 +76,7 @@ public class CustomUserDetails implements UserDetails {
     
     @Override
     public boolean isAccountNonLocked() {
-        if (isSeller()) {
-            return !"SUSPENDED".equals(seller.getStatus());
-        } else if (isMember()) {
-            return !"SUSPENDED".equals(member.getStatus());
-        }
-        return true;
+        return MemberStatus.SUSPENDED.getValue() == member.getStatus();
     }
     
     @Override
@@ -117,31 +86,11 @@ public class CustomUserDetails implements UserDetails {
     
     @Override
     public boolean isEnabled() {
-        if (isSeller()) {
-            return "ACTIVE".equals(seller.getStatus());
-        } else if (isMember()) {
-            return "ACTIVE".equals(member.getStatus());
-        }
-        return false;
+        return member.getStatus() == MemberStatus.ACTIVE.getValue();
     }
     
     // 사용자 ID 반환 (Long 타입)
     public Long getUserId() {
-        if (isSeller()) {
-            return seller.getSellerId();
-        } else if (isMember()) {
-            return member.getMemberId();
-        }
-        return null;
-    }
-    
-    // 사용자 이름 반환
-    public String getRealName() {
-        if (isSeller()) {
-            return seller.getName();
-        } else if (isMember()) {
-            return member.getName();
-        }
-        return null;
+        return member.getMemberId();
     }
 } 

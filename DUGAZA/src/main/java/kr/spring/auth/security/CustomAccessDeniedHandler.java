@@ -1,12 +1,12 @@
 package kr.spring.auth.security;
 
-import java.io.IOException;
-
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.web.csrf.InvalidCsrfTokenException;
 import org.springframework.security.web.csrf.MissingCsrfTokenException;
 import org.springframework.stereotype.Component;
@@ -14,15 +14,11 @@ import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.servlet.FlashMapManager;
 import org.springframework.web.servlet.support.SessionFlashMapManager;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
 
 @Slf4j
 @Component
-public class CustomAccessDeniedHandler 
-                        implements AccessDeniedHandler{
+public class CustomAccessDeniedHandler implements AccessDeniedHandler{
 
 	//파일의 최대 업로드 사이트
 	@Value("${spring.servlet.multipart.max-file-size:50MB}")
@@ -31,13 +27,7 @@ public class CustomAccessDeniedHandler
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 			AccessDeniedException accessDeniedException) throws IOException, ServletException {
-		//{}는 SLF4J(Simple Logging Facade for Java)에서
-		//제공하는 플레이스홀더
-		//문자열 결합보다 성능이 더 좋음
-		//예)
-		//문자열 결합 : log.error("오류 발생 : " + accessDeniedException.toString());
-		//플레이스홀더 이용 : log.error("오류 발생 : {}",accessDeniedException.toString());
-		
+
 		log.debug("<<예외 발생 페이지>> : {}", request.getRequestURI());
 		log.error("<<예외 발생>> : {}", accessDeniedException.toString());
 		
@@ -114,20 +104,6 @@ public class CustomAccessDeniedHandler
 		return "XMLHttpRequest".equalsIgnoreCase(requestedWith);
 	}
 	
-	//Ajax 에러 응답 (401/403 구분)
-	/*
-	 * 응답 예시
-	 * 401 Unauthorized (비로그인 상태)
-	 * {
-	 * 	 "result":"error",
-	 * 	 "message":"로그인이 필요합니다."
-	 * }
-	 * 403 Fobidden (로그인 했지만 권한 없음)
-	 * {
-	 *   "result":"error",
-	 *   "message":"권한이 없습니다."
-	 * }
-	 */
 	private void handleAjaxErrorResponse(
 			   HttpServletRequest request,
 			   HttpServletResponse response,

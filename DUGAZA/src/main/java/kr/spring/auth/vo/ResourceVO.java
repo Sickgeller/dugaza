@@ -1,6 +1,7 @@
 package kr.spring.auth.vo;
 
 import lombok.Data;
+
 import java.util.List;
 
 @Data

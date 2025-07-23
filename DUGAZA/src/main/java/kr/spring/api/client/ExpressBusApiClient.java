@@ -12,14 +12,7 @@ import kr.spring.api.dto.ExpressBusCityApiDto;
 import kr.spring.api.dto.ExpressBusGradeApiDto;
 import kr.spring.api.dto.ExpressBusTerminalApiDto;
 import lombok.RequiredArgsConstructor;
-<<<<<<< HEAD
-=======
-import org.springframework.stereotype.Component;
-
-import java.net.URI;
-import java.util.List;
 import kr.spring.api.dto.ExpressBusRouteApiDto;
->>>>>>> branch 'main' of https://github.com/joojungho/DUGAZA.git
 
 @Component
 @RequiredArgsConstructor

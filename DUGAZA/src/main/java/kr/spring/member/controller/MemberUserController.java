@@ -196,9 +196,6 @@ public class MemberUserController {
 		// 비밀번호 암호화 후 업데이트
 		memberVO.setPassword(passwordEncoder.encode(memberVO.getPassword()));
 		memberService.updatePassword(memberVO);
-		
-		log.info("비밀번호 변경 완료: 사용자 = {}", member.getId());
-		
 		return "views/common/resultAlert";
 	}
 	/**

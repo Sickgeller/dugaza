@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Data
@@ -13,22 +14,16 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SellerVO {
-    private Long sellerId;
-    private String id;
-    private String password;
-    private String name;             // 대표자 이름
-    private String businessName;     // 상호명
-    private String email;
+    private Long memberId;
+    private String businessName;
     private String license;
-    private String sellerType;
-    private String status;
-    private String address;
-    private String addressDetail;
-    private String phone;            // 기본 전화번호
-    private String secondaryPhone;   // 보조 전화번호
-    private String role;
-    private Date createdAt;
-    private Date updatedAt;
+    private Long sellerType;
+    private String businessAddress;
+    private String businessAddressDetail;
+    private String businessPhone;
+    private String businessSecondaryPhone;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
 
 /**
