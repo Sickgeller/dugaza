@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.api.mapper.TrainCityApiMapper">
+
+    <resultMap id="TrainCityCodeResultMap" type="kr.spring.api.dto.TrainCityApiDto">
+        <id property="cityCode" column="CITY_CODE"/>
+        <result property="cityName" column="CITY_NAME"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="kr.spring.api.dto.TrainCityApiDto">
+        /* TrainCityApiMapper.insert */
+        INSERT INTO TRAIN_CITY (CITY_CODE, CITY_NAME) 
+        VALUES(#{cityCode,jdbcType=NUMERIC}, #{cityName,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="update" parameterType="kr.spring.api.dto.TrainCityApiDto">
+        /* TrainCityApiMapper.update */
+        UPDATE TRAIN_CITY
+        SET
+            CITY_NAME = #{cityName,jdbcType=VARCHAR}
+        WHERE
+            CITY_CODE = #{cityCode,jdbcType=NUMERIC}
+    </update>
+
+    <select id="getAllCityDto" resultMap="TrainCityCodeResultMap">
+        /* TrainCityApiMapper.getAllCityDto */
+        SELECT * FROM TRAIN_CITY
+    </select>
+
+</mapper>

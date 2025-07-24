@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기차 노선 조회 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bus.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <main layout:fragment="content">
+        <div class="bus-container">
+            <div class="bus-header">
+                <h1><i class="fas fa-train"></i> 기차 노선 조회</h1>
+                <p>전국 기차 노선을 검색하고 실시간 정보를 확인하세요</p>
+                <div class="status-notice">
+                    <i class="fas fa-info-circle"></i>
+                    <span>현재 조회 기능만 제공됩니다. 예약 기능은 제공되지않습니다.</span>
+                </div>
+            </div>
+
+            <div class="bus-search-section">
+                <form class="bus-search-form" id="trainSearchForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="departureCity"><i class="fas fa-map-marker-alt"></i> 출발지</label>
+                            <select id="departureCity" required>
+                                <option value="">도시를 선택하세요</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="departureStation"><i class="fas fa-building"></i> 출발역</label>
+                            <select id="departureStation" required disabled>
+                                <option value="">역을 선택하세요</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="arrivalCity"><i class="fas fa-map-marker-alt"></i> 도착지</label>
+                            <select id="arrivalCity" required>
+                                <option value="">도시를 선택하세요</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="arrivalStation"><i class="fas fa-building"></i> 도착역</label>
+                            <select id="arrivalStation" required disabled>
+                                <option value="">역을 선택하세요</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="departureDate"><i class="fas fa-calendar"></i> 출발 날짜</label>
+                            <input type="date" id="departureDate" required>
+                        </div>
+                    </div>
+                    <div class="search-actions">
+                        <button type="submit" class="search-btn">
+                            <i class="fas fa-search"></i> 노선 검색
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 검색 결과 섹션 -->
+            <div class="search-results" id="searchResults" style="display: none;">
+                <h2><i class="fas fa-list"></i> 검색 결과</h2>
+                <div class="results-container" id="resultsContainer">
+                    <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
+                </div>
+            </div>
+
+            <div class="bus-info-section">
+                <h2><i class="fas fa-info-circle"></i> 기차 안내</h2>
+                <div class="bus-info-grid">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-train"></i>
+                        </div>
+                        <h3>기차</h3>
+                        <p>도시 간 빠르고 편리한 이동을 위한 기차입니다</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> 전국 주요 도시 연결</li>
+                            <li><i class="fas fa-check"></i> 실시간 운행 정보</li>
+                            <li><i class="fas fa-check"></i> 다양한 등급 (KTX, ITX, 무궁화호)</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>운행 시간</h3>
+                        <p>기차는 24시간 운행되며, 시간대별로 다양한 편이 있습니다</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> 새벽편 (00:00 ~ 06:00)</li>
+                            <li><i class="fas fa-check"></i> 주간편 (06:00 ~ 18:00)</li>
+                            <li><i class="fas fa-check"></i> 야간편 (18:00 ~ 24:00)</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <h3>요금 안내</h3>
+                        <p>거리와 등급에 따라 요금이 차등 적용됩니다</p>
+                        <ul>
+                            <li><i class="fas fa-check"></i> KTX: 고속철도 (최고급)</li>
+                            <li><i class="fas fa-check"></i> ITX: 새마을호 (중급)</li>
+                            <li><i class="fas fa-check"></i> 무궁화호: 일반열차 (기본)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            // CSRF 토큰 가져오기
+            const csrfToken = /*[[${_csrf.token}]]*/ '';
+            
+            // 전역 변수
+            let cities = [];
+            let stations = [];
+
+            // 페이지 로드 시 초기화
+            document.addEventListener('DOMContentLoaded', function() {
+                loadCities();
+                setDefaultDate();
+                setupEventListeners();
+            });
+
+            // 도시 목록 로드
+            async function loadCities() {
+                try {
+                    const response = await fetch('/transportation/train/cities');
+                    if (response.ok) {
+                        cities = await response.json();
+                        populateCitySelects();
+                    } else {
+                        console.error('도시 목록 로드 실패');
+                    }
+                } catch (error) {
+                    console.error('도시 목록 로드 중 오류:', error);
+                }
+            }
+
+            // 도시 선택 옵션 채우기
+            function populateCitySelects() {
+                const departureCitySelect = document.getElementById('departureCity');
+                const arrivalCitySelect = document.getElementById('arrivalCity');
+
+                // 기존 옵션 제거 (첫 번째 옵션 제외)
+                departureCitySelect.innerHTML = '<option value="">도시를 선택하세요</option>';
+                arrivalCitySelect.innerHTML = '<option value="">도시를 선택하세요</option>';
+
+                console.log('도시 데이터:', cities);
+
+                // 도시 옵션 추가
+                cities.forEach(city => {
+                    console.log('처리 중인 도시:', city);
+                    
+                    // 안전한 속성 접근
+                    const cityCode = city.cityCode || city.CITY_CODE || city.city_code;
+                    const cityName = city.cityName || city.CITY_NAME || city.city_name;
+                    
+                    if (!cityCode || !cityName) {
+                        console.warn('도시 데이터 누락:', city);
+                        return;
+                    }
+                    
+                    const depOption = document.createElement('option');
+                    depOption.value = cityCode;
+                    depOption.textContent = cityName;
+                    departureCitySelect.appendChild(depOption);
+
+                    const arrOption = document.createElement('option');
+                    arrOption.value = cityCode;
+                    arrOption.textContent = cityName;
+                    arrivalCitySelect.appendChild(arrOption);
+                });
+            }
+
+            // 기본 날짜 설정 (오늘)
+            function setDefaultDate() {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                document.getElementById('departureDate').value = `${year}-${month}-${day}`;
+            }
+
+            // 이벤트 리스너 설정
+            function setupEventListeners() {
+                // 출발 도시 변경 시
+                document.getElementById('departureCity').addEventListener('change', function() {
+                    loadStationsByCity(this.value, 'departureStation');
+                });
+
+                // 도착 도시 변경 시
+                document.getElementById('arrivalCity').addEventListener('change', function() {
+                    loadStationsByCity(this.value, 'arrivalStation');
+                });
+
+                // 폼 제출
+                document.getElementById('trainSearchForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    searchRoutes();
+                });
+            }
+
+            // 도시별 역 목록 로드
+            async function loadStationsByCity(cityCode, stationSelectId) {
+                const stationSelect = document.getElementById(stationSelectId);
+                
+                if (!cityCode) {
+                    stationSelect.innerHTML = '<option value="">역을 선택하세요</option>';
+                    stationSelect.disabled = true;
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/transportation/train/stations/${cityCode}`);
+                    if (response.ok) {
+                        const stations = await response.json();
+                        
+                        // 기존 옵션 제거
+                        stationSelect.innerHTML = '<option value="">역을 선택하세요</option>';
+                        
+                        console.log('역 데이터:', stations);
+                        
+                        // 역 옵션 추가
+                        stations.forEach(station => {
+                            console.log('처리 중인 역:', station);
+                            
+                            // 안전한 속성 접근 - 모든 가능한 속성명 시도
+                            const nodeName = station.nodeName || station.NODE_NAME || station.node_name || 
+                                           station.NodeName || station.Node_Name || station.NODENAME;
+                            
+                            if (!nodeName) {
+                                console.warn('역 데이터 누락:', station);
+                                console.log('사용 가능한 속성들:', Object.keys(station));
+                                return;
+                            }
+                            
+                            const option = document.createElement('option');
+                            option.value = nodeName;
+                            option.textContent = nodeName;
+                            stationSelect.appendChild(option);
+                        });
+                        
+                        stationSelect.disabled = false;
+                    } else {
+                        console.error('역 목록 로드 실패');
+                    }
+                } catch (error) {
+                    console.error('역 목록 로드 중 오류:', error);
+                }
+            }
+
+            // 노선 검색
+            async function searchRoutes() {
+                const depPlaceName = document.getElementById('departureStation').value;
+                const arrPlaceName = document.getElementById('arrivalStation').value;
+                const depPlandTime = document.getElementById('departureDate').value;
+
+                if (!depPlaceName || !arrPlaceName || !depPlandTime) {
+                    alert('모든 필드를 입력해주세요.');
+                    return;
+                }
+
+                console.log('검색 파라미터:', { depPlaceName, arrPlaceName, depPlandTime });
+
+                try {
+                    const formData = new FormData();
+                    formData.append('depPlaceName', depPlaceName);
+                    formData.append('arrPlaceName', arrPlaceName);
+                    formData.append('depPlandTime', depPlandTime);
+                    formData.append('_csrf', csrfToken);
+
+                    const response = await fetch('/transportation/train/search', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: formData
+                    });
+
+                    console.log('응답 상태:', response.status);
+                    console.log('응답 헤더:', response.headers);
+
+                    if (response.ok) {
+                        const responseText = await response.text();
+                        console.log('응답 텍스트:', responseText);
+                        
+                        try {
+                            const routes = JSON.parse(responseText);
+                            displayResults(routes);
+                        } catch (parseError) {
+                            console.error('JSON 파싱 오류:', parseError);
+                            console.error('응답 내용:', responseText);
+                            alert('서버 응답을 처리할 수 없습니다.');
+                        }
+                    } else {
+                        const errorText = await response.text();
+                        console.error('노선 검색 실패:', response.status, errorText);
+                        alert('노선 검색에 실패했습니다.');
+                    }
+                } catch (error) {
+                    console.error('노선 검색 중 오류:', error);
+                    alert('노선 검색 중 오류가 발생했습니다.');
+                }
+            }
+
+            // 검색 결과 표시
+            function displayResults(routes) {
+                const resultsContainer = document.getElementById('resultsContainer');
+                const searchResults = document.getElementById('searchResults');
+
+                console.log('검색 결과:', routes);
+
+                // null 값 필터링
+                const validRoutes = routes.filter(route => route !== null);
+                
+                if (validRoutes.length === 0) {
+                    resultsContainer.innerHTML = '<div class="no-results"><p>검색 결과가 없습니다.</p></div>';
+                    searchResults.style.display = 'block';
+                    return;
+                }
+
+                let html = '';
+                validRoutes.forEach(route => {
+                    console.log('처리 중인 노선:', route);
+                    
+                    // 안전한 속성 접근
+                    const depPlandTime = route.depPlandTime || route.DEP_PLAND_TIME;
+                    const arrPlandTime = route.arrPlandTime || route.ARR_PLAND_TIME;
+                    const trainGradeName = route.trainGradeName || route.TRAIN_GRADE_NAME || '기차';
+                    const trainNo = route.trainNo || route.TRAIN_NO || '';
+                    const adultCharge = route.adultCharge || route.ADULT_CHARGE || 0;
+                    const depPlaceName = route.depPlaceName || route.DEP_PLACE_NAME || '';
+                    const arrPlaceName = route.arrPlaceName || route.ARR_PLACE_NAME || '';
+
+                    if (!depPlandTime || !arrPlandTime) {
+                        console.warn('시간 정보 누락:', route);
+                        return;
+                    }
+
+                    const depTime = new Date(depPlandTime).toLocaleTimeString('ko-KR', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    const arrTime = new Date(arrPlandTime).toLocaleTimeString('ko-KR', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    html += `
+                        <div class="route-card">
+                            <div class="route-header">
+                                <h3>${trainGradeName} ${trainNo}</h3>
+                                <span class="route-price">${adultCharge.toLocaleString()}원</span>
+                            </div>
+                            <div class="route-details">
+                                <div class="route-stations">
+                                    <div class="station dep">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>${depPlaceName}</span>
+                                        <time>${depTime}</time>
+                                    </div>
+                                    <div class="route-arrow">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </div>
+                                    <div class="station arr">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>${arrPlaceName}</span>
+                                        <time>${arrTime}</time>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                resultsContainer.innerHTML = html;
+                searchResults.style.display = 'block';
+            }
+        </script>
+    </main>
+</body>
+</html> 

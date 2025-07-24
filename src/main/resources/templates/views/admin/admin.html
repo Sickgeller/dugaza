@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>관리자 대시보드 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>관리자</h1>
+                <p>시스템 관리자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><a th:href="@{/admin}"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li><a th:href="@{/member/admin_member}"><i class="fas fa-users"></i><span>회원 관리</span></a></li>
+                    <li><a th:href="@{/admin/sellers}"><i class="fas fa-store"></i><span>판매자 관리</span></a></li>
+                    <li>
+                        <a href="#" class="dropdown-toggle"><i class="fas fa-boxes"></i><span>상품 관리</span></a>
+                        <ul class="submenu">
+                            <li><a th:href="@{/admin/cars}"><i class="fas fa-car"></i><span>렌터카</span></a></li>
+                            <li><a th:href="@{/house/admin_house}"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
+                        </ul>
+                    </li>
+                    <li><a th:href="@{/admin/reviews}"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a th:href="@{/admin/qna/list}"><i class="fas fa-flag"></i><span>문의 관리</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div th:replace="~{fragments/header :: admin-header}"></div>
+
+            <!-- 승인 대기 차량 목록 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>승인 대기 차량</h3>
+                    <p>새로 등록된 차량들의 승인을 처리하세요.</p>
+                </div>
+                
+                <div class="pending-cars-container">
+                    <div id="pendingCarsList" class="pending-cars-grid">
+                        <!-- 승인 대기 차량들이 여기에 동적으로 로드됩니다 -->
+                    </div>
+                    
+                    <div id="noPendingCars" class="no-data" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <p>승인 대기 중인 차량이 없습니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 승인 대기 숙소 목록 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>승인 대기 숙소</h3>
+                    <p>새로 신청된 숙소들의 승인을 처리하세요.</p>
+                </div>
+                
+                <div class="pending-houses-container">
+                    <div id="pendingHousesList" class="pending-houses-grid">
+                        <!-- 승인 대기 숙소들이 여기에 동적으로 로드됩니다 -->
+                    </div>
+                    
+                    <div id="noPendingHouses" class="no-data" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <p>승인 대기 중인 숙소가 없습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/assets/js/customjs.js}"></script>
+    <script>
+        // CSRF 토큰 설정 - null 체크 추가
+        const tokenElement = document.querySelector('meta[name="_csrf"]');
+        const headerElement = document.querySelector('meta[name="_csrf_header"]');
+        const token = tokenElement ? tokenElement.getAttribute('content') : '';
+        const header = headerElement ? headerElement.getAttribute('content') : '';
+        
+        // 페이지 로드 시 승인 대기 차량 목록 조회
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOMContentLoaded 이벤트 발생');
+            loadPendingCars();
+            loadPendingHouses();
+        });
+        
+        // 백업 로딩 메커니즘 (DOMContentLoaded가 작동하지 않을 경우)
+        setTimeout(function() {
+            console.log('타임아웃 후 로딩 시도');
+            loadPendingCars();
+            loadPendingHouses();
+        }, 1000);
+        
+        // 승인 대기 차량 목록 조회
+        function loadPendingCars() {
+            console.log('승인 대기 차량 목록 조회 시작');
+            
+            // 헤더 설정
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // CSRF 토큰이 있으면 헤더에 추가
+            if (header && token) {
+                headers[header] = token;
+            }
+            
+            fetch('/admin/pending-cars', {
+                method: 'GET',
+                headers: headers
+            })
+            .then(response => {
+                console.log('차량 목록 응답 상태:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('차량 목록 데이터:', data);
+                if (data.success) {
+                    displayPendingCars(data.cars);
+                } else {
+                    console.error('승인 대기 차량 목록 조회 실패:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('차량 목록 네트워크 오류:', error);
+            });
+        }
+        
+        // 승인 대기 차량 목록 표시
+        function displayPendingCars(cars) {
+            const container = document.getElementById('pendingCarsList');
+            const noDataDiv = document.getElementById('noPendingCars');
+            
+            if (cars.length === 0) {
+                container.style.display = 'none';
+                noDataDiv.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'grid';
+            noDataDiv.style.display = 'none';
+            
+            container.innerHTML = cars.map(car => `
+                <div class="pending-car-card">
+                    <div class="car-image">
+                        <img src="${car.imageUrl}" alt="${car.carName}">
+                    </div>
+                    <div class="car-info">
+                        <h4>${car.carName}</h4>
+                        <p><strong>판매자:</strong> ${car.sellerName}</p>
+                        <p><strong>차종:</strong> ${car.carType}</p>
+                        <p><strong>연식:</strong> ${car.year}년</p>
+                        <p><strong>색상:</strong> ${car.carColor}</p>
+                        <p><strong>연료:</strong> ${car.fuelType}</p>
+                        <p><strong>승차정원:</strong> ${car.carSeats}명</p>
+                        <p><strong>일일 대여료:</strong> ₩${car.dailyPrice.toLocaleString()}</p>
+                        <p><strong>차량번호:</strong> ${car.carNumber}</p>
+                    </div>
+                    <div class="car-actions">
+                        <button onclick="approveCar(${car.carId})" class="btn-approve">
+                            <i class="fas fa-check"></i> 승인
+                        </button>
+                        <button onclick="rejectCar(${car.carId})" class="btn-reject">
+                            <i class="fas fa-times"></i> 거절
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 차량 승인
+        function approveCar(carId) {
+            if (!confirm('이 차량을 승인하시겠습니까?')) {
+                return;
+            }
+            
+            // 헤더 설정
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // CSRF 토큰이 있으면 헤더에 추가
+            if (header && token) {
+                headers[header] = token;
+            }
+            
+            fetch(`/admin/cars/${carId}/approve`, {
+                method: 'POST',
+                headers: headers
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('차량이 성공적으로 승인되었습니다.');
+                    loadPendingCars(); // 목록 새로고침
+                } else {
+                    alert('차량 승인에 실패했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('차량 승인 중 오류가 발생했습니다.');
+            });
+        }
+        
+        // 차량 거절
+        function rejectCar(carId) {
+            if (!confirm('이 차량을 거절하시겠습니까?')) {
+                return;
+            }
+            
+            // 헤더 설정
+            const headers = {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            };
+            
+            // CSRF 토큰이 있으면 헤더에 추가
+            if (header && token) {
+                headers[header] = token;
+            }
+            
+            fetch(`/admin/cars/${carId}/status`, {
+                method: 'POST',
+                headers: headers,
+                body: `status=DELETED`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('차량이 거절되었습니다.');
+                    loadPendingCars(); // 목록 새로고침
+                } else {
+                    alert('차량 거절에 실패했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('차량 거절 중 오류가 발생했습니다.');
+            });
+        }
+
+        // 승인 대기 숙소 목록 조회
+        function loadPendingHouses() {
+            console.log('승인 대기 숙소 목록 조회 시작');
+            
+            // 헤더 설정
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // CSRF 토큰이 있으면 헤더에 추가
+            if (header && token) {
+                headers[header] = token;
+            }
+            
+            fetch('/admin/pending-houses', {
+                method: 'GET',
+                headers: headers
+            })
+            .then(response => {
+                console.log('숙소 목록 응답 상태:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('숙소 목록 데이터:', data);
+                if (data.success) {
+                    displayPendingHouses(data.data);
+                } else {
+                    console.error('승인 대기 숙소 목록 조회 실패:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('숙소 목록 네트워크 오류:', error);
+            });
+        }
+        
+        // 승인 대기 숙소 목록 표시
+        function displayPendingHouses(houses) {
+            const container = document.getElementById('pendingHousesList');
+            const noDataDiv = document.getElementById('noPendingHouses');
+            
+            if (houses.length === 0) {
+                container.style.display = 'none';
+                noDataDiv.style.display = 'block';
+                return;
+            }
+            
+            container.style.display = 'grid';
+            noDataDiv.style.display = 'none';
+            
+            container.innerHTML = houses.map(house => `
+                <div class="pending-house-card">
+                    <div class="house-info">
+                        <h4>${house.houseTitle}</h4>
+                        <p><strong>판매자:</strong> ${house.sellerName}</p>
+                        <p><strong>이메일:</strong> ${house.sellerEmail}</p>
+                        <p><strong>주소:</strong> ${house.houseAddress}</p>
+                        <p><strong>신청일:</strong> ${new Date(house.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div class="house-actions">
+                        <button onclick="approveHouse(${house.houseId}, ${house.sellerId})" class="btn-approve">
+                            <i class="fas fa-check"></i> 승인
+                        </button>
+                        <button onclick="rejectHouse(${house.houseId}, ${house.sellerId})" class="btn-reject">
+                            <i class="fas fa-times"></i> 거절
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 숙소 승인
+        function approveHouse(houseId, sellerId) {
+            if (!confirm('이 숙소를 승인하시겠습니까?')) {
+                return;
+            }
+            
+            // 헤더 설정
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // CSRF 토큰이 있으면 헤더에 추가
+            if (header && token) {
+                headers[header] = token;
+            }
+            
+            fetch(`/admin/houses/${houseId}/approve?sellerId=${sellerId}`, {
+                method: 'POST',
+                headers: headers
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('숙소가 성공적으로 승인되었습니다.');
+                    loadPendingHouses(); // 목록 새로고침
+                } else {
+                    alert('숙소 승인에 실패했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('숙소 승인 중 오류가 발생했습니다.');
+            });
+        }
+        
+        // 숙소 거절
+        function rejectHouse(houseId, sellerId) {
+            if (!confirm('이 숙소를 거절하시겠습니까?')) {
+                return;
+            }
+            
+            // 헤더 설정
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // CSRF 토큰이 있으면 헤더에 추가
+            if (header && token) {
+                headers[header] = token;
+            }
+            
+            fetch(`/admin/houses/${houseId}/reject?sellerId=${sellerId}`, {
+                method: 'POST',
+                headers: headers
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('숙소가 거절되었습니다.');
+                    loadPendingHouses(); // 목록 새로고침
+                } else {
+                    alert('숙소 거절에 실패했습니다: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('숙소 거절 중 오류가 발생했습니다.');
+            });
+        }
+    </script>
+</body>
+</html> 

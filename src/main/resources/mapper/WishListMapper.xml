@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.wishlist.dao.WishListMapper">
+	<resultMap type="kr.spring.wishlist.vo.WishListVO" id="wishListMap">
+		<result property="wishListId" column="WISHLIST_ID"/>
+		<result property="memberId" column="MEMBER_ID"/>
+		<result property="contentType" column="CONTENT_TYPE"/>
+		<result property="contentId" column="CONTENT_ID"/>
+		<result property="createdAt" column="CREATED_AT"/>
+	</resultMap>
+
+	<insert id="insertWishList" parameterType="kr.spring.wishlist.vo.WishListVO">
+		INSERT INTO WISHLIST(
+			WISHLIST_ID,
+			MEMBER_ID,
+			CONTENT_TYPE,
+			CONTENT_ID,
+			CREATED_AT
+		) VALUES(
+			WISHLIST_SEQ.NEXTVAL,
+			#{memberId},
+			#{contentType, jdbcType=NUMERIC},
+			#{contentId},
+			SYSDATE
+		)
+	</insert>
+	
+	<delete id="deleteList" parameterType="kr.spring.wishlist.vo.WishListVO">
+		DELETE FROM WISHLIST
+		WHERE MEMBER_ID = #{memberId} AND CONTENT_ID = #{contentId} AND CONTENT_TYPE = #{contentType, jdbcType=NUMERIC}
+	</delete>
+	
+	<select id="selectWishList" parameterType="kr.spring.wishlist.vo.WishListVO" resultMap="wishListMap">
+		SELECT 
+			*
+		FROM WISHLIST
+		WHERE MEMBER_ID = #{memberId} AND CONTENT_ID = #{contentId} AND CONTENT_TYPE = #{contentType, jdbcType=NUMERIC} AND ROWNUM = 1
+	</select>
+	
+	<select id="getWishListCountByMemberId" parameterType="Long" resultType="int">
+		SELECT COUNT(*) FROM WISHLIST WHERE MEMBER_ID = #{memberId}
+	</select>
+	
+	<select id="getWishListByMemberId" parameterType="Long" resultMap="wishListMap">
+		SELECT * FROM WISHLIST WHERE MEMBER_ID = #{memberId} ORDER BY CREATED_AT DESC
+	</select>
+</mapper>

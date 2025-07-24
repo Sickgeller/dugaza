@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리숙소 추가 신청</title>
+    <link rel="stylesheet" th:href="@{/assets/css/seller.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <style>
+        .house-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .house-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+            background: white;
+        }
+        
+        .house-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .house-card.selected {
+            border: 2px solid #007bff;
+            box-shadow: 0 0 10px rgba(0,123,255,0.3);
+        }
+        
+        .house-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .house-info {
+            padding: 15px;
+        }
+        
+        .house-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+            color: #333;
+        }
+        
+        .house-info p {
+            margin: 5px 0;
+            color: #666;
+        }
+        
+        .house-info i {
+            margin-right: 8px;
+            color: #007bff;
+        }
+        
+        .search-filters {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .search-filters input,
+        .search-filters select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 20px 0;
+        }
+        
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .pagination button.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .pagination button:hover:not(.active) {
+            background: #f8f9fa;
+        }
+        
+        .form-actions {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+        }
+        
+        .btn-primary {
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-dismissible {
+            position: relative;
+            padding-right: 35px;
+        }
+        
+        .alert-dismissible .close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 15px;
+            color: inherit;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="admin-container">
+    <div th:replace="~{fragments/house_seller_sidebar :: houseSideBar}"></div>
+    <div class="main-content">
+        <div class="content-header">
+            <h2>관리숙소 추가 신청</h2>
+            <div class="header-actions">
+                <a th:href="@{/seller/house/applications}" class="btn-secondary">
+                    <i class="fas fa-list"></i> 신청 목록 보기
+                </a>
+            </div>
+        </div>
+        
+        <!-- 알림 메시지 -->
+        <div th:if="${message}" class="alert alert-success alert-dismissible">
+            <span th:text="${message}"></span>
+            <button type="button" class="close" onclick="this.parentElement.style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible">
+            <span th:text="${error}"></span>
+            <button type="button" class="close" onclick="this.parentElement.style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="content-section">
+            <!-- 검색 및 필터 -->
+            <div class="search-filters">
+                <div class="search-box">
+                    <input type="text" id="searchKeyword" placeholder="숙소명 검색..." 
+                           th:value="${keyword}" onchange="searchHouses()">
+                </div>
+                <div class="filter-box">
+                    <select id="categoryFilter" onchange="searchHouses()">
+                        <option value="">카테고리 선택</option>
+                        <option value="관광호텔" th:selected="${category == '관광호텔'}">관광호텔</option>
+                        <option value="수상관광호텔" th:selected="${category == '수상관광호텔'}">수상관광호텔</option>
+                        <option value="전통호텔" th:selected="${category == '전통호텔'}">전통호텔</option>
+                        <option value="가족호텔" th:selected="${category == '가족호텔'}">가족호텔</option>
+                        <option value="콘도미니엄" th:selected="${category == '콘도미니엄'}">콘도미니엄</option>
+                        <option value="유스호스텔" th:selected="${category == '유스호스텔'}">유스호스텔</option>
+                        <option value="펜션" th:selected="${category == '펜션'}">펜션</option>
+                        <option value="여관" th:selected="${category == '여관'}">여관</option>
+                        <option value="모텔" th:selected="${category == '모텔'}">모텔</option>
+                        <option value="민박" th:selected="${category == '민박'}">민박</option>
+                        <option value="게스트하우스" th:selected="${category == '게스트하우스'}">게스트하우스</option>
+                        <option value="홈스테이" th:selected="${category == '홈스테이'}">홈스테이</option>
+                        <option value="서비스드레지던스" th:selected="${category == '서비스드레지던스'}">서비스드레지던스</option>
+                        <option value="한옥" th:selected="${category == '한옥'}">한옥</option>
+                    </select>
+                    <select id="sortFilter" onchange="searchHouses()">
+                        <option value="">정렬 기준</option>
+                        <option value="title" th:selected="${sort == 'title'}">숙소명순</option>
+                        <option value="rating" th:selected="${sort == 'rating'}">평점순</option>
+                        <option value="popular" th:selected="${sort == 'popular'}">인기순</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 숙소 목록 -->
+            <div class="house-list">
+                <div th:each="house : ${houseList}" class="house-card" th:onclick="'selectHouse(' + ${house.contentId} + ')'">
+                    <img th:src="${house.firstImage2 != null ? house.firstImage2 : '/assets/images/house.png'}" 
+                         alt="숙소 이미지" class="house-image"
+                         onerror="this.onerror=null; this.src='/assets/images/house.png';">
+                    <div class="house-info">
+                        <h3 th:text="${house.title}">숙소명</h3>
+                        <p><i class="fas fa-map-marker-alt"></i> <span th:text="${house.addr1}">주소</span></p>
+                        <p><i class="fas fa-building"></i> <span th:text="${house.cat3}">카테고리</span></p>
+                        <p><i class="fas fa-star"></i> <span th:text="${house.review_avg + ' (' + house.review_count + '건)'}">평점</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 페이지네이션 -->
+            <div class="pagination" th:if="${totalPages > 1}">
+                <button th:if="${currentPage > 1}" onclick="goToPage(1)">
+                    <i class="fas fa-angle-double-left"></i>
+                </button>
+                <button th:if="${currentPage > 1}" th:onclick="'goToPage(' + ${currentPage - 1} + ')'">
+                    <i class="fas fa-angle-left"></i>
+                </button>
+                
+                <!-- 페이지 번호 표시 (최대 10개) -->
+                <th:block th:with="
+                    startPage=${currentPage <= 5 ? 1 : currentPage - 5},
+                    endPage=${currentPage + 4 > totalPages ? totalPages : currentPage + 4},
+                    startPage=${startPage < 1 ? 1 : startPage},
+                    endPage=${endPage > startPage + 9 ? startPage + 9 : endPage}">
+                    
+                    <th:block th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
+                        <button th:text="${pageNum}" 
+                                th:class="${pageNum == currentPage ? 'active' : ''}"
+                                th:onclick="'goToPage(' + ${pageNum} + ')'">1</button>
+                    </th:block>
+                </th:block>
+                
+                <button th:if="${currentPage < totalPages}" th:onclick="'goToPage(' + ${currentPage + 1} + ')'">
+                    <i class="fas fa-angle-right"></i>
+                </button>
+                <button th:if="${currentPage < totalPages}" th:onclick="'goToPage(' + ${totalPages} + ')'">
+                    <i class="fas fa-angle-double-right"></i>
+                </button>
+            </div>
+
+            <!-- 신청 폼 -->
+            <form th:action="@{/seller/house/apply}" method="post" id="applyForm">
+                <input type="hidden" id="selectedHouseId" name="contentId">
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary" id="submitBtn" disabled>선택한 숙소 신청하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// CSRF 토큰 설정
+const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
+const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
+
+let selectedHouseCard = null;
+
+function selectHouse(houseId) {
+    // 이전 선택 제거
+    if (selectedHouseCard) {
+        selectedHouseCard.classList.remove('selected');
+    }
+    
+    // 새로운 선택
+    const card = event.currentTarget;
+    card.classList.add('selected');
+    selectedHouseCard = card;
+    
+    // 폼 업데이트
+    document.getElementById('selectedHouseId').value = houseId;
+    document.getElementById('submitBtn').disabled = false;
+}
+
+function searchHouses() {
+    const keyword = document.getElementById('searchKeyword').value;
+    const category = document.getElementById('categoryFilter').value;
+    const sort = document.getElementById('sortFilter').value;
+    
+    const params = new URLSearchParams();
+    if (keyword) params.append('keyword', keyword);
+    if (category) params.append('category', category);
+    if (sort) params.append('sort', sort);
+    
+    window.location.href = '/seller/house/apply?' + params.toString();
+}
+
+function goToPage(page) {
+    const currentUrl = new URL(window.location);
+    currentUrl.searchParams.set('page', page);
+    window.location.href = currentUrl.toString();
+}
+</script>
+</body>
+</html> 

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.api.mapper.RestaurantDetailApiMapper">
+
+    <insert id="insert" parameterType="kr.spring.api.dto.RestaurantDetailApiDto">
+        INSERT INTO RESTAURANT_DETAIL (
+            CONTENT_ID,
+            CONTENT_TYPE_ID,
+            CHK_CREDIT_CARD_FOOD,
+            DISCOUNT_INFO_FOOD,
+            FIRST_MENU,
+            INFO_CENTER_FOOD,
+            KIDS_FACILITY,
+            OPEN_DATE_FOOD,
+            OPEN_TIME_FOOD,
+            PACKING,
+            PARKING_FOOD,
+            RESERVATION_FOOD,
+            REST_DATE_FOOD,
+            SCALE_FOOD,
+            SEAT,
+            SMOKING,
+            TREAT_MENU,
+            LCNS_NO
+        ) VALUES (
+                     #{contentId},
+                     #{contentTypeId},
+                     #{chkCreditCardFood},
+                     #{discountInfoFood},
+                     #{firstMenu},
+                     #{infoCenterFood},
+                     #{kidsFacility},
+                     #{openDateFood},
+                     #{openTimeFood},
+                     #{packing},
+                     #{parkingFood},
+                     #{reservationFood},
+                     #{restDateFood},
+                     #{scaleFood},
+                     #{seat},
+                     #{smoking},
+                     #{treatMenu},
+                     #{lcnsNo}
+                 )
+    </insert>
+
+    <update id="update" parameterType="kr.spring.api.dto.RestaurantDetailApiDto">
+        UPDATE RESTAURANT_DETAIL
+        SET
+            CONTENT_TYPE_ID = #{contentTypeId},
+            CHK_CREDIT_CARD_FOOD = #{chkCreditCardFood},
+            DISCOUNT_INFO_FOOD = #{discountInfoFood},
+            FIRST_MENU = #{firstMenu},
+            INFO_CENTER_FOOD = #{infoCenterFood},
+            KIDS_FACILITY = #{kidsFacility},
+            OPEN_DATE_FOOD = #{openDateFood},
+            OPEN_TIME_FOOD = #{openTimeFood},
+            PACKING = #{packing},
+            PARKING_FOOD = #{parkingFood},
+            RESERVATION_FOOD = #{reservationFood},
+            REST_DATE_FOOD = #{restDateFood},
+            SCALE_FOOD = #{scaleFood},
+            SEAT = #{seat},
+            SMOKING = #{smoking},
+            TREAT_MENU = #{treatMenu},
+            LCNS_NO = #{lcnsNo}
+        WHERE CONTENT_ID = #{contentId}
+    </update>
+
+</mapper>

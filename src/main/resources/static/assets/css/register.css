@@ -1,0 +1,154 @@
+/* 회원가입 폼 전용 스타일 */
+
+/* 아이디 중복확인 컨테이너 */
+.id-check-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  position: relative;
+  z-index: 5;
+  pointer-events: none;
+}
+
+#checkIdBtn {
+  pointer-events: auto;
+}
+
+
+/* 중복확인 버튼 */
+.btn-check,
+#checkIdBtn {
+  padding: 8px 15px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+  min-width: 80px;
+  font-weight: 500;
+  display: inline-block;
+  visibility: visible;
+  opacity: 1;
+  position: relative;
+  z-index: 10;
+}
+
+.btn-check:hover,
+#checkIdBtn:hover {
+  background-color: #1d4ed8;
+}
+
+/* 중복확인 메시지 */
+.check-message {
+  font-size: 12px;
+  margin-left: 8px;
+  min-height: 16px;
+  color: #666;
+}
+
+/* 안내 문구 */
+.notice {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* 에러 메시지 */
+.error-message {
+  color: #e53e3e;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* 체크박스 그룹 */
+.checkbox-group {
+  margin: 20px 0;
+  position: relative;
+  z-index: 5;
+}
+
+.checkbox-group strong {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+/* 필수 입력 표시 */
+.required::after {
+  content: "*";
+  color: #dc3545;
+  margin-left: 4px;
+}
+
+/* 모바일 반응형 */
+@media (max-width: 576px) {
+  .id-check-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-check {
+    width: 100%;
+  }
+
+  .check-message {
+    margin-left: 0;
+    margin-top: 4px;
+  }
+}
+
+/* 숙소 선택 정보 */
+.house-select-info {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+}
+
+.house-select-info p {
+    margin: 0 0 10px 0;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.house-select-info i {
+    color: #007bff;
+    margin-right: 5px;
+}
+
+.house-select-info .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.house-select-info .btn:hover {
+    background: #545b62;
+    color: white;
+    text-decoration: none;
+}

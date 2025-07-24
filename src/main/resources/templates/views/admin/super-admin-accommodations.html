@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숙소 관리 - 관리자</title>
+    <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>관리자</h1>
+                <p>시스템 관리자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a th:href="@{/member/admin_member}"><i class="fas fa-users"></i><span>회원 관리</span></a></li>
+                    <li><a th:href="@{/admin/sellers}"><i class="fas fa-store"></i><span>판매자 관리</span></a></li>
+                    <li class="active">
+                        <a href="#" class="dropdown-toggle"><i class="fas fa-boxes"></i><span>상품 관리</span></a>
+                        <ul class="submenu">
+                            <li><a th:href="@{/admin/cars}"><i class="fas fa-car"></i><span>렌터카</span></a></li>
+                            <li class="active"><a th:href="@{/admin/houses}"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
+                        </ul>
+                    </li>
+                    <li><a th:href="@{/admin/reviews}"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a th:href="@{/admin/qna/list}"><i class="fas fa-flag"></i><span>문의 관리</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div th:replace="~{fragments/header :: admin-header}"></div>
+
+            <!-- 숙소 통계 -->
+            <div class="content-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-hotel"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>총 숙소</h3>
+                            <p th:text="${totalCount} + '개'">0개</p>
+                            <span class="stat-change increase">전체 숙소</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>운영 중</h3>
+                            <p th:text="${availableCount} + '개'">0개</p>
+                            <span class="stat-change" th:text="${availablePercentage} + '%'">0%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>평균 평점</h3>
+                            <p th:text="${avgRating} + ' ⭐'">0.0 ⭐</p>
+                            <span class="stat-change increase">+0.2</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>점검 중</h3>
+                            <p th:text="${repairedCount} + '개'">0개</p>
+                            <span class="stat-change" th:text="${repairedPercentage} + '%'">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 검색 및 필터 -->
+            <div class="content-section">
+                <div class="search-filter-container">
+                    <div class="search-box">
+                        <input type="text" id="searchKeyword" placeholder="숙소명, 주소 검색" th:value="${keyword}">
+                        <button onclick="searchHouses()"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="filter-options">
+                        <select id="categoryFilter">
+                            <option value="">카테고리</option>
+                            <option value="호텔" th:selected="${category == '호텔'}">호텔</option>
+                            <option value="펜션" th:selected="${category == '펜션'}">펜션</option>
+                            <option value="리조트" th:selected="${category == '리조트'}">리조트</option>
+                        </select>
+                        <select id="statusFilter">
+                            <option value="">상태</option>
+                            <option value="AVAILABLE" th:selected="${status == 'AVAILABLE'}">운영중</option>
+                            <option value="INAVAILABLE" th:selected="${status == 'INAVAILABLE'}">운영정지</option>
+                            <option value="suspending" th:selected="${status == 'suspending'}">승인대기</option>
+                            <option value="REPAIRED" th:selected="${status == 'REPAIRED'}">점검중</option>
+                            <option value="DELETED" th:selected="${status == 'DELETED'}">삭제됨</option>
+                        </select>
+                        <select id="sortFilter">
+                            <option value="">정렬 기준</option>
+                            <option value="title" th:selected="${sort == 'title'}">숙소명순</option>
+                            <option value="rating" th:selected="${sort == 'rating'}">평점순</option>
+                            <option value="popular" th:selected="${sort == 'popular'}">인기순</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 숙소 목록 -->
+            <div class="content-section">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>숙소 정보</th>
+                                <th>판매자</th>
+                                <th>카테고리</th>
+                                <th>객실 수</th>
+                                <th>예약률</th>
+                                <th>평점</th>
+                                <th>상태</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="houseTableBody">
+                            <tr th:each="house : ${houseList}">
+                                <td>
+                                    <div class="house-info">
+                                        <img th:src="${house.firstImage2 != null ? house.firstImage2 : '/assets/images/house.png'}" 
+                                             alt="숙소 이미지" onerror="this.onerror=null; this.src='/assets/images/house.png';">
+                                        <div>
+                                            <strong th:text="${house.title}">숙소명</strong>
+                                            <small th:text="${house.addr1}">주소</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${house.sellerName}">제주호텔그룹</td>
+                                <td th:text="${house.cat3}">호텔/제주시</td>
+                                <td th:text="${house.roomCount != null ? house.roomCount + '실' : '120실'}">120실</td>
+                                <td th:text="${house.reservationRate} + '%'">88%</td>
+                                <td th:text="${house.rating} + ' ⭐'">4.7 ⭐</td>
+                                <td>
+                                    <select class="status-select" th:data-house-id="${house.contentId}" onchange="updateHouseStatus(this)">
+                                        <option value="AVAILABLE" th:selected="${house.status == 'AVAILABLE'}">운영중</option>
+                                        <option value="INAVAILABLE" th:selected="${house.status == 'INAVAILABLE'}">운영정지</option>
+                                        <option value="suspending" th:selected="${house.status == 'suspending'}">승인대기</option>
+                                        <option value="REPAIRED" th:selected="${house.status == 'REPAIRED'}">점검중</option>
+                                        <option value="DELETED" th:selected="${house.status == 'DELETED'}">삭제됨</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보" th:onclick="'viewHouseDetail(' + ${house.contentId} + ')'">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <button class="btn-icon" title="판매자 등록" 
+                                            th:attr="data-house-id=${house.contentId},data-house-title=${house.title}"
+                                            onclick="registerSellerFromData(this)">
+                                        <i class="fas fa-user-plus"></i>
+                                    </button>
+                                    <button class="btn-icon" title="삭제" th:onclick="'deleteHouse(' + ${house.contentId} + ')'">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- 페이지네이션 -->
+                <div class="pagination" th:if="${totalPages > 1}">
+                    <!-- 첫 페이지로 이동 -->
+                    <button class="btn-page" th:if="${currentPage > 1}" th:onclick="'goToPage(1)'">
+                        <i class="fas fa-angle-double-left"></i>
+                    </button>
+                    
+                    <!-- 이전 페이지 -->
+                    <button class="btn-page" th:if="${currentPage > 1}" th:onclick="'goToPage(' + ${currentPage - 1} + ')'">
+                        <i class="fas fa-angle-left"></i>
+                    </button>
+                    
+                    <!-- 페이지 번호들 -->
+                    <th:block th:with="start=${currentPage > 4 ? currentPage - 4 : 1}, end=${currentPage + 5 > totalPages ? totalPages : currentPage + 5}">
+                        <!-- 첫 페이지가 start보다 크면 첫 페이지와 ... 표시 -->
+                        <button class="btn-page" th:if="${start > 1}" th:onclick="'goToPage(1)'" th:text="1">1</button>
+                        <span class="pagination-ellipsis" th:if="${start > 2}">...</span>
+                        
+                        <!-- 실제 페이지 번호들 -->
+                        <button class="btn-page" th:each="pageNum : ${#numbers.sequence(start, end)}" 
+                                th:class="${pageNum == currentPage ? 'active' : ''}" 
+                                th:onclick="'goToPage(' + ${pageNum} + ')'" 
+                                th:text="${pageNum}">1</button>
+                        
+                        <!-- 마지막 페이지가 end보다 작으면 ... 표시와 마지막 페이지 -->
+                        <span class="pagination-ellipsis" th:if="${end < totalPages - 1}">...</span>
+                        <button class="btn-page" th:if="${end < totalPages}" th:onclick="'goToPage(' + ${totalPages} + ')'" th:text="${totalPages}">1</button>
+                    </th:block>
+                    
+                    <!-- 다음 페이지 -->
+                    <button class="btn-page" th:if="${currentPage < totalPages}" th:onclick="'goToPage(' + ${currentPage + 1} + ')'">
+                        <i class="fas fa-angle-right"></i>
+                    </button>
+                    
+                    <!-- 마지막 페이지로 이동 -->
+                    <button class="btn-page" th:if="${currentPage < totalPages}" th:onclick="'goToPage(' + ${totalPages} + ')'">
+                        <i class="fas fa-angle-double-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 숙소 상세보기 모달 -->
+    <div id="houseDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>숙소 상세정보</h3>
+                <span class="close" onclick="closeHouseDetailModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="houseDetailContent">
+                <!-- 상세정보 내용이 여기에 로드됩니다 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 판매자 등록 모달 -->
+    <div id="sellerRegisterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>숙소 판매자 등록</h3>
+                <span class="close" onclick="closeSellerRegisterModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="selected-house-info">
+                    <h4>선택된 숙소</h4>
+                    <p id="selectedHouseName"></p>
+                </div>
+                <form id="sellerRegisterForm" th:action="@{/seller/house/register}" method="post">
+                    <input type="hidden" id="selectedContentId" name="contentId">
+                    
+                    <div class="form-group">
+                        <label for="businessName">상호명 *</label>
+                        <input type="text" id="businessName" name="businessName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="license">사업자등록번호 *</label>
+                        <input type="text" id="license" name="license" placeholder="000-00-00000" pattern="\d{3}-\d{2}-\d{5}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name">대표자명 *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">이메일 *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">비밀번호 *</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">사업장 주소 *</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="addressDetail">상세주소</label>
+                        <input type="text" id="addressDetail" name="addressDetail">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">연락처 *</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="secondaryPhone">보조연락처</label>
+                        <input type="tel" id="secondaryPhone" name="secondaryPhone">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i> 등록 완료
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeSellerRegisterModal()">
+                            <i class="fas fa-times"></i> 취소
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/js/admin.js}"></script>
+    <script>
+        // CSRF 토큰 설정 - null 체크 추가
+        const tokenElement = document.querySelector('meta[name="_csrf"]');
+        const headerElement = document.querySelector('meta[name="_csrf_header"]');
+        const token = tokenElement ? tokenElement.getAttribute('content') : '';
+        const header = headerElement ? headerElement.getAttribute('content') : '';
+
+        // 숙소 상세정보 보기
+        function viewHouseDetail(houseId) {
+            console.log('숙소 상세보기 요청:', houseId);
+            console.log('요청 URL:', `/admin/houses/${houseId}/detail`);
+            
+            fetch(`/admin/houses/${houseId}/detail`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    [header]: token
+                }
+            })
+            .then(response => {
+                console.log('응답 상태:', response.status);
+                console.log('응답 헤더:', response.headers);
+                return response.json();
+            })
+            .then(data => {
+                console.log('받은 데이터:', data);
+                if (data.success) {
+                    const house = data.house;
+                    console.log('숙소 정보:', house);
+                    const content = `
+                        <div class="house-detail">
+                            <div class="house-image">
+                                <img src="${house.firstImage2 || '/assets/images/house.png'}" alt="숙소 이미지">
+                            </div>
+                            <div class="house-info-detail">
+                                <h4>${house.title}</h4>
+                                <p><strong>주소:</strong> ${house.addr1}</p>
+                                <p><strong>판매자:</strong> ${house.sellerName}</p>
+                                <p><strong>카테고리:</strong> ${house.cat3}</p>
+                                <p><strong>객실 수:</strong> ${house.roomCount || '120'}실</p>
+                                <p><strong>예약률:</strong> ${house.reservationRate}%</p>
+                                <p><strong>평점:</strong> ${house.rating} ⭐</p>
+                                <p><strong>상태:</strong> ${getStatusText(house.status)}</p>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('houseDetailContent').innerHTML = content;
+                    document.getElementById('houseDetailModal').style.display = 'block';
+                    console.log('모달 표시 완료');
+                } else {
+                    console.error('API 응답 실패:', data.message);
+                    alert('숙소 정보를 불러오는데 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+                alert('숙소 정보를 불러오는데 실패했습니다.');
+            });
+        }
+
+        // 상태 텍스트 변환
+        function getStatusText(status) {
+            switch(status) {
+                case 'AVAILABLE': return '운영중';
+                case 'INAVAILABLE': return '운영정지';
+                case 'suspending': return '승인대기';
+                case 'REPAIRED': return '점검중';
+                case 'DELETED': return '삭제됨';
+                default: return status;
+            }
+        }
+
+        // 모달 닫기
+        function closeHouseDetailModal() {
+            document.getElementById('houseDetailModal').style.display = 'none';
+        }
+
+        // 판매자 등록 모달 열기
+        function registerSellerFromData(button) {
+            const contentId = button.getAttribute('data-house-id');
+            const houseName = button.getAttribute('data-house-title');
+            document.getElementById('selectedContentId').value = contentId;
+            document.getElementById('selectedHouseName').textContent = houseName;
+            document.getElementById('sellerRegisterModal').style.display = 'block';
+        }
+
+        // 판매자 등록 모달 열기 (이전 함수, 호환성 유지)
+        function registerSeller(contentId, houseName) {
+            document.getElementById('selectedContentId').value = contentId;
+            document.getElementById('selectedHouseName').textContent = houseName;
+            document.getElementById('sellerRegisterModal').style.display = 'block';
+        }
+
+        // 판매자 등록 모달 닫기
+        function closeSellerRegisterModal() {
+            document.getElementById('sellerRegisterModal').style.display = 'none';
+            document.getElementById('sellerRegisterForm').reset();
+        }
+
+        // 숙소 상태 업데이트
+        function updateHouseStatus(selectElement) {
+            const houseId = selectElement.getAttribute('data-house-id');
+            const newStatus = selectElement.value;
+            
+            if (confirm(`숙소 상태를 "${getStatusText(newStatus)}"로 변경하시겠습니까?`)) {
+                fetch('/admin/houses/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [header]: token
+                    },
+                    body: JSON.stringify({
+                        houseId: houseId,
+                        status: newStatus
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('상태가 성공적으로 변경되었습니다.');
+                    } else {
+                        alert('상태 변경에 실패했습니다.');
+                        // 원래 상태로 되돌리기
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('상태 변경 중 오류가 발생했습니다.');
+                    location.reload();
+                });
+            } else {
+                // 취소 시 원래 상태로 되돌리기
+                location.reload();
+            }
+        }
+
+        // 숙소 삭제 (상태를 DELETED로 변경)
+        function deleteHouse(houseId) {
+            if (confirm('정말로 이 숙소를 삭제하시겠습니까?')) {
+                fetch('/admin/houses/status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [header]: token
+                    },
+                    body: JSON.stringify({
+                        houseId: houseId,
+                        status: 'DELETED'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('숙소가 삭제되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('삭제에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('삭제 중 오류가 발생했습니다.');
+                });
+            }
+        }
+
+        // 숙소 검색
+        function searchHouses() {
+            const keyword = document.getElementById('searchKeyword').value;
+            const category = document.getElementById('categoryFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+            
+            // URL 파라미터로 검색 조건 전달
+            const currentUrl = new URL(window.location);
+            
+            if (keyword) {
+                currentUrl.searchParams.set('keyword', keyword);
+            } else {
+                currentUrl.searchParams.delete('keyword');
+            }
+            
+            if (category) {
+                currentUrl.searchParams.set('category', category);
+            } else {
+                currentUrl.searchParams.delete('category');
+            }
+            
+            if (status) {
+                currentUrl.searchParams.set('status', status);
+            } else {
+                currentUrl.searchParams.delete('status');
+            }
+            
+            if (sort) {
+                currentUrl.searchParams.set('sort', sort);
+            } else {
+                currentUrl.searchParams.delete('sort');
+            }
+            
+            // 페이지를 1로 리셋
+            currentUrl.searchParams.set('page', '1');
+            
+            window.location.href = currentUrl.toString();
+        }
+        
+        // 페이지 이동
+        function goToPage(page) {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('page', page);
+            window.location.href = currentUrl.toString();
+        }
+
+        // 모달 외부 클릭 시 닫기
+        window.onclick = function(event) {
+            const houseDetailModal = document.getElementById('houseDetailModal');
+            const sellerRegisterModal = document.getElementById('sellerRegisterModal');
+            
+            if (event.target == houseDetailModal) {
+                houseDetailModal.style.display = 'none';
+            }
+            if (event.target == sellerRegisterModal) {
+                sellerRegisterModal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html> 

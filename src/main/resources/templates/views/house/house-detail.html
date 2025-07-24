@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>그랜드 호텔 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/content-detail.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/accommodation-detail.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+<main class="detail-main" layout:fragment="content">
+    <div class="detail-container">
+        <div class="detail-header">
+            <div class="detail-title">
+                <h1 th:text="${info.title}"></h1>
+                <div class="detail-meta">
+                    <span class="rating"><i class="fas fa-star"></i> [[${#numbers.formatDecimal(status.averageRating, 0, 1)}]]</span>
+                    <span class="reviews" th:text="'리뷰 (' + ${status.totalCount} + ')'">(리뷰 523)</span>
+                    <span class="location"><i class="fas fa-map-marker-alt"></i> [[${info.addr1}]]</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a th:href="@{/reservation/house(contentId=${info.contentId})}" class="primary-btn">
+                    <i class="fas fa-calendar-check"></i> 예약하기
+                </a>
+                <button class="like-btn" th:data-content-id="${info.contentId}" th:data-content-type="${info.contentTypeId}">
+                     <i th:class="${wish != null ? 'fas fa-heart' : 'far fa-heart'}" th:style="${wish != null ? 'color: red;' : ''}"></i> 
+                     <span th:text="${wish != null} ? '찜 취소' : '찜하기'"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="detail-gallery">
+            <div class="main-image">
+                <img th:src="${info.firstImage != null ? info.firstImage : '/assets/images/house.png'}" alt="그랜드 호텔 대표 이미지">
+            </div>
+        </div>
+
+        <div class="detail-content">
+
+            <!-- <section class="info-section">
+                <h2>숙소 정보</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <h3><i class="fas fa-clock"></i> 체크인/체크아웃</h3>
+                        <p>체크인: 15:00<br>체크아웃: 11:00</p>
+                    </div>
+                    <div class="info-item">
+                        <h3><i class="fas fa-phone"></i> 연락처</h3>
+                        <p>02-1234-5678</p>
+                    </div>
+                    <div class="info-item">
+                        <h3><i class="fas fa-parking"></i> 주차</h3>
+                        <p>무료 주차 가능</p>
+                    </div>
+                    <div class="info-item">
+                        <h3><i class="fas fa-wifi"></i> 인터넷</h3>
+                        <p>전 객실 무료 WiFi</p>
+                    </div>
+                </div>
+            </section> -->
+            <section class="info-section">
+                <h2>숙소 정보</h2>
+                <div class="info-grid">
+                    <!-- 체크인/체크아웃 -->
+                    <th:block th:if="${info.checkInTime != null or info.checkOutTime != null}">
+                        <div class="info-item">
+                            <h3><i class="fas fa-clock"></i> 체크인/체크아웃</h3>
+                            <p th:text="'체크인: ' + ${info.checkInTime}"></p>
+                            <p th:text="'체크아웃: ' + ${info.checkOutTime}"></p>
+                        </div>
+                    </th:block>
+
+                    <!-- 문의 및 안내 -->
+                    <th:block th:if="${info.infoCenterLodging != null}">
+                        <div class="info-item">
+                            <h3><i class="fas fa-phone"></i> 연락처</h3>
+                            <p th:text="${info.infoCenterLodging}"></p>
+                        </div>
+                    </th:block>
+
+                    <!-- 주차 -->
+                    <th:block th:if="${info.parkingLodging != null}">
+                        <div class="info-item">
+                            <h3><i class="fas fa-parking"></i> 주차</h3>
+                            <p th:text="${info.parkingLodging}"></p>
+                        </div>
+                    </th:block>
+
+                    <!-- 수용 인원 -->
+                    <th:block th:if="${info.accomCountLodging != null}">
+                        <div class="info-item">
+                            <h3><i class="fas fa-users"></i> 수용 인원</h3>
+                            <p th:text="${info.accomCountLodging} + '명'"></p>
+                        </div>
+                    </th:block>
+
+                    <!-- 객실 수 -->
+                    <th:block th:if="${info.roomCount != null}">
+                        <div class="info-item">
+                            <h3><i class="fas fa-door-open"></i> 객실 수</h3>
+                            <p th:text="${info.roomCount} + '개'"></p>
+                        </div>
+                    </th:block>
+
+                    <!-- 객실 유형 -->
+                    <th:block th:if="${info.roomType != null}">
+                        <div class="info-item">
+                            <h3><i class="fas fa-bed"></i> 객실 유형</h3>
+                            <p th:text="${info.roomType}"></p>
+                        </div>
+                    </th:block>
+
+                    <!-- 취사 가능 여부 -->
+                    <th:block th:if="${info.chkCooking != null and info.chkCooking == '1'}">
+                        <div class="info-item">
+                            <h3><i class="fas fa-fire"></i> 취사 여부</h3>
+                            <p>객실 내 취사 가능</p>
+                        </div>
+                    </th:block>
+
+                    <!-- 바비큐장 여부 -->
+                    <th:block th:if="${info.barbecue != null and info.barbecue == '1'}">
+                        <div class="info-item">
+                            <h3><i class="fas fa-drumstick-bite"></i> 바비큐장</h3>
+                            <p>이용 가능</p>
+                        </div>
+                    </th:block>
+
+                    <!-- 식음료장 여부 -->
+                    <th:block th:if="${info.beverage != null and info.beverage == '1'}">
+                        <div class="info-item">
+                            <h3><i class="fas fa-coffee"></i> 식음료장</h3>
+                            <p>운영 중</p>
+                        </div>
+                    </th:block>
+
+                    <!-- 자전거 대여 여부 -->
+                    <th:block th:if="${info.bicycle != null and info.bicycle == '1'}">
+                        <div class="info-item">
+                            <h3><i class="fas fa-bicycle"></i> 자전거 대여</h3>
+                            <p>가능</p>
+                        </div>
+                    </th:block>
+
+                    <!-- 사우나, 휘트니스, 노래방 등 부대시설 -->
+                    <th:block th:if="${info.sauna == '1'}">
+                        <div class="info-item"><h3><i class="fas fa-hot-tub"></i> 사우나</h3><p>이용 가능</p></div>
+                    </th:block>
+
+                    <th:block th:if="${info.fitness == '1'}">
+                        <div class="info-item"><h3><i class="fas fa-dumbbell"></i> 피트니스</h3><p>이용 가능</p></div>
+                    </th:block>
+
+                    <th:block th:if="${info.karaoke == '1'}">
+                        <div class="info-item"><h3><i class="fas fa-microphone"></i> 노래방</h3><p>이용 가능</p></div>
+                    </th:block>
+
+                    <th:block th:if="${info.seminar == '1'}">
+                        <div class="info-item"><h3><i class="fas fa-chalkboard-teacher"></i> 세미나실</h3><p>이용 가능</p></div>
+                    </th:block>
+
+                    <th:block th:if="${info.sports == '1'}">
+                        <div class="info-item"><h3><i class="fas fa-basketball-ball"></i> 스포츠 시설</h3><p>이용 가능</p></div>
+                    </th:block>
+
+                    <th:block th:if="${info.publicBath == '1'}">
+                        <div class="info-item"><h3><i class="fas fa-shower"></i> 공용 샤워실</h3><p>이용 가능</p></div>
+                    </th:block>
+
+                    <th:block th:if="${info.publicPc == '1'}">
+                        <div class="info-item"><h3><i class="fas fa-desktop"></i> 공용 PC실</h3><p>이용 가능</p></div>
+                    </th:block>
+
+                    <th:block th:if="${info.campfire == '1'}">
+                        <div class="info-item"><h3><i class="fas fa-fire"></i> 캠프파이어</h3><p>가능</p></div>
+                    </th:block>
+
+                    <!-- 예약 안내 -->
+                    <th:block th:if="${info.reservationLodging != null}">
+                        <div class="info-item">
+                            <h3><i class="fas fa-calendar-alt"></i> 예약 안내</h3>
+                            <p th:text="${info.reservationLodging}"></p>
+                        </div>
+                    </th:block>
+
+                    <!-- 예약 홈페이지 -->
+                    <th:block th:if="${info.reservationUrl != null}">
+                        <div class="info-item">
+                            <h3><i class="fas fa-link"></i> 예약 홈페이지</h3>
+                            <a th:href="${info.reservationUrl}" target="_blank" th:text="${info.reservationUrl}"></a>
+                        </div>
+                    </th:block>
+
+                    <!-- 기타 부대시설 -->
+                    <th:block th:if="${info.subFacility != null}">
+                        <div class="info-item">
+                            <h3><i class="fas fa-building"></i> 기타 부대시설</h3>
+                            <p th:text="${info.subFacility}"></p>
+                        </div>
+                    </th:block>
+                </div>
+            </section>
+
+
+            <section class="room-section" th:if="${roomList != null and !roomList.isEmpty()}">
+                <h2>객실 안내</h2>
+                <div class="room-grid">
+                    <div class="room-item" th:each="room : ${roomList}">
+                        <div class="room-card">
+                            <img th:src="${room.image1 != null ? room.image1 : '../images/accommodation/room1.jpg'}" th:alt="${room.roomName}">
+                            <div class="room-info">
+                                <h3 th:text="${room.roomName}">스위트룸</h3>
+                                <div class="room-features">
+                                    <span th:if="${room.maximumCapacity != null}"><i class="fas fa-user"></i> 최대 [[${room.maximumCapacity}]]인</span>
+                                    <span th:if="${room.roomSize != null}"><i class="fas fa-expand"></i> [[${room.roomSize}]]</span>
+                                    <span th:if="${room.bedInfo != null}"><i class="fas fa-bed"></i> [[${room.bedInfo}]]</span>
+                                </div>
+                                <p class="room-description" th:if="${room.description != null}" th:text="${room.description}">
+                                    최고급 인테리어와 넓은 공간을 자랑하는 스위트룸으로, 특별한 날을 위한 최적의 선택입니다.
+                                </p>
+                                <div class="room-amenities">
+                                    <span th:if="${room.wifi == 1}"><i class="fas fa-wifi"></i> 무료 WiFi</span>
+                                    <span th:if="${room.tv == 1}"><i class="fas fa-tv"></i> 스마트 TV</span>
+                                    <span th:if="${room.aircon == 1}"><i class="fas fa-snowflake"></i> 에어컨</span>
+                                    <span th:if="${room.bathroom == 1}"><i class="fas fa-bath"></i> 욕조</span>
+                                    <span th:if="${room.sofa == 1}"><i class="fas fa-couch"></i> 소파</span>
+                                    <span th:if="${room.kitchen == 1}"><i class="fas fa-utensils"></i> 주방</span>
+                                    <span th:if="${room.pet == 1}"><i class="fas fa-paw"></i> 반려동물 동반</span>
+                                    <span th:if="${room.smokingRoom == 1}"><i class="fas fa-smoking"></i> 흡연실</span>
+                                </div>
+                                <div class="room-price" th:if="${room.price != null}">
+                                    <span class="price" th:text="${#numbers.formatInteger(room.price, 3, 'COMMA')} + '원'">300,000원</span>
+                                    <span class="unit">/ 1박</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 페이지네이션 블록 -->
+                <div class="pagination">
+                    <ul>
+                        <li th:if="${currentPage > 1}">
+                            <a th:href="@{|/house/detail?contentId=${info.contentId}&page=${currentPage-1}&pageSize=${pageSize}|}">&laquo; 이전</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(1, totalPages)}"
+                            th:classappend="${i == currentPage} ? 'active'">
+                            <a th:href="@{|/house/detail?contentId=${info.contentId}&page=${i}&pageSize=${pageSize}|}" th:text="${i}"></a>
+                        </li>
+                        <li th:if="${currentPage < totalPages}">
+                            <a th:href="@{|/house/detail?contentId=${info.contentId}&page=${currentPage+1}&pageSize=${pageSize}|}">다음 &raquo;</a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="map-section">
+                <h2>위치</h2>
+                <div class="map-container">
+                    <!-- 지도가 들어갈 자리 -->
+                    <div class="map-placeholder" id="map"></div>
+                    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0004c4e85aaef62938a2afa572f9f526"></script>
+                    <script th:inline="javascript">
+                        var container = document.getElementById('map');
+                        var options = {
+                            center: new kakao.maps.LatLng(/*[[${info.mapY}]]*/, /*[[${info.mapX}]]*/),
+                            level: 3
+                        };
+
+                        var map = new kakao.maps.Map(container, options);
+
+                        // 마커가 표시될 위치입니다
+                        var markerPosition  = new kakao.maps.LatLng(/*[[${info.mapY}]]*/, /*[[${info.mapX}]]*/);
+
+                        // 마커를 생성합니다
+                        var marker = new kakao.maps.Marker({
+                            position: markerPosition
+                        });
+
+                        // 마커가 지도 위에 표시되도록 설정합니다
+                        marker.setMap(map);
+                    </script>
+                </div>
+                <div class="location-info">
+                        <span th:if="${not #strings.isEmpty(info.addr1) or not #strings.isEmpty(info.addr2)}"
+                              th:text="${#strings.defaultString(info.addr1, '') + ' ' + #strings.defaultString(info.addr2, '')}">
+      				</span>
+                    <!--  <p><i class="fas fa-subway"></i> 강남역 2번 출구에서 도보 5분</p> -->
+                </div>
+            </section>
+
+            <section class="review-section">
+                <div class="review-header">
+                    <h2>리뷰</h2>
+                </div>
+                <div class="review-stats">
+                    <div class="rating-average">
+                        <div class="rating-number" th:text="${#numbers.formatDecimal(status.averageRating, 0, 1)}"></div>
+                        <div class="rating-stars" th:data-rating="${status.averageRating}">
+                            <!--  <i class="fas fa-star"></i>  -->
+                        </div>
+
+                        <div class="rating-count" th:text="${status.totalCount + '개의 리뷰'}"></div>
+                    </div>
+                    <div class="rating-bars">
+                        <div class="rating-bar">
+                            <span class="stars">5점</span>
+                            <div class="bar-container">
+                                <div class="bar" th:style="'width:' + ${status.fiveStarRatio} + '%'"></div>
+                            </div>
+                            <span class="percentage" th:text="${#numbers.formatDecimal(status.fiveStarRatio, 0, 1) + '%'}">85%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span class="stars">4점</span>
+                            <div class="bar-container">
+                                <div class="bar" th:style="'width:' + ${status.fourStarRatio} + '%'"></div>
+                            </div>
+                            <span class="percentage" th:text="${#numbers.formatDecimal(status.fourStarRatio, 0, 1) + '%'}">10%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span class="stars">3점</span>
+                            <div class="bar-container">
+                                <div class="bar" th:style="'width:' + ${status.threeStarRatio} + '%'"></div>
+                            </div>
+                            <span class="percentage" th:text="${#numbers.formatDecimal(status.threeStarRatio, 0, 1) + '%'}">3%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span class="stars">2점</span>
+                            <div class="bar-container">
+                                <div class="bar" th:style="'width:' + ${status.twoStarRatio} + '%'"></div>
+                            </div>
+                            <span class="percentage" th:text="${#numbers.formatDecimal(status.twoStarRatio, 0, 1) + '%'}">1%</span>
+                        </div>
+                        <div class="rating-bar">
+                            <span class="stars">1점</span>
+                            <div class="bar-container">
+                                <div class="bar" th:style="'width:' + ${status.oneStarRatio} + '%'"></div>
+                            </div>
+                            <span class="percentage" th:text="${#numbers.formatDecimal(status.oneStarRatio, 0, 1) + '%'}">1%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-form-wrapper">
+                    <h3>리뷰 작성</h3>
+                    <form th:action="@{/house/saveReview}" method="post">
+                        <!-- 숨겨진 필드: 숙소 ID -->
+                        <input type="hidden" name="contentId" th:value="${info.contentId}" />
+
+                        <!-- 별점 선택 -->
+                        <div class="form-group rating-input">
+                            <label>별점</label>
+                            <div class="star-rating-input">
+                                <input type="hidden" name="rating" id="rating-value" value="0" />
+                                <i class="far fa-star" data-value="1"></i>
+                                <i class="far fa-star" data-value="2"></i>
+                                <i class="far fa-star" data-value="3"></i>
+                                <i class="far fa-star" data-value="4"></i>
+                                <i class="far fa-star" data-value="5"></i>
+                            </div>
+                        </div>
+
+                        <!-- 내용 (필수) -->
+                        <div class="form-group">
+                            <label for="content">내용</label>
+                            <textarea name="review" id="content" class="form-control" required rows="5" placeholder="리뷰 내용을 작성하세요"></textarea>
+                        </div>
+
+                        <!-- 제출 -->
+                        <div class="form-group">
+                            <button type="submit" class="submit-review-btn">리뷰 등록</button>
+                        </div>
+                    </form>
+                </div>
+                <script>
+                    const stars = document.querySelectorAll('.star-rating-input i');
+                    const ratingInput = document.getElementById('rating-value');
+
+                    stars.forEach(star => {
+                        star.addEventListener('click', () => {
+                            const rating = parseInt(star.getAttribute('data-value'));
+                            ratingInput.value = rating;
+
+                            stars.forEach(s => {
+                                s.classList.remove('fas');
+                                s.classList.add('far');
+                            });
+
+                            for (let i = 0; i < rating; i++) {
+                                stars[i].classList.remove('far');
+                                stars[i].classList.add('fas');
+                            }
+                        });
+                    });
+                </script>
+                <div class="review-list">
+                    <div class="review-item" th:each="review : ${reviewList}">
+                        <div class="review-user">
+                            <img src="../images/users/profile3.jpg" alt="사용자 프로필">
+                            <div class="user-info">
+                                <h4 th:text="${review.id}"></h4>
+                                <div class="rating-stars" th:data-rating="${review.rating}">
+                                    <!--  <i class="fas fa-star"></i> -->
+                                </div>
+                            </div>
+                            <span class="review-date" th:text="${review.createdAt}"></span>
+                        </div>
+                        <p class="review-text" th:text="${review.review}">
+
+                        </p>
+                        <!-- <div class="review-images">
+                            <img src="../images/accommodation/hanok.jpg" alt="리뷰 이미지 1">
+                            <img src="../images/accommodation/hotel-main.jpg" alt="리뷰 이미지 2">
+                        </div> -->
+                    </div>
+                    <!-- 추가 리뷰 아이템들 -->
+                </div>
+                <script>
+                    document.querySelectorAll('.rating-stars').forEach(container => {
+                        const rating = parseFloat(container.dataset.rating);
+                        const fullStars = Math.floor(rating);
+                        const decimal = rating - fullStars;
+                        const halfStar = decimal >= 0.25 && decimal < 0.75 ? 1 : 0;
+                        const roundUp = decimal >= 0.75 ? 1 : 0;
+                        const emptyStars = 5 - fullStars - halfStar - roundUp;
+
+                        let starsHtml = '';
+
+                        for (let i = 0; i < fullStars + roundUp; i++) {
+                            starsHtml += '<i class="fas fa-star"></i>';
+                        }
+                        if (halfStar) {
+                            starsHtml += '<i class="fas fa-star-half-alt"></i>';
+                        }
+                        for (let i = 0; i < emptyStars; i++) {
+                            starsHtml += '<i class="far fa-star"></i>';
+                        }
+
+                        container.innerHTML = starsHtml;
+                    });
+                </script>
+                <div class="review-pagination">
+                    <div class="page-numbers">
+                        <a href="#" class="active">1</a>
+                        <a href="#">2</a>
+                        <a href="#">3</a>
+                        <a href="#">4</a>
+                        <a href="#">5</a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+</body>
+</html> 

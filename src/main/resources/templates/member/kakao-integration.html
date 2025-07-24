@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset=UTF-8>
+    <meta name=viewport" content="width=device-width, initial-scale=1.0>
+    <title>카카오 계정 통합 - DUGAZA</title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/login.css}">
+    <style>
+        .integration-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .integration-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .integration-header h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .integration-header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .account-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .account-info h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .info-value {
+            color: #333;
+        }
+        
+        .integration-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #07c;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #567;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #545;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="integration-container">
+        <div class="integration-header">
+            <h2>카카오 계정 통합</h2>
+            <p>이미 가입된 이메일 주소가 발견되었습니다.</p>
+        </div>
+        
+        <div class="notice">
+            <strong>알림:</strong> 이 이메일 주소로 가입된 기존 계정이 있습니다. 
+            카카오 계정을 기존 계정과 통합하시겠습니까?
+        </div>
+        
+        <div class="account-info">
+            <h3>기존 계정 정보</h3>
+            <div class="info-row">
+                <span class="info-label">이메일:</span>
+                <span class="info-value" th:text="${existingMember.email}">user@example.com</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">이름:</span>
+                <span class="info-value" th:text="${existingMember.name}">홍길동</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">가입일:</span>
+                <span class="info-value" th:text="${#temporals.format(existingMember.createdAt, 'yyyy-MM-dd')}">2024</span>
+            </div>
+        </div>
+        
+        <div class="account-info">
+            <h3>카카오 계정 정보</h3>
+            <div class="info-row">
+                <span class="info-label">이메일:</span>
+                <span class="info-value th:text="${kakaoUserInfo.email}">kakao@example.com</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">닉네임:</span>
+                <span class="info-value th:text=${kakaoUserInfo.nickname}">카카오닉네임</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">프로필 이미지:</span>
+                <span class="info-value" th:if="${kakaoUserInfo.profileImage}">
+                    <img th:src="${kakaoUserInfo.profileImage}" alt="프로필" style="width: 40px; height: 40px; border-radius: 50%;">                </span>
+                <span class="info-value" th:unless="${kakaoUserInfo.profileImage}">없음</span>
+            </div>
+        </div>
+        
+        <div class="integration-options">
+            <a th:href="@{/auth/kakao/integrate(confirm=true, kakaoId=${kakaoUserInfo.id}, email=${existingMember.email})}" 
+               class="btn btn-primary">
+                계정 통합하기
+            </a>
+            <a th:href="@{/auth/kakao/integrate(confirm=false)}" 
+               class="btn btn-secondary">
+                취소하기
+            </a>
+        </div>
+        
+        <div style="margin-top: 20px; text-align: center;">
+            <small style="color: #666;">
+                * 계정을 통합하면 카카오 로그인으로도 기존 계정에 접속할 수 있습니다.
+            </small>
+        </div>
+    </div>
+</body>
+</html> 

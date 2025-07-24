@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.car.dao.CarReservationMapper">
+    <resultMap id="carReservationMap" type="kr.spring.car.vo.CarReservationVO">
+        <id property="reservationId" column="RESERVATION_ID"/>
+        <result property="carId" column="CAR_ID"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="startDate" column="START_DATE" jdbcType="TIMESTAMP"/>
+        <result property="endDate" column="END_DATE" jdbcType="TIMESTAMP"/>
+        <result property="status" column="STATUS"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+        <result property="pickupLocationCode" column="PICK_UP_LOCATION_CODE"/>
+        <result property="returnLocationCode" column="RETURN_LOCATION_CODE"/>
+        <result property="price" column="PRICE"/>
+        <result property="carName" column="CAR_NAME"/>
+        <result property="carType" column="CAR_TYPE"/>
+        <result property="carPrice" column="CAR_PRICE"/>
+        <result property="memberName" column="MEMBER_NAME"/>
+    </resultMap>
+
+    <insert id="insertReservation" parameterType="kr.spring.car.vo.CarReservationVO">
+        <selectKey keyProperty="reservationId" resultType="long" order="BEFORE">
+            SELECT CAR_RESERVATION_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO CAR_RESERVATION (
+            RESERVATION_ID, CAR_ID, MEMBER_ID, START_DATE, END_DATE, STATUS, CREATED_AT, UPDATED_AT
+        ) VALUES (
+            #{reservationId,jdbcType=NUMERIC}, #{carId,jdbcType=NUMERIC}, #{memberId,jdbcType=NUMERIC}, 
+            #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, #{status}, SYSDATE, SYSDATE
+        )
+    </insert>
+
+    <update id="updateReservation" parameterType="kr.spring.car.vo.CarReservationVO">
+        UPDATE CAR_RESERVATION SET
+            CAR_ID = #{carId},
+            MEMBER_ID = #{memberId},
+            START_DATE = #{startDate,jdbcType=TIMESTAMP},
+            END_DATE = #{endDate,jdbcType=TIMESTAMP},
+            STATUS = #{status},
+            UPDATED_AT = SYSDATE
+        WHERE RESERVATION_ID = #{reservationId}
+    </update>
+
+    <delete id="deleteReservation" parameterType="long">
+        DELETE FROM CAR_RESERVATION WHERE RESERVATION_ID = #{reservationId}
+    </delete>
+
+    <select id="selectReservation" parameterType="long" resultMap="carReservationMap">
+        SELECT * FROM CAR_RESERVATION WHERE RESERVATION_ID = #{reservationId}
+    </select>
+
+    <select id="selectReservationsByCar" parameterType="long" resultMap="carReservationMap">
+        SELECT * FROM CAR_RESERVATION WHERE CAR_ID = #{carId} ORDER BY START_DATE DESC
+    </select>
+
+    <select id="selectReservationsBySeller" parameterType="long" resultMap="carReservationMap">
+        SELECT 
+            cr.RESERVATION_ID,
+            cr.CAR_ID,
+            cr.MEMBER_ID,
+            cr.START_DATE,
+            cr.END_DATE,
+            cr.STATUS,
+            cr.CREATED_AT,
+            cr.UPDATED_AT,
+            cr.PICK_UP_LOCATION_CODE,
+            cr.RETURN_LOCATION_CODE,
+            cr.PRICE,
+            c.CAR_NAME,
+            c.CAR_TYPE,
+            c.CAR_PRICE,
+            m.NAME as MEMBER_NAME
+        FROM CAR_RESERVATION cr
+        INNER JOIN CAR c ON cr.CAR_ID = c.CAR_ID
+        INNER JOIN MEMBER m ON cr.MEMBER_ID = m.MEMBER_ID
+        WHERE c.SELLER_ID = #{sellerId}
+        ORDER BY cr.START_DATE DESC
+    </select>
+
+    <select id="selectReservationsByMember" parameterType="long" resultMap="carReservationMap">
+        SELECT *
+        FROM CAR_RESERVATION
+        WHERE MEMBER_ID = #{memberId}
+        ORDER BY START_DATE DESC
+    </select>
+</mapper> 

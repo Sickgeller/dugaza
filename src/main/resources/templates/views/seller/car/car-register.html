@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차량 등록</title>
+    <link rel="stylesheet" th:href="@{/assets/css/seller.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div th:replace="~{fragments/car_seller_sidebar :: carSideBar}"></div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>차량 등록</h2>
+                </div>
+                <div class="user-info">
+                    <span th:text="${seller.name} + '님'">홍길동님</span>
+                    <img th:src="@{/assets/images/users/profile1.jpg}" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 차량 등록 폼 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>새 차량 등록</h3>
+                    <p>대여할 차량의 정보를 입력해주세요.</p>
+                </div>
+
+                <form th:action="@{/seller/car/register}" method="post" enctype="multipart/form-data" class="registration-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="carName">차량명 *</label>
+                            <input type="text" id="carName" name="carName" placeholder="예: 아반떼 CN7" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carType">차종 *</label>
+                            <select id="carType" name="carType" required>
+                                <option value="">선택하세요</option>
+                                <option value="경차">경차</option>
+                                <option value="소형">소형</option>
+                                <option value="준중형">준중형</option>
+                                <option value="중형">중형</option>
+                                <option value="대형">대형</option>
+                                <option value="SUV">SUV</option>
+                                <option value="승합">승합</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="carNumber">차량번호 *</label>
+                            <input type="text" id="carNumber" name="carNumber" placeholder="예: 123가4567" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carYear">연식 *</label>
+                            <input type="number" id="carYear" name="carYear" min="2000" max="2024" placeholder="예: 2024" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carColor">색상 *</label>
+                            <input type="text" id="carColor" name="carColor" placeholder="예: 화이트" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carFuel">연료 *</label>
+                            <select id="carFuel" name="carFuel" required>
+                                <option value="">선택하세요</option>
+                                <option value="가솔린">가솔린</option>
+                                <option value="디젤">디젤</option>
+                                <option value="LPG">LPG</option>
+                                <option value="전기">전기</option>
+                                <option value="하이브리드">하이브리드</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="carSeats">승차정원 *</label>
+                            <input type="number" id="carSeats" name="carSeats" min="2" max="15" placeholder="예: 5" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carPrice">일일 대여료 *</label>
+                            <input type="number" id="carPrice" name="carPrice" min="0" step="1000" placeholder="예: 50000" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="carImage">차량 이미지</label>
+                        <input type="file" id="carImage" name="carImage" accept="image/*">
+                        <div class="image-preview" id="imagePreview"></div>
+                        <small class="form-help">차량의 전면, 측면, 후면 사진을 업로드해주세요. (선택사항)</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> 차량 등록
+                        </button>
+                        <a href="/seller/car/management" class="btn-secondary">
+                            <i class="fas fa-times"></i> 취소
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/assets/js/customjs.js}"></script>
+    <script>
+        // 이미지 미리보기
+        document.getElementById('carImage').addEventListener('change', function(e) {
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            
+            for (let file of e.target.files) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '150px';
+                    img.style.height = '150px';
+                    img.style.objectFit = 'cover';
+                    img.style.margin = '10px';
+                    img.style.borderRadius = '8px';
+                    img.style.border = '2px solid #ddd';
+                    preview.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 폼 유효성 검사
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const carName = document.getElementById('carName').value.trim();
+            const carNumber = document.getElementById('carNumber').value.trim();
+            const carPrice = document.getElementById('carPrice').value;
+            
+            if (!carName) {
+                alert('차량명을 입력해주세요.');
+                e.preventDefault();
+                return;
+            }
+            
+            if (!carNumber) {
+                alert('차량번호를 입력해주세요.');
+                e.preventDefault();
+                return;
+            }
+            
+            if (!carPrice || carPrice <= 0) {
+                alert('올바른 대여료를 입력해주세요.');
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
+</body>
+</html> 

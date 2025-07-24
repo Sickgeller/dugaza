@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>판매자 관리 - 관리자</title>
+    <link rel="stylesheet" th:href="@{/assets/css/admin.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>관리자</h1>
+                <p>시스템 관리자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a th:href="@{/admin}"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li><a th:href="@{/member/admin_member}"><i class="fas fa-users"></i><span>회원 관리</span></a></li>
+                    <li class="active"><a th:href="@{/admin/sellers}"><i class="fas fa-store"></i><span>판매자 관리</span></a></li>
+                    <li>
+                        <a href="#" class="dropdown-toggle"><i class="fas fa-boxes"></i><span>상품 관리</span></a>
+                        <ul class="submenu">
+                            <li><a th:href="@{/admin/cars}"><i class="fas fa-car"></i><span>렌터카</span></a></li>
+                            <li><a th:href="@{/house/admin_house}"><i class="fas fa-hotel"></i><span>숙소</span></a></li>
+                        </ul>
+                    </li>
+                    <li><a th:href="@{/admin/reviews}"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a th:href="@{/admin/qna/list}"><i class="fas fa-flag"></i><span>문의 관리</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div th:replace="~{fragments/header :: admin-header}"></div>
+
+            <!-- 판매자 통계 -->
+            <div class="content-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>렌터카 판매자</h3>
+                            <p th:text="${stats?.carSellers ?: 0}">0명</p>
+                            <span class="stat-change increase">활성 사업자</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-hotel"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>숙소 판매자</h3>
+                            <p th:text="${stats?.houseSellers ?: 0}">0명</p>
+                            <span class="stat-change increase">활성 사업자</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>활성 판매자</h3>
+                            <p th:text="${stats?.activeSellers ?: 0}">0명</p>
+                            <span class="stat-change">전체 판매자</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>승인 대기</h3>
+                            <p th:text="${stats?.pendingSellers ?: 0}">0명</p>
+                            <span class="stat-change">신규 요청</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 검색 및 필터 -->
+            <div class="content-section">
+                <div class="search-filter-container">
+                    <div class="search-box">
+                        <input type="text" id="searchKeyword" placeholder="판매자명, 상호명, 이메일, 사업자번호 검색" th:value="${keyword}">
+                        <button onclick="searchSellers()"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="filter-options">
+                        <select id="sellerTypeFilter">
+                            <option value="">판매자 유형</option>
+                            <option value="CAR" th:selected="${sellerType == 'CAR'}">렌터카</option>
+                            <option value="HOUSE" th:selected="${sellerType == 'HOUSE'}">숙소</option>
+                        </select>
+                        <select id="statusFilter">
+                            <option value="">상태</option>
+                            <option value="ACTIVE" th:selected="${status == 'ACTIVE'}">활성</option>
+                            <option value="INACTIVE" th:selected="${status == 'INACTIVE'}">정지</option>
+                            <option value="SUSPENDED" th:selected="${status == 'SUSPENDED'}">일시정지</option>
+                        </select>
+                        <select id="sortFilter">
+                            <option value="">정렬 기준</option>
+                            <option value="name" th:selected="${sort == 'name'}">대표자명순</option>
+                            <option value="businessName" th:selected="${sort == 'businessName'}">상호명순</option>
+                            <option value="createdAt" th:selected="${sort == 'createdAt'}">가입일순</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 판매자 목록 -->
+            <div class="content-section">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>판매자 정보</th>
+                                <th>유형</th>
+                                <th>사업자번호</th>
+                                <th>연락처</th>
+                                <th>주소</th>
+                                <th>가입일</th>
+                                <th>상태</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sellerTableBody">
+                            <tr th:each="seller : ${sellerList}">
+                                <td>
+                                    <div class="seller-info">
+                                        <img src="../images/users/profile2.jpg" alt="판매자 프로필">
+                                        <div>
+                                            <strong th:text="${seller.businessName}">상호명</strong>
+                                            <small th:text="${seller.name}">대표자명</small>
+                                            <small th:text="${seller.email}">이메일</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span th:if="${seller.sellerType == 'car'}" class="seller-type car">렌터카</span>
+                                    <span th:if="${seller.sellerType == 'house'}" class="seller-type house">숙소</span>
+                                    <span th:if="${seller.sellerType != 'car' and seller.sellerType != 'house'}" class="seller-type other" th:text="${seller.sellerType}">기타</span>
+                                </td>
+                                <td th:text="${seller.license}">사업자번호</td>
+                                <td th:text="${seller.phone}">연락처</td>
+                                <td th:text="${seller.address}">주소</td>
+                                <td th:text="${#dates.format(seller.createdAt, 'yyyy.MM.dd')}">가입일</td>
+                                <td>
+                                    <span th:if="${seller.status == 'ACTIVE'}" class="status available">활성</span>
+                                    <span th:if="${seller.status == 'PENDING'}" class="status pending">승인대기</span>
+                                    <span th:if="${seller.status == 'SUSPENDED'}" class="status suspended">정지</span>
+                                </td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보" th:onclick="'viewSellerDetail(' + ${seller.sellerId} + ')'">
+                                        <i class="fas fa-info-circle"></i>
+                                    </button>
+                                    <button class="btn-icon" title="수정" th:onclick="'editSeller(' + ${seller.sellerId} + ')'">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button th:if="${seller.status == 'ACTIVE'}" class="btn-icon" title="정지" 
+                                            th:onclick="'updateSellerStatus(' + ${seller.sellerId} + ', &quot;SUSPENDED&quot;)'">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                    <button th:if="${seller.status == 'SUSPENDED'}" class="btn-icon" title="활성화" 
+                                            th:onclick="'updateSellerStatus(' + ${seller.sellerId} + ', &quot;ACTIVE&quot;)'">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button th:if="${seller.status == 'PENDING'}" class="btn-icon" title="승인" 
+                                            th:onclick="'updateSellerStatus(' + ${seller.sellerId} + ', &quot;ACTIVE&quot;)'">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button th:if="${seller.status == 'PENDING'}" class="btn-icon" title="거절" 
+                                            th:onclick="'updateSellerStatus(' + ${seller.sellerId} + ', &quot;SUSPENDED&quot;)'">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+                    <button class="btn-page"><i class="fas fa-angle-double-left"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-left"></i></button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page">2</button>
+                    <button class="btn-page">3</button>
+                    <button class="btn-page">4</button>
+                    <button class="btn-page">5</button>
+                    <button class="btn-page"><i class="fas fa-angle-right"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-double-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/js/admin.js}"></script>
+    <script th:inline="javascript">
+        // CSRF 토큰 가져오기
+        var csrfToken = /*[[${_csrf.token}]]*/ '';
+        var csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+        
+        // 판매자 상태 업데이트
+        function updateSellerStatus(sellerId, status) {
+            if (confirm('정말로 이 판매자의 상태를 변경하시겠습니까?')) {
+                const headers = {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                };
+                
+                // CSRF 토큰이 있으면 헤더에 추가
+                if (csrfToken && csrfHeader) {
+                    headers[csrfHeader] = csrfToken;
+                }
+                
+                fetch('/admin/seller/status', {
+                    method: 'POST',
+                    headers: headers,
+                    body: `sellerId=${sellerId}&status=${status}`
+                })
+                .then(response => response.text())
+                .then(result => {
+                    if (result === 'success') {
+                        alert('판매자 상태가 성공적으로 업데이트되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('판매자 상태 업데이트에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('판매자 상태 업데이트 중 오류가 발생했습니다.');
+                });
+            }
+        }
+
+        // 판매자 검색
+        function searchSellers() {
+            const keyword = document.getElementById('searchKeyword').value;
+            const sellerType = document.getElementById('sellerTypeFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+            
+            // URL 파라미터로 검색 조건 전달
+            const currentUrl = new URL(window.location);
+            
+            if (keyword) {
+                currentUrl.searchParams.set('keyword', keyword);
+            } else {
+                currentUrl.searchParams.delete('keyword');
+            }
+            
+            if (sellerType) {
+                currentUrl.searchParams.set('sellerType', sellerType);
+            } else {
+                currentUrl.searchParams.delete('sellerType');
+            }
+            
+            if (status) {
+                currentUrl.searchParams.set('status', status);
+            } else {
+                currentUrl.searchParams.delete('status');
+            }
+            
+            if (sort) {
+                currentUrl.searchParams.set('sort', sort);
+            } else {
+                currentUrl.searchParams.delete('sort');
+            }
+            
+            // 페이지를 1로 리셋
+            currentUrl.searchParams.set('page', '1');
+            
+            window.location.href = currentUrl.toString();
+        }
+
+        // 판매자 상세정보 보기
+        function viewSellerDetail(sellerId) {
+            // 모달이나 새 페이지로 판매자 상세정보 표시
+            console.log('판매자 상세정보:', sellerId);
+        }
+
+        // 판매자 수정
+        function editSeller(sellerId) {
+            // 판매자 수정 페이지로 이동
+            console.log('판매자 수정:', sellerId);
+        }
+    </script>
+</body>
+</html> 

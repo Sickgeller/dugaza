@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="kr.spring.house.dao.HouseMapper">
+<!-- <resultMap id="contentMap" type="kr.spring.tour.vo.TourVO">
+    <result property="areaCode" column="AREA_CODE" />
+    <result property="cat1" column="CAT1" />
+    <result property="cat2" column="CAT2" />
+    <result property="cat3" column="CAT3" />
+    <result property="contentId" column="CONTENT_ID" />
+    <result property="contentTypeId" column="CONTENT_TYPE_ID" />
+    <result property="firstImage" column="FIRST_IMAGE" />
+    <result property="firstImage2" column="FIRST_IMAGE2" />
+    <result property="cpyrhtDivCd" column="CPYRHT_DIV_CD" />
+    <result property="mapX" column="MAP_X" />
+    <result property="mapY" column="MAP_Y" />
+    <result property="sigunguCode" column="SIGUNGU_CODE" />
+    <result property="createdAt" column="CREATED_AT" />
+    <result property="updatedAt" column="UPDATED_AT" />
+    <result property="showFlag" column="SHOW_FLAG" />
+</resultMap> -->
+<resultMap id="houseMap" type="kr.spring.house.vo.HouseVO">
+    <result property="areaCode" column="AREA_CODE" />
+    <result property="cat1" column="CAT1" />
+    <result property="cat2" column="CAT2" />
+    <result property="cat3" column="CAT3" />
+    <result property="contentId" column="CONTENT_ID" />
+    <result property="contentTypeId" column="CONTENT_TYPE_ID" />
+    <result property="firstImage" column="FIRST_IMAGE" />
+    <result property="firstImage2" column="FIRST_IMAGE2" />
+    <result property="cpyrhtDivCd" column="CPYRHT_DIV_CD" />
+    <result property="mapX" column="MAP_X" />
+    <result property="mapY" column="MAP_Y" />
+    <result property="sigunguCode" column="SIGUNGU_CODE" />
+    <result property="createdAt" column="CREATED_AT" />
+    <result property="updatedAt" column="UPDATED_AT" />
+    <result property="showFlag" column="SHOW_FLAG" />
+    <result property="title" column="TITLE" />
+    <result property="addr1" column="ADDR1" />
+    <result property="addr2" column="ADDR2" />
+    <result property="zipcode" column="ZIPCODE" />
+    <result property="tel" column="TEL" />
+    <result property="accomCountLodging" column="ACCOM_COUNT_LODGING" />
+    <result property="checkInTime" column="CHECK_IN_TIME" />
+    <result property="checkOutTime" column="CHECK_OUT_TIME" />
+    <result property="chkCooking" column="CHK_COOKING" />
+    <result property="foodPlace" column="FOOD_PLACE" />
+    <result property="infoCenterLodging" column="INFO_CENTER_LODGING" />
+    <result property="parkingLodging" column="PARKING_LODGING" />
+    <result property="pickup" column="PICKUP" />
+    <result property="roomCount" column="ROOM_COUNT" />
+    <result property="reservationLodging" column="RESERVATION_LODGING" />
+    <result property="reservationUrl" column="RESERVATION_URL" />
+    <result property="roomType" column="ROOM_TYPE" />
+    <result property="scaleLodging" column="SCALE_LODGING" />
+    <result property="subFacility" column="SUB_FACILITY" />
+    <result property="barbecue" column="BARBECUE" />
+    <result property="beauty" column="BEAUTY" />
+    <result property="beverage" column="BEVERAGE" />
+    <result property="bicycle" column="BICYCLE" />
+    <result property="campfire" column="CAMPFIRE" />
+    <result property="fitness" column="FITNESS" />
+    <result property="karaoke" column="KARAOKE" />
+    <result property="publicBath" column="PUBLIC_BATH" />
+    <result property="publicPc" column="PUBLIC_PC" />
+    <result property="sauna" column="SAUNA" />
+    <result property="seminar" column="SEMINAR" />
+    <result property="sports" column="SPORTS" />
+    <result property="refundRegulation" column="REFUND_REGULATION" />
+    <result property="review_avg" column="review_avg" />
+    <result property="review_count" column="review_count" />
+    <result property="price" column="price" />
+    <result property="wish_count" column="wish_count" />
+    <result property="status" column="status" />
+</resultMap>
+	<sql id="houseSearch">
+			<if test="category != null and category != 0">
+				AND content_type_id = #{category}	
+			</if>
+			<if test="keyword != null and keyword != ''">
+				AND (title LIKE '%' || #{keyword} || '%' OR
+				addr1 LIKE '%' || #{keyword} || '%' OR
+				addr2 LIKE '%' || #{keyword} || '%') 
+			</if>
+            <if test="cat3 != null and cat3 != ''">
+                AND cat3 = #{cat3}
+            </if>
+            <if test="status != null and status != ''">
+                AND tc.content_id IN (
+                    SELECT hsd.house_id 
+                    FROM house_seller_detail hsd 
+                    WHERE hsd.status = #{status}
+                    UNION
+                    SELECT tc2.content_id
+                    FROM tour_content tc2
+                    WHERE tc2.content_type_id = 32
+                    AND #{status} = 'suspending'
+                    AND tc2.content_id NOT IN (
+                        SELECT hsd2.house_id 
+                        FROM house_seller_detail hsd2
+                    )
+                )
+            </if>
+            <if test="checkIn != null and checkIn != '' and checkOut != null and checkOut != ''">
+                AND tc.content_id IN (
+                    SELECT DISTINCT hri.house_id
+                    FROM house_room_info hri
+                    WHERE hri.status = 0
+                    AND NOT EXISTS (
+                        SELECT 1
+                        FROM house_reservation hr
+                        WHERE hr.room_id = hri.room_id
+                        AND hr.status IN (0, 1)
+                        AND (
+                            (hr.reservation_start &lt; TO_TIMESTAMP(#{checkOut} || ' 11:00:00', 'YYYY-MM-DD HH24:MI:SS') AND hr.reservation_end > TO_TIMESTAMP(#{checkIn} || ' 15:00:00', 'YYYY-MM-DD HH24:MI:SS'))
+                        )
+                    )
+                )
+            </if>
+	</sql>
+	<!-- 전체/검색 레코드수 (숙박:32번) -->
+	<select id="selectRowCount" resultType="integer">
+		SELECT
+		  COUNT(*)
+		FROM tour_content tc WHERE content_type_id = 32
+		<include refid="houseSearch"/>                          
+	</select>
+	
+	<!-- 전체/검색 목록 -->
+	<!-- <select id="selectList" parameterType="map"
+	                        resultMap="houseMap">
+		SELECT
+		  *
+		FROM (SELECT
+		        a.*,
+		        rownum rnum
+		      FROM (SELECT
+		              *
+		            FROM tour_content c WHERE c.content_type_id = 32
+		            <include refid="houseSearch"/> 
+		            ORDER BY c.updated_at DESC NULLS LAST)a)
+	<![CDATA[
+		WHERE rnum >= #{start, jdbcType=INTEGER} AND rnum <= #{end, jdbcType=INTEGER}
+	]]>	             
+	</select> -->
+	
+	<!-- 전체/검색 목록 -->
+	<select id="selectList" parameterType="map" resultMap="houseMap">
+	    SELECT *
+	    FROM (
+	        SELECT a.*, ROWNUM as rnum
+	        FROM (
+	            SELECT
+	                tc.AREA_CODE, tc.CAT1, tc.CAT2, tc.CAT3, tc.CONTENT_ID, tc.CONTENT_TYPE_ID, tc.FIRST_IMAGE, tc.FIRST_IMAGE2, tc.CPYRHT_DIV_CD, tc.MAP_X, tc.MAP_Y, tc.SIGUNGU_CODE, tc.CREATED_AT, tc.UPDATED_AT, tc.SHOW_FLAG, tc.TITLE, tc.ADDR1, tc.ADDR2, tc.ZIPCODE, tc.TEL,
+	                hd.ACCOM_COUNT_LODGING, hd.CHECK_IN_TIME, hd.CHECK_OUT_TIME, hd.CHK_COOKING, hd.FOOD_PLACE, hd.INFO_CENTER_LODGING, hd.PARKING_LODGING, hd.PICKUP, hd.ROOM_COUNT, hd.RESERVATION_LODGING, hd.RESERVATION_URL, hd.ROOM_TYPE, hd.SCALE_LODGING, hd.SUB_FACILITY, hd.BARBECUE, hd.BEAUTY, hd.BEVERAGE, hd.BICYCLE, hd.CAMPFIRE, hd.FITNESS, hd.KARAOKE, hd.PUBLIC_BATH, hd.PUBLIC_PC, hd.SAUNA, hd.SEMINAR, hd.SPORTS, hd.REFUND_REGULATION,
+	                NVL(b.review_avg, 0.0) as review_avg,
+	                NVL(b.review_count, 0) as review_count,
+	                c.price,
+	                NVL(d.wish_count, 0) as wish_count
+	            FROM tour_content tc 
+				LEFT JOIN house_detail hd ON tc.content_id = hd.content_id
+				LEFT JOIN (
+					SELECT 
+						content_id,
+						ROUND(AVG(rating),1) as review_avg,
+						COUNT(*) as review_count
+					FROM REVIEWS
+					GROUP BY content_id
+				) b ON tc.content_id = b.content_id
+				LEFT JOIN (
+					SELECT 
+						house_id,
+						MIN(price) as price
+					FROM HOUSE_ROOM_INFO
+					GROUP BY house_id
+				) c ON tc.content_id = c.house_id
+				LEFT JOIN (
+					SELECT
+						CONTENT_ID,
+						COUNT(*) as wish_count
+					FROM WISHLIST
+					GROUP BY CONTENT_ID
+				) d ON tc.content_id = d.content_id
+			    WHERE tc.content_type_id = 32
+			    <include refid="houseSearch"/> 
+	            ORDER BY
+	                <choose>
+	                    <when test="sort == 'price_asc'">price ASC NULLS LAST, AREA_CODE ASC</when>
+	                    <when test="sort == 'price_desc'">price DESC NULLS LAST, AREA_CODE ASC</when>
+	                    <when test="sort == 'rating'">review_avg DESC NULLS LAST, AREA_CODE ASC</when>
+	                    <when test="sort == 'reviews'">review_count DESC NULLS LAST, AREA_CODE ASC</when>
+	                    <otherwise>wish_count DESC NULLS LAST, AREA_CODE ASC</otherwise>
+	                </choose>
+	        ) a
+	    )
+		<![CDATA[
+			WHERE rnum >= #{start, jdbcType=INTEGER} AND rnum <= #{end, jdbcType=INTEGER}
+		]]>	             
+	</select>
+	
+	<!-- 관리자용 숙소 목록 (WISHLIST JOIN 제거) -->
+	<select id="selectAdminList" parameterType="map" resultMap="houseMap">
+	    SELECT *
+	    FROM (
+	        SELECT a.*, ROWNUM as rnum
+	        FROM (
+	            SELECT
+	                tc.AREA_CODE, tc.CAT1, tc.CAT2, tc.CAT3, tc.CONTENT_ID, tc.CONTENT_TYPE_ID, tc.FIRST_IMAGE, tc.FIRST_IMAGE2, tc.CPYRHT_DIV_CD, tc.MAP_X, tc.MAP_Y, tc.SIGUNGU_CODE, tc.CREATED_AT, tc.UPDATED_AT, tc.SHOW_FLAG, tc.TITLE, tc.ADDR1, tc.ADDR2, tc.ZIPCODE, tc.TEL,
+	                hd.ACCOM_COUNT_LODGING, hd.CHECK_IN_TIME, hd.CHECK_OUT_TIME, hd.CHK_COOKING, hd.FOOD_PLACE, hd.INFO_CENTER_LODGING, hd.PARKING_LODGING, hd.PICKUP, hd.ROOM_COUNT, hd.RESERVATION_LODGING, hd.RESERVATION_URL, hd.ROOM_TYPE, hd.SCALE_LODGING, hd.SUB_FACILITY, hd.BARBECUE, hd.BEAUTY, hd.BEVERAGE, hd.BICYCLE, hd.CAMPFIRE, hd.FITNESS, hd.KARAOKE, hd.PUBLIC_BATH, hd.PUBLIC_PC, hd.SAUNA, hd.SEMINAR, hd.SPORTS, hd.REFUND_REGULATION,
+	                NVL(b.review_avg, 0.0) as review_avg,
+	                NVL(b.review_count, 0) as review_count,
+	                c.price,
+	                0 as wish_count,
+	                NVL(hsd.status, 'suspending') as status
+	            FROM tour_content tc 
+				LEFT JOIN house_detail hd ON tc.content_id = hd.content_id
+				LEFT JOIN house_seller_detail hsd ON tc.content_id = hsd.house_id
+				LEFT JOIN (
+					SELECT 
+						content_id,
+						ROUND(AVG(rating),1) as review_avg,
+						COUNT(*) as review_count
+					FROM REVIEWS
+					GROUP BY content_id
+				) b ON tc.content_id = b.content_id
+				LEFT JOIN (
+					SELECT 
+						house_id,
+						MIN(price) as price
+					FROM HOUSE_ROOM_INFO
+					GROUP BY house_id
+				) c ON tc.content_id = c.house_id
+			    WHERE tc.content_type_id = 32
+			    <include refid="houseSearch"/> 
+	            ORDER BY tc.content_id DESC
+	        ) a
+	    )
+		<![CDATA[
+			WHERE rnum >= #{start, jdbcType=INTEGER} AND rnum <= #{end, jdbcType=INTEGER}
+		]]>	             
+	</select>
+	
+	<!-- 숙소 항목 -->
+    <select id="selectHouse" parameterType="long" resultMap="houseMap">
+        SELECT
+            tc.*,
+            hd.*,
+            NVL(b.review_avg, 0.0) as review_avg,
+            NVL(b.review_count, 0) as review_count,
+            c.price,
+            NVL(d.wish_count, 0) as wish_count
+        FROM tour_content tc
+        LEFT JOIN house_detail hd ON tc.content_id = hd.content_id
+        LEFT JOIN (
+            SELECT
+                content_id,
+                ROUND(AVG(rating),1) as review_avg,
+                COUNT(*) as review_count
+            FROM REVIEWS
+            GROUP BY content_id
+        ) b ON tc.content_id = b.content_id
+        LEFT JOIN (
+            SELECT
+                house_id,
+                MIN(price) as price
+            FROM HOUSE_ROOM_INFO
+            GROUP BY house_id
+        ) c ON tc.content_id = c.house_id
+        LEFT JOIN (
+            SELECT
+                CONTENT_ID,
+                COUNT(*) as wish_count
+            FROM WISHLIST
+            GROUP BY CONTENT_ID
+        ) d ON tc.content_id = d.content_id
+        WHERE tc.content_id = #{id}
+    </select>
+
+	<select id="selectHousesWithSellerId" parameterType="long" resultMap="houseMap">
+		SELECT
+			tc.*,
+			hd.*,
+			NVL(r.review_avg, 0.0) as review_avg,
+			NVL(r.review_count, 0) as review_count
+		FROM tour_content tc
+		JOIN house_seller_detail hsd ON tc.content_id = hsd.house_id
+		LEFT JOIN house_detail hd ON tc.content_id = hd.content_id
+		LEFT JOIN (
+			SELECT 
+				content_id,
+				ROUND(AVG(rating),1) as review_avg,
+				COUNT(*) as review_count
+			FROM REVIEWS
+			GROUP BY content_id
+		) r ON tc.content_id = r.content_id
+		WHERE hsd.seller_id = #{sellerId}
+		ORDER BY tc.content_id DESC
+	</select>
+
+    <!-- 숙소 신청용 목록 조회 (신청 가능한 숙소만) -->
+    <select id="selectListForApply" parameterType="map" resultMap="houseMap">
+        WITH filtered_houses AS (
+            SELECT
+                tc.*, 
+                NVL(b.review_avg, 0.0) as review_avg,
+                NVL(b.review_count, 0) as review_count,
+                NVL(d.wish_count, 0) as wish_count,
+                ROW_NUMBER() OVER (
+                    ORDER BY
+                    <choose>
+                        <when test="sort == 'title'">tc.TITLE ASC</when>
+                        <when test="sort == 'rating'">review_avg DESC NULLS LAST</when>
+                        <when test="sort == 'popular'">wish_count DESC NULLS LAST</when>
+                        <otherwise>tc.UPDATED_AT DESC NULLS LAST</otherwise>
+                    </choose>
+                ) as row_num
+            FROM tour_content tc 
+            LEFT JOIN house_seller_detail hsd ON tc.content_id = hsd.house_id
+            LEFT JOIN (
+                SELECT 
+                    content_id,
+                    ROUND(AVG(rating),1) as review_avg,
+                    COUNT(*) as review_count
+                FROM REVIEWS
+                GROUP BY content_id
+            ) b ON tc.content_id = b.content_id
+            LEFT JOIN (
+                SELECT
+                    CONTENT_ID,
+                    COUNT(*) as wish_count
+                FROM WISHLIST
+                GROUP BY CONTENT_ID
+            ) d ON tc.content_id = d.content_id
+            WHERE tc.content_type_id = 32
+            AND (
+                hsd.house_id IS NULL  -- 아직 신청된 적 없는 숙소
+                OR (
+                    hsd.status = 'suspending'  -- 승인 대기 중이면서
+                    AND hsd.seller_id != #{sellerId}  -- 다른 판매자가 신청한 숙소
+                )
+                OR hsd.status = 'deleted'  -- 삭제된 숙소도 재신청 가능
+                OR hsd.status = 'inavailable'  -- 운영 중단된 숙소도 재신청 가능
+            )
+            AND NOT EXISTS (  -- 이미 available 상태인 숙소는 제외
+                SELECT 1 
+                FROM house_seller_detail hsd2 
+                WHERE hsd2.house_id = tc.content_id 
+                AND hsd2.status = 'available'
+            )
+            <include refid="houseSearch"/>
+        )
+        SELECT *
+        FROM filtered_houses
+        WHERE row_num BETWEEN #{start} AND #{end}
+    </select>
+
+	<!-- 숙소 신청 INSERT -->
+	<insert id="insertHouseApplication" parameterType="kr.spring.seller.vo.HouseSellerDetailVO">
+		INSERT INTO HOUSE_SELLER_DETAIL (
+			HOUSE_ID,
+			SELLER_ID,
+			STATUS
+		) VALUES (
+			#{houseId},
+			#{sellerId},
+			#{status}
+		)
+	</insert>
+
+	<!-- 승인 대기 중인 숙소 목록 조회 -->
+	<select id="selectPendingHouses" resultType="kr.spring.seller.vo.HouseSellerDetailVO">
+		SELECT 
+			hsd.HOUSE_ID as houseId,
+			hsd.SELLER_ID as sellerId,
+			hsd.STATUS as status,
+			tc.TITLE as houseTitle,
+			tc.ADDR1 as houseAddress,
+			s.NAME as sellerName,
+			s.EMAIL as sellerEmail
+		FROM HOUSE_SELLER_DETAIL hsd
+		JOIN TOUR_CONTENT tc ON hsd.HOUSE_ID = tc.CONTENT_ID
+		JOIN SELLER s ON hsd.SELLER_ID = s.SELLER_ID
+		WHERE hsd.STATUS = 'suspending'
+		ORDER BY tc.CONTENT_ID DESC
+	</select>
+
+	<!-- 숙소 승인/거절 상태 업데이트 -->
+	<update id="updateHouseStatus" parameterType="map">
+		UPDATE HOUSE_SELLER_DETAIL 
+		SET STATUS = #{status}
+		WHERE HOUSE_ID = #{houseId} 
+		AND SELLER_ID = #{sellerId}
+	</update>
+
+	<!-- 판매자별 숙소 목록 조회 (status별) -->
+	<select id="selectHousesBySellerAndStatus" parameterType="map" resultType="kr.spring.seller.vo.HouseSellerDetailVO">
+		SELECT 
+			hsd.HOUSE_ID as houseId,
+			hsd.SELLER_ID as sellerId,
+			hsd.STATUS as status,
+			tc.TITLE as houseTitle,
+			tc.ADDR1 as houseAddress
+		FROM HOUSE_SELLER_DETAIL hsd
+		JOIN TOUR_CONTENT tc ON hsd.HOUSE_ID = tc.CONTENT_ID
+		WHERE hsd.SELLER_ID = #{sellerId}
+		<if test="status != null and status != ''">
+			AND hsd.STATUS = #{status}
+		</if>
+		ORDER BY tc.CONTENT_ID DESC
+	</select>
+	
+	<!-- 신청 목록 조회 -->
+	<select id="selectHouseApplications" parameterType="map" resultType="kr.spring.seller.vo.HouseSellerDetailVO">
+		SELECT 
+			hsd.HOUSE_ID as houseId,
+			hsd.SELLER_ID as sellerId,
+			hsd.STATUS as status,
+			tc.TITLE as houseTitle,
+			tc.ADDR1 as houseAddress,
+			tc.FIRST_IMAGE2 as firstImage
+		FROM HOUSE_SELLER_DETAIL hsd
+		JOIN TOUR_CONTENT tc ON hsd.HOUSE_ID = tc.CONTENT_ID
+		WHERE hsd.SELLER_ID = #{sellerId}
+		<if test="status != null and status != ''">
+			AND hsd.STATUS = #{status}
+		</if>
+		ORDER BY tc.CONTENT_ID DESC
+	</select>
+	
+	<!-- 신청 개수 조회 -->
+	<select id="countHouseApplications" parameterType="map" resultType="int">
+		SELECT 
+			COUNT(*)
+		FROM HOUSE_SELLER_DETAIL hsd
+		WHERE hsd.SELLER_ID = #{sellerId}
+		<if test="status != null and status != ''">
+			AND hsd.STATUS = #{status}
+		</if>
+	</select>
+	
+	<!-- 신청 취소 (삭제) -->
+	<delete id="deleteHouseApplication" parameterType="map">
+		DELETE FROM HOUSE_SELLER_DETAIL
+		WHERE HOUSE_ID = #{houseId}
+		AND SELLER_ID = #{sellerId}
+		AND STATUS = 'suspending'
+	</delete>
+</mapper>
+

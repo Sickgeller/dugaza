@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>행사 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/tour.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/restaurant.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<body th:data-is-login="${#authentication.principal != 'anonymousUser'}">
+    <main class="tour-main" layout:fragment="content">
+        <form th:action="@{/event}" method="get">
+            <section class="search-section">
+                <div class="search-container">
+                    <div class="search-box">
+                        <input type="text" placeholder="통합 검색" name="keyword" th:value="${keyword}">
+                        <button type="submit" class="search-btn">검색</button>
+                    </div>
+                </div>
+            </section>
+            </form>
+
+            <section class="tour-list">
+                <div class="tour-grid">
+                    <article class="tour-card" th:each="tour : ${list}">
+                        <div class="tour-image">
+                            <a th:href="@{/event/detail(contentId=${tour.contentId})}">
+                                <img th:src="${tour.firstImage != null ? tour.firstImage : '/assets/images/tour-icon.png'}" alt="행사">
+                            </a>
+                            <button class="like-btn" th:data-content-id="${tour.contentId}" th:data-content-type="${tour.contentTypeId}">
+                                <i th:class="${tour.wished ? 'fas fa-heart' : 'far fa-heart'}" th:style="${tour.wished ? 'color: red;' : ''}"></i>
+                            </button>
+                        </div>
+                        <div class="tour-content">
+                            <a th:href="@{/event/detail(contentId=${tour.contentId})}">
+                                <h3 th:text="${tour.title}"></h3>
+                                <div class="tour-meta">
+                                    <span class="location"><i class="fas fa-map-marker-alt" th:text="${tour.addr1}"></i></span>
+                                    <span class="rating"><i class="fas fa-star"></i><span th:text="${tour.avgReview}"></span></span>
+                                    <span class="reviews">(리뷰 <span th:text="${tour.countReview}"></span>)</span>
+                                </div>
+                                <div class="tour-footer">
+                                    <a href="#" class="detail-btn">자세히 보기</a>
+                                </div>
+                            </a>
+                        </div>
+                    </article>
+                </div>
+ 
+                <div class="pagination" th:utext="${page}">
+                </div>
+            </section> 
+    </main>
+    
+    <th:block layout:fragment="script">
+        <script type="text/javascript" th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+        <script>
+            $(document).on('click', '.like-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var contentId = $(this).data("content-id");
+                var contentTypeId = $(this).data("content-type");
+                var heartIcon = $(this).find("i");
+
+                // CSRF 토큰과 헤더 이름을 메타 태그에서 읽어옵니다.
+                const csrfToken = $('meta[name="_csrf"]').attr('content');
+                const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+                // 로그인 여부 확인 (body 태그의 data-is-login 속성 사용)
+                const isLogin = $('body').data('is-login');
+                if (isLogin !== true) {
+                    alert('로그인이 필요한 서비스입니다.');
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/wishlist/toggle",
+                    data: {
+                        contentId: contentId,
+                        contentTypeId: contentTypeId
+                    },
+                    beforeSend: function(xhr) {
+                        if (csrfHeader && csrfToken) {
+                            xhr.setRequestHeader(csrfHeader, csrfToken);
+                        }
+                    },
+                    success: function(response) {
+                        if (response.wished) {
+                            heartIcon.removeClass("far").addClass("fas").css("color", "red");
+                        } else {
+                            heartIcon.removeClass("fas").addClass("far").css("color", "");
+                        }
+                    },
+                    error: function() {
+                        alert("찜 상태를 변경하는 데 실패했습니다.");
+                    }
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html> 

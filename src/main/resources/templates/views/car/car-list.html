@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>렌터카 검색 결과 - 드가자닷컴</title>
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/car-list.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <main layout:fragment="content">
+        <div class="car-list-container">
+            <!-- 검색 조건 요약 -->
+            <div class="search-summary">
+                <div class="summary-content">
+                    <h2><i class="fas fa-search"></i> 검색 결과</h2>
+                    <div class="search-criteria">
+                        <span class="criteria-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <strong>수령:</strong> <span th:text="${searchDTO.pickupLocationName}">서울</span>
+                        </span>
+                        <span class="criteria-item">
+                            <i class="fas fa-calendar"></i>
+                            <strong>기간:</strong> 
+                            <span th:text="${#temporals.format(searchDTO.pickupDate, 'MM/dd')}">12/01</span> - 
+                            <span th:text="${#temporals.format(searchDTO.returnDate, 'MM/dd')}">12/03</span>
+                        </span>
+                    </div>
+                    <div class="result-count">
+                        <span th:text="${cars.size()}">0</span>대의 차량이 검색되었습니다
+                    </div>
+                </div>
+                <a th:href="@{/car/search}" class="modify-search-btn">
+                    <i class="fas fa-edit"></i> 검색 조건 수정
+                </a>
+            </div>
+
+            <!-- 차량 목록 -->
+            <div class="car-list" th:if="${not #lists.isEmpty(cars)}">
+                <div class="car-item" th:each="car : ${cars}">
+                    <div class="car-image">
+                        <img th:src="${car.carImage != null ? '/assets/images/cars/' + car.carImage : '/assets/images/default-car.jpg'}" 
+                             th:alt="${car.carName}" onerror="this.src='/assets/images/default-car.jpg'">
+                    </div>
+                    <div class="car-info">
+                        <div class="car-header">
+                            <h3 th:text="${car.carName}">차량명</h3>
+                            <div class="car-badges">
+                                <span class="badge badge-type" th:text="${car.carType}">중형차</span>
+                                <span class="badge badge-fuel" th:text="${car.carFuel}">휘발유</span>
+                            </div>
+                        </div>
+                        <div class="car-details">
+                            <div class="detail-item">
+                                <i class="fas fa-users"></i>
+                                <span th:text="${car.carSeats} + '인승'">5인승</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-calendar"></i>
+                                <span th:text="${car.carYear} + '년식'">2023년식</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-gas-pump"></i>
+                                <span th:text="${car.carFuel}">휘발유</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span th:text="${car.locationName}">서울</span>
+                            </div>
+                        </div>
+                        <div class="car-features">
+                            <span class="feature" th:if="${car.carColor != null}" th:text="${car.carColor}">흰색</span>
+                            <span class="feature" th:if="${car.carNumber != null}" th:text="${car.carNumber}">12가3456</span>
+                        </div>
+                    </div>
+                    <div class="car-pricing">
+                        <div class="price-info">
+                            <div class="daily-rate">
+                                <span class="price" th:text="${#numbers.formatInteger(car.carPrice, 3, 'COMMA')} + '원'">50,000원</span>
+                                <span class="unit">/일</span>
+                            </div>
+                            <div class="total-price">
+                                <span class="label">총 요금:</span>
+                                <span class="total" th:data-price="${car.carPrice}" th:data-pickup="${searchDTO.pickupDate}" th:data-return="${searchDTO.returnDate}">-</span>
+                            </div>
+                        </div>
+                        <div class="car-actions">
+                            <a th:href="@{/car/detail/{carId}(carId=${car.carId})}" class="detail-btn">
+                                <i class="fas fa-info-circle"></i> 상세보기
+                            </a>
+                            <a th:href="@{/car/reservation/{carId}(carId=${car.carId})}" class="reserve-btn">
+                                <i class="fas fa-calendar-check"></i> 예약하기
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 검색 결과가 없을 때 -->
+            <div class="no-results" th:if="${#lists.isEmpty(cars)}">
+                <div class="no-results-content">
+                    <i class="fas fa-search"></i>
+                    <h3>검색 결과가 없습니다</h3>
+                    <p>다른 검색 조건으로 다시 시도해보세요.</p>
+                    <a th:href="@{/car/search}" class="retry-search-btn">
+                        <i class="fas fa-redo"></i> 다시 검색하기
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 페이지 로드 시 총 요금 계산
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateTotalPrices();
+        });
+
+        function calculateTotalPrices() {
+            const totalElements = document.querySelectorAll('.total');
+            
+            totalElements.forEach(function(element) {
+                const price = parseInt(element.getAttribute('data-price'));
+                const pickupDate = element.getAttribute('data-pickup');
+                const returnDate = element.getAttribute('data-return');
+                
+                if (price && pickupDate && returnDate) {
+                    const start = new Date(pickupDate);
+                    const end = new Date(returnDate);
+                    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                    
+                    if (days > 0) {
+                        const totalPrice = price * days;
+                        element.textContent = totalPrice.toLocaleString() + '원';
+                    } else {
+                        element.textContent = price.toLocaleString() + '원';
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

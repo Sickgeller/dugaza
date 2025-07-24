@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>매출 관리</title>
+    <link rel="stylesheet" th:href="@{/assets/css/seller.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div th:replace="~{fragments/car_seller_sidebar :: carSideBar}"></div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>매출 관리</h2>
+                </div>
+                <div class="user-info">
+                    <span th:text="${seller.name} + '님'">홍길동님</span>
+                    <img th:src="@{/assets/images/users/profile1.jpg}" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 매출 통계 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>매출 현황</h3>
+                    <div class="period-selector">
+                        <button class="active">일간</button>
+                        <button>주간</button>
+                        <button>월간</button>
+                        <button>연간</button>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>총 매출</h3>
+                            <p th:text="${#numbers.formatInteger(salesData.totalRevenue, 3, 'COMMA')} + '원'">15,000,000원</p>
+                            <span class="stat-change increase">+12.5%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-month"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>이번 달 매출</h3>
+                            <p th:text="${#numbers.formatInteger(salesData.monthlyRevenue, 3, 'COMMA')} + '원'">2,500,000원</p>
+                            <span class="stat-change increase">+8.3%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>총 예약</h3>
+                            <p th:text="${salesData.totalReservations} + '건'">45건</p>
+                            <span class="stat-change increase">+15.2%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>평균 평점</h3>
+                            <p th:text="${salesData.averageRating} + '점'">4.5점</p>
+                            <span class="stat-change increase">+0.2점</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 매출 차트 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>매출 추이</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas id="salesChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- 최근 거래 내역 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>최근 거래 내역</h3>
+                    <button class="btn-primary">전체보기</button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>거래번호</th>
+                                <th>차량명</th>
+                                <th>고객명</th>
+                                <th>대여기간</th>
+                                <th>거래금액</th>
+                                <th>상태</th>
+                                <th>거래일</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#TR001</td>
+                                <td>아반떼 CN7</td>
+                                <td>김철수</td>
+                                <td>2024-02-15 ~ 2024-02-17</td>
+                                <td>150,000원</td>
+                                <td><span class="status available">완료</span></td>
+                                <td>2024-02-15</td>
+                            </tr>
+                            <tr>
+                                <td>#TR002</td>
+                                <td>쏘나타 DN8</td>
+                                <td>이영희</td>
+                                <td>2024-02-14 ~ 2024-02-16</td>
+                                <td>200,000원</td>
+                                <td><span class="status available">완료</span></td>
+                                <td>2024-02-14</td>
+                            </tr>
+                            <tr>
+                                <td>#TR003</td>
+                                <td>그랜저 GN7</td>
+                                <td>박민수</td>
+                                <td>2024-02-13 ~ 2024-02-15</td>
+                                <td>300,000원</td>
+                                <td><span class="status rented">진행중</span></td>
+                                <td>2024-02-13</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/assets/js/customjs.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 매출 차트
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['1월', '2월', '3월', '4월', '5월', '6월'],
+                datasets: [{
+                    label: '월별 매출',
+                    data: [1200000, 1500000, 1800000, 2200000, 2500000, 2800000],
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '월별 매출 추이'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString() + '원';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

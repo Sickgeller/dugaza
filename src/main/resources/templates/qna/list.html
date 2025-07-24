@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_mypage}">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/assets/css/qna.css}">
+    <title>Q&A 목록</title>
+</head>
+<body>
+	<div layout:fragment="content" class="page-main">
+    <h1>문의 목록</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>카테고리</th>
+                <th>제목</th>
+                <th>작성일</th>
+                <th>답변 여부</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="qna : ${qnaList}">
+                <td th:text="${qna.category}"></td>
+                <td>
+                    <a th:href="@{'/qna/detail/' + ${qna.qna_id}}" th:text="${qna.title}"></a>
+                </td>
+                <td th:text="${#dates.format(qna.created_at, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${qna.is_answered?.toUpperCase() == 'Y' ? '답변 완료' : '미답변'}"></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</body>
+</html>

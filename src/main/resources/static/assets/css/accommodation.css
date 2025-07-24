@@ -1,0 +1,345 @@
+.accommodation-main {
+    margin-top: 70px;
+    padding: 20px;
+}
+
+/* Search Section */
+.search-section {
+    background: linear-gradient(to right, #2681ff, #1a73e8);
+    padding: 40px 20px;
+    margin: -20px -20px 30px;
+}
+
+.search-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.search-box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.search-group {
+    flex: 1;
+}
+
+.search-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #666;
+    font-weight: 500;
+}
+
+.search-input {
+	position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding-left: 40px;
+}
+
+.search-input i {
+	position: absolute;
+	left: 12px;
+    color: #666;
+    margin-right: 10px;
+    pointer-events: none;
+}
+
+.search-input input,
+.search-input select {
+    flex: 1;
+    border: none;
+    padding: 12px 0;
+    font-size: 16px;
+    outline: none;
+    background: none;
+    width: 100%;
+}
+
+.search-input input{
+	padding-left: 0;
+}
+
+.search-btn {
+    align-self: flex-end;
+    background-color: #ff4757;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-btn:hover {
+    background-color: #ff6b81;
+}
+
+.filter-tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tag:hover,
+.tag.active {
+    background: white;
+    color: #2681ff;
+}
+
+/* Accommodation List */
+.accommodation-list {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.list-header h2 {
+    font-size: 24px;
+    color: #333;
+}
+
+.sort-options select {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #666;
+    outline: none;
+}
+
+/* Accommodation Grid */
+.accommodation-grid {
+    display: grid;
+    /*grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));*/
+    grid-template-columns: repeat(3, minmax(280px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+/* Accommodation Card */
+.accommodation-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.accommodation-card:hover {
+    transform: translateY(-5px);
+}
+
+.accommodation-image {
+    position: relative;
+    height: 200px;
+}
+
+.accommodation-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.category-tag {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+}
+
+.like-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.like-btn i {
+    color: #ff4757;
+    font-size: 18px;
+}
+
+.like-btn:hover {
+    transform: scale(1.1);
+}
+
+.accommodation-content {
+    padding: 20px;
+}
+
+.accommodation-content h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.accommodation-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+.accommodation-meta .rating i {
+    color: #ffd700;
+}
+
+.accommodation-description {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.accommodation-features {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.accommodation-features span {
+    color: #666;
+    font-size: 14px;
+}
+
+.accommodation-features i {
+    color: #2681ff;
+    margin-right: 5px;
+}
+
+.accommodation-price {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.accommodation-price .price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ff4757;
+}
+
+.accommodation-price .unit {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-numbers {
+    display: flex;
+    gap: 5px;
+}
+
+.page-numbers a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    color: #666;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.page-numbers a:hover,
+.page-numbers a.active {
+    background-color: #2681ff;
+    color: white;
+}
+
+.prev-btn,
+.next-btn {
+    background: none;
+    border: 1px solid #ddd;
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.prev-btn:hover,
+.next-btn:hover {
+    background-color: #f0f7ff;
+    border-color: #2681ff;
+    color: #2681ff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .search-box {
+        flex-direction: column;
+    }
+
+    .search-btn {
+        width: 100%;
+    }
+
+    .list-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .accommodation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .accommodation-image {
+        height: 250px;
+    }
+
+    .accommodation-features {
+        flex-wrap: wrap;
+    }
+} 

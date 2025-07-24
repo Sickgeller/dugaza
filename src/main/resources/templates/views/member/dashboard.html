@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_mypage}">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지 - 대시보드</title>
+    <th:block layout:fragment="css">
+        <!-- 추가 CSS가 필요한 경우 여기에 추가 -->
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="dashboard-container">
+            <!-- 대시보드 헤더 -->
+            <div class="dashboard-header">
+                <h1>안녕하세요, <span th:text="${member.name}">사용자</span>님!</h1>
+                <p>오늘도 즐거운 여행 되세요.</p>
+            </div>
+            
+            <!-- 통계 카드 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>총 예약</h3>
+                    <div class="stat-number" th:text="${carReservations.size() + houseReservations.size()}">0</div>
+                    <div class="stat-description">전체 예약 건수</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>결제 대기</h3>
+                    <div class="stat-number" th:text="${paymentPendingCount}">0</div>
+                    <div class="stat-description">결제 대기 중</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>찜 목록</h3>
+                    <div class="stat-number" th:text="${wishListCount}">0</div>
+                    <div class="stat-description">관심 상품</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3>내 리뷰</h3>
+                    <div class="stat-number" th:text="${reviewCount}">0</div>
+                    <div class="stat-description">작성한 리뷰</div>
+                </div>
+            </div>
+            
+            <!-- 최근 예약 -->
+            <div class="recent-section">
+                <h3><i class="fas fa-calendar-check"></i> 최근 예약</h3>
+                <div th:if="${carReservations.isEmpty() and houseReservations.isEmpty()}" class="empty-state">
+                    <i class="fas fa-calendar-times"></i>
+                    <p>아직 예약 내역이 없습니다.</p>
+                    <a th:href="@{/house}" class="btn btn-primary">숙소 예약하기</a>
+                </div>
+                <div th:if="${not carReservations.isEmpty() or not houseReservations.isEmpty()}">
+                    <div th:each="reservation : ${carReservations}" class="recent-item">
+                        <div class="recent-item-info">
+                            <h4 th:text="${reservation.carName}">차량명</h4>
+                            <p th:text="${#temporals.format(reservation.startDate, 'yyyy-MM-dd HH:mm')} + ' ~ ' + ${#temporals.format(reservation.endDate, 'yyyy-MM-dd HH:mm')}">예약일</p>
+                        </div>
+                        <span class="recent-item-status status-confirmed">확정</span>
+                    </div>
+                    <div th:each="reservation : ${houseReservations}" class="recent-item">
+                        <div class="recent-item-info">
+                            <h4 th:text="${houseMap.get(reservation.houseId) != null ? houseMap.get(reservation.houseId).title : '숙소명 없음'}">숙소명</h4>
+                            <p th:text="${#temporals.format(reservation.reservationStart, 'yyyy-MM-dd HH:mm')} + ' ~ ' + ${#temporals.format(reservation.reservationEnd, 'yyyy-MM-dd HH:mm')}">예약일</p>
+                        </div>
+                        <span class="recent-item-status status-confirmed">확정</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 최근 결제 -->
+            <div class="recent-section">
+                <h3><i class="fas fa-credit-card"></i> 최근 결제</h3>
+                <div th:if="${payments.isEmpty()}" class="empty-state">
+                    <i class="fas fa-credit-card"></i>
+                    <p>아직 결제 내역이 없습니다.</p>
+                </div>
+                <div th:if="${not payments.isEmpty()}">
+                    <div th:each="payment : ${payments}" class="recent-item">
+                        <div class="recent-item-info">
+                            <h4 th:text="${payment.paymentId}">결제번호</h4>
+                            <p th:text="${payment.amount} + '원'">결제금액</p>
+                        </div>
+                        <span class="recent-item-status status-completed">완료</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 빠른 액션 -->
+            <div class="quick-actions">
+                <a th:href="@{/house}" class="quick-action-btn">
+                    <i class="fas fa-bed"></i>
+                    <span>숙소 예약</span>
+                </a>
+                <a th:href="@{/car/search}" class="quick-action-btn">
+                    <i class="fas fa-car"></i>
+                    <span>차량 대여</span>
+                </a>
+                <a th:href="@{/member/payment}" class="quick-action-btn">
+                    <i class="fas fa-credit-card"></i>
+                    <span>결제</span>
+                </a>
+                <a th:href="@{/member/profile}" class="quick-action-btn">
+                    <i class="fas fa-user-edit"></i>
+                    <span>정보 수정</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

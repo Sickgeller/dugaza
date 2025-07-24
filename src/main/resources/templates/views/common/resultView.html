@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title th:text="${accessTitle}"></title>
+<link rel="stylesheet" th:href="@{/assets/css/common.css}">
+<style>
+.success-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 40px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: #4CAF50;
+    border-radius: 50%;
+    margin: 0 auto 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 40px;
+}
+
+.success-title {
+    color: #333;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.success-message {
+    color: #666;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #545b62;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #1e7e34;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .success-container {
+        margin: 20px;
+        padding: 30px 20px;
+    }
+    
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}
+</style>
+</head>
+<body>
+<div class="success-container">
+    <div class="success-icon">✓</div>
+    <h1 class="success-title" th:text="${accessTitle}"></h1>
+    <div class="success-message" th:text="${accessMsg}"></div>
+    
+    <div class="button-group">
+        <a th:href="@{${accessUrl}}" class="btn btn-primary" th:text="${accessBtn}"></a>
+        
+        <!-- 사업자 전용 버튼들 -->
+        <a th:if="${isSeller}" href="/seller/car/dashboard" class="btn btn-success">사업자 대시보드</a>
+        <a th:if="${isSeller}" href="/seller/car/register" class="btn btn-secondary">차량 등록하기</a>
+        
+        <!-- 일반 회원 전용 버튼들 -->
+        <a th:if="${!isSeller}" href="/member/mypage" class="btn btn-success">마이페이지</a>
+        <a th:if="${!isSeller}" href="/" class="btn btn-secondary">메인으로</a>
+    </div>
+</div>
+
+<script>
+// 5초 후 자동으로 메인 페이지로 이동 (선택사항)
+setTimeout(function() {
+    // 사업자인 경우 대시보드로, 일반 회원인 경우 메인으로
+    const isSeller = [[${isSeller}]];
+    if (isSeller) {
+        window.location.href = '/seller/car/dashboard';
+    } else {
+        window.location.href = '/';
+    }
+}, 5000);
+</script>
+</body>
+</html>
+
+
+
+

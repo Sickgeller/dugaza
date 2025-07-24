@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.trainsportation.dao.TrainMapper">
+
+    <!-- 도시 목록 조회 -->
+    <select id="selectAllCities" resultType="kr.spring.trainsportation.vo.TrainCityVO">
+        SELECT 
+            CITY_CODE as "cityCode", 
+            CITY_NAME as "cityName"
+        FROM TRAIN_CITY
+        ORDER BY CITY_NAME
+    </select>
+    
+    <!-- 도시별 역 목록 조회 -->
+    <select id="selectStationsByCity" parameterType="integer" resultType="kr.spring.trainsportation.vo.TrainStationVO">
+        SELECT 
+            NODE_ID as "nodeId", 
+            NODE_NAME as "nodeName", 
+            IS_ACTIVE as "isActive", 
+            CITY_CODE as "cityCode"
+        FROM TRAIN_STATION
+        WHERE CITY_CODE = #{cityCode}
+        AND IS_ACTIVE = 'Y'
+        ORDER BY NODE_NAME
+    </select>
+    
+    <!-- 전체 역 목록 조회 -->
+    <select id="selectAllStations" resultType="kr.spring.trainsportation.vo.TrainStationVO">
+        SELECT NODE_ID, NODE_NAME, IS_ACTIVE, CITY_CODE
+        FROM TRAIN_STATION
+        WHERE IS_ACTIVE = 'Y'
+        ORDER BY NODE_NAME
+    </select>
+    
+    <!-- 노선 검색 (출발지=도착지) -->
+    <select id="searchRoutes" parameterType="map" resultType="kr.spring.trainsportation.vo.TrainRouteVO">
+        SELECT 
+            TRAIN_ROUTE_ID as "trainRouteId",
+            ADULT_CHARGE as "adultCharge",
+            ARR_PLACE_NAME as "arrPlaceName",
+            DEP_PLACE_NAME as "depPlaceName",
+            ARR_PLAND_TIME as "arrPlandTime",
+            DEP_PLAND_TIME as "depPlandTime",
+            TRAIN_GRADE_NAME as "trainGradeName",
+            TRAIN_NO as "trainNo"
+        FROM TRAIN_ROUTE
+        WHERE DEP_PLACE_NAME = #{depPlaceName}
+        AND ARR_PLACE_NAME = #{arrPlaceName}
+        AND DEP_PLAND_TIME >= TO_DATE(#{depPlandTime}, 'YYYY-MM-DD')
+        ORDER BY DEP_PLAND_TIME
+    </select>
+
+</mapper> 

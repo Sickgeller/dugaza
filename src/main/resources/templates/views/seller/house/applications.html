@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>숙소 신청 목록</title>
+    <link rel="stylesheet" th:href="@{/assets/css/seller.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <style>
+        .applications-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .applications-list th,
+        .applications-list td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .applications-list th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .applications-list tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .house-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .house-image {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 15px;
+        }
+        
+        .house-details h4 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+        }
+        
+        .house-details p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-suspending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-available {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-deleted {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+        
+        .empty-state h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .empty-state p {
+            margin: 0 0 20px 0;
+            color: #666;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-dismissible {
+            position: relative;
+            padding-right: 35px;
+        }
+        
+        .alert-dismissible .close {
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 15px;
+            color: inherit;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 20px 0;
+        }
+        
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .pagination button.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .pagination button:hover:not(.active) {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+<div class="admin-container">
+    <div th:replace="~{fragments/house_seller_sidebar :: houseSideBar}"></div>
+    <div class="main-content">
+        <div class="content-header">
+            <h2>숙소 신청 목록</h2>
+            <div class="header-actions">
+                <a th:href="@{/seller/house/apply}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> 새 숙소 신청
+                </a>
+            </div>
+        </div>
+        
+        <!-- 알림 메시지 -->
+        <div th:if="${message}" class="alert alert-success alert-dismissible">
+            <span th:text="${message}"></span>
+            <button type="button" class="close" onclick="this.parentElement.style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible">
+            <span th:text="${error}"></span>
+            <button type="button" class="close" onclick="this.parentElement.style.display='none'">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="content-section">
+            <!-- 신청 목록 -->
+            <div th:if="${applications != null and !applications.isEmpty()}">
+                <table class="applications-list">
+                    <thead>
+                        <tr>
+                            <th>숙소 정보</th>
+                            <th>상태</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="app : ${applications}">
+                            <td>
+                                <div class="house-info">
+                                    <img th:src="${app.firstImage != null ? app.firstImage : '/assets/images/house.png'}" 
+                                         alt="숙소 이미지" class="house-image"
+                                         onerror="this.onerror=null; this.src='/assets/images/house.png';">
+                                    <div class="house-details">
+                                        <h4 th:text="${app.houseTitle}">숙소명</h4>
+                                        <p th:text="${app.houseAddress}">주소</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span th:if="${app.status == 'suspending'}" class="status-badge status-suspending">승인 대기중</span>
+                                <span th:if="${app.status == 'available'}" class="status-badge status-available">승인됨</span>
+                                <span th:if="${app.status == 'deleted'}" class="status-badge status-deleted">거절됨</span>
+                            </td>
+                            <td>
+                                <button th:if="${app.status == 'suspending'}" 
+                                        class="btn btn-danger" 
+                                        th:onclick="'cancelApplication(' + ${app.houseId} + ')'">
+                                    신청 취소
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- 페이지네이션 -->
+                <div class="pagination" th:if="${totalPages > 1}">
+                    <button th:if="${currentPage > 1}" onclick="goToPage(1)">
+                        <i class="fas fa-angle-double-left"></i>
+                    </button>
+                    <button th:if="${currentPage > 1}" th:onclick="'goToPage(' + ${currentPage - 1} + ')'">
+                        <i class="fas fa-angle-left"></i>
+                    </button>
+                    
+                    <!-- 페이지 번호 표시 (최대 10개) -->
+                    <th:block th:with="
+                        startPage=${currentPage <= 5 ? 1 : currentPage - 5},
+                        endPage=${currentPage + 4 > totalPages ? totalPages : currentPage + 4},
+                        startPage=${startPage < 1 ? 1 : startPage},
+                        endPage=${endPage > startPage + 9 ? startPage + 9 : endPage}">
+                        
+                        <th:block th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
+                            <button th:text="${pageNum}" 
+                                    th:class="${pageNum == currentPage ? 'active' : ''}"
+                                    th:onclick="'goToPage(' + ${pageNum} + ')'">1</button>
+                        </th:block>
+                    </th:block>
+                    
+                    <button th:if="${currentPage < totalPages}" th:onclick="'goToPage(' + ${currentPage + 1} + ')'">
+                        <i class="fas fa-angle-right"></i>
+                    </button>
+                    <button th:if="${currentPage < totalPages}" th:onclick="'goToPage(' + ${totalPages} + ')'">
+                        <i class="fas fa-angle-double-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 신청 내역이 없을 경우 -->
+            <div th:if="${applications == null or applications.isEmpty()}" class="empty-state">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>신청 내역이 없습니다</h3>
+                <p>아직 숙소 신청 내역이 없습니다. 새로운 숙소를 신청해보세요.</p>
+                <a th:href="@{/seller/house/apply}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> 숙소 신청하기
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// CSRF 토큰 설정
+const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
+const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
+
+// 신청 취소 함수
+function cancelApplication(houseId) {
+    if (confirm('정말로 이 숙소 신청을 취소하시겠습니까?')) {
+        fetch('/seller/house/cancel-application', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                [header]: token
+            },
+            body: 'houseId=' + houseId
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert(data.message || '신청 취소에 실패했습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('신청 취소 중 오류가 발생했습니다.');
+        });
+    }
+}
+
+// 페이지 이동 함수
+function goToPage(page) {
+    window.location.href = '/seller/house/applications?page=' + page;
+}
+</script>
+</body>
+</html> 

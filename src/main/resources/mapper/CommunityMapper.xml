@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.spring.community.dao.CommunityMapper">
+
+	<!-- resultMap: DB 컬럼명 ↔ VO 필드명 -->
+	<resultMap id="communityPostMap"
+		type="kr.spring.community.vo.CommunityPostVO">
+		<id property="id" column="ID" />
+		<result property="category" column="CATEGORY" />
+		<result property="title" column="TITLE" />
+		<result property="content" column="CONTENT" />
+		<result property="memberId" column="MEMBER_ID" />
+		<result property="writer" column="WRITER" /> <!-- join한 member.ID -->
+		<result property="filename" column="FILENAME" />
+		<result property="regdate" column="REGDATE" />
+		<result property="viewCount" column="VIEW_COUNT" />
+		<result property="likeCount" column="LIKE_COUNT" />
+		<result property="commentCount" column="COMMENT_COUNT" />
+	</resultMap>
+
+	<!-- 게시글 목록 -->
+<select id="selectPostList" parameterType="map"
+	resultMap="communityPostMap">
+SELECT *
+FROM (
+	SELECT ROWNUM rnum, A.*
+	FROM (
+		SELECT cp.*, m.id AS writer
+		FROM community_post cp
+		JOIN member m ON cp.member_id = m.member_id
+		<where>
+			<if test="category != null and category != ''">
+				AND cp.category = #{category}
+			</if>
+			<if test="keyword != null and keyword != ''">
+				AND (cp.title LIKE '%' || #{keyword} || '%' OR cp.content LIKE '%' || #{keyword} || '%')
+			</if>
+		</where>
+		ORDER BY
+		<choose>
+			<when test="order == 'popular'">
+				cp.like_count DESC
+			</when>
+			<when test="order == 'view'">
+				cp.view_count DESC
+			</when>
+			<when test="order == 'comment'">
+				cp.comment_count DESC
+			</when>
+			<otherwise>
+				cp.regdate DESC
+			</otherwise>
+		</choose>
+	) A
+)
+WHERE rnum BETWEEN #{start} AND #{end}
+</select>
+
+
+
+
+	<!-- 글 등록 -->
+	<insert id="insertPost"
+		parameterType="kr.spring.community.vo.CommunityPostVO">
+		INSERT INTO community_post (
+		id, category, title,
+		content, member_id, filename
+		) VALUES (
+		community_seq.NEXTVAL,
+		#{category},
+		#{title},
+		#{content},
+		#{memberId},
+		#{filename,
+		jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<!-- 글 상세 -->
+	<select id="selectPost" parameterType="long"
+		resultMap="communityPostMap">
+		SELECT p.*, m.ID AS WRITER
+		FROM community_post p
+		JOIN member m
+		ON p.member_id = m.member_id
+		WHERE p.id = #{id}
+	</select>
+
+	<!-- 글 수정 -->
+	<update id="updatePost"
+		parameterType="kr.spring.community.vo.CommunityPostVO">
+		UPDATE community_post
+		SET title = #{title},
+		content =
+		#{content},
+		category = #{category},
+		filename = #{filename}
+		WHERE id =
+		#{id}
+	</update>
+
+	<!-- 글 삭제 -->
+	<delete id="deletePost" parameterType="long">
+		DELETE FROM community_post
+		WHERE id = #{id}
+	</delete>
+
+
+	<!-- 글 개수 -->
+	<select id="selectPostCount" parameterType="map"
+		resultType="int">
+		SELECT COUNT(*)
+		FROM community_post cp
+		<where>
+			<if test="category != null and category != ''">
+				AND cp.category = #{category}
+			</if>
+			<if test="keyword != null and keyword != ''">
+				AND cp.title LIKE '%' || #{keyword} || '%'
+			</if>
+		</where>
+	</select>
+
+
+	<!-- 댓글수 업데이트 -->
+	<update id="updateCommentCount">
+		UPDATE community_post
+		SET comment_count =
+		NVL(comment_count, 0) + #{amount}
+		WHERE id = #{postId}
+	</update>
+
+	<!-- 조회수 증가 -->
+	<update id="incrementViewCount">
+		UPDATE community_post
+		SET view_count = view_count + 1
+		WHERE id = #{id}
+	</update>
+
+	<!-- 좋아요 여부 확인 -->
+	<select id="isLiked" resultType="int">
+		SELECT COUNT(*)
+		FROM
+		community_post_like
+		WHERE post_id = #{postId} AND member_id =
+		#{memberId}
+	</select>
+
+	<!-- 좋아요 등록 -->
+	<insert id="insertLike">
+		INSERT INTO community_post_like (post_id, member_id)
+		VALUES (#{postId}, #{memberId})
+	</insert>
+
+	<!-- 좋아요 취소 -->
+	<delete id="deleteLike">
+		DELETE FROM community_post_like
+		WHERE post_id =
+		#{postId} AND member_id = #{memberId}
+	</delete>
+
+	<!-- 게시글 좋아요 카운트 업데이트 -->
+	<update id="incrementLikeCount">
+		UPDATE community_post
+		SET like_count = like_count + 1
+		WHERE id = #{postId}
+	</update>
+	<update id="decrementLikeCount">
+		UPDATE community_post
+		SET like_count = like_count - 1
+		WHERE id = #{postId}
+	</update>
+
+
+
+</mapper>

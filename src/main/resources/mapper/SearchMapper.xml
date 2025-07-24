@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.spring.common.search.dao.SearchMapper">
+<!-- TourVO 매핑 -->
+<resultMap id="tourMap" type="kr.spring.tour.vo.TourVO">
+	<id property="id" column="ID"/>
+	<result property="addr1" column="ADDR1"/>
+	<result property="addr2" column="ADDR2"/>
+	<result property="areaCode" column="AREA_CODE"/>
+	<result property="cat1" column="CAT1"/>
+	<result property="cat2" column="CAT2"/>
+	<result property="cat3" column="CAT3"/>
+	<result property="contentId" column="CONTENT_ID"/>
+	<result property="contentTypeId" column="CONTENT_TYPE_ID"/>
+	<result property="firstImage" column="FIRST_IMAGE"/>
+	<result property="firstImage2" column="FIRST_IMAGE2"/>
+	<result property="cpyrhtDivCd" column="CPYRHT_DIV_CD"/>
+	<result property="mapX" column="MAP_X"/>
+	<result property="mapY" column="MAP_Y"/>
+	<result property="mlevel" column="MLEVEL"/>
+	<result property="sigunguCode" column="SIGUNGU_CODE"/>
+	<result property="tel" column="TEL"/>
+	<result property="title" column="TITLE"/>
+	<result property="zipcode" column="ZIPCODE"/>
+	<result property="createdAt" column="CREATED_AT"/>
+	<result property="updatedAt" column="UPDATED_AT"/>
+	<result property="showFlag" column="SHOW_FLAG"/>
+</resultMap>
+	<select id="integratedSearch" resultMap="tourMap" parameterType="String">
+	    SELECT *
+	    FROM (
+	        SELECT t.*, 
+	               ROW_NUMBER() OVER (PARTITION BY t.content_type_id ORDER BY t.updated_at DESC NULLS LAST) AS rn
+	        FROM tour_content t
+	        WHERE 1 = 1
+	          AND (
+	              LOWER(t.title) LIKE '%' || LOWER(#{keyword}) || '%'
+	              OR LOWER(t.addr1) LIKE '%' || LOWER(#{keyword}) || '%'
+	          )
+	    )
+	    WHERE rn &lt;= 6
+	</select>
+	
+	<!-- 카테고리별 검색 결과 개수를 한 번에 가져오기 -->
+	<select id="countSearchGroupedByCategory" resultType="map" parameterType="string">
+	    SELECT content_type_id, COUNT(*) AS total
+	    FROM tour_content
+	    WHERE show_flag = 1
+	      AND (
+	        LOWER(title) LIKE '%' || LOWER(#{keyword}) || '%'
+	        OR LOWER(addr1) LIKE '%' || LOWER(#{keyword}) || '%'
+	      )
+	    GROUP BY content_type_id
+	</select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

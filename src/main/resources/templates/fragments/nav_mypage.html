@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <nav th:fragment="nav_mypage" class="mypage-nav">
+        <div class="mypage-container">
+            <div class="mypage-sidebar">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-details">
+                        <h4 th:text="${member.name}">사용자명</h4>
+                        <p th:text="${member.email}">이메일</p>
+                    </div>
+                </div>
+                
+                <ul class="mypage-menu">
+                    <li th:class="${currentMenu == 'dashboard' ? 'active' : ''}">
+                        <a th:href="@{/member/dashboard}">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>대시보드</span>
+                        </a>
+                    </li>
+                    <li th:class="${currentMenu == 'reservations' ? 'active' : ''}">
+                        <a th:href="@{/member/reservations}">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>예약 내역</span>
+                        </a>
+                    </li>
+                    <li th:class="${currentMenu == 'payment-pending' ? 'active' : ''}">
+                        <a th:href="@{/payment/pending}">
+                            <i class="fas fa-clock"></i>
+                            <span>결제 대기</span>
+                            <span class="badge" th:if="${paymentPendingCount > 0}" th:text="${paymentPendingCount}">0</span>
+                        </a>
+                    </li>
+                    <li th:class="${currentMenu == 'payment' ? 'active' : ''}">
+                        <a th:href="@{/member/payment}">
+                            <i class="fas fa-credit-card"></i>
+                            <span>결제하기</span>
+                        </a>
+                    </li>
+                    <li th:class="${currentMenu == 'wishlist' ? 'active' : ''}">
+                        <a th:href="@{/member/wishlist}">
+                            <i class="fas fa-heart"></i>
+                            <span>찜 목록</span>
+                            <span class="badge" th:if="${wishListCount > 0}" th:text="${wishListCount}">0</span>
+                        </a>
+                    </li>
+                    <li th:class="${currentMenu == 'reviews' ? 'active' : ''}">
+                        <a th:href="@{/member/reviews}">
+                            <i class="fas fa-star"></i>
+                            <span>리뷰 관리</span>
+                            <span class="badge" th:if="${reviewCount > 0}" th:text="${reviewCount}">0</span>
+                        </a>
+                    </li>
+                    <li th:class="${currentMenu == 'qna' ? 'active' : ''}">
+                        <a th:href="@{/qna/my}">
+                            <i class="fas fa-question-circle"></i>
+                            <span>문의 내역</span>
+                            <span class="badge" th:if="${qnaCount > 0}" th:text="${qnaCount}">0</span>
+                        </a>
+                    </li>
+                    <li th:class="${currentMenu == 'payments' ? 'active' : ''}">
+                        <a th:href="@{/member/payments}">
+                            <i class="fas fa-credit-card"></i>
+                            <span>결제 내역</span>
+                        </a>
+                    </li>
+                    <li th:class="${currentMenu == 'profile' ? 'active' : ''}">
+                        <a th:href="@{/member/profile}">
+                            <i class="fas fa-user-edit"></i>
+                            <span>개인정보 관리</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="mypage-footer">
+                    <a th:href="@{/member/logout}" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>로그아웃</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</body>
+</html> 

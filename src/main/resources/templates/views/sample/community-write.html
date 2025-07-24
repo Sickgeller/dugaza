@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/layout_basic}">
+<head>
+<meta charset="UTF-8">
+<title>커뮤니티 글쓰기 - 드가자닷컴</title>
+<link rel="stylesheet" th:href="@{/assets/css/style.css}">
+<link rel="stylesheet" th:href="@{/assets/css/community-write.css}">
+
+</head>
+
+<body>
+
+	<main layout:fragment="content">
+
+		<div class="community-write-container">
+
+
+			<form th:action="@{/community/write}" method="post"
+				enctype="multipart/form-data">
+				<input type="hidden" name="id" th:value="${postVO.id}">
+
+				<!-- 제목 + 카테고리 한줄 -->
+				<div class="form-group horizontal">
+					<div class="title-container">
+						<label for="title">제목</label> <input type="text" id="title"
+							name="title" th:value="${postVO.title}" placeholder="제목을 입력하세요"
+							required>
+					</div>
+
+					<div class="category-container">
+						<label for="category">카테고리</label> <select id="category"
+							name="category" required>
+							<option value=""
+								th:selected="${postVO.category == null or postVO.category == ''}"
+								hidden>카테고리 선택</option>
+							<option value="review"
+								th:selected="${postVO.category == 'review'}">여행 리뷰</option>
+							<option value="plan" th:selected="${postVO.category == 'plan'}">여행
+								계획</option>
+							<option value="mate" th:selected="${postVO.category == 'mate'}">동행
+								찾기</option>
+							<option value="qna" th:selected="${postVO.category == 'qna'}">질문/답변</option>
+						</select>
+
+					</div>
+				</div>
+
+
+				<!-- 내용 -->
+				<div class="form-group">
+					<label for="content">내용</label>
+					<textarea id="content" name="content" rows="10" required
+						placeholder="내용을 입력하세요" th:text="${postVO.content}"></textarea>
+				</div>
+
+				<!-- 기존 이미지 -->
+				<div class="form-group" th:if="${postVO.filename}">
+					<label>기존 이미지</label>
+					<div>
+						<img th:src="@{'/upload/' + ${postVO.filename}}" alt="첨부 이미지"
+							style="max-width: 300px; display: block; margin-bottom: 10px;">
+						<p>
+							<strong>현재 파일:</strong> <span th:text="${postVO.filename}"></span>
+						</p>
+					</div>
+				</div>
+
+				<!-- 새 이미지 -->
+				<div class="form-group">
+					<label for="uploadFile">이미지 업로드</label> <input type="file"
+						id="uploadFile" name="uploadFile">
+				</div>
+
+				<div class="form-actions" >
+					<button type="submit">저장</button>
+					<a href="/community" class="btn-cancel">취소</a>
+				</div>
+			</form>
+		</div>
+	</main>
+</body>
+</html>

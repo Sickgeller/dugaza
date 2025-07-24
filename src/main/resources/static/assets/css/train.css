@@ -1,0 +1,360 @@
+/* 기차 조회 페이지 스타일 */
+.train-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.train-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.train-header h1 {
+    color: #333;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.train-header h1 i {
+    color: #2681ff;
+    margin-right: 10px;
+}
+
+.train-header p {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+.status-notice {
+    background: #fff3cd;
+    color: #856404;
+    padding: 15px 20px;
+    border-radius: 8px;
+    border: 1px solid #ffeaa7;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+}
+
+.status-notice i {
+    color: #f39c12;
+}
+
+/* 검색 섹션 */
+.train-search-section {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+}
+
+.train-search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-group label i {
+    color: #2681ff;
+    margin-right: 8px;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #2681ff;
+    box-shadow: 0 0 0 3px rgba(38, 129, 255, 0.1);
+}
+
+.train-types {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.train-type {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 10px 15px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.train-type:hover {
+    border-color: #2681ff;
+    background: #f8f9fa;
+}
+
+.train-type input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #2681ff;
+}
+
+.train-type span {
+    font-weight: 600;
+    color: #333;
+}
+
+.search-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.search-btn {
+    background: linear-gradient(135deg, #2681ff, #1e6fd9);
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-btn:hover {
+    background: linear-gradient(135deg, #1e6fd9, #1557b0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(38, 129, 255, 0.3);
+}
+
+/* 기차 정보 섹션 */
+.train-info-section {
+    margin-bottom: 40px;
+}
+
+.train-info-section h2 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.train-info-section h2 i {
+    color: #2681ff;
+    margin-right: 10px;
+}
+
+.train-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.info-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+}
+
+.info-icon {
+    font-size: 3rem;
+    color: #2681ff;
+    margin-bottom: 20px;
+}
+
+.info-card h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.info-card p {
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.info-card ul {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+}
+
+.info-card li {
+    color: #666;
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.info-card li:before {
+    content: "•";
+    color: #2681ff;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+/* 인기 노선 */
+.popular-routes {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 40px;
+}
+
+.popular-routes h2 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.popular-routes h2 i {
+    color: #ffc107;
+    margin-right: 10px;
+}
+
+.routes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.route-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.route-card:hover {
+    transform: translateY(-3px);
+}
+
+.route-card h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+.route-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.route-info span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.route-info i {
+    color: #2681ff;
+}
+
+.route-trains {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.train-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.train-badge.ktx {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.train-badge.itx {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.train-badge.mugunghwa {
+    background: #e8f5e8;
+    color: #388e3c;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .train-container {
+        padding: 20px 15px;
+    }
+    
+    .train-search-section {
+        padding: 25px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .train-types {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .train-info-grid,
+    .routes-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .train-header h1 {
+        font-size: 2rem;
+    }
+    
+    .route-info {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+} 

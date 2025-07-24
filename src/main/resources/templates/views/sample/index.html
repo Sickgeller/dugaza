@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>드가자닷컴 - 국내 여행의 모든 것</title>
+    <link rel="stylesheet" th:href="@{/assets/css/sample/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html">드가자닷컴</a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="#" class="active">홈</a></li>
+                    <li><a href="pages/tour.html">관광지</a></li>
+                    <li><a href="pages/restaurant.html">맛집</a></li>
+                    <li><a href="pages/accommodation.html">숙소</a></li>
+                    <li><a href="pages/community.html">커뮤니티</a></li>
+                </ul>
+            </nav>
+            <div class="user-menu">
+                <a th:href="@{/member/login}" class="login-btn">로그인</a>
+                <a href="pages/register.html" class="register-btn">회원가입</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <div class="search-container">
+                <h1>국내 여행의 모든 것, 드가자닷컴</h1>
+                <div class="search-box">
+                    <div class="search-input">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="어디로 가시나요?">
+                    </div>
+                    <button class="search-btn">검색</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="popular-section">
+            <div class="section-container">
+                <h2>인기 여행지</h2>
+                <div class="popular-grid">
+                    <div class="popular-item">
+                        <img src="images/main/seoul.jpg" alt="서울">
+                        <h3>서울</h3>
+                        <p>대한민국의 수도</p>
+                    </div>
+                    <div class="popular-item">
+                        <img src="images/main/busan.jpg" alt="부산">
+                        <h3>부산</h3>
+                        <p>해운대와 광안리</p>
+                    </div>
+                    <div class="popular-item">
+                        <img src="images/main/jeju.jpg" alt="제주">
+                        <h3>제주</h3>
+                        <p>아름다운 섬</p>
+                    </div>
+                    <div class="popular-item">
+                        <img src="images/main/gangwon.jpg" alt="강원">
+                        <h3>강원</h3>
+                        <p>자연과 휴양</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="category-section">
+            <div class="section-container">
+                <h2>카테고리</h2>
+                <div class="category-grid">
+                    <a href="pages/tour.html" class="category-item">
+                        <i class="fas fa-landmark"></i>
+                        <span>관광지</span>
+                    </a>
+                    <a href="pages/restaurant.html" class="category-item">
+                        <i class="fas fa-utensils"></i>
+                        <span>맛집</span>
+                    </a>
+                    <a href="pages/accommodation.html" class="category-item">
+                        <i class="fas fa-bed"></i>
+                        <span>숙소</span>
+                    </a>
+                    <a href="pages/community.html" class="category-item">
+                        <i class="fas fa-users"></i>
+                        <span>커뮤니티</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>드가자닷컴</h3>
+                </div>
+                <div class="footer-links">
+                    <ul>
+                        <li><a href="#">회사소개</a></li>
+                        <li><a href="#">이용약관</a></li>
+                        <li><a href="#">개인정보처리방침</a></li>
+                        <li><a href="#">고객센터</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 드가자닷컴. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

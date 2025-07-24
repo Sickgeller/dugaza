@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>차량 관리</title>
+    <link rel="stylesheet" th:href="@{/assets/css/seller.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div th:replace="~{fragments/car_seller_sidebar :: carSideBar}"></div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>차량 관리</h2>
+                </div>
+                <div class="user-info">
+                    <span th:text="${seller.name} + '님'">홍길동님</span>
+                    <img th:src="@{/assets/images/users/profile1.jpg}" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 통계 요약 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>차량 현황</h3>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>총 차량</h3>
+                            <p th:text="${totalCars} + '대'"></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>대여 가능</h3>
+                            <p th:text="${availableCars} + '대'"></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>승인 대기</h3>
+                            <p th:text="${suspendingCars} + '대'"></p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-car-side"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>대여 중</h3>
+                            <p th:text="${rentedCars} + '대'"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 차량 목록 -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>차량 목록</h3>
+                    <button class="btn-primary" onclick="location.href='/seller/car/register'">
+                        <i class="fas fa-plus"></i> 차량 등록
+                    </button>
+                </div>
+
+                <!-- 차량 목록 테이블 -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>차량</th>
+                                <th>차종</th>
+                                <th>차량번호</th>
+                                <th>연식</th>
+                                <th>상태</th>
+                                <th>일일 요금</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(cars)}">
+                                <td colspan="7" class="text-center">등록된 차량이 없습니다.</td>
+                            </tr>
+                            <tr th:each="car : ${cars}">
+                                <td>
+                                    <div class="car-info">
+                                        <img th:if="${car.carImage != null and car.carImage != ''}" 
+                                             th:src="@{/assets/upload/} + ${car.carImage}" 
+                                             alt="차량 이미지" class="car-image">
+                                        <img th:unless="${car.carImage != null and car.carImage != ''}" 
+                                             th:src="@{/assets/images/car/default-car.png}"
+                                             alt="기본 차량 이미지" class="car-image">
+                                        <div>
+                                            <strong th:text="${car.carName}">차량명</strong>
+                                            <small th:text="${car.carColor}">색상</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${car.carType}">차종</td>
+                                <td th:text="${car.carNumber}">차량번호</td>
+                                <td th:text="${car.carYear} + '년'">연식</td>
+                                <td>
+                                    <span th:class="${car.status == 'AVAILABLE' ? 'status available' : car.status == 'SUSPENDING' ? 'status suspending' : car.status == 'INAVAILABLE' ? 'status inavailable' : car.status == 'DELETED' ? 'status deleted' : 'status rented'}" 
+                                          th:text="${car.status == 'AVAILABLE' ? '대여 가능' : car.status == 'SUSPENDING' ? '승인 대기' : car.status == 'INAVAILABLE' ? '대여 불가' : car.status == 'DELETED' ? '삭제됨' : '대여중'}">상태</span>
+                                </td>
+                                <td th:text="${#numbers.formatInteger(car.carPrice, 3, 'COMMA')} + '원'">일일 요금</td>
+                                <td>
+                                    <a th:href="@{/seller/car/edit/{carId}(carId=${car.carId})}" class="btn-icon" title="수정">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button class="btn-icon" title="삭제" th:onclick="'deleteCar(' + ${car.carId} + ')'">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/assets/js/jquery-3.7.1.min.js}"></script>
+    <script th:src="@{/assets/js/customjs.js}"></script>
+    <script>
+        function deleteCar(carId) {
+            if (confirm('정말로 이 차량을 삭제하시겠습니까?')) {
+                fetch(`/seller/car/delete/${carId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('삭제에 실패했습니다.');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

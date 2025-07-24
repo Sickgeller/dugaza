@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>보험 관리 - 렌터카 판매자</title>
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>렌터카 관리자</h1>
+                <p>렌터카 판매자 대시보드</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="car-seller.html"><i class="fas fa-home"></i><span>대시보드</span></a></li>
+                    <li><a href="car-management.html"><i class="fas fa-car"></i><span>차량 관리</span></a></li>
+                    <li><a href="car-reservations.html"><i class="fas fa-calendar-check"></i><span>예약 관리</span></a></li>
+                    <li><a href="car-review.html"><i class="fas fa-star"></i><span>리뷰 관리</span></a></li>
+                    <li><a href="car-promotions.html"><i class="fas fa-tags"></i><span>프로모션 관리</span></a></li>
+                    <li><a href="car-sales.html"><i class="fas fa-chart-line"></i><span>매출 관리</span></a></li>
+                    <li><a href="../../sample/car-settings.html"><i class="fas fa-cog"></i><span>설정</span></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="main-content">
+            <!-- 헤더 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+                    <h2>보험 관리</h2>
+                </div>
+                <div class="user-info">
+                    <span>제주렌트카님</span>
+                    <img src="../images/users/profile1.jpg" alt="프로필 이미지">
+                </div>
+            </div>
+
+            <!-- 보험 통계 -->
+            <div class="content-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>보험 가입 차량</h3>
+                            <p>45대</p>
+                            <span class="stat-change">전체 차량</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>보험 만료 예정</h3>
+                            <p>3대</p>
+                            <span class="stat-change warning">이번 달</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-car-crash"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>보험 처리 건수</h3>
+                            <p>8건</p>
+                            <span class="stat-change">이번 달</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-won-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>보험료</h3>
+                            <p>4,850,000원</p>
+                            <span class="stat-change">이번 달</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 보험 검색 및 필터 -->
+            <div class="content-section">
+                <div class="search-filter-container">
+                    <div class="search-box">
+                        <input type="text" placeholder="차량번호, 보험증권번호 검색">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="filter-options">
+                        <select>
+                            <option value="">보험사</option>
+                            <option value="samsung">삼성화재</option>
+                            <option value="hyundai">현대해상</option>
+                            <option value="db">DB손해보험</option>
+                            <option value="kb">KB손해보험</option>
+                        </select>
+                        <select>
+                            <option value="">보험 유형</option>
+                            <option value="liability">대인배상</option>
+                            <option value="property">대물배상</option>
+                            <option value="comprehensive">종합보험</option>
+                        </select>
+                        <select>
+                            <option value="">상태</option>
+                            <option value="active">유효</option>
+                            <option value="expiring">만료예정</option>
+                            <option value="expired">만료</option>
+                        </select>
+                        <input type="date" placeholder="시작일">
+                        <input type="date" placeholder="종료일">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 보험 목록 -->
+            <div class="content-section">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>차량정보</th>
+                                <th>보험사</th>
+                                <th>증권번호</th>
+                                <th>보험유형</th>
+                                <th>보험기간</th>
+                                <th>월 보험료</th>
+                                <th>보상한도</th>
+                                <th>상태</th>
+                                <th>관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="car-info">
+                                        <img src="../images/cars/morning.jpg" alt="모닝 JA">
+                                        <div>
+                                            <strong>모닝 JA</strong>
+                                            <small>123가4567</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>삼성화재</td>
+                                <td>2024-12345678</td>
+                                <td>종합보험</td>
+                                <td>
+                                    <div class="insurance-period">
+                                        <div>2024-01-01</div>
+                                        <div>2024-12-31</div>
+                                    </div>
+                                </td>
+                                <td>85,000원</td>
+                                <td>
+                                    <div class="coverage-info">
+                                        <div>대인: 무한</div>
+                                        <div>대물: 2억원</div>
+                                    </div>
+                                </td>
+                                <td><span class="status available">유효</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="갱신"><i class="fas fa-sync-alt"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="car-info">
+                                        <img src="../images/cars/avante.jpg" alt="아반떼 CN7">
+                                        <div>
+                                            <strong>아반떼 CN7</strong>
+                                            <small>234가5678</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>현대해상</td>
+                                <td>2024-23456789</td>
+                                <td>종합보험</td>
+                                <td>
+                                    <div class="insurance-period">
+                                        <div>2024-02-01</div>
+                                        <div>2025-01-31</div>
+                                    </div>
+                                </td>
+                                <td>95,000원</td>
+                                <td>
+                                    <div class="coverage-info">
+                                        <div>대인: 무한</div>
+                                        <div>대물: 3억원</div>
+                                    </div>
+                                </td>
+                                <td><span class="status available">유효</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="갱신"><i class="fas fa-sync-alt"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="car-info">
+                                        <img src="../images/cars/tucson.jpg" alt="투싼 NX4">
+                                        <div>
+                                            <strong>투싼 NX4</strong>
+                                            <small>345가6789</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>DB손해보험</td>
+                                <td>2024-34567890</td>
+                                <td>종합보험</td>
+                                <td>
+                                    <div class="insurance-period">
+                                        <div>2024-01-15</div>
+                                        <div>2024-02-28</div>
+                                    </div>
+                                </td>
+                                <td>120,000원</td>
+                                <td>
+                                    <div class="coverage-info">
+                                        <div>대인: 무한</div>
+                                        <div>대물: 5억원</div>
+                                    </div>
+                                </td>
+                                <td><span class="status warning">만료예정</span></td>
+                                <td>
+                                    <button class="btn-icon" title="상세정보"><i class="fas fa-info-circle"></i></button>
+                                    <button class="btn-icon" title="수정"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon" title="갱신"><i class="fas fa-sync-alt"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- 페이지네이션 -->
+                <div class="pagination">
+                    <button class="btn-page"><i class="fas fa-angle-double-left"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-left"></i></button>
+                    <button class="btn-page active">1</button>
+                    <button class="btn-page">2</button>
+                    <button class="btn-page">3</button>
+                    <button class="btn-page">4</button>
+                    <button class="btn-page">5</button>
+                    <button class="btn-page"><i class="fas fa-angle-right"></i></button>
+                    <button class="btn-page"><i class="fas fa-angle-double-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+</body>
+</html> 

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_basic}">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/assets/css/qnaResponse.css}">
+    <title>관리자 문의 목록</title>
+</head>
+
+<body id="response-body">
+<div layout:fragment="content" class="qna-response-wrapper">
+    <h2 class="qna-response-title">문의 목록 (관리자)</h2>
+    <table border="1" class="qna-response-table">
+        <thead>
+        <tr>
+            <th class="qna-response-th">번호</th>
+            <th class="qna-response-th">카테고리</th>
+            <th class="qna-response-th">제목</th>
+            <th class="qna-response-th">작성자 ID</th>
+            <th class="qna-response-th">작성일</th>
+            <th class="qna-response-th">답변 여부</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="qna : ${qnaList}">
+            <td class="qna-response-td" th:text="${qna.qna_id}">1</td>
+            <td class="qna-response-td" th:text="${qna.category}">일반</td>
+            <td class="qna-response-td">
+                <a th:href="@{|/admin/qna/detail/${qna.qna_id}|}" th:text="${qna.title}">제목</a>
+            </td>
+            <td class="qna-response-td" th:text="${qna.member_id}">사용자</td>
+            <td class="qna-response-td" th:text="${#dates.format(qna.created_at, 'yyyy-MM-dd HH:mm')}">날짜</td>
+            <td class="qna-response-td" th:text="${qna.is_answered?.toUpperCase() == 'Y' ? '답변 완료' : '미답변'}">답변 여부</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

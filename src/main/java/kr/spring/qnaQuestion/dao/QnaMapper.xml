@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper   
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+<mapper namespace="kr.spring.qnaQuestion.dao.QnaMapper">
+	<insert id="insertQuestion" parameterType="kr.spring.qnaQuestion.vo.QnaQuestionVO">
+		INSERT INTO qna_question 
+    	(qna_id, category, title, content, member_id, created_at, is_answered)
+  				VALUES 
+			    (qna_question_seq.NEXTVAL, 
+			     #{category, jdbcType=VARCHAR},
+			     #{title, jdbcType=VARCHAR}, 
+			     #{content, jdbcType=CLOB}, 
+			     #{member_id, jdbcType=NUMERIC}, 
+			     SYSDATE,
+			     #{is_answered, jdbcType=CHAR})
+	</insert>
+	
+	<select id="getQnaList" resultType="kr.spring.qnaQuestion.vo.QnaQuestionVO">
+		    SELECT qna_id, category, title, content, member_id, created_at, is_answered
+		    FROM qna_question
+		    ORDER BY created_at DESC
+	</select>
+	
+	<select id="getQnaListByMember" resultType="kr.spring.qnaQuestion.vo.QnaQuestionVO">
+	    SELECT qna_id, category, title, content, member_id, created_at, is_answered
+	    FROM qna_question
+	    WHERE member_id = #{member_id}
+	    ORDER BY created_at DESC
+	</select>
+	
+
+	<select id="getQnaDetail" resultType="kr.spring.qnaQuestion.vo.QnaQuestionVO">
+	    SELECT qna_id, category, title, content, member_id, created_at, is_answered
+	    FROM qna_question
+	    WHERE qna_id = #{qna_id}
+	</select>
+	
+	
+	<select id="selectAllQna" resultType="QnaQuestionVO">
+	    SELECT * FROM qna_question
+	    ORDER BY created_at DESC
+	</select>
+	
+	<select id="getAllQnaList" resultType="kr.spring.qnaQuestion.vo.QnaQuestionVO">
+    SELECT * FROM qna_question ORDER BY created_at DESC
+	</select>
+	
+	<insert id="insertResponse">
+	  INSERT INTO qna_response (
+	    response_id,
+	    qna_id,
+	    member_id,
+	    content,
+	    created_at
+	  ) VALUES (
+	    qna_response_seq.NEXTVAL,
+	    #{qna_id},
+	    #{member_id},
+	    #{content},
+	    SYSDATE
+	  )
+	</insert>
+	
+	<!-- 문의글에 답변 여부 업데이트 -->
+	<update id="updateIsAnswered">
+	  UPDATE qna_question
+	  SET is_answered = #{is_answered}
+	  WHERE qna_id = #{qna_id}
+	</update>
+	
+	<!-- 특정 문의에 대한 답변 1개 조회 -->
+	<select id="getAnswerByQnaId" resultType="kr.spring.qnaResponse.vo.QnaResponseVO">
+	  SELECT *
+	  FROM qna_response
+	  WHERE qna_id = #{qna_id}
+	</select>
+	
+	<select id="getQnaById" resultType="kr.spring.qnaQuestion.vo.QnaQuestionVO">
+	  SELECT *
+	  FROM qna_question
+	  WHERE qna_id = #{qnaId}
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

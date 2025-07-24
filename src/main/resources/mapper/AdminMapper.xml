@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.spring.admin.dao.AdminMapper">
+    
+    <resultMap type="kr.spring.seller.vo.SellerVO" id="sellerMap">
+        <id property="sellerId" column="SELLER_ID"/>
+        <result property="id" column="ID"/>
+        <result property="name" column="NAME"/>
+        <result property="businessName" column="BUSINESS_NAME"/>
+        <result property="email" column="EMAIL"/>
+        <result property="license" column="LICENSE"/>
+        <result property="sellerType" column="SELLER_TYPE"/>
+        <result property="status" column="STATUS"/>
+        <result property="address" column="ADDRESS"/>
+        <result property="addressDetail" column="ADDRESS_DETAIL"/>
+        <result property="phone" column="PHONE"/>
+        <result property="secondaryPhone" column="SECONDARY_PHONE"/>
+        <result property="role" column="ROLE"/>
+        <result property="createdAt" column="CREATED_AT"/>
+        <result property="updatedAt" column="UPDATED_AT"/>
+    </resultMap>
+    
+    <!-- 전체 판매자 목록 조회 -->
+    <select id="selectAllSellers" resultMap="sellerMap">
+        SELECT 
+            SELLER_ID, ID, NAME, BUSINESS_NAME, EMAIL, LICENSE,
+            SELLER_TYPE, STATUS, ADDRESS, ADDRESS_DETAIL, PHONE,
+            SECONDARY_PHONE, ROLE, CREATED_AT, UPDATED_AT
+        FROM SELLER
+        ORDER BY CREATED_AT DESC
+    </select>
+    
+    <!-- 판매자 타입별 목록 조회 -->
+    <select id="selectSellersByType" parameterType="string" resultMap="sellerMap">
+        SELECT 
+            SELLER_ID, ID, NAME, BUSINESS_NAME, EMAIL, LICENSE,
+            SELLER_TYPE, STATUS, ADDRESS, ADDRESS_DETAIL, PHONE,
+            SECONDARY_PHONE, ROLE, CREATED_AT, UPDATED_AT
+        FROM SELLER
+        WHERE SELLER_TYPE = #{sellerType}
+        ORDER BY CREATED_AT DESC
+    </select>
+    
+    <!-- 판매자 상태별 목록 조회 -->
+    <select id="selectSellersByStatus" parameterType="string" resultMap="sellerMap">
+        SELECT 
+            SELLER_ID, ID, NAME, BUSINESS_NAME, EMAIL, LICENSE,
+            SELLER_TYPE, STATUS, ADDRESS, ADDRESS_DETAIL, PHONE,
+            SECONDARY_PHONE, ROLE, CREATED_AT, UPDATED_AT
+        FROM SELLER
+        WHERE STATUS = #{status}
+        ORDER BY CREATED_AT DESC
+    </select>
+    
+    <!-- 판매자 검색 -->
+    <select id="searchSellers" resultMap="sellerMap">
+        SELECT 
+            SELLER_ID, ID, NAME, BUSINESS_NAME, EMAIL, LICENSE,
+            SELLER_TYPE, STATUS, ADDRESS, ADDRESS_DETAIL, PHONE,
+            SECONDARY_PHONE, ROLE, CREATED_AT, UPDATED_AT
+        FROM SELLER
+        WHERE 1=1
+        <if test="searchType == 'name'">
+            AND (NAME LIKE '%' || #{keyword} || '%' OR BUSINESS_NAME LIKE '%' || #{keyword} || '%')
+        </if>
+        <if test="searchType == 'email'">
+            AND EMAIL LIKE '%' || #{keyword} || '%'
+        </if>
+        <if test="searchType == 'license'">
+            AND LICENSE LIKE '%' || #{keyword} || '%'
+        </if>
+        <if test="searchType == 'phone'">
+            AND (PHONE LIKE '%' || #{keyword} || '%' OR SECONDARY_PHONE LIKE '%' || #{keyword} || '%')
+        </if>
+        ORDER BY CREATED_AT DESC
+    </select>
+    
+    <!-- 검색 및 필터 조건으로 판매자 목록 조회 -->
+    <select id="selectSellersWithFilter" parameterType="map" resultMap="sellerMap">
+        SELECT 
+            SELLER_ID, ID, NAME, BUSINESS_NAME, EMAIL, LICENSE,
+            SELLER_TYPE, STATUS, ADDRESS, ADDRESS_DETAIL, PHONE,
+            SECONDARY_PHONE, ROLE, CREATED_AT, UPDATED_AT
+        FROM SELLER
+        WHERE 1=1
+        <if test="keyword != null and keyword != ''">
+            AND (NAME LIKE '%' || #{keyword} || '%' 
+                 OR BUSINESS_NAME LIKE '%' || #{keyword} || '%'
+                 OR EMAIL LIKE '%' || #{keyword} || '%'
+                 OR LICENSE LIKE '%' || #{keyword} || '%'
+                 OR PHONE LIKE '%' || #{keyword} || '%')
+        </if>
+        <if test="sellerType != null and sellerType != ''">
+            AND SELLER_TYPE = #{sellerType}
+        </if>
+        <if test="status != null and status != ''">
+            AND STATUS = #{status}
+        </if>
+        <choose>
+            <when test="sort == 'name'">
+                ORDER BY NAME ASC
+            </when>
+            <when test="sort == 'businessName'">
+                ORDER BY BUSINESS_NAME ASC
+            </when>
+            <when test="sort == 'createdAt'">
+                ORDER BY CREATED_AT DESC
+            </when>
+            <otherwise>
+                ORDER BY CREATED_AT DESC
+            </otherwise>
+        </choose>
+    </select>
+    
+    <!-- 판매자 상태 업데이트 -->
+    <update id="updateSellerStatus">
+        UPDATE SELLER 
+        SET STATUS = #{status}, UPDATED_AT = SYSDATE
+        WHERE SELLER_ID = #{sellerId}
+    </update>
+    
+    <!-- 판매자 통계 조회 -->
+    <select id="getSellerStatistics" resultType="map">
+        SELECT 
+            COUNT(*) as totalSellers,
+            SUM(CASE WHEN STATUS = 'ACTIVE' THEN 1 ELSE 0 END) as activeSellers,
+            SUM(CASE WHEN STATUS = 'PENDING' THEN 1 ELSE 0 END) as pendingSellers,
+            SUM(CASE WHEN STATUS = 'SUSPENDED' THEN 1 ELSE 0 END) as suspendedSellers,
+            SUM(CASE WHEN SELLER_TYPE = 'car' THEN 1 ELSE 0 END) as carSellers,
+            SUM(CASE WHEN SELLER_TYPE = 'house' THEN 1 ELSE 0 END) as houseSellers
+        FROM SELLER
+    </select>
+    
+    <!-- 판매자 타입별 통계 조회 -->
+    <select id="getSellerTypeStatistics" resultType="map">
+        SELECT 
+            SUM(CASE WHEN SELLER_TYPE = 'car' THEN 1 ELSE 0 END) as carSellers,
+            SUM(CASE WHEN SELLER_TYPE = 'house' THEN 1 ELSE 0 END) as houseSellers
+        FROM SELLER
+    </select>
+    
+    <!-- 승인 대기 중인 차량 목록 조회 -->
+    <select id="selectPendingCars" resultType="map">
+        SELECT 
+            c.CAR_ID as carId,
+            c.MAKER as maker,
+            c.MODEL as model,
+            c.LICENSE_PLATE as licensePlate,
+            c.YEAR as year,
+            c.CAPACITY as capacity,
+            c.PRICE as price,
+            c.STATUS as status,
+            c.IMAGE as image,
+            c.CREATED_AT as createdAt,
+            s.SELLER_ID as sellerId,
+            s.NAME as sellerName,
+            s.EMAIL as sellerEmail
+        FROM CAR c
+        JOIN SELLER s ON c.SELLER_ID = s.SELLER_ID
+        WHERE c.STATUS = 'suspending'
+        ORDER BY c.CREATED_AT DESC
+    </select>
+</mapper> 
