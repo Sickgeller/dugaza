@@ -2,14 +2,6 @@
 
 DUGAZA는 여행 정보 통합 플랫폼으로, 사용자와 판매자로 크게 이루어져있으며 공공 API를 기반으로한 여행정보 제공 및 관련 상품 (렌터카, 숙소 판매등등) 에 관련된 서비스를 제공하는 통합 플랫폼입니다.
 
-
-<h3>단순 기능 구현 (CRUD)</h3>
-
-
-
-<h3>어려움이 있었던 기능 구현 부분</h3>
-
-
 <details>
 <summary># 🔐 DUGAZA Spring Security 시스템</summary>
 
@@ -55,6 +47,8 @@ Spring Security를 활용하여 **다중 사용자 타입**과 **소셜 로그�
 ---
 
 ## 🔧 핵심 컴포넌트
+
+---
 <details>
 <summary>🎭 다중 Security Filter Chain</summary>
 
@@ -114,6 +108,7 @@ public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) {
 }
 ```
 </details>
+</details>
 <details>
 <summary>👤 통합 사용자 관리 (CustomUserDetails)</summary>
 
@@ -150,7 +145,7 @@ public class CustomUserDetails implements UserDetails {
 }
 ```
 </details>
-
+</details>
 <details>
 <summary>🔗 OAuth2 소셜 로그인 (카카오)</summary>
 
@@ -204,7 +199,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
    └─ No → 로그인 성공
 ```
 </details>
-
+</details>
 <details>
 <summary>🎯 인증 핸들러</summary>
 
@@ -270,16 +265,11 @@ public class CustomFailureHandler implements AuthenticationFailureHandler {
     }
 }
 ```
-
----
 </details>
----
-
 </details>
-
 
 <details>
-<summary>#🌐 DUGAZA API 시스템</summary>
+<summary>🌐 DUGAZA API 시스템</summary>
 
 > **"다양한 외부 API를 하나의 인터페이스로, 성능과 안정성을 모두 잡다"**
 
@@ -331,12 +321,10 @@ DUGAZA는 **여행 정보 통합 플랫폼**으로, 공공 관광 API, 기차, �
 
 ## 🔧 핵심 컴포넌트
 
+---
 <details>
 <summary>🎭 다중 HTTP 클라이언트 아키텍처</summary>
-
-    <br>
-
-    #### **WebClient, RestClient, RestTemplate등등 구현방식을 선택할수있는 BaseApiClient 인터페이스**
+#### **WebClient, RestClient, RestTemplate등등 구현방식을 선택할수있는 BaseApiClient 인터페이스**
 ```java
 public interface BaseApiClient {
     /**
@@ -470,9 +458,8 @@ public class WebClientBaseApiClient implements BaseApiClient {
     }
 }
 ```
----
-</details>
 
+</details>
 <details>
 <summary>🎯 전문화된 API 클라이언트</summary>
 
@@ -646,7 +633,7 @@ public class ExpressBusApiClient {
 </details>
 
 <details>
-<summary># 🔍 DUGAZA AOP 시스템</summary>
+<summary>🔍 DUGAZA AOP 시스템</summary>
 
 ## 🎯 개요
 
@@ -695,6 +682,7 @@ public class ExpressBusApiClient {
 
 ## 🔧 핵심 컴포넌트
 
+---
 <details>
 <summary>🎯 Controller Layer AOP</summary>
 
