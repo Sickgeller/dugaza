@@ -227,19 +227,29 @@ public class TrainApiClient {
 ```
 
 
-<img width="776" height="850" alt="기차 노선 검색 1" src="https://github.com/user-attachments/assets/f21507ac-f393-433d-b9da-865f5ebfb722" />
-<img width="1610" height="122" alt="image" src="https://github.com/user-attachments/assets/478d446a-7999-4360-bb20-c4fc2412974f" />
+<img width="776" height="850" alt="기차 노선 검색 1" src="https://github.com/user-attachments/assets/f21507ac-f393-433d-b9da-865f5ebfb722" /><br>
+<img width="1610" height="122" alt="image" src="https://github.com/user-attachments/assets/478d446a-7999-4360-bb20-c4fc2412974f" /><br>
 비동기방식으로 도시목록 로딩후 도시선택 이후 비동기 방식으로 해당 지역내의 역을 로딩
 
-<img width="838" height="850" alt="image" src="https://github.com/user-attachments/assets/d4061db0-2728-4563-965f-1fb7b5ef2336" />
+<img width="838" height="850" alt="image" src="https://github.com/user-attachments/assets/d4061db0-2728-4563-965f-1fb7b5ef2336" /><br>
 출발역과 도착역 모두선택후 검색 클릭시 결과에 맞는 역 결과 등장
-<img width="751" height="850" alt="image" src="https://github.com/user-attachments/assets/1bd08229-431d-4482-b4fc-b1d46e4b3392" />
+<img width="751" height="850" alt="image" src="https://github.com/user-attachments/assets/1bd08229-431d-4482-b4fc-b1d46e4b3392" /><br>
 
 </details>
 
-<details>
-<summary>🚌 고속버스 API 클라이언트</summary>
+<details>고속버스 노선 검색</summary>
 
+<img width="802" height="819" alt="image" src="https://github.com/user-attachments/assets/533f3710-5539-4d70-b953-f401048b554a" />
+<img width="1602" height="93" alt="image" src="https://github.com/user-attachments/assets/6698b276-d16a-496b-8a68-d4af8726c7e8" /><br>
+비동기 방식으로 페이지 로드시 지역을 선택
+<img width="1682" height="60" alt="image" src="https://github.com/user-attachments/assets/d5ab0b9f-c397-4395-8e6c-1867b9ce7eea" /><br>
+비동기 방식으로 도시 지역 선택시 지역에 해당하는 터미널 출력 이후 터미널 선택후 검색시
+
+<img width="578" height="377" alt="image" src="https://github.com/user-attachments/assets/0f8e045e-e033-4e3d-9b12-2ec53814de5a" />
+
+해당 파라미터값에 맞는 결과가 나오게됨. 고속버스는 API에서 노선검색이 편해서 더 쉬웠음
+
+</details>
 
 
 ---
@@ -394,7 +404,6 @@ function searchBusRoutes() {
 ---
 
 
-</details>
 </details>
 
 <h3>구현에 어려움이 있었던 부분들</h3>
