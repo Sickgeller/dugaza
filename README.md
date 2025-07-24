@@ -268,7 +268,7 @@ public class CustomFailureHandler implements AuthenticationFailureHandler {
 }
 ```
 </details>
-###✅ **성과**
+### ✅ **성과**
 - **다중 사용자 타입**: Member/Seller 완벽 분리 관리
 - **소셜 로그인**: 카카오 OAuth2 완전 통합
 - **보안 강화**: CSRF, 세션 관리, Remember-Me
