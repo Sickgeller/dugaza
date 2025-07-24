@@ -106,7 +106,6 @@ public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) {
 }
 ```
 </details>
-</details>
 <details>
 <summary>👤 통합 사용자 관리 (CustomUserDetails)</summary>
 
@@ -143,7 +142,7 @@ public class CustomUserDetails implements UserDetails {
 }
 ```
 </details>
-</details>
+
 <details>
 <summary>🔗 OAuth2 소셜 로그인 (카카오)</summary>
 
@@ -197,7 +196,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
    └─ No → 로그인 성공
 ```
 </details>
-</details>
+
 <details>
 <summary>🎯 인증 핸들러</summary>
 
