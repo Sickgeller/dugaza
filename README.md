@@ -101,7 +101,8 @@ public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) {
 }
 ```
 </details>
-### 2. 👤 통합 사용자 관리 (CustomUserDetails)
+<details><summary>
+### 2. 👤 통합 사용자 관리 (CustomUserDetails)</summary>
 
 #### **다중 사용자 타입 지원**
 ```java
@@ -135,8 +136,9 @@ public class CustomUserDetails implements UserDetails {
     }
 }
 ```
-
-### 3. 🔗 OAuth2 소셜 로그인 (카카오)
+</details>
+<details><summary>
+### 3. 🔗 OAuth2 소셜 로그인 (카카오)</summary>
 
 #### **카카오 로그인 플로우**
 ```java
@@ -187,7 +189,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
    ├─ Yes → 통합 페이지로 이동 (기존 계정 연동)
    └─ No → 로그인 성공
 ```
-
+</details>
 ### 4. 🎯 인증 핸들러
 
 #### **성공 핸들러 (역할별 리다이렉트)**
