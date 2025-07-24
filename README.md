@@ -42,8 +42,8 @@ DUGAZA는 여행 정보 통합 플랫폼으로, **다중 사용자 타입**과 *
 ---
 
 ## 🔧 핵심 컴포넌트
-
-### 1. 🎭 다중 Security Filter Chain
+<details>
+<summary>### 1. 🎭 다중 Security Filter Chain</summary>
 
 #### **웹 애플리케이션용 Filter Chain**
 ```java
@@ -100,7 +100,7 @@ public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) {
         .build();
 }
 ```
-
+</details>
 ### 2. 👤 통합 사용자 관리 (CustomUserDetails)
 
 #### **다중 사용자 타입 지원**
