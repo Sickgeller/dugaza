@@ -274,7 +274,7 @@ public class CustomFailureHandler implements AuthenticationFailureHandler {
 </details>
 
 <details>
-<summary>🌐 DUGAZA API 시스템</summary>
+<summary>#🌐 DUGAZA API 시스템</summary>
 
 > **"다양한 외부 API를 하나의 인터페이스로, 성능과 안정성을 모두 잡다"**
 
@@ -640,7 +640,7 @@ public class ExpressBusApiClient {
 </details>
 
 <details>
-<summary>🔍 DUGAZA AOP 시스템</summary>
+<summary># 🔍 DUGAZA AOP 시스템</summary>
 
 ## 🎯 개요
 
