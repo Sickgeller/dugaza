@@ -196,7 +196,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
    ├─ Yes → 통합 페이지로 이동 (기존 계정 연동)
    └─ No → 로그인 성공
 ```
-</details>
+
 </details>
 
 
