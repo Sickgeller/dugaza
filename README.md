@@ -190,7 +190,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
    └─ No → 로그인 성공
 ```
 </details>
-### 4. 🎯 인증 핸들러
+<details><summary>
+### 4. 🎯 인증 핸들러</summary>
 
 #### **성공 핸들러 (역할별 리다이렉트)**
 ```java
@@ -254,7 +255,7 @@ public class CustomFailureHandler implements AuthenticationFailureHandler {
     }
 }
 ```
-
+</details>
 ---
 
 ## 🔐 보안 정책
