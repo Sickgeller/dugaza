@@ -464,7 +464,7 @@ public class WebClientBaseApiClient implements BaseApiClient {
 ### 2. 🎯 전문화된 API 클라이언트
     </summary>
 
-#### **관광청 API 클라이언트**
+#### **공통 관광 데이터 API 클라이언트**
 ```java
 @Slf4j
 @Component
