@@ -1,4 +1,4 @@
-<img width="776" height="847" alt="image" src="https://github.com/user-attachments/assets/eaeb6791-5b94-4d52-8fed-36923138daa6" />## 🎯 프로젝트 개요
+## 🎯 프로젝트 개요
 
 DUGAZA는 여행 정보 통합 플랫폼으로, 사용자와 판매자로 크게 이루어져있으며 공공 API를 기반으로한 여행정보 제공 및 관련 상품 (렌터카, 숙소 판매등등) 에 관련된 서비스를 제공하는 통합 플랫폼입니다.
 
