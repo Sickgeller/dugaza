@@ -8,7 +8,7 @@ DUGAZA는 여행 정보 통합 플랫폼으로, 사용자와 판매자로 크게
 > **"복잡한 보안을 간단하게, 강력한 인증을 유연하게"**
 
 ## 🎯 개요
-<br>
+
 Spring Security를 활용하여 **다중 사용자 타입**과 **소셜 로그인**을 지원하는 고도화된 인증 / 인가 시스템을 구축했습니다.
 
 ### 🌟 핵심 특징
@@ -274,8 +274,8 @@ public class CustomFailureHandler implements AuthenticationFailureHandler {
 </details>
 
 <details>
-<summary># 🌐 DUGAZA API 시스템</summary>
-<br>
+<summary>🌐 DUGAZA API 시스템</summary>
+
 > **"다양한 외부 API를 하나의 인터페이스로, 성능과 안정성을 모두 잡다"**
 
 ## 🎯 프로젝트 개요
@@ -636,8 +636,10 @@ public class ExpressBusApiClient {
 - **확장성**: 새로운 API 쉽게 추가 가능
 - **안정성**: 비동기 로깅, 예외 처리, 타임아웃 설정
 
+</details>
+
 <details>
-<summary> 🔍 DUGAZA AOP 시스템</summary>
+<summary>🔍 DUGAZA AOP 시스템</summary>
 
 ## 🎯 개요
 
