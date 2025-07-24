@@ -2,8 +2,406 @@
 
 DUGAZA는 여행 정보 통합 플랫폼으로, 사용자와 판매자로 크게 이루어져있으며 공공 API를 기반으로한 여행정보 제공 및 관련 상품 (렌터카, 숙소 판매등등) 에 관련된 서비스를 제공하는 통합 플랫폼입니다.
 
+<h3>단순 구현 (CRUD)</h3>
 <details>
-<summary># 🔐 DUGAZA Spring Security 시스템</summary>
+    <summary></summary>
+    # 🚄🚌 DUGAZA 교통 시스템
+    
+## 🎯 개요
+
+**기차(KTX, ITX, 무궁화호)**와 **고속버스** 정보를 통합하여 당일 어떤 노선이 얼마에 있는지를 보여주는 화면입니다.
+
+### 🌟 핵심 특징
+- **실시간 교통 정보**: 기차와 고속버스 실시간 조회
+- **통합 교통 서비스**: 하나의 플랫폼에서 모든 교통수단 정보 제공
+- **사용자 친화적 UI**: 직관적인 검색 인터페이스
+- **API 기반 데이터**: 공공 교통 API를 활용한 정확한 정보
+- **허브역 기반 검색**: 하위역 간 검색을 위한 허브역 중계 시스템
+
+---
+
+## 🏗️ 아키텍처 구조
+
+### 🚄 **기차 허브역 시스템 - 핵심 **
+기차 노선 검색 시스템의 가장 소개할만한 특징은 **허브역 기반 검색 시스템**입니다. 
+국토교통부(Tago) 열차정보 API에서는 하위역 간 직접 검색(여수 -> 의정부 등 중간에 "핵심역"을 지나고 "핵심역"의 부속 역들을 직접 검색하는것)을 지원하지 않기 때문에, 
+17개의 핵심 허브역을 지정하여 **하위역 → 허브역 → 허브역 → 하위역** 형태의 모든 경로를 미리 계산하여 DB에 저장하였습니다다.
+
+
+### 📊 전체 교통 시스템 구조도
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    DUGAZA Transportation System              │
+├─────────────────────────────────────────────────────────────┤
+│  🎯 Controller Layer                                       │
+│  ├── TransportationController (통합 컨트롤러)              │
+│  ├── 기차/버스 페이지 라우팅                                │
+│  └── REST API 엔드포인트                                    │
+├─────────────────────────────────────────────────────────────┤
+│  🔌 API Client Layer                                       │
+│  ├── TrainApiClient (기차 API)                             │
+│  ├── ExpressBusApiClient (고속버스 API)                    │
+│  └── BaseApiClient (공통 API 인터페이스)                   │
+├─────────────────────────────────────────────────────────────┤
+│  📊 Service Layer                                          │
+│  ├── TrainService (기차 서비스)                            │
+│  ├── ExpressBusService (고속버스 서비스)                   │
+│  └── 데이터 처리 및 비즈니스 로직                           │
+├─────────────────────────────────────────────────────────────┤
+│  🗄️ Data Access Layer                                     │
+│  ├── TrainMapper (기차 데이터)                             │
+│  ├── ExpressBusTerminalApiMapper (버스 터미널)             │
+│  └── TrainCityApiMapper (도시 정보)                        │
+├─────────────────────────────────────────────────────────────┤
+│  🌐 External API                                           │
+│  ├── 기차 API (공공데이터포털)                             │
+│  ├── 고속버스 API (공공데이터포털)                         │
+│  └── 실시간 교통 정보                                       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🔧 핵심 컴포넌트
+
+<details>
+<summary>🎯 통합 교통 컨트롤러</summary>
+
+#### **TransportationController - 교통 서비스 통합 관리**
+```java
+@Slf4j
+@Controller
+@RequestMapping("/transportation")
+@RequiredArgsConstructor
+public class TransportationController {
+
+    private final ExpressBusApiClient expressBusApiClient;
+    private final ExpressBusTerminalApiMapper expressBusTerminalApiMapper;
+    private final TrainCityApiMapper trainCityApiMapper;
+    private final TrainService trainService;
+
+    // 메인 교통 페이지
+    @GetMapping("")
+    public String transportationMain() {
+        return "views/transportation/transportation";
+    }
+    
+    // 기차 조회 페이지
+    @GetMapping("/train")
+    public String trainForm() {
+        return "views/transportation/train";
+    }
+    
+    // 버스 조회 페이지
+    @GetMapping("/bus")
+    public String busForm() { 
+        return "views/transportation/bus";
+    }
+}
+```
+
+#### **기차 관련 API 엔드포인트**
+```java
+// 기차 도시 목록 조회
+@GetMapping("/train/cities")
+@ResponseBody
+public ResponseEntity<List<TrainCityVO>> getTrainCities() {
+    try {
+        List<TrainCityVO> cities = trainService.getAllCities();
+        return ResponseEntity.ok(cities);
+    } catch (Exception e) {
+        log.error("기차 도시 목록 조회 중 오류 발생", e);
+        return ResponseEntity.internalServerError().build();
+    }
+}
+
+// 도시별 기차역 목록 조회
+@GetMapping("/train/stations/{cityCode}")
+@ResponseBody
+public ResponseEntity<List<TrainStationVO>> getTrainStationsByCity(@PathVariable Integer cityCode) {
+    try {
+        List<TrainStationVO> stations = trainService.getStationsByCity(cityCode);
+        return ResponseEntity.ok(stations);
+    } catch (Exception e) {
+        log.error("도시별 기차역 목록 조회 중 오류 발생", e);
+        return ResponseEntity.internalServerError().build();
+    }
+}
+
+// 기차 노선 검색
+@PostMapping("/train/search")
+@ResponseBody
+public ResponseEntity<List<TrainRouteVO>> searchTrainRoutes(
+        @RequestParam(name = "depPlaceName") String depPlaceName,
+        @RequestParam(name = "arrPlaceName") String arrPlaceName,
+        @RequestParam(name = "depPlandTime") String depPlandTime) {
+    try {
+        Map<String, Object> params = new HashMap<>();
+        params.put("depPlaceName", depPlaceName);
+        params.put("arrPlaceName", arrPlaceName);
+        params.put("depPlandTime", depPlandTime);
+        
+        List<TrainRouteVO> routes = trainService.searchRoutes(params);
+        return ResponseEntity.ok(routes);
+    } catch (Exception e) {
+        log.error("기차 노선 검색 중 오류 발생", e);
+        return ResponseEntity.internalServerError().build();
+    }
+}
+```
+
+#### **고속버스 관련 API 엔드포인트**
+```java
+// 고속버스 도시 목록 조회
+@GetMapping("/bus/cities")
+@ResponseBody
+public ResponseEntity<List<TrainCityApiDto>> getCities() {
+    try {
+        List<TrainCityApiDto> cities = trainCityApiMapper.getAllCityDto();
+        return ResponseEntity.ok(cities);
+    } catch (Exception e) {
+        log.error("고속버스 도시 목록 조회 중 오류 발생", e);
+        return ResponseEntity.internalServerError().build();
+    }
+}
+
+// 고속버스 터미널 목록 조회
+@GetMapping("/bus/terminals")
+@ResponseBody
+public ResponseEntity<List<ExpressBusTerminalApiDto>> getTerminals() {
+    try {
+        List<ExpressBusTerminalApiDto> terminals = expressBusTerminalApiMapper.selectAll();
+        return ResponseEntity.ok(terminals);
+    } catch (Exception e) {
+        log.error("고속버스 터미널 목록 조회 중 오류 발생", e);
+        return ResponseEntity.internalServerError().build();
+    }
+}
+
+// 고속버스 경로 검색
+@PostMapping("/bus/search")
+@ResponseBody
+public ResponseEntity<List<ExpressBusRouteApiDto>> searchBusRoutes(
+        @RequestParam(name = "depTerminalId") String depTerminalId,
+        @RequestParam(name = "arrTerminalId") String arrTerminalId,
+        @RequestParam(name = "depPlandTime") String depPlandTime) {
+    try {
+        List<ExpressBusRouteApiDto> routes = expressBusApiClient.searchRoutes(
+            depTerminalId, arrTerminalId, depPlandTime);
+        return ResponseEntity.ok(routes);
+    } catch (Exception e) {
+        log.error("고속버스 경로 검색 중 오류 발생", e);
+        return ResponseEntity.internalServerError().build();
+    }
+}
+```
+</details>
+
+<details>
+<summary>🚄 기차 노선 조회회</summary>
+
+#### **TrainApiClient - 기차 API 통합 관리**
+```java
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class TrainApiClient {
+
+    private final BaseApiClient baseApiClient;
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    private static final DateTimeFormatter PARSING_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+    ...
+    
+    /**
+     * 기차 노선 조회
+     */
+    @LogExecutionTime(category = "TrainRoute")
+    public List<TrainRouteApiDto> getTrainRouteData(String depNodeId, String arrNodeId) {
+        URI uri = baseApiClient.makeTrainUri("/getStrtpntAlocFndTrainInfo",
+                "depPlaceId", depNodeId,
+                "arrPlaceId", arrNodeId,
+                "depPlandTime", PARSING_FORMATTER.format(LocalDateTime.now()));
+        return baseApiClient.callApiManyTimes(uri, this::createTrainRouteDto);
+    }
+}
+```
+
+어려웠던 부분분
+
+</details>
+
+<details>
+<summary>🚌 고속버스 API 클라이언트</summary>
+
+
+
+---
+
+## 📊 API 목록
+
+### 🚄 기차 API
+| API | 설명 | 엔드포인트 | 메서드 |
+|-----|------|------------|--------|
+| 기차 종류 | 기차 종류 목록 (KTX, ITX, 무궁화호) | `/getVhcleKndList` | GET |
+| 지역 코드 | 기차 지역 코드 목록 | `/getCtyCodeList` | GET |
+| 역 정보 | 도시별 기차역 정보 | `/getCtyAcctoTrainSttnList` | GET |
+| 노선 조회 | 기차 노선 정보 | `/getStrtpntAlocFndTrainInfo` | POST |
+
+### 🚌 고속버스 API
+| API | 설명 | 엔드포인트 | 메서드 |
+|-----|------|------------|--------|
+| 도시 목록 | 고속버스 도시 코드 | `/getCtyCodeList` | GET |
+| 터미널 목록 | 고속버스 터미널 정보 | `/getExpBusTrminlList` | GET |
+| 등급 목록 | 고속버스 등급 정보 | `/getExpBusGradList` | GET |
+| 노선 조회 | 고속버스 노선 정보 | `/getStrtpntAlocFndExpbusInfo` | POST |
+
+### 🎯 내부 API 엔드포인트
+| API | 설명 | 엔드포인트 | 메서드 |
+|-----|------|------------|--------|
+| 교통 메인 | 교통 서비스 메인 페이지 | `/transportation` | GET |
+| 기차 조회 | 기차 조회 페이지 | `/transportation/train` | GET |
+| 버스 조회 | 고속버스 조회 페이지 | `/transportation/bus` | GET |
+| 기차 도시 | 기차 도시 목록 | `/transportation/train/cities` | GET |
+| 기차역 | 도시별 기차역 목록 | `/transportation/train/stations/{cityCode}` | GET |
+| 기차 검색 | 기차 노선 검색 | `/transportation/train/search` | POST |
+| 버스 도시 | 고속버스 도시 목록 | `/transportation/bus/cities` | GET |
+| 버스 터미널 | 고속버스 터미널 목록 | `/transportation/bus/terminals` | GET |
+| 버스 검색 | 고속버스 노선 검색 | `/transportation/bus/search` | POST |
+
+---
+
+## 🚀 사용 방법
+
+### 1. **기차 조회 플로우**
+```javascript
+// 1. 도시 목록 로드
+fetch('/transportation/train/cities')
+    .then(response => response.json())
+    .then(cities => {
+        // 도시 선택 옵션 생성
+        populateCitySelect(cities);
+    });
+
+// 2. 도시 선택 시 기차역 목록 로드
+function onCityChange(cityCode) {
+    fetch(`/transportation/train/stations/${cityCode}`)
+        .then(response => response.json())
+        .then(stations => {
+            // 기차역 선택 옵션 생성
+            populateStationSelect(stations);
+        });
+}
+
+// 3. 기차 노선 검색
+function searchTrainRoutes() {
+    const formData = new FormData();
+    formData.append('depPlaceName', departureStation);
+    formData.append('arrPlaceName', arrivalStation);
+    formData.append('depPlandTime', departureDate);
+    
+    fetch('/transportation/train/search', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(routes => {
+        // 검색 결과 표시
+        displayTrainRoutes(routes);
+    });
+}
+```
+
+### 2. **고속버스 조회 플로우**
+```javascript
+// 1. 도시 목록 로드
+fetch('/transportation/bus/cities')
+    .then(response => response.json())
+    .then(cities => {
+        // 도시 선택 옵션 생성
+        populateBusCitySelect(cities);
+    });
+
+// 2. 도시 선택 시 터미널 목록 로드
+function onBusCityChange(cityCode) {
+    fetch(`/transportation/bus/terminals/${cityCode}`)
+        .then(response => response.json())
+        .then(terminals => {
+            // 터미널 선택 옵션 생성
+            populateTerminalSelect(terminals);
+        });
+}
+
+// 3. 고속버스 노선 검색
+function searchBusRoutes() {
+    const formData = new FormData();
+    formData.append('depTerminalId', departureTerminal);
+    formData.append('arrTerminalId', arrivalTerminal);
+    formData.append('depPlandTime', departureDate);
+    
+    fetch('/transportation/bus/search', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(routes => {
+        // 검색 결과 표시
+        displayBusRoutes(routes);
+    });
+}
+```
+
+
+
+---
+
+## 🎨 UI/UX 특징
+
+### 📱 **반응형 디자인**
+- **모바일 최적화**: 터치 친화적 인터페이스
+- **데스크톱 지원**: 넓은 화면에서의 최적화된 레이아웃
+- **접근성**: 키보드 네비게이션 지원
+
+### 🎯 **사용자 경험**
+- **단계별 검색**: 도시 → 역/터미널 → 날짜 → 검색
+- **실시간 피드백**: 로딩 상태 및 에러 메시지
+- **직관적 아이콘**: Font Awesome 아이콘 활용
+- **상태 표시**: 조회 가능/예약 가능 상태 뱃지
+
+### 🎨 **시각적 요소**
+- **카드 기반 레이아웃**: 정보의 명확한 구분
+- **색상 코딩**: 교통수단별 구분 색상
+- **애니메이션**: 부드러운 전환 효과
+- **그리드 시스템**: 일관된 레이아웃
+
+---
+
+---
+
+## ✅ **성과**
+- **통합 교통 서비스**: 기차와 고속버스 정보를 하나의 플랫폼에서 제공
+- **실시간 정보**: 공공 API를 통한 정확한 실시간 교통 정보
+- **사용자 친화적**: 직관적이고 쉬운 검색 인터페이스
+- **확장 가능한 구조**: 새로운 교통수단 쉽게 추가 가능
+- **성능 최적화**: AOP 기반 실행 시간 모니터링 및 로깅
+
+---
+
+## 🔮 **향후 계획**
+- **예약 기능**: 실제 교통수단 예약 연동
+- **실시간 알림**: 지연/취소 정보 실시간 알림
+- **경로 추천**: 최적 경로 추천 알고리즘
+- **모바일 앱**: 네이티브 모바일 애플리케이션
+- **AI 기반**: 개인화된 교통 정보 제공
+
+---
+
+*DUGAZA 교통 시스템은 사용자에게 완벽한 여행 경험을 제공하기 위해 지속적으로 발전하고 있습니다.* 🚀 
+</details>
+
+<h3>구현에 어려움이 있었던 부분들</h3>
+<details>
+<summary> 🔐 DUGAZA Spring Security 시스템</summary>
 
 > **"복잡한 보안을 간단하게, 강력한 인증을 유연하게"**
 
@@ -197,8 +595,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
    └─ No → 로그인 성공
 ```
 
-
-
 </details>
 
 
@@ -268,13 +664,7 @@ public class CustomFailureHandler implements AuthenticationFailureHandler {
 }
 ```
 </details>
-### ✅ **성과**
-
-- **다중 사용자 타입**: Member/Seller 완벽 분리 관리  
-- **소셜 로그인**: 카카오 OAuth2 완전 통합  
-- **보안 강화**: CSRF, 세션 관리, Remember-Me  
-- **확장성**: 새로운 역할/권한 쉽게 추가 가능  
-- **유지보수성**: 명확한 책임 분리로 코드 관리 용이
+<hr>
 </details>
 
 <details>
