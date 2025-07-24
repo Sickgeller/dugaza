@@ -237,6 +237,9 @@ public class TrainApiClient {
 
 </details>
 
+
+---
+
 <details>고속버스 노선 검색</summary>
 
 <img width="802" height="819" alt="image" src="https://github.com/user-attachments/assets/533f3710-5539-4d70-b953-f401048b554a" />
@@ -250,7 +253,6 @@ public class TrainApiClient {
 해당 파라미터값에 맞는 결과가 나오게됨. 고속버스는 API에서 노선검색이 편해서 더 쉬웠음
 
 </details>
-
 
 ---
 
