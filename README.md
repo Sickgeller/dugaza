@@ -196,12 +196,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
    ├─ Yes → 통합 페이지로 이동 (기존 계정 연동)
    └─ No → 로그인 성공
 ```
-✅ 성과
-다중 사용자 타입: Member/Seller 완벽 분리 관리
-소셜 로그인: 카카오 OAuth2 완전 통합
-보안 강화: CSRF, 세션 관리, Remember-Me
-확장성: 새로운 역할/권한 쉽게 추가 가능
-유지보수성: 명확한 책임 분리로 코드 관리 용이
+
+
 
 </details>
 
@@ -271,8 +267,13 @@ public class CustomFailureHandler implements AuthenticationFailureHandler {
     }
 }
 ```
+✅ 성과
+다중 사용자 타입: Member/Seller 완벽 분리 관리
+소셜 로그인: 카카오 OAuth2 완전 통합
+보안 강화: CSRF, 세션 관리, Remember-Me
+확장성: 새로운 역할/권한 쉽게 추가 가능
+유지보수성: 명확한 책임 분리로 코드 관리 용이
 </details>
-<hr>
 </details>
 
 <details>
