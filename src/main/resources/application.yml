@@ -61,19 +61,6 @@ spring:
       max-file-size: 50MB #파일 한 개당 최대 사이즈
       max-request-size: 50MB #요청당 최대 파일 크기
 
-  mail: # JavaMail 설정 (기존 javamail에서 변경)
-    host: smtp.gmail.com
-    port: 587
-    username: ${data-config.google-mail-url}
-    password: ${data-config.google-mail-password}
-    properties:
-      mail.smtp.auth: true
-      mail.smtp.starttls.enable: true
-      mail.smtp.ssl.trust: smtp.gmail.com
-      mail.transport.protocol: smtp
-      mail.debug: true
-    default-encoding: utf-8
-
   config:
     import: classpath:data-config.yml
 
@@ -116,9 +103,8 @@ server:
       enabled: true
       force: true
   session:
-    persistent: false # 세션 영속화 비활성화(톰캣 재시작 시 세션 파일 복원 안함)
-    timeout: 3600 # 세션 타임아웃(초)
-  # HTTPS 리다이렉트 설정 (선택사항)
+    persistent: false
+    timeout: 3600
   ssl:
     enabled: false
 
@@ -141,7 +127,7 @@ api:
 
 toss:
   payments:
-    secret-key: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
+    secret-key:  ${data-config.api.toss.payments.secret-key}
 
 file:
     upload-dir: ${user.home}/myapp/uploads
