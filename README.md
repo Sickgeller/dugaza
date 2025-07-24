@@ -108,7 +108,6 @@ public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) {
 }
 ```
 </details>
-</details>
 <details>
 <summary>👤 통합 사용자 관리 (CustomUserDetails)</summary>
 
@@ -144,7 +143,6 @@ public class CustomUserDetails implements UserDetails {
     }
 }
 ```
-</details>
 </details>
 <details>
 <summary>🔗 OAuth2 소셜 로그인 (카카오)</summary>
@@ -200,6 +198,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 ```
 </details>
 </details>
+
+
 <details>
 <summary>🎯 인증 핸들러</summary>
 
@@ -266,6 +266,7 @@ public class CustomFailureHandler implements AuthenticationFailureHandler {
 }
 ```
 </details>
+<hr>
 </details>
 
 <details>
@@ -629,7 +630,7 @@ public class ExpressBusApiClient {
 - **실시간 모니터링**: AOP 기반 실행 시간 측정 및 로깅
 - **확장성**: 새로운 API 쉽게 추가 가능
 - **안정성**: 비동기 로깅, 예외 처리, 타임아웃 설정
-
+<hr>
 </details>
 
 <details>
