@@ -273,6 +273,8 @@ public class CustomFailureHandler implements AuthenticationFailureHandler {
 
 ---
 </details>
+---
+
 </details>
 
 
