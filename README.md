@@ -636,13 +636,11 @@ public class ExpressBusApiClient {
 - **안정성**: 비동기 로깅, 예외 처리, 타임아웃 설정
 
 <details>
-    <summary>
-# 🔍 DUGAZA AOP 시스템
-    </summary>
+<summary># 🌐 DUGAZA API 시스템</summary>
 
 ## 🎯 개요
 
-DUGAZA는 **Aspect-Oriented Programming (AOP)**를 활용하여 **로깅, 성능 모니터링, 전역 모델 관리**를 체계적으로 구현했습니다. 이를 통해 비즈니스 로직과 횡단 관심사(Cross-cutting Concerns)를 효과적으로 분리하여 유지보수성과 가독성을 크게 향상시켰습니다.
+**Aspect-Oriented Programming (AOP)**를 활용하여 **로깅, 성능 모니터링, 전역 모델 관리**를 체계적으로 구현했습니다. 이를 통해 비즈니스 로직과 횡단 관심사를 효과적으로 분리하여 유지보수성과 가독성을 크게 향상시켰습니다.
 
 ### 🌟 핵심 특징
 - **다층 로깅 시스템**: Controller, Service, Mapper, API Client별 세분화된 로깅
