@@ -48,7 +48,7 @@ Spring Security를 활용하여 **다중 사용자 타입**과 **소셜 로그�
 
 ## 🔧 핵심 컴포넌트
 <details>
-<summary>### 1. 🎭 다중 Security Filter Chain</summary>
+<summary>🎭 다중 Security Filter Chain</summary>
 
 #### **웹 애플리케이션용 Filter Chain**
 ```java
@@ -106,8 +106,9 @@ public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) {
 }
 ```
 </details>
-<details><summary>
-### 2. 👤 통합 사용자 관리 (CustomUserDetails)</summary>
+</details>
+<details>
+<summary>👤 통합 사용자 관리 (CustomUserDetails)</summary>
 
 #### **다중 사용자 타입 지원**
 ```java
@@ -142,8 +143,9 @@ public class CustomUserDetails implements UserDetails {
 }
 ```
 </details>
-<details><summary>
-### 3. 🔗 OAuth2 소셜 로그인 (카카오)</summary>
+</details>
+<details>
+<summary>🔗 OAuth2 소셜 로그인 (카카오)</summary>
 
 #### **카카오 로그인 플로우**
 ```java
@@ -195,8 +197,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
    └─ No → 로그인 성공
 ```
 </details>
-<details><summary>
-### 4. 🎯 인증 핸들러</summary>
+</details>
+<details>
+<summary>🎯 인증 핸들러</summary>
 
 #### **성공 핸들러 (역할별 리다이렉트)**
 ```java
@@ -327,8 +330,7 @@ DUGAZA는 **여행 정보 통합 플랫폼**으로, 공공 관광 API, 기차, �
 ## 🔧 핵심 컴포넌트
 
 <details>
-<summary>### 1. 🎭 다중 HTTP 클라이언트 아키텍처</summary>
-</details>
+<summary>🎭 다중 HTTP 클라이언트 아키텍처</summary>
 #### **WebClient, RestClient, RestTemplate등등 구현방식을 선택할수있는 BaseApiClient 인터페이스**
 ```java
 public interface BaseApiClient {
@@ -464,10 +466,9 @@ public class WebClientBaseApiClient implements BaseApiClient {
 }
 ```
 
+</details>
 <details>
-    <summary>
-### 2. 🎯 전문화된 API 클라이언트
-    </summary>
+<summary>🎯 전문화된 API 클라이언트</summary>
 
 #### **공통 관광 데이터 API 클라이언트**
 ```java
@@ -688,7 +689,8 @@ public class ExpressBusApiClient {
 
 ## 🔧 핵심 컴포넌트
 
-### 1. 🎯 Controller Layer AOP
+<details>
+<summary>🎯 Controller Layer AOP</summary>
 
 #### **ControllerLoggingAspect - 웹 요청 로깅**
 ```java
@@ -792,7 +794,9 @@ public class GlobalModelAdvice {
 }
 ```
 
-### 2. 🔧 Service Layer AOP
+</details>
+<details>
+<summary>🔧 Service Layer AOP</summary>
 
 #### **ServiceLoggingAspect - 서비스 로직 로깅**
 ```java
@@ -875,7 +879,9 @@ public class ServiceLoggingAspect {
 }
 ```
 
-### 3. 📊 Data Access Layer AOP
+</details>
+<details>
+<summary>📊 Data Access Layer AOP</summary>
 
 #### **MapperLoggingAspect - SQL 실행 로깅**
 ```java
@@ -936,7 +942,9 @@ public class MapperLoggingAspect {
 }
 ```
 
-### 4. 🌐 API Client Layer AOP
+</details>
+<details>
+<summary>🌐 API Client Layer AOP</summary>
 
 #### **LoggingAspect - API 호출 로깅**
 ```java
@@ -1029,7 +1037,9 @@ public class LoggingAspect {
 }
 ```
 
-### 5. 🏷️ 커스텀 어노테이션
+</details>
+<details>
+<summary>🏷️ 커스텀 어노테이션</summary>
 
 #### **LogExecutionTime - 선택적 성능 측정**
 ```java
