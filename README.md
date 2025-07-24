@@ -2,7 +2,8 @@
 
 DUGAZA는 여행 정보 통합 플랫폼으로, 사용자와 판매자로 크게 이루어져있으며 공공 API를 기반으로한 여행정보 제공 및 관련 상품 (렌터카, 숙소 판매등등) 에 관련된 서비스를 제공하는 통합 플랫폼입니다.
 
-<details> <summary># 🔐 DUGAZA Spring Security 시스템</summary>
+<details>
+<summary># 🔐 DUGAZA Spring Security 시스템</summary>
 
 > **"복잡한 보안을 간단하게, 강력한 인증을 유연하게"**
 
@@ -273,7 +274,7 @@ public class CustomFailureHandler implements AuthenticationFailureHandler {
 </details>
 
 <details>
-   <summary> # 🌐 DUGAZA API 시스템</summary>
+<summary># 🌐 DUGAZA API 시스템</summary>
 
 > **"다양한 외부 API를 하나의 인터페이스로, 성능과 안정성을 모두 잡다"**
 
@@ -636,7 +637,7 @@ public class ExpressBusApiClient {
 - **안정성**: 비동기 로깅, 예외 처리, 타임아웃 설정
 
 <details>
-<summary># 🌐 DUGAZA API 시스템</summary>
+<summary># 🔍 DUGAZA AOP 시스템</summary>
 
 ## 🎯 개요
 
@@ -654,6 +655,7 @@ public class ExpressBusApiClient {
 ## 🏗️ AOP 아키텍처 구조
 
 ### 📊 전체 AOP 시스템 구조도
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    DUGAZA AOP System                        │
@@ -1201,7 +1203,8 @@ public Object logControllerMethodExecution(ProceedingJoinPoint joinPoint) {
 ## 📈 로깅의 중요성
 
 ### 🔍 **문제 진단 및 디버깅**
-```java
+
+```
 // 실행 흐름 추적
 [Tour] [REST API] 요청 시작 - URI: /api/tour/areas [GET]
 [Tour] 서비스 시작 - 메서드: getAreaCodeData
@@ -1212,7 +1215,8 @@ public Object logControllerMethodExecution(ProceedingJoinPoint joinPoint) {
 ```
 
 ### 📊 **성능 모니터링**
-```java
+
+```
 // 성능 병목 지점 식별
 [TourData] 실행 완료 - 메서드: getAreaCodeData, 실행 시간: 180ms
 [UserData] 실행 완료 - 메서드: getUserInfo, 실행 시간: 45ms
@@ -1220,7 +1224,8 @@ public Object logControllerMethodExecution(ProceedingJoinPoint joinPoint) {
 ```
 
 ### 🚨 **오류 추적**
-```java
+
+```
 // 오류 발생 지점 및 원인 파악
 [Tour] API 호출 오류 - 메서드: getAreaCodeData, 오류: Connection timeout
 [Tour] 서비스 오류 - 메서드: getAreaCodeData, 실행 시간: 5000ms, 오류: Connection timeout
