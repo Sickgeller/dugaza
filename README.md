@@ -320,7 +320,10 @@ DUGAZA는 **여행 정보 통합 플랫폼**으로, 공공 관광 API, 기차, �
 
 <details>
 <summary>🎭 다중 HTTP 클라이언트 아키텍처</summary>
-#### **WebClient, RestClient, RestTemplate등등 구현방식을 선택할수있는 BaseApiClient 인터페이스**
+
+    <br>
+
+    #### **WebClient, RestClient, RestTemplate등등 구현방식을 선택할수있는 BaseApiClient 인터페이스**
 ```java
 public interface BaseApiClient {
     /**
