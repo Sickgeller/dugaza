@@ -270,8 +270,11 @@ public class CustomFailureHandler implements AuthenticationFailureHandler {
     }
 }
 ```
+
+---
 </details>
 </details>
+
 
 <details>
 <summary>#🌐 DUGAZA API 시스템</summary>
@@ -465,8 +468,9 @@ public class WebClientBaseApiClient implements BaseApiClient {
     }
 }
 ```
-
+---
 </details>
+
 <details>
 <summary>🎯 전문화된 API 클라이언트</summary>
 
