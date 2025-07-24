@@ -227,12 +227,14 @@ public class TrainApiClient {
 ```
 
 
-<img width="776" height="847" alt="기차 노선 검색 1" src="https://github.com/user-attachments/assets/f21507ac-f393-433d-b9da-865f5ebfb722" />
+<img width="776" height="850" alt="기차 노선 검색 1" src="https://github.com/user-attachments/assets/f21507ac-f393-433d-b9da-865f5ebfb722" />
 <img width="1610" height="122" alt="image" src="https://github.com/user-attachments/assets/478d446a-7999-4360-bb20-c4fc2412974f" />
 비동기방식으로 도시목록 로딩후 도시선택 이후 비동기 방식으로 해당 지역내의 역을 로딩
 
-<img width="838" height="835" alt="image" src="https://github.com/user-attachments/assets/d4061db0-2728-4563-965f-1fb7b5ef2336" />
+<img width="838" height="850" alt="image" src="https://github.com/user-attachments/assets/d4061db0-2728-4563-965f-1fb7b5ef2336" />
 출발역과 도착역 모두선택후 검색 클릭시 결과에 맞는 역 결과 등장
+<img width="751" height="850" alt="image" src="https://github.com/user-attachments/assets/1bd08229-431d-4482-b4fc-b1d46e4b3392" />
+
 </details>
 
 <details>
