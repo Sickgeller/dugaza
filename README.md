@@ -198,7 +198,7 @@ public ResponseEntity<List<ExpressBusRouteApiDto>> searchBusRoutes(
 </details>
 
 <details>
-<summary>🚄 기차 노선 조회회</summary>
+<summary>🚄 기차 노선 조회</summary>
 
 #### **TrainApiClient - 기차 API 통합 관리**
 ```java
@@ -227,7 +227,6 @@ public class TrainApiClient {
 }
 ```
 
-어려웠던 부분분
 
 </details>
 
@@ -387,16 +386,8 @@ function searchBusRoutes() {
 
 ---
 
-## 🔮 **향후 계획**
-- **예약 기능**: 실제 교통수단 예약 연동
-- **실시간 알림**: 지연/취소 정보 실시간 알림
-- **경로 추천**: 최적 경로 추천 알고리즘
-- **모바일 앱**: 네이티브 모바일 애플리케이션
-- **AI 기반**: 개인화된 교통 정보 제공
 
----
-
-*DUGAZA 교통 시스템은 사용자에게 완벽한 여행 경험을 제공하기 위해 지속적으로 발전하고 있습니다.* 🚀 
+</details>
 </details>
 
 <h3>구현에 어려움이 있었던 부분들</h3>
