@@ -9,6 +9,129 @@
     <link rel="stylesheet" th:href="@{/assets/css/style.css}">
     <link rel="stylesheet" th:href="@{/assets/css/bus.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* 페이지네이션 스타일 */
+        .pagination-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .pagination {
+            display: inline-flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover {
+            background: #f0f0f0;
+        }
+
+        .pagination button.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .pagination button:disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .pagination .page-info {
+            margin: 0 15px;
+            color: #666;
+        }
+
+        /* 검색 결과 개선 */
+        .route-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .route-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .route-header h3 {
+            margin: 0;
+            color: #333;
+        }
+
+        .route-price {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .route-stations {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .station {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .station.dep {
+            color: #28a745;
+        }
+
+        .station.arr {
+            color: #dc3545;
+        }
+
+        .station i {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .station span {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .station time {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .route-arrow {
+            margin: 0 20px;
+            color: #666;
+        }
+
+        .route-arrow i {
+            font-size: 1.5em;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
     <main layout:fragment="content">
@@ -72,6 +195,12 @@
                 <div class="results-container" id="resultsContainer">
                     <!-- 검색 결과가 여기에 동적으로 추가됩니다 -->
                 </div>
+                <!-- 페이지네이션 -->
+                <div class="pagination-container" id="paginationContainer" style="display: none;">
+                    <div class="pagination" id="pagination">
+                        <!-- 페이지네이션 버튼들이 여기에 동적으로 추가됩니다 -->
+                    </div>
+                </div>
             </div>
 
             <div class="bus-info-section">
@@ -124,6 +253,9 @@
             // 전역 변수
             let cities = [];
             let stations = [];
+            let currentRoutes = []; // 현재 검색 결과
+            let currentPage = 1;
+            const itemsPerPage = 10; // 페이지당 표시할 항목 수
 
             // 페이지 로드 시 초기화
             document.addEventListener('DOMContentLoaded', function() {
@@ -235,19 +367,21 @@
                         stations.forEach(station => {
                             console.log('처리 중인 역:', station);
                             
-                            // 안전한 속성 접근 - 모든 가능한 속성명 시도
+                            // 안전한 속성 접근 - nodeId와 nodeName 모두 시도
+                            const nodeId = station.nodeId || station.NODE_ID || station.node_id || 
+                                         station.NodeId || station.Node_Id || station.NODEID;
                             const nodeName = station.nodeName || station.NODE_NAME || station.node_name || 
                                            station.NodeName || station.Node_Name || station.NODENAME;
                             
-                            if (!nodeName) {
+                            if (!nodeId || !nodeName) {
                                 console.warn('역 데이터 누락:', station);
                                 console.log('사용 가능한 속성들:', Object.keys(station));
                                 return;
                             }
                             
                             const option = document.createElement('option');
-                            option.value = nodeName;
-                            option.textContent = nodeName;
+                            option.value = nodeId;  // nodeId를 value로 사용
+                            option.textContent = nodeName;  // nodeName을 표시 텍스트로 사용
                             stationSelect.appendChild(option);
                         });
                         
@@ -262,21 +396,21 @@
 
             // 노선 검색
             async function searchRoutes() {
-                const depPlaceName = document.getElementById('departureStation').value;
-                const arrPlaceName = document.getElementById('arrivalStation').value;
+                const depPlaceId = document.getElementById('departureStation').value;
+                const arrPlaceId = document.getElementById('arrivalStation').value;
                 const depPlandTime = document.getElementById('departureDate').value;
 
-                if (!depPlaceName || !arrPlaceName || !depPlandTime) {
+                if (!depPlaceId || !arrPlaceId || !depPlandTime) {
                     alert('모든 필드를 입력해주세요.');
                     return;
                 }
 
-                console.log('검색 파라미터:', { depPlaceName, arrPlaceName, depPlandTime });
+                console.log('검색 파라미터:', { depPlaceId, arrPlaceId, depPlandTime });
 
                 try {
                     const formData = new FormData();
-                    formData.append('depPlaceName', depPlaceName);
-                    formData.append('arrPlaceName', arrPlaceName);
+                    formData.append('depPlaceId', depPlaceId);
+                    formData.append('arrPlaceId', arrPlaceId);
                     formData.append('depPlandTime', depPlandTime);
                     formData.append('_csrf', csrfToken);
 
@@ -297,7 +431,17 @@
                         
                         try {
                             const routes = JSON.parse(responseText);
-                            displayResults(routes);
+                            console.log('파싱된 라우트:', routes);
+                            
+                            if (Array.isArray(routes)) {
+                                displayResults(routes);
+                            } else if (routes && Array.isArray(routes.content)) {
+                                // Spring Boot Page 객체인 경우
+                                displayResults(routes.content);
+                            } else {
+                                console.error('예상치 못한 응답 형식:', routes);
+                                alert('서버 응답 형식이 올바르지 않습니다.');
+                            }
                         } catch (parseError) {
                             console.error('JSON 파싱 오류:', parseError);
                             console.error('응답 내용:', responseText);
@@ -306,7 +450,7 @@
                     } else {
                         const errorText = await response.text();
                         console.error('노선 검색 실패:', response.status, errorText);
-                        alert('노선 검색에 실패했습니다.');
+                        alert('노선 검색에 실패했습니다. 상태 코드: ' + response.status);
                     }
                 } catch (error) {
                     console.error('노선 검색 중 오류:', error);
@@ -318,44 +462,90 @@
             function displayResults(routes) {
                 const resultsContainer = document.getElementById('resultsContainer');
                 const searchResults = document.getElementById('searchResults');
+                const paginationContainer = document.getElementById('paginationContainer');
 
-                console.log('검색 결과:', routes);
+                console.log('displayResults 호출됨, routes:', routes);
+                console.log('routes 타입:', typeof routes);
+                console.log('routes 길이:', routes ? routes.length : 'undefined');
 
-                // null 값 필터링
-                const validRoutes = routes.filter(route => route !== null);
-                
-                if (validRoutes.length === 0) {
-                    resultsContainer.innerHTML = '<div class="no-results"><p>검색 결과가 없습니다.</p></div>';
+                if (!routes || !Array.isArray(routes)) {
+                    console.error('routes가 배열이 아님:', routes);
+                    resultsContainer.innerHTML = '<div class="no-results"><p>검색 결과 형식이 올바르지 않습니다.</p></div>';
+                    paginationContainer.style.display = 'none';
                     searchResults.style.display = 'block';
                     return;
                 }
 
+                // null 값 필터링
+                const validRoutes = routes.filter(route => route !== null);
+                console.log('유효한 라우트 수:', validRoutes.length);
+                currentRoutes = validRoutes;
+                currentPage = 1;
+                
+                if (validRoutes.length === 0) {
+                    resultsContainer.innerHTML = '<div class="no-results"><p>검색 결과가 없습니다.</p></div>';
+                    paginationContainer.style.display = 'none';
+                    searchResults.style.display = 'block';
+                    return;
+                }
+
+                // 페이지네이션 표시
+                displayPagination(validRoutes.length);
+                
+                // 현재 페이지의 결과만 표시
+                displayCurrentPage();
+                
+                searchResults.style.display = 'block';
+            }
+
+            // 현재 페이지 표시
+            function displayCurrentPage() {
+                const resultsContainer = document.getElementById('resultsContainer');
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const pageRoutes = currentRoutes.slice(startIndex, endIndex);
+
                 let html = '';
-                validRoutes.forEach(route => {
-                    console.log('처리 중인 노선:', route);
+                pageRoutes.forEach((route, index) => {
+                    console.log(`처리 중인 노선 ${index}:`, route);
+                    console.log('route 객체의 모든 키:', Object.keys(route));
                     
-                    // 안전한 속성 접근
-                    const depPlandTime = route.depPlandTime || route.DEP_PLAND_TIME;
-                    const arrPlandTime = route.arrPlandTime || route.ARR_PLAND_TIME;
-                    const trainGradeName = route.trainGradeName || route.TRAIN_GRADE_NAME || '기차';
-                    const trainNo = route.trainNo || route.TRAIN_NO || '';
-                    const adultCharge = route.adultCharge || route.ADULT_CHARGE || 0;
-                    const depPlaceName = route.depPlaceName || route.DEP_PLACE_NAME || '';
-                    const arrPlaceName = route.arrPlaceName || route.ARR_PLACE_NAME || '';
+                    // 안전한 속성 접근 - 모든 가능한 속성명 시도
+                    const depPlandTime = route.depPlandTime || route.depPlandtime || route.DEP_PLAND_TIME || route.DEP_PLANDTIME;
+                    const arrPlandTime = route.arrPlandTime || route.arrPlandtime || route.ARR_PLAND_TIME || route.ARR_PLANDTIME;
+                    const trainGradeName = route.trainGradeName || route.trainGradename || route.TRAIN_GRADE_NAME || route.TRAIN_GRADENAME || '기차';
+                    const trainNo = route.trainNo || route.trainno || route.TRAIN_NO || route.TRAINNO || '';
+                    const adultCharge = route.adultCharge || route.adultcharge || route.ADULT_CHARGE || route.ADULTCHARGE || 0;
+                    const depPlaceName = route.depPlaceName || route.depplacename || route.DEP_PLACE_NAME || route.DEPPLACENAME || '';
+                    const arrPlaceName = route.arrPlaceName || route.arrplacename || route.ARR_PLACE_NAME || route.ARRPLACENAME || '';
+
+                    console.log('추출된 데이터:', {
+                        depPlandTime, arrPlandTime, trainGradeName, trainNo, adultCharge, depPlaceName, arrPlaceName
+                    });
 
                     if (!depPlandTime || !arrPlandTime) {
                         console.warn('시간 정보 누락:', route);
                         return;
                     }
 
-                    const depTime = new Date(depPlandTime).toLocaleTimeString('ko-KR', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                    const arrTime = new Date(arrPlandTime).toLocaleTimeString('ko-KR', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
+                    // 시간 파싱 개선
+                    let depTime, arrTime;
+                    try {
+                        depTime = new Date(depPlandTime).toLocaleTimeString('ko-KR', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        arrTime = new Date(arrPlandTime).toLocaleTimeString('ko-KR', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    } catch (error) {
+                        console.error('시간 파싱 오류:', error);
+                        console.error('depPlandTime:', depPlandTime);
+                        console.error('arrPlandTime:', arrPlandTime);
+                        depTime = '시간 오류';
+                        arrTime = '시간 오류';
+                    }
 
                     html += `
                         <div class="route-card">
@@ -385,7 +575,61 @@
                 });
 
                 resultsContainer.innerHTML = html;
-                searchResults.style.display = 'block';
+            }
+
+            // 페이지네이션 표시
+            function displayPagination(totalItems) {
+                const paginationContainer = document.getElementById('paginationContainer');
+                const pagination = document.getElementById('pagination');
+                
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                
+                if (totalPages <= 1) {
+                    paginationContainer.style.display = 'none';
+                    return;
+                }
+
+                let html = '';
+                
+                // 이전 페이지 버튼
+                html += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-left"></i>
+                </button>`;
+                
+                // 페이지 번호들
+                const startPage = Math.max(1, currentPage - 2);
+                const endPage = Math.min(totalPages, currentPage + 2);
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    html += `<button onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+                }
+                
+                // 다음 페이지 버튼
+                html += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>`;
+                
+                // 페이지 정보
+                html += `<span class="page-info">${currentPage} / ${totalPages} 페이지 (총 ${totalItems}개 결과)</span>`;
+                
+                pagination.innerHTML = html;
+                paginationContainer.style.display = 'block';
+            }
+
+            // 페이지 변경
+            function changePage(page) {
+                const totalPages = Math.ceil(currentRoutes.length / itemsPerPage);
+                
+                if (page < 1 || page > totalPages) {
+                    return;
+                }
+                
+                currentPage = page;
+                displayCurrentPage();
+                displayPagination(currentRoutes.length);
+                
+                // 페이지 상단으로 스크롤
+                document.getElementById('searchResults').scrollIntoView({ behavior: 'smooth' });
             }
         </script>
     </main>

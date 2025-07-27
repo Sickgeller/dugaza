@@ -56,11 +56,21 @@ public class TrainApiClient{
     }
 
     @LogExecutionTime(category = "TrainRoute")
-    public List<TrainRouteApiDto> getTrainRouteData(String depNodeId, String arrNodeId) {
-        URI uri = baseApiClient.makeTrainUri("/getStrtpntAlocFndTrainInfo",
-                "depPlaceId", depNodeId,
-                "arrPlaceId", arrNodeId,
-                "depPlandTime", PARSING_FORMATTER.format(LocalDateTime.now()));
+    public List<TrainRouteApiDto> getTrainRouteData(String depNodeId, String arrNodeId, String depPlandTime) {
+        URI uri = null;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime param = LocalDateTime.parse(depPlandTime + " 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        if(depNodeId.isEmpty() || arrNodeId.isEmpty() || depPlandTime.isEmpty()) {
+            uri = baseApiClient.makeTrainUri("/getStrtpntAlocFndTrainInfo",
+                    "depPlaceId", depNodeId,
+                    "arrPlaceId", arrNodeId
+                    ,"depPlandTime", PARSING_FORMATTER.format(LocalDateTime.now()));
+        }else{
+            uri = baseApiClient.makeTrainUri("/getStrtpntAlocFndTrainInfo",
+                    "depPlaceId", depNodeId,
+                    "arrPlaceId", arrNodeId
+                    ,"depPlandTime", param.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        }
         return baseApiClient.callApiManyTimes(uri, this::createTrainRouteDto);
     }
 

@@ -83,7 +83,7 @@ public class TrainSyncServiceImpl implements TrainSyncService {
                 if (depHubStation == arrHubStation) {
                     continue;
                 }
-                List<TrainRouteApiDto> getHubRoute = trainApiClient.getTrainRouteData(depHubStation.getNodeId(), arrHubStation.getNodeId());
+                List<TrainRouteApiDto> getHubRoute = trainApiClient.getTrainRouteData(depHubStation.getNodeId(), arrHubStation.getNodeId(), null);
                 resultRoutesList.addAll(getHubRoute);
             }
         }
@@ -93,8 +93,8 @@ public class TrainSyncServiceImpl implements TrainSyncService {
         for (TrainHubStationEnum hubStation : TrainHubStationEnum.values()) {
             List<TrainStationApiDto> inHubStation = trainStationApiMapper.getStationByCityCode(hubStation.getCityCode()); // 허브역별 연결된 역들
             for (TrainStationApiDto inHub : inHubStation) {
-                List<TrainRouteApiDto> NormalToHub = trainApiClient.getTrainRouteData(inHub.getNodeId(), hubStation.getNodeId());
-                List<TrainRouteApiDto> HubToNormal = trainApiClient.getTrainRouteData(hubStation.getNodeId(), inHub.getNodeId());
+                List<TrainRouteApiDto> NormalToHub = trainApiClient.getTrainRouteData(inHub.getNodeId(), hubStation.getNodeId(), null);
+                List<TrainRouteApiDto> HubToNormal = trainApiClient.getTrainRouteData(hubStation.getNodeId(), inHub.getNodeId(), null);
                 resultRoutesList.addAll(NormalToHub);
                 resultRoutesList.addAll(HubToNormal);
             }

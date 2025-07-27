@@ -1,10 +1,7 @@
 package kr.spring.trainsportation.controller;
 
 import kr.spring.api.client.ExpressBusApiClient;
-import kr.spring.api.dto.ExpressBusCityApiDto;
-import kr.spring.api.dto.ExpressBusRouteApiDto;
-import kr.spring.api.dto.ExpressBusTerminalApiDto;
-import kr.spring.api.dto.TrainCityApiDto;
+import kr.spring.api.dto.*;
 import kr.spring.api.mapper.ExpressBusTerminalApiMapper;
 import kr.spring.api.mapper.TrainCityApiMapper;
 import kr.spring.trainsportation.service.TrainService;
@@ -152,17 +149,12 @@ public class TransportationController {
 	 */
 	@PostMapping("/train/search")
 	@ResponseBody
-	public ResponseEntity<List<TrainRouteVO>> searchTrainRoutes(
-			@RequestParam(name = "depPlaceName") String depPlaceName,
-			@RequestParam(name = "arrPlaceName") String arrPlaceName,
+	public ResponseEntity<List<TrainRouteApiDto>> searchTrainRoutes(
+			@RequestParam(name = "depPlaceId") String depPlaceId,
+			@RequestParam(name = "arrPlaceId") String arrPlaceId,
 			@RequestParam(name = "depPlandTime") String depPlandTime) {
 		try {
-			Map<String, Object> params = new HashMap<>();
-			params.put("depPlaceName", depPlaceName);
-			params.put("arrPlaceName", arrPlaceName);
-			params.put("depPlandTime", depPlandTime);
-			
-			List<TrainRouteVO> routes = trainService.searchRoutes(params);
+			List<TrainRouteApiDto> routes = trainService.searchRoutes(depPlaceId, arrPlaceId, depPlandTime);
 			return ResponseEntity.ok(routes);
 		} catch (Exception e) {
 			log.error("기차 노선 검색 중 오류 발생", e);

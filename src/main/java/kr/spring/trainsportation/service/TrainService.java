@@ -1,11 +1,10 @@
 package kr.spring.trainsportation.service;
 
+import kr.spring.api.dto.TrainRouteApiDto;
 import kr.spring.trainsportation.vo.TrainCityVO;
-import kr.spring.trainsportation.vo.TrainRouteVO;
 import kr.spring.trainsportation.vo.TrainStationVO;
 
 import java.util.List;
-import java.util.Map;
 
 public interface TrainService {
     
@@ -16,7 +15,7 @@ public interface TrainService {
     List<TrainStationVO> getStationsByCity(Integer cityCode);
     
     // 노선 검색
-    List<TrainRouteVO> searchRoutes(Map<String, Object> params);
+    List<TrainRouteApiDto> searchRoutes(String depPlaceId, String arrPlaceId, String depPlandTime);
     
     // 전체 역 목록 조회
     List<TrainStationVO> getAllStations();

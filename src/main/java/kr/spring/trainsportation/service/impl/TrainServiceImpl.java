@@ -1,16 +1,16 @@
 package kr.spring.trainsportation.service.impl;
 
+import kr.spring.api.client.TrainApiClient;
+import kr.spring.api.dto.TrainRouteApiDto;
 import kr.spring.trainsportation.dao.TrainMapper;
 import kr.spring.trainsportation.service.TrainService;
 import kr.spring.trainsportation.vo.TrainCityVO;
-import kr.spring.trainsportation.vo.TrainRouteVO;
 import kr.spring.trainsportation.vo.TrainStationVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -18,6 +18,7 @@ import java.util.Map;
 public class TrainServiceImpl implements TrainService {
 
     private final TrainMapper trainMapper;
+    private final TrainApiClient trainApiClient;
 
     @Override
     public List<TrainCityVO> getAllCities() {
@@ -32,9 +33,8 @@ public class TrainServiceImpl implements TrainService {
     }
 
     @Override
-    public List<TrainRouteVO> searchRoutes(Map<String, Object> params) {
-        log.info("기차 노선 검색: params={}", params);
-        return trainMapper.searchRoutes(params);
+    public List<TrainRouteApiDto> searchRoutes(String depPlaceId, String arrPlaceId, String depPlandTime) {
+        return trainApiClient.getTrainRouteData(depPlaceId, arrPlaceId, depPlandTime);
     }
 
     @Override
