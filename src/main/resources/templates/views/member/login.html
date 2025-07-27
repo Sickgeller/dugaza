@@ -67,19 +67,13 @@
                         <a th:href="@{/oauth2/authorization/kakao}" class="btn-social kakao">
                             <i class="fas fa-comment"></i> 카카오 로그인
                         </a>
-                        <button type="button" class="btn-social naver">
-                            <i class="fas fa-n"></i> 네이버 로그인
-                        </button>
-                        <button type="button" class="btn-social google">
-                            <i class="fab fa-google"></i> 구글 로그인
-                        </button>
                     </div>
                 </div>
                 <div class="login-footer">
                     <div class="footer-links">
-                        <a href="#">이용약관</a>
-                        <a href="#">개인정보처리방침</a>
-                        <a href="#">고객센터</a>
+                        <a th:href="@{/common/terms}">이용약관</a>
+                        <a th:href="@{/common/privacy}">개인정보처리방침</a>
+                        <a th:href="@{/common/faq}">고객센터</a>
                     </div>
                     <div class="footer-options">
                         아직 회원이 아니신가요? <a th:href="@{/member/register}">회원가입</a>

@@ -23,7 +23,7 @@ import kr.spring.community.service.CommunityService;
 import kr.spring.community.vo.CommunityPostVO;
 import kr.spring.community.vo.CommunityReplyVO;
 import kr.spring.member.service.MemberService;
-import kr.spring.util.PagingUtil;
+import kr.spring.util.CursorPagingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -49,49 +49,54 @@ public class CommunityController {
 
 
  // 커뮤니티 메인
-    @GetMapping({"", "/"})
+    @GetMapping("")
     public String communityMain(
-            @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String order,
-            @RequestParam(required = false) String keyword,
-            Model model, HttpServletResponse response) {
+            @RequestParam(name = "cursor", required = false) Long cursor,
+            @RequestParam(name = "pageSize", defaultValue = "15") int pageSize,
+            @RequestParam(name = "category", required = false) String category,
+            @RequestParam(name = "order", defaultValue = "latest") String order,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            HttpServletResponse response,
+            Model model) {
     	
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         response.setHeader("Pragma", "no-cache");
         response.setHeader("Expires", "0");
     	
-    	
+        log.info("Community main page requested: cursor={}, pageSize={}, category={}, order={}, keyword={}", 
+                cursor, pageSize, category, order, keyword);
 
-        log.info("Community main page requested: page={}, category={}, order={}, keyword={}", pageNum, category, order, keyword);
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("category", category);
-        map.put("order", order);
-        map.put("keyword", keyword);
-
-        int count = communityService.selectPostCount(map);
-
-        // 페이징 유틸 생성
-        PagingUtil page = new PagingUtil(
-                pageNum,
-                count,
-                15,     // 한 페이지에 15개
-                5,      // 블록 크기
-                "/community",
-                "&category=" + (category != null ? category : "") + "&order=" + (order != null ? order : "") + "&keyword=" + (keyword != null ? keyword : "")
-        );
-
-        List<CommunityPostVO> list = null;
-        if (count > 0) {
-            map.put("start", page.getStartRow());
-            map.put("end", page.getEndRow());
-            list = communityService.selectPostList(map);
+        // 커서 기반 페이지네이션 유틸 생성
+        CursorPagingUtil cursorPaging = new CursorPagingUtil(cursor, pageSize, keyword, category);
+        cursorPaging.setSort(order);
+        
+        // 데이터 조회
+        List<CommunityPostVO> list = communityService.selectPostListByCursor(cursorPaging);
+        
+        // 다음 페이지 존재 여부 확인
+        boolean hasNext = communityService.hasNextPage(cursorPaging);
+        cursorPaging.setHasNext(hasNext);
+        
+        // 다음 페이지 커서 계산 (마지막 항목의 ID)
+        Long nextCursor = null;
+        if (!list.isEmpty() && hasNext) {
+            nextCursor = list.get(list.size() - 1).getId();
         }
+        
+        // 이전 페이지 커서 (현재 커서가 있으면 그대로 사용)
+        Long prevCursor = cursor;
+        
+        // 페이지네이션 HTML 생성
+        String paginationHtml = cursorPaging.generatePaginationHtml("/community", nextCursor, prevCursor);
 
         model.addAttribute("list", list);
-        model.addAttribute("count", count);
-        model.addAttribute("page", page.getPage());
+        model.addAttribute("count", list.size());
+        model.addAttribute("pageSize", pageSize);
+        model.addAttribute("hasNext", hasNext);
+        model.addAttribute("nextCursor", nextCursor);
+        model.addAttribute("prevCursor", prevCursor);
+        model.addAttribute("pagination", paginationHtml);
+        model.addAttribute("cursorPaging", cursorPaging);
         model.addAttribute("category", category);
         model.addAttribute("order", order);
         model.addAttribute("keyword", keyword);

@@ -37,6 +37,7 @@ import kr.spring.util.PagingUtil;
 import kr.spring.wishlist.service.WishListService;
 import kr.spring.wishlist.vo.WishListVO;
 import lombok.extern.slf4j.Slf4j;
+import kr.spring.util.CursorPagingUtil;
 
 @Slf4j
 @Controller
@@ -53,7 +54,9 @@ public class HouseController {
 	private final TourService tourService;
 
 	@GetMapping("")
-	public String accommodationMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
+	public String accommodationMain(
+			@RequestParam(name = "cursor", required = false) Long cursor,
+			@RequestParam(name = "pageSize", defaultValue = "9") int pageSize,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword,
 			@RequestParam(required = false, name = "cat3") String cat3,
 			@RequestParam(name = "sort", defaultValue = "latest") String sort,
@@ -61,46 +64,52 @@ public class HouseController {
             @RequestParam(name = "checkOut", required = false) String checkOut,
 			Model model) {
 
-		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("keyword", keyword);
-		map.put("cat3", cat3);
-		map.put("sort", sort);
-		map.put("checkIn", checkIn);
-        map.put("checkOut", checkOut);
+		log.info("숙소 메인 페이지 요청: cursor={}, pageSize={}, keyword={}, cat3={}, sort={}", 
+				cursor, pageSize, keyword, cat3, sort);
 
-		int count = houseService.selectRowCount(map);
-
-		//페이지 처리
-		PagingUtil page = new PagingUtil(null,keyword,
-				pageNum,count,9,10,
-				"");
-
-		// 페이지네이션 링크에 cat3 파라미터를 유지하도록 설정
-		String pageUrl = "/house"; 
-		if (cat3 != null && !cat3.isEmpty()) {
-			pageUrl += "?cat3=" + cat3;
+		// 커서 기반 페이지네이션 유틸 생성
+		CursorPagingUtil cursorPaging = new CursorPagingUtil(cursor, pageSize, keyword, cat3, sort);
+		
+		// 데이터 조회
+		List<HouseVO> list = houseService.selectListByCursor(cursorPaging);
+		
+		// 다음 페이지 존재 여부 확인
+		boolean hasNext = houseService.hasNextPage(cursorPaging);
+		cursorPaging.setHasNext(hasNext);
+		
+		// 다음 페이지 커서 계산 (마지막 항목의 ID)
+		Long nextCursor = null;
+		if (!list.isEmpty() && hasNext) {
+			nextCursor = list.get(list.size() - 1).getContentId();
 		}
-		// PagingUtil에 pageURL을 설정하는 메서드가 있다고 가정합니다.
-		// 실제 PagingUtil 클래스의 메서드명에 따라 수정이 필요할 수 있습니다.
-		// page.setPageURL(pageUrl);
+		
+		// 이전 페이지 커서 (현재 커서가 있으면 그대로 사용)
+		Long prevCursor = cursor;
+		
+		// 페이지네이션 HTML 생성
+		String paginationHtml = cursorPaging.generatePaginationHtml("/house", nextCursor, prevCursor);
 
-		List<HouseVO> list = null;
-		if(count > 0) {
-			map.put("start", page.getStartRow());
-			map.put("end", page.getEndRow());
-			list = houseService.selectList(map);
-		}
-		model.addAttribute("keyword", keyword);
-		model.addAttribute("count", count);
 		model.addAttribute("list", list);
-		model.addAttribute("page", page);
+		model.addAttribute("keyword", keyword);
+		model.addAttribute("count", list.size());
+		model.addAttribute("pageSize", pageSize);
+		model.addAttribute("hasNext", hasNext);
+		model.addAttribute("nextCursor", nextCursor);
+		model.addAttribute("prevCursor", prevCursor);
+		model.addAttribute("pagination", paginationHtml);
+		model.addAttribute("cursorPaging", cursorPaging);
 		model.addAttribute("cat3", cat3); // 뷰에서 활성화된 버튼 표시를 위해 전달
 		model.addAttribute("sort", sort);
+		model.addAttribute("checkIn", checkIn);
+		model.addAttribute("checkOut", checkOut);
+		
 		return "views/sample/accommodation";
 	}
 
 	@GetMapping("/list")
-	public String accommodationList(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
+	public String accommodationList(
+			@RequestParam(name = "cursor", required = false) Long cursor,
+			@RequestParam(name = "pageSize", defaultValue = "9") int pageSize,
 			@RequestParam(name = "keyword", defaultValue = "") String keyword,
 			@RequestParam(required = false, name = "cat3") String cat3,
 			@RequestParam(name = "sort", defaultValue = "latest") String sort,
@@ -108,31 +117,40 @@ public class HouseController {
             @RequestParam(name = "checkOut", required = false) String checkOut,
 			Model model) {
 
-		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("keyword", keyword);
-		map.put("cat3", cat3);
-		map.put("sort", sort);
-		map.put("checkIn", checkIn);
-        map.put("checkOut", checkOut);
-
-		int count = houseService.selectRowCount(map);
-
-		//페이지 처리
-		PagingUtil page = new PagingUtil(null,keyword,
-				pageNum,count,9,10,
-				"");
-
-		List<HouseVO> list = null;
-		if(count > 0) {
-			map.put("start", page.getStartRow());
-			map.put("end", page.getEndRow());
-			list = houseService.selectList(map);
+		// 커서 기반 페이지네이션 유틸 생성
+		CursorPagingUtil cursorPaging = new CursorPagingUtil(cursor, pageSize, keyword, cat3, sort);
+		
+		// 데이터 조회
+		List<HouseVO> list = houseService.selectListByCursor(cursorPaging);
+		
+		// 다음 페이지 존재 여부 확인
+		boolean hasNext = houseService.hasNextPage(cursorPaging);
+		cursorPaging.setHasNext(hasNext);
+		
+		// 다음 페이지 커서 계산 (마지막 항목의 ID)
+		Long nextCursor = null;
+		if (!list.isEmpty() && hasNext) {
+			nextCursor = list.get(list.size() - 1).getContentId();
 		}
-		model.addAttribute("count", count);
+		
+		// 이전 페이지 커서 (현재 커서가 있으면 그대로 사용)
+		Long prevCursor = cursor;
+		
+		// 페이지네이션 HTML 생성
+		String paginationHtml = cursorPaging.generatePaginationHtml("/house", nextCursor, prevCursor);
+
 		model.addAttribute("list", list);
-		model.addAttribute("page", page);
+		model.addAttribute("count", list.size());
+		model.addAttribute("pageSize", pageSize);
+		model.addAttribute("hasNext", hasNext);
+		model.addAttribute("nextCursor", nextCursor);
+		model.addAttribute("prevCursor", prevCursor);
+		model.addAttribute("pagination", paginationHtml);
+		model.addAttribute("cursorPaging", cursorPaging);
 		model.addAttribute("cat3", cat3); 
 		model.addAttribute("sort", sort);
+		model.addAttribute("checkIn", checkIn);
+		model.addAttribute("checkOut", checkOut);
 
 		return "views/sample/accommodation :: #accommodation-list";
 	}

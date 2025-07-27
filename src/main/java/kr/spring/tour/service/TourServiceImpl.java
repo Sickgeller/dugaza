@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.tour.dao.TourMapper;
 import kr.spring.tour.vo.TourVO;
+import kr.spring.util.CursorPagingUtil;
 import kr.spring.wishlist.service.WishListService;
 import kr.spring.wishlist.vo.WishListVO;
 
@@ -63,6 +64,49 @@ public class TourServiceImpl implements TourService{
 		}
 
 		return list;
+	}
+	
+	@Override
+	public List<TourVO> selectListByCursor(CursorPagingUtil cursorPaging) {
+		// CursorPagingUtil을 Map으로 변환
+		Map<String, Object> map = cursorPaging.toMap();
+		List<TourVO> list = tourMapper.selectListByCursor(map);
+		
+		// 로그인한 사용자의 찜 상태 확인
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof CustomUserDetails) {
+			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+			long memberId = userDetails.getMember().getMemberId();
+
+			for (TourVO tour : list) {
+				try {
+					WishListVO wishListVO = new WishListVO();
+					wishListVO.setMemberId(memberId);
+					wishListVO.setContentId(tour.getContentId());
+					wishListVO.setContentType(tour.getContentTypeId().longValue());
+
+					if (wishListService.selectWishList(wishListVO) != null) {
+						tour.setWished(true);
+					} else {
+						tour.setWished(false);
+					}
+				} catch (NumberFormatException e) {
+					tour.setWished(false);
+				}
+			}
+		} else {
+			for (TourVO tour : list) {
+				tour.setWished(false);
+			}
+		}
+
+		return list;
+	}
+	
+	@Override
+	public boolean hasNextPage(CursorPagingUtil cursorPaging) {
+		Map<String, Object> map = cursorPaging.toMap();
+		return tourMapper.hasNextPage(map);
 	}
 
 	@Override

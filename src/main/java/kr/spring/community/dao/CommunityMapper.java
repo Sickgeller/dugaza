@@ -15,6 +15,10 @@ public interface CommunityMapper {
 
     // 글 목록
     List<CommunityPostVO> selectPostList(Map<String, Object> map);
+    
+    // 커서 기반 페이지네이션을 위한 메서드들
+    List<CommunityPostVO> selectPostListByCursor(Map<String, Object> map);
+    boolean hasNextPage(Map<String, Object> map);
 
     // 글 갯수 (페이징용)
     int selectPostCount(Map<String, Object> map);
@@ -48,7 +52,4 @@ public interface CommunityMapper {
     
     //좋아요 감소
     void decrementLikeCount(Long postId);
-
-
-
 }

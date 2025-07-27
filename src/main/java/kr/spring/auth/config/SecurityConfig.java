@@ -63,6 +63,7 @@ public class SecurityConfig {
                     .requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**", "/favicon.*").permitAll() // 정적 리소스 허용
                     .requestMatchers("/", "/member/login", "/member/register", "/member/registerUser", "/member/kakao/integration", "/member/kakao/integrate", "/member/kakao/register", "/member/kakao/save-session", "/member/kakao/cancel").permitAll() // 인증 없이 접근 가능한 페이지
                     .requestMatchers("/views/common/**").permitAll() // 공통 페이지들
+                    .requestMatchers("/common/**").permitAll() // 공통 페이지들 (회사소개, 이용약관, 개인정보처리방침, 고객센터)
                     .requestMatchers("/touristAttraction/**").permitAll()
                     .requestMatchers("/event/**").permitAll()
                     .requestMatchers("/house/**").permitAll()

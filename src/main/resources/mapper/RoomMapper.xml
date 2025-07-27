@@ -27,19 +27,32 @@
         <result property="description" column="DESCRIPTION"/>
     </resultMap>
 
+    <!-- 커서 기반 페이지네이션: 판매자별 객실 목록 조회 -->
     <select id="getRoomsWithSellerId" parameterType="map" resultMap="RoomDetailResultMap">
-        SELECT * FROM (
-            SELECT ROWNUM AS RN, A.*
-            FROM (
-                SELECT HRI.*, HSD.SELLER_ID
-                FROM HOUSE_SELLER_DETAIL HSD
-                JOIN HOUSE_ROOM_INFO HRI ON HSD.HOUSE_ID = HRI.HOUSE_ID
-                WHERE SELLER_ID = #{sellerId}
-                ORDER BY HRI.ROOM_ID DESC
-            ) A
-            WHERE ROWNUM &lt;= #{endRow}
-        )
-        WHERE RN &gt;= #{startRow}
+        SELECT HRI.*, HSD.SELLER_ID
+        FROM HOUSE_SELLER_DETAIL HSD
+        JOIN HOUSE_ROOM_INFO HRI ON HSD.HOUSE_ID = HRI.HOUSE_ID
+        WHERE SELLER_ID = #{sellerId}
+        <if test="cursor != null">
+            AND HRI.ROOM_ID &lt; #{cursor}
+        </if>
+        ORDER BY HRI.ROOM_ID DESC
+        FETCH FIRST #{pageSize} ROWS ONLY
+    </select>
+    
+    <!-- 다음 페이지 존재 여부 확인 -->
+    <select id="hasNextPage" parameterType="map" resultType="boolean">
+        SELECT CASE 
+            WHEN COUNT(*) > 0 THEN 1 
+            ELSE 0 
+        END
+        FROM HOUSE_SELLER_DETAIL HSD
+        JOIN HOUSE_ROOM_INFO HRI ON HSD.HOUSE_ID = HRI.HOUSE_ID
+        WHERE SELLER_ID = #{sellerId}
+        <if test="cursor != null">
+            AND HRI.ROOM_ID &lt; #{cursor}
+        </if>
+        AND ROWNUM = 1
     </select>
 
     <select id="getTotalRoomCount" parameterType="Long" resultType="Integer">

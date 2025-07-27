@@ -35,15 +35,15 @@ public class MainController {
 		return "views/sample/main";
 	}
 	
-	@GetMapping("/terms")
+	@GetMapping("/common/terms")
 	public String termsPage() {
 	    return "views/terms/terms";
 	}
-    @GetMapping("/privacy")
+    @GetMapping("/common/privacy")
     public String showPrivacyPage() {
         return "views/privacy/privacy";  
     }
-    @GetMapping("/about")
+    @GetMapping("/common/about")
     public String showAboutPage() {
         return "views/about/about"; 
     }

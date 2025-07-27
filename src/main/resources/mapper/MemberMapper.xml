@@ -56,30 +56,43 @@
         <include refid="memberSearch"/>
     </select>
     
-    <!-- 전체/검색 목록 -->
-    <select id="selectList" parameterType="map" resultMap="memberMap">
-        SELECT *
-        FROM (SELECT a.*, rownum rnum
-              FROM (SELECT *
-                    FROM member m 
-                    WHERE 1=1
-                    <include refid="memberSearch"/>
-                    <choose>
-                        <when test="sort == 'name'">
-                            ORDER BY m.name ASC
-                        </when>
-                        <when test="sort == 'email'">
-                            ORDER BY m.email ASC
-                        </when>
-                        <otherwise>
-                            ORDER BY m.member_id DESC
-                        </otherwise>
-                    </choose>
-                    )a)
-        <![CDATA[
-        WHERE rnum >= #{start} AND rnum <= #{end}
-        ]]>
-    </select>
+    <!-- 커서 기반 페이지네이션: 전체/검색 목록 -->
+	<select id="selectList" parameterType="map" resultMap="memberMap">
+		SELECT *
+		FROM member m 
+		WHERE 1=1
+		<include refid="memberSearch"/>
+		<if test="cursor != null">
+			AND m.member_id &lt; #{cursor}
+		</if>
+		<choose>
+			<when test="sort == 'name'">
+				ORDER BY m.name ASC, m.member_id DESC
+			</when>
+			<when test="sort == 'email'">
+				ORDER BY m.email ASC, m.member_id DESC
+			</when>
+			<otherwise>
+				ORDER BY m.member_id DESC
+			</otherwise>
+		</choose>
+		FETCH FIRST #{pageSize} ROWS ONLY
+	</select>
+	
+	<!-- 다음 페이지 존재 여부 확인 -->
+	<select id="hasNextPage" parameterType="map" resultType="boolean">
+		SELECT CASE 
+			WHEN COUNT(*) > 0 THEN 1 
+			ELSE 0 
+		END
+		FROM member m 
+		WHERE 1=1
+		<include refid="memberSearch"/>
+		<if test="cursor != null">
+			AND m.member_id &lt; #{cursor}
+		</if>
+		AND ROWNUM = 1
+	</select>
 
     <select id="findMemberIdByUsername" resultType="long">
         SELECT MEMBER_ID

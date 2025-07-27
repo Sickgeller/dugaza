@@ -5,12 +5,18 @@ import java.util.Map;
 
 import kr.spring.house.vo.HouseVO;
 import kr.spring.seller.vo.HouseSellerDetailVO;
+import kr.spring.util.CursorPagingUtil;
 
 public interface HouseService {
 	// 숙소 총 개수
 	public Integer selectRowCount(Map<String, Object> map);
 	// 숙소 목록
 	public List<HouseVO> selectList(Map<String, Object> map);
+	
+	// 커서 기반 페이지네이션을 위한 메서드들
+	public List<HouseVO> selectListByCursor(CursorPagingUtil cursorPaging);
+	public boolean hasNextPage(CursorPagingUtil cursorPaging);
+	
 	// 관리자용 숙소 목록 (WISHLIST JOIN 제거)
 	public List<HouseVO> selectAdminList(Map<String, Object> map);
 	public HouseVO selectHouse(Long id);

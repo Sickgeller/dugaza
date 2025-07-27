@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import kr.spring.community.vo.CommunityPostVO;
+import kr.spring.util.CursorPagingUtil;
 
 public interface CommunityService {
 
@@ -12,6 +13,10 @@ public interface CommunityService {
 
     // 게시글 목록 조회
     List<CommunityPostVO> selectPostList(Map<String, Object> map);
+    
+    // 커서 기반 페이지네이션을 위한 메서드들
+    List<CommunityPostVO> selectPostListByCursor(CursorPagingUtil cursorPaging);
+    boolean hasNextPage(CursorPagingUtil cursorPaging);
 
     // 게시글 수 조회
     int selectPostCount(Map<String, Object> map);

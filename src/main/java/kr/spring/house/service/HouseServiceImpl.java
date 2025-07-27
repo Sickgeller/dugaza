@@ -17,6 +17,7 @@ import kr.spring.auth.security.CustomUserDetails;
 import kr.spring.house.dao.HouseMapper;
 import kr.spring.house.vo.HouseVO;
 import kr.spring.seller.vo.HouseSellerDetailVO;
+import kr.spring.util.CursorPagingUtil;
 import kr.spring.wishlist.service.WishListService;
 import kr.spring.wishlist.vo.WishListVO;
 import lombok.RequiredArgsConstructor;
@@ -66,6 +67,48 @@ public class HouseServiceImpl implements HouseService {
         }
 
         return list;
+    }
+    
+    @Override
+    public List<HouseVO> selectListByCursor(CursorPagingUtil cursorPaging) {
+        // CursorPagingUtil을 Map으로 변환
+        Map<String, Object> map = cursorPaging.toMap();
+        List<HouseVO> list = houseMapper.selectListByCursor(map);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof CustomUserDetails) {
+            CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+            long memberId = userDetails.getMember().getMemberId();
+
+            for (HouseVO house : list) {
+                try {
+                    WishListVO wishListVO = new WishListVO();
+                    wishListVO.setMemberId(memberId);
+                    wishListVO.setContentId(house.getContentId());
+                    wishListVO.setContentType(house.getContentTypeId().longValue());
+
+                    if (wishListService.selectWishList(wishListVO) != null) {
+                        house.setWished(true);
+                    } else {
+                        house.setWished(false);
+                    }
+                } catch (NumberFormatException e) {
+                    house.setWished(false);
+                }
+            }
+        } else {
+            for (HouseVO house : list) {
+                house.setWished(false);
+            }
+        }
+
+        return list;
+    }
+    
+    @Override
+    public boolean hasNextPage(CursorPagingUtil cursorPaging) {
+        Map<String, Object> map = cursorPaging.toMap();
+        return houseMapper.hasNextPage(map);
     }
 
     @Override

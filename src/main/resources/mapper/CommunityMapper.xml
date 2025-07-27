@@ -21,13 +21,8 @@
 		<result property="commentCount" column="COMMENT_COUNT" />
 	</resultMap>
 
-	<!-- 게시글 목록 -->
-<select id="selectPostList" parameterType="map"
-	resultMap="communityPostMap">
-SELECT *
-FROM (
-	SELECT ROWNUM rnum, A.*
-	FROM (
+	<!-- 커서 기반 페이지네이션: 게시글 목록 -->
+	<select id="selectPostList" parameterType="map" resultMap="communityPostMap">
 		SELECT cp.*, m.id AS writer
 		FROM community_post cp
 		JOIN member m ON cp.member_id = m.member_id
@@ -38,26 +33,48 @@ FROM (
 			<if test="keyword != null and keyword != ''">
 				AND (cp.title LIKE '%' || #{keyword} || '%' OR cp.content LIKE '%' || #{keyword} || '%')
 			</if>
+			<if test="cursor != null">
+				AND cp.id &lt; #{cursor}
+			</if>
 		</where>
 		ORDER BY
 		<choose>
 			<when test="order == 'popular'">
-				cp.like_count DESC
+				cp.like_count DESC, cp.id DESC
 			</when>
 			<when test="order == 'view'">
-				cp.view_count DESC
+				cp.view_count DESC, cp.id DESC
 			</when>
 			<when test="order == 'comment'">
-				cp.comment_count DESC
+				cp.comment_count DESC, cp.id DESC
 			</when>
 			<otherwise>
-				cp.regdate DESC
+				cp.regdate DESC, cp.id DESC
 			</otherwise>
 		</choose>
-	) A
-)
-WHERE rnum BETWEEN #{start} AND #{end}
-</select>
+		FETCH FIRST #{pageSize} ROWS ONLY
+	</select>
+	
+	<!-- 다음 페이지 존재 여부 확인 -->
+	<select id="hasNextPage" parameterType="map" resultType="boolean">
+		SELECT CASE 
+			WHEN COUNT(*) > 0 THEN 1 
+			ELSE 0 
+		END
+		FROM community_post cp
+		<where>
+			<if test="category != null and category != ''">
+				AND cp.category = #{category}
+			</if>
+			<if test="keyword != null and keyword != ''">
+				AND (cp.title LIKE '%' || #{keyword} || '%' OR cp.content LIKE '%' || #{keyword} || '%')
+			</if>
+			<if test="cursor != null">
+				AND cp.id &lt; #{cursor}
+			</if>
+		</where>
+		AND ROWNUM = 1
+	</select>
 
 
 

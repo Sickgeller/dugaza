@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import kr.spring.tour.service.TourService;
 import kr.spring.tour.vo.TourVO;
-import kr.spring.util.PagingUtil;
+import kr.spring.util.CursorPagingUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -24,46 +24,56 @@ public class TourController {
 	@Autowired
 	private TourService tourService;
 
-	// 관광지 메인 화면 호출
+	// 관광지 메인 화면 호출 (커서 기반 페이지네이션)
 	@GetMapping("")
-	public String tourMain(@RequestParam(name = "pageNum", defaultValue="1") int pageNum,
-						   @RequestParam(name = "category", defaultValue="0") int category,
-						   @RequestParam(name = "keyword", defaultValue = "") String keyword,
-						   Model model) {
-		int count = tourService.selectRowCount();
-
-		//페이지 처리
-		PagingUtil page = new PagingUtil(null,keyword,
-				pageNum,count,9,10,
-				"","&category="+category);
-		Map<String,Object> map = 
-				new HashMap<String,Object>();
-		List<TourVO> list = null;
-		if(count > 0) {
-			map.put("start", page.getStartRow());
-			map.put("end", page.getEndRow());
-			map.put("category", category);
-			map.put("keyword", keyword);
-			list = tourService.selectList(map);
+	public String tourMain(
+			@RequestParam(name = "cursor", required = false) Long cursor,
+			@RequestParam(name = "pageSize", defaultValue = "9") int pageSize,
+			@RequestParam(name = "category", defaultValue = "0") int category,
+			@RequestParam(name = "keyword", defaultValue = "") String keyword,
+			Model model) {
+		
+		log.info("관광지 메인 페이지 요청: cursor={}, pageSize={}, category={}, keyword={}", 
+				cursor, pageSize, category, keyword);
+		
+		// 커서 기반 페이지네이션 유틸 생성
+		CursorPagingUtil cursorPaging = new CursorPagingUtil(cursor, pageSize, keyword, String.valueOf(category));
+		
+		// 데이터 조회
+		List<TourVO> list = tourService.selectListByCursor(cursorPaging);
+		
+		// 다음 페이지 존재 여부 확인
+		boolean hasNext = tourService.hasNextPage(cursorPaging);
+		cursorPaging.setHasNext(hasNext);
+		
+		// 다음 페이지 커서 계산 (마지막 항목의 ID)
+		Long nextCursor = null;
+		if (!list.isEmpty() && hasNext) {
+			nextCursor = list.get(list.size() - 1).getContentId();
 		}
-		model.addAttribute("keyword", keyword);
-		model.addAttribute("count", count);
+		
+		// 이전 페이지 커서 (현재 커서가 있으면 그대로 사용)
+		Long prevCursor = cursor;
+		
+		// 페이지네이션 HTML 생성
+		String paginationHtml = cursorPaging.generatePaginationHtml("/tour", nextCursor, prevCursor);
+		
 		model.addAttribute("list", list);
-		model.addAttribute("page", page.getPage());
+		model.addAttribute("keyword", keyword);
 		model.addAttribute("category", category);
+		model.addAttribute("pageSize", pageSize);
+		model.addAttribute("hasNext", hasNext);
+		model.addAttribute("nextCursor", nextCursor);
+		model.addAttribute("prevCursor", prevCursor);
+		model.addAttribute("pagination", paginationHtml);
+		model.addAttribute("cursorPaging", cursorPaging);
 
 		return "views/sample/tour";
 	}
 	
 	// 항목 자세히 보기 - TouristAttractionController로 직접 연결하도록 변경
-	/*
 	@GetMapping("/detail")
-	public String tourDetail(@RequestParam(name = "contentId") Long contentId, Model model) {
-	    int typeId = tourService.selectContentTypeId(contentId);
-	    ContentTypeAdd contentType = ContentTypeAdd.fromId(typeId);
-
-	    return "redirect:/" + contentType.getName() + "/detail?contentId=" + contentId;
+	public String tourDetail(@RequestParam Long id, Model model) {
+		return "redirect:/touristAttraction/detail?id=" + id;
 	}
-	*/
-
 }

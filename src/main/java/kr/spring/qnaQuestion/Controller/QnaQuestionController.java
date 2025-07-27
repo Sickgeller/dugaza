@@ -74,7 +74,7 @@ public class QnaQuestionController {
         if (result.hasErrors()) {
             ValidationUtil.printErrorFields(result);
             model.addAttribute("message", "입력값이 유효하지 않습니다.");
-            model.addAttribute("url", request.getContextPath() + "/faq");
+            model.addAttribute("url", request.getContextPath() + "/common/faq");
             return "views/common/resultAlert";
         }
         
@@ -91,7 +91,7 @@ public class QnaQuestionController {
 
         // 성공 응답
         model.addAttribute("message", "문의가 등록되었습니다.");
-        model.addAttribute("url", request.getContextPath() + "/faq");
+        model.addAttribute("url", request.getContextPath() + "/common/faq");
         return "views/common/resultAlert";
     }
     

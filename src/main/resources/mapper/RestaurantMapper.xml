@@ -87,54 +87,50 @@
 		<include refid="restaurantSearch"/>                          
 	</select>
 	
-	<!-- 전체/검색 목록 -->
-	<select id="selectList" parameterType="map"
-	                        resultMap="tourMap">
-		<!--SELECT
-		  *
-		FROM (SELECT
-		        a.*,
-		        rownum rnum
-		      FROM (SELECT
-		              *
-		            FROM tour_content c WHERE c.content_type_id = 39
-		            <include refid="restaurantSearch"/> 
-		            ORDER BY c.updated_at DESC NULLS LAST)a)
-	<![CDATA[
-		WHERE rnum >= #{start, jdbcType=INTEGER} AND rnum <= #{end, jdbcType=INTEGER}
-	]]>	             -->
-	SELECT *
-		FROM (
-		  SELECT a.*, rownum rnum
-		  FROM (
-		    SELECT 
-		      c.content_id, 
-		      c.title, 
-		      c.addr1, 
-		      c.addr2, 
-		      c.first_image, 
-		      c.updated_at,   
-		      c.content_type_id,                 
-		      NVL(ROUND(AVG(r.rating), 1), 0.0) AS avg_review,
-	          COUNT(r.review_id) AS review_count
-		    FROM tour_content c
-		    LEFT JOIN reviews r ON c.content_id = r.content_id
-		    WHERE c.content_type_id = 39
-		    <include refid="restaurantSearch"/>
-		    GROUP BY 
-		      c.content_id, 
-		      c.title, 
-		      c.addr1, 
-		      c.addr2, 
-		      c.first_image, 
-		      c.updated_at,
-		      c.content_type_id                       
-		    ORDER BY c.updated_at DESC NULLS LAST
-		  ) a
-		)
-		<![CDATA[
-		  WHERE rnum >= #{start, jdbcType=INTEGER} AND rnum <= #{end, jdbcType=INTEGER}
-		]]>
+	<!-- 커서 기반 페이지네이션: 전체/검색 목록 -->
+	<select id="selectList" parameterType="map" resultMap="tourMap">
+		SELECT 
+			c.content_id, 
+			c.title, 
+			c.addr1, 
+			c.addr2, 
+			c.first_image, 
+			c.updated_at,   
+			c.content_type_id,                  
+			NVL(ROUND(AVG(r.rating), 1), 0.0) AS avg_review,
+			COUNT(r.review_id) AS review_count
+		FROM tour_content c
+		LEFT JOIN reviews r ON c.content_id = r.content_id
+		WHERE c.content_type_id = 39
+		<include refid="restaurantSearch"/>
+		<if test="cursor != null">
+			AND c.content_id &lt; #{cursor}
+		</if>
+		GROUP BY 
+			c.content_id, 
+			c.title, 
+			c.addr1, 
+			c.addr2, 
+			c.first_image, 
+			c.updated_at,
+			c.content_type_id                       
+		ORDER BY c.content_id DESC
+		FETCH FIRST #{pageSize} ROWS ONLY
+	</select>
+	
+	<!-- 다음 페이지 존재 여부 확인 -->
+	<select id="hasNextPage" parameterType="map" resultType="boolean">
+		SELECT CASE 
+			WHEN COUNT(*) > 0 THEN 1 
+			ELSE 0 
+		END
+		FROM tour_content c
+		WHERE c.content_type_id = 39
+		<include refid="restaurantSearch"/>
+		<if test="cursor != null">
+			AND c.content_id &lt; #{cursor}
+		</if>
+		AND ROWNUM = 1
 	</select>
 	
 	<!-- 레스토랑 항목 -->

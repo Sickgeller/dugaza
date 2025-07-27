@@ -271,30 +271,40 @@
         ORDER BY R.CREATED_AT DESC, R.REVIEW_ID DESC
     </select>
     
-    <!-- 모든 리뷰 조회 (관리자용) -->
+    <!-- 커서 기반 페이지네이션: 모든 리뷰 조회 (관리자용) -->
     <select id="findAllReviews" resultMap="reviewResultMap" parameterType="map">
-        SELECT * FROM (
-            SELECT ROWNUM AS RN, R.*
-            FROM (
-                SELECT
-                    TO_NUMBER(R.REVIEW_ID) as REVIEW_ID,
-                    TO_NUMBER(R.MEMBER_ID) as MEMBER_ID,
-                    TO_NUMBER(R.CONTENT_ID) as CONTENT_ID,
-                    TO_NUMBER(R.RESERVATION_ID) as RESERVATION_ID,
-                    TO_NUMBER(NVL(R.RATING, 0)) as RATING,
-                    TO_NUMBER(NVL(R.STATUS, 1)) as STATUS,
-                    NVL(R.REVIEW, '') as REVIEW,
-                    R.CREATED_AT,
-                    R.UPDATED_AT,
-                    TO_NUMBER(R.CONTENT_TYPE_ID) as CONTENT_TYPE_ID,
-                    TO_CHAR(M.ID) as ID
-                FROM REVIEWS R
-                JOIN MEMBER M ON M.MEMBER_ID = R.MEMBER_ID
-                ORDER BY R.CREATED_AT DESC, R.REVIEW_ID DESC
-            ) R
-            WHERE ROWNUM &lt;= #{endRow}
-        )
-        WHERE RN &gt;= #{startRow}
+        SELECT
+            TO_NUMBER(R.REVIEW_ID) as REVIEW_ID,
+            TO_NUMBER(R.MEMBER_ID) as MEMBER_ID,
+            TO_NUMBER(R.CONTENT_ID) as CONTENT_ID,
+            TO_NUMBER(R.RESERVATION_ID) as RESERVATION_ID,
+            TO_NUMBER(NVL(R.RATING, 0)) as RATING,
+            TO_NUMBER(NVL(R.STATUS, 1)) as STATUS,
+            NVL(R.REVIEW, '') as REVIEW,
+            R.CREATED_AT,
+            R.UPDATED_AT,
+            TO_NUMBER(R.CONTENT_TYPE_ID) as CONTENT_TYPE_ID,
+            TO_CHAR(M.ID) as ID
+        FROM REVIEWS R
+        JOIN MEMBER M ON M.MEMBER_ID = R.MEMBER_ID
+        <if test="cursor != null">
+            WHERE R.REVIEW_ID &lt; #{cursor}
+        </if>
+        ORDER BY R.REVIEW_ID DESC
+        FETCH FIRST #{pageSize} ROWS ONLY
+    </select>
+    
+    <!-- 다음 페이지 존재 여부 확인 -->
+    <select id="hasNextPage" parameterType="map" resultType="boolean">
+        SELECT CASE 
+            WHEN COUNT(*) > 0 THEN 1 
+            ELSE 0 
+        END
+        FROM REVIEWS R
+        <if test="cursor != null">
+            WHERE R.REVIEW_ID &lt; #{cursor}
+        </if>
+        AND ROWNUM = 1
     </select>
     
     <!-- 리뷰 상태 업데이트 -->

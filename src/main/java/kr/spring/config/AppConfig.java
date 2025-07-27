@@ -36,12 +36,8 @@ import kr.spring.websocket.SocketHandler;
         "kr.spring.**.dao"
 })
 @EnableConfigurationProperties({ApiConfig.class})
-public class AppConfig implements WebMvcConfigurer, WebSocketConfigurer {
+public class AppConfig implements WebMvcConfigurer{
 
-    @Value("${spring.mail.username}")
-    private String google_mail_url;
-    @Value("${spring.mail.password}")
-    private String google_mail_password;
     @Autowired
     private ApplicationContext applicationContext;
 
@@ -54,31 +50,6 @@ public class AppConfig implements WebMvcConfigurer, WebSocketConfigurer {
         }
     }
 
-    // 웹소켓 셋팅
-    @Bean
-    public JavaMailSenderImpl javaMailSenderImpl() {
-        Properties prop = new Properties();
-        prop.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-        prop.put("mail.smtp.starttls.enable", "true");
-        prop.put("mail.transport.protocol", "smtp");
-        prop.put("mail.smtp.auth", "true");
-        prop.put("mail.debug", "true");
-        
-        JavaMailSenderImpl javaMail = new JavaMailSenderImpl();
-        javaMail.setHost("smtp.gmail.com");
-        javaMail.setPort(587);
-        javaMail.setDefaultEncoding("utf-8");
-        javaMail.setUsername(google_mail_url);
-        javaMail.setPassword(google_mail_password);
-        javaMail.setJavaMailProperties(prop);
-        
-        return javaMail;
-    }
-
-    @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new SocketHandler(), "message-ws").setAllowedOrigins("*");
-    }
 
     @Bean
     public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
@@ -97,7 +68,5 @@ public class AppConfig implements WebMvcConfigurer, WebSocketConfigurer {
         
         return sessionFactory.getObject();
     }
-
-    
 
 }

@@ -26,12 +26,9 @@
         
         .kakao-info h3 {
             color: #3C1E1E;
-            margin: 0 0 10px 0;
-        }
-        
-        .kakao-info p {
-            color: #3C1E1E;
-            margin: 5px 0;
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
         }
         
         .option-buttons {
@@ -116,9 +113,6 @@
     <div class="integration-container">
         <div class="kakao-info">
             <h3>카카오 계정 연동</h3>
-            <p th:text="${'카카오 ID: ' + kakaoId}">카카오 ID: 123456789</p>
-            <p th:text="${'이메일: ' + email}">이메일: user@example.com</p>
-            <p th:text="${'닉네임: ' + nickname}">닉네임: 사용자</p>
         </div>
         
         <h2>계정 연동 방법을 선택해주세요</h2>

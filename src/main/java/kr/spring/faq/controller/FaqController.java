@@ -17,7 +17,7 @@ public class FaqController {
 	@Autowired
 	private FaqService faqService;
 
-	@GetMapping("/faq")
+	@GetMapping("/common/faq")
 	public String faqPage(Model model,HttpServletRequest request) {
 		CsrfToken csrf = (CsrfToken) request.getAttribute("_csrf");
 	    if (csrf != null) {

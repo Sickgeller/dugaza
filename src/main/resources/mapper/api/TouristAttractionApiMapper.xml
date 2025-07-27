@@ -2,46 +2,70 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="kr.spring.api.mapper.TouristAttractionApiMapper">
 
+    <!-- UPSERT 구문으로 동시성 문제 해결 -->
     <insert id="insert" parameterType="kr.spring.api.dto.TouristAttrationDetailApiDto">
-        INSERT INTO TOURIST_ATTRACTION_DETAIL (
-            CONTENT_ID,
-            CONTENT_TYPE_ID,
-            ACCOM_COUNT,
-            CHK_BABY_CARRIAGE,
-            CHK_CREDIT_CARD,
-            CHK_PET,
-            EXPAGE_RANGE,
-            EXP_GUIDE,
-            HERITAGE1,
-            HERITAGE2,
-            HERITAGE3,
-            INFO_CENTER,
-            OPEN_DATE,
-            PARKING,
-            REST_DATE,
-            USE_SEASON,
-            USE_TIME
-        ) VALUES (
-                     #{contentId},
-                     #{contentTypeId},
-                     #{accomCount},
-                     #{chkBabyCarriage},
-                     #{chkCreditCard},
-                     #{chkPet},
-                     #{expAgeRange},
-                     #{expGuide},
-                     #{heritage1},
-                     #{heritage2},
-                     #{heritage3},
-                     #{infoCenter},
-                     #{openDate},
-                     #{parking},
-                     #{restDate},
-                     #{useSeason},
-                     #{useTime}
-                 )
+        MERGE INTO TOURIST_ATTRACTION_DETAIL tad
+        USING (SELECT #{contentId} as CONTENT_ID FROM DUAL) src
+        ON (tad.CONTENT_ID = src.CONTENT_ID)
+        WHEN MATCHED THEN
+            UPDATE SET
+                CONTENT_TYPE_ID = #{contentTypeId},
+                ACCOM_COUNT = #{accomCount},
+                CHK_BABY_CARRIAGE = #{chkBabyCarriage},
+                CHK_CREDIT_CARD = #{chkCreditCard},
+                CHK_PET = #{chkPet},
+                EXPAGE_RANGE = #{expAgeRange},
+                EXP_GUIDE = #{expGuide},
+                HERITAGE1 = #{heritage1},
+                HERITAGE2 = #{heritage2},
+                HERITAGE3 = #{heritage3},
+                INFO_CENTER = #{infoCenter},
+                OPEN_DATE = #{openDate},
+                PARKING = #{parking},
+                REST_DATE = #{restDate},
+                USE_SEASON = #{useSeason},
+                USE_TIME = #{useTime}
+        WHEN NOT MATCHED THEN
+            INSERT (
+                CONTENT_ID,
+                CONTENT_TYPE_ID,
+                ACCOM_COUNT,
+                CHK_BABY_CARRIAGE,
+                CHK_CREDIT_CARD,
+                CHK_PET,
+                EXPAGE_RANGE,
+                EXP_GUIDE,
+                HERITAGE1,
+                HERITAGE2,
+                HERITAGE3,
+                INFO_CENTER,
+                OPEN_DATE,
+                PARKING,
+                REST_DATE,
+                USE_SEASON,
+                USE_TIME
+            ) VALUES (
+                #{contentId},
+                #{contentTypeId},
+                #{accomCount},
+                #{chkBabyCarriage},
+                #{chkCreditCard},
+                #{chkPet},
+                #{expAgeRange},
+                #{expGuide},
+                #{heritage1},
+                #{heritage2},
+                #{heritage3},
+                #{infoCenter},
+                #{openDate},
+                #{parking},
+                #{restDate},
+                #{useSeason},
+                #{useTime}
+            )
     </insert>
 
+    <!-- 기존 update는 호환성을 위해 유지 -->
     <update id="update" parameterType="kr.spring.api.dto.TouristAttrationDetailApiDto">
         UPDATE TOURIST_ATTRACTION_DETAIL
         SET

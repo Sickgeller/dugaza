@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import kr.spring.community.dao.CommunityMapper;
 import kr.spring.community.vo.CommunityPostVO;
+import kr.spring.util.CursorPagingUtil;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -23,6 +24,19 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public List<CommunityPostVO> selectPostList(Map<String, Object> map) {
         return communityMapper.selectPostList(map);
+    }
+    
+    @Override
+    public List<CommunityPostVO> selectPostListByCursor(CursorPagingUtil cursorPaging) {
+        // CursorPagingUtil을 Map으로 변환
+        Map<String, Object> map = cursorPaging.toMap();
+        return communityMapper.selectPostListByCursor(map);
+    }
+    
+    @Override
+    public boolean hasNextPage(CursorPagingUtil cursorPaging) {
+        Map<String, Object> map = cursorPaging.toMap();
+        return communityMapper.hasNextPage(map);
     }
 
     @Override
