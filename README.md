@@ -90,7 +90,7 @@ DUGAZA : 공공 API 활용 여행 정보 통합 플랫폼
 ## 📎 문서 링크
 
 - [`docs/transportation.md`](./docs/transportation.md) - 허브역 기반 기차 검색 구조
-- [`docs/security.md`](./docs/security.md) - 다중 사용자 인증 및 OAuth2 처리 흐름
+- [`docs/security.md`](./docs/auth.md) - 다중 사용자 인증 및 OAuth2 처리 흐름
 - [`docs/aop.md`](./docs/aop.md) - AOP 성능 측정 및 로깅 구조
 - [`docs/api.md`](./docs/api.md) - API 구성 및 BaseApiClient 설계
 - [`docs/screenshots.md`](./docs/screenshots.md) - 전체 기능별 UI 화면 모음
