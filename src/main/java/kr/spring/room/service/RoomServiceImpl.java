@@ -92,4 +92,15 @@ public class RoomServiceImpl implements RoomService {
     public int getTotalRoomCountByHouseId(Long houseId) {
         return roomMapper.countRoomsByHouseId(houseId);
     }
+
+    @Override
+    public List<RoomDetailVO> getRoomsByContentType(String contentType, Long contentId, int page, int pageSize) {
+        switch (contentType) {
+            case "house":
+                return getRoomsByHouseId(contentId, page, pageSize);
+            // case "hotel": ...
+            default:
+                throw new IllegalArgumentException("지원하지 않는 contentType: " + contentType);
+        }
+    }
 }

@@ -57,6 +57,7 @@ public class EventController {
 			map.put("start", page.getStartRow());
 			map.put("end", page.getEndRow());
 			map.put("keyword", keyword);
+			map.put("pageSize", 9); // 명확히 int 타입으로 추가
 			list = eventService.selectList(map);
 		}
 		model.addAttribute("keyword", keyword);

@@ -207,55 +207,10 @@
             </section>
 
 
-            <section class="room-section" th:if="${roomList != null and !roomList.isEmpty()}">
+            <section class="room-section">
                 <h2>객실 안내</h2>
-                <div class="room-grid">
-                    <div class="room-item" th:each="room : ${roomList}">
-                        <div class="room-card">
-                            <img th:src="${room.image1 != null ? room.image1 : '../images/accommodation/room1.jpg'}" th:alt="${room.roomName}">
-                            <div class="room-info">
-                                <h3 th:text="${room.roomName}">스위트룸</h3>
-                                <div class="room-features">
-                                    <span th:if="${room.maximumCapacity != null}"><i class="fas fa-user"></i> 최대 [[${room.maximumCapacity}]]인</span>
-                                    <span th:if="${room.roomSize != null}"><i class="fas fa-expand"></i> [[${room.roomSize}]]</span>
-                                    <span th:if="${room.bedInfo != null}"><i class="fas fa-bed"></i> [[${room.bedInfo}]]</span>
-                                </div>
-                                <p class="room-description" th:if="${room.description != null}" th:text="${room.description}">
-                                    최고급 인테리어와 넓은 공간을 자랑하는 스위트룸으로, 특별한 날을 위한 최적의 선택입니다.
-                                </p>
-                                <div class="room-amenities">
-                                    <span th:if="${room.wifi == 1}"><i class="fas fa-wifi"></i> 무료 WiFi</span>
-                                    <span th:if="${room.tv == 1}"><i class="fas fa-tv"></i> 스마트 TV</span>
-                                    <span th:if="${room.aircon == 1}"><i class="fas fa-snowflake"></i> 에어컨</span>
-                                    <span th:if="${room.bathroom == 1}"><i class="fas fa-bath"></i> 욕조</span>
-                                    <span th:if="${room.sofa == 1}"><i class="fas fa-couch"></i> 소파</span>
-                                    <span th:if="${room.kitchen == 1}"><i class="fas fa-utensils"></i> 주방</span>
-                                    <span th:if="${room.pet == 1}"><i class="fas fa-paw"></i> 반려동물 동반</span>
-                                    <span th:if="${room.smokingRoom == 1}"><i class="fas fa-smoking"></i> 흡연실</span>
-                                </div>
-                                <div class="room-price" th:if="${room.price != null}">
-                                    <span class="price" th:text="${#numbers.formatInteger(room.price, 3, 'COMMA')} + '원'">300,000원</span>
-                                    <span class="unit">/ 1박</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- 페이지네이션 블록 -->
-                <div class="pagination">
-                    <ul>
-                        <li th:if="${currentPage > 1}">
-                            <a th:href="@{|/house/detail?contentId=${info.contentId}&page=${currentPage-1}&pageSize=${pageSize}|}">&laquo; 이전</a>
-                        </li>
-                        <li th:each="i : ${#numbers.sequence(1, totalPages)}"
-                            th:classappend="${i == currentPage} ? 'active'">
-                            <a th:href="@{|/house/detail?contentId=${info.contentId}&page=${i}&pageSize=${pageSize}|}" th:text="${i}"></a>
-                        </li>
-                        <li th:if="${currentPage < totalPages}">
-                            <a th:href="@{|/house/detail?contentId=${info.contentId}&page=${currentPage+1}&pageSize=${pageSize}|}">다음 &raquo;</a>
-                        </li>
-                    </ul>
-                </div>
+                <div id="roomList"></div>
+                <div id="roomPagination"></div>
             </section>
 
             <section class="map-section">
@@ -397,28 +352,8 @@
                         });
                     });
                 </script>
-                <div class="review-list">
-                    <div class="review-item" th:each="review : ${reviewList}">
-                        <div class="review-user">
-                            <img src="../images/users/profile3.jpg" alt="사용자 프로필">
-                            <div class="user-info">
-                                <h4 th:text="${review.id}"></h4>
-                                <div class="rating-stars" th:data-rating="${review.rating}">
-                                    <!--  <i class="fas fa-star"></i> -->
-                                </div>
-                            </div>
-                            <span class="review-date" th:text="${review.createdAt}"></span>
-                        </div>
-                        <p class="review-text" th:text="${review.review}">
-
-                        </p>
-                        <!-- <div class="review-images">
-                            <img src="../images/accommodation/hanok.jpg" alt="리뷰 이미지 1">
-                            <img src="../images/accommodation/hotel-main.jpg" alt="리뷰 이미지 2">
-                        </div> -->
-                    </div>
-                    <!-- 추가 리뷰 아이템들 -->
-                </div>
+                <div id="reviewList"></div>
+                <div id="reviewPagination"></div>
                 <script>
                     document.querySelectorAll('.rating-stars').forEach(container => {
                         const rating = parseFloat(container.dataset.rating);
@@ -443,18 +378,72 @@
                         container.innerHTML = starsHtml;
                     });
                 </script>
-                <div class="review-pagination">
-                    <div class="page-numbers">
-                        <a href="#" class="active">1</a>
-                        <a href="#">2</a>
-                        <a href="#">3</a>
-                        <a href="#">4</a>
-                        <a href="#">5</a>
-                    </div>
-                </div>
             </section>
         </div>
     </div>
 </main>
+<script>
+const contentId = /*[[${info.contentId}]]*/;
+const contentType = 'house';
+
+function loadRooms(page=1, pageSize=5) {
+  fetch(`/api/detail/${contentType}/${contentId}/rooms?page=${page}&pageSize=${pageSize}`)
+    .then(res => res.json())
+    .then(data => renderRooms(data));
+}
+function renderRooms(rooms) {
+  const container = document.getElementById('roomList');
+  container.innerHTML = rooms.map(room => `
+    <div class="room-item">
+      <div class="room-card">
+        <img src="${room.image1 || '/assets/images/accommodation/room1.jpg'}" alt="${room.roomName}">
+        <div class="room-info">
+          <h3>${room.roomName}</h3>
+          <div class="room-features">
+            ${room.maximumCapacity ? `<span><i class="fas fa-user"></i> 최대 ${room.maximumCapacity}인</span>` : ''}
+            ${room.roomSize ? `<span><i class="fas fa-expand"></i> ${room.roomSize}</span>` : ''}
+            ${room.bedInfo ? `<span><i class="fas fa-bed"></i> ${room.bedInfo}</span>` : ''}
+          </div>
+          <p class="room-description">${room.description || ''}</p>
+          <div class="room-amenities">
+            ${room.wifi ? '<span><i class="fas fa-wifi"></i> 무료 WiFi</span>' : ''}
+          </div>
+          <div class="room-price">
+            <span class="price">${room.price ? room.price.toLocaleString() + '원' : ''}</span>
+            <span class="unit">/ 1박</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadReviews(page=1, pageSize=5) {
+  fetch(`/api/detail/${contentType}/${contentId}/reviews?page=${page}&pageSize=${pageSize}`)
+    .then(res => res.json())
+    .then(data => renderReviews(data));
+}
+function renderReviews(reviews) {
+  const container = document.getElementById('reviewList');
+  container.innerHTML = reviews.map(review => `
+    <div class="review-item">
+      <div class="review-user">
+        <img src="/assets/images/users/profile3.jpg" alt="사용자 프로필">
+        <div class="user-info">
+          <h4>${review.id}</h4>
+          <div class="rating-stars" data-rating="${review.rating}"></div>
+        </div>
+        <span class="review-date">${review.createdAt}</span>
+      </div>
+      <p class="review-text">${review.review}</p>
+    </div>
+  `).join('');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  loadRooms();
+  loadReviews();
+});
+</script>
 </body>
 </html> 

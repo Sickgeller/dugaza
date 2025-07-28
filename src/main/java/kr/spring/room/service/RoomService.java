@@ -25,4 +25,6 @@ public interface RoomService {
     // houseId로 room 목록 조회 (RoomDetailVO 사용)
     List<RoomDetailVO> getRoomsByHouseId(Long houseId, int page, int pageSize);
     int getTotalRoomCountByHouseId(Long houseId);
+
+    List<RoomDetailVO> getRoomsByContentType(String contentType, Long contentId, int page, int pageSize);
 }

@@ -189,102 +189,10 @@
                 </section>
 
                 <!-- 리뷰 섹션 -->
-                <section class="review-section" th:if="${status != null}">
-                    <div class="review-header">
-                        <h2>리뷰</h2>
-                    </div>
-                    <div class="review-stats">
-                        <div class="rating-average">
-                            <div class="rating-number" th:text="${#numbers.formatDecimal(status.averageRating, 0, 1)}"></div>
-                            <div class="rating-stars" th:data-rating="${status.averageRating}"></div>
-                            <div class="rating-count" th:text="${status.totalCount + '개의 리뷰'}"></div>
-                        </div>
-                        <div class="rating-bars">
-                            <div class="rating-bar">
-                                <span class="stars">5점</span>
-                                <div class="bar-container">
-                                    <div class="bar" th:style="'width:' + ${status.fiveStarRatio} + '%'"></div>
-                                </div>
-                                <span class="percentage" th:text="${#numbers.formatDecimal(status.fiveStarRatio, 0, 1) + '%'}">0%</span>
-                            </div>
-                            <div class="rating-bar">
-                                <span class="stars">4점</span>
-                                <div class="bar-container">
-                                    <div class="bar" th:style="'width:' + ${status.fourStarRatio} + '%'"></div>
-                                </div>
-                                <span class="percentage" th:text="${#numbers.formatDecimal(status.fourStarRatio, 0, 1) + '%'}">0%</span>
-                            </div>
-                            <div class="rating-bar">
-                                <span class="stars">3점</span>
-                                <div class="bar-container">
-                                    <div class="bar" th:style="'width:' + ${status.threeStarRatio} + '%'"></div>
-                                </div>
-                                <span class="percentage" th:text="${#numbers.formatDecimal(status.threeStarRatio, 0, 1) + '%'}">0%</span>
-                            </div>
-                            <div class="rating-bar">
-                                <span class="stars">2점</span>
-                                <div class="bar-container">
-                                    <div class="bar" th:style="'width:' + ${status.twoStarRatio} + '%'"></div>
-                                </div>
-                                <span class="percentage" th:text="${#numbers.formatDecimal(status.twoStarRatio, 0, 1) + '%'}">0%</span>
-                            </div>
-                            <div class="rating-bar">
-                                <span class="stars">1점</span>
-                                <div class="bar-container">
-                                    <div class="bar" th:style="'width:' + ${status.oneStarRatio} + '%'"></div>
-                                </div>
-                                <span class="percentage" th:text="${#numbers.formatDecimal(status.oneStarRatio, 0, 1) + '%'}">0%</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="review-form-wrapper">
-                        <h3>리뷰 작성</h3>
-                        <form th:action="@{/touristAttraction/saveReview}" method="post">
-                            <input type="hidden" name="contentId" th:value="${info.contentId}" />
-                    
-                            <div class="form-group rating-input">
-                                <label>별점</label>
-                                <div class="star-rating-input">
-                                    <input type="hidden" name="rating" id="rating-value" value="0" />
-                                    <i class="far fa-star" data-value="1"></i>
-                                    <i class="far fa-star" data-value="2"></i>
-                                    <i class="far fa-star" data-value="3"></i>
-                                    <i class="far fa-star" data-value="4"></i>
-                                    <i class="far fa-star" data-value="5"></i>
-                                </div>
-                            </div>
-                    
-                            <div class="form-group">
-                                <label for="content">내용</label>
-                                <textarea name="review" id="content" class="form-control" required rows="5" placeholder="리뷰 내용을 작성하세요"></textarea>
-                            </div>
-                    
-                            <div class="form-group">
-                                <button type="submit" class="submit-review-btn">리뷰 등록</button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="review-list">
-                        <div class="review-item" th:each="review : ${reviewList}">
-                            <div class="review-user">
-                                <img src="../images/users/profile3.jpg" alt="사용자 프로필">
-                                <div class="user-info">
-                                    <h4 th:text="${review.id}"></h4>
-                                    <div class="rating-stars" th:data-rating="${review.rating}"></div>
-                                </div>
-                                <span class="review-date" th:text="${review.createdAt}"></span>
-                            </div>
-                            <p class="review-text" th:text="${review.review}"></p>
-                        </div>
-                    </div>
-
-                    <div class="review-pagination">
-                        <div class="page-numbers">
-                            <a href="#" class="active">1</a>
-                        </div>
-                    </div>
+                <section class="review-section">
+                    <h2>리뷰</h2>
+                    <div id="reviewList"></div>
+                    <div id="reviewPagination"></div>
                 </section>
             </div>
         </div>
@@ -335,6 +243,36 @@
                 container.innerHTML = starsHtml;
             });
         </script>
+        <script>
+const contentId = /*[[${info.contentId}]]*/;
+const contentType = 'tourist-attraction';
+
+function loadReviews(page=1, pageSize=5) {
+  fetch(`/api/detail/${contentType}/${contentId}/reviews?page=${page}&pageSize=${pageSize}`)
+    .then(res => res.json())
+    .then(data => renderReviews(data));
+}
+function renderReviews(reviews) {
+  const container = document.getElementById('reviewList');
+  container.innerHTML = reviews.map(review => `
+    <div class="review-item">
+      <div class="review-user">
+        <img src="/assets/images/users/profile3.jpg" alt="사용자 프로필">
+        <div class="user-info">
+          <h4>${review.id}</h4>
+          <div class="rating-stars" data-rating="${review.rating}"></div>
+        </div>
+        <span class="review-date">${review.createdAt}</span>
+      </div>
+      <p class="review-text">${review.review}</p>
+    </div>
+  `).join('');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  loadReviews();
+});
+</script>
     </main>
 </body>
 </html> 

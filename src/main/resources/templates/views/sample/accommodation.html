@@ -125,6 +125,8 @@
                 </article>
             </div>
 
+            <!-- 아래는 page 객체 기반 Thymeleaf 페이지네이션 코드. 완전히 제거 -->
+            <!--
             <div class="pagination" th:if="${count > 0}">
                 <a th:href="@{/house/list(pageNum=${page.startPage - 1},keyword=${param.keyword},cat3=${param.cat3},checkIn=${param.checkIn},checkOut=${param.checkOut},numberOfGuests=${param.numberOfGuests})}" th:if="${page.startPage > 1}" class="prev-btn"><i class="fas fa-chevron-left"></i></a>
                 <div class="page-numbers">
@@ -134,6 +136,7 @@
                 </div>
                 <a th:href="@{/house/list(pageNum=${page.endPage + 1},keyword=${param.keyword},cat3=${param.cat3},checkIn=${param.checkIn},checkOut=${param.checkOut},numberOfGuests=${param.numberOfGuests})}" th:if="${page.endPage < page.totalPage}" class="next-btn"><i class="fas fa-chevron-right"></i></a>
             </div>
+            -->
         </section>
 
         <script>

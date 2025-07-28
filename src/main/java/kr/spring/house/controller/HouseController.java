@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.ResponseEntity;
 
 import jakarta.servlet.http.HttpSession;
 import kr.spring.auth.security.CustomUserDetails;
@@ -39,6 +42,8 @@ import kr.spring.wishlist.vo.WishListVO;
 import lombok.extern.slf4j.Slf4j;
 import kr.spring.util.CursorPagingUtil;
 
+import java.util.function.Supplier;
+
 @Slf4j
 @Controller
 @RequestMapping("/house")
@@ -52,6 +57,16 @@ public class HouseController {
 	private final RoomService roomService;
 //	private final SellerService sellerService;
 	private final TourService tourService;
+
+	// 공통 정보 조회 유틸
+	public static <T> T getOrInsertAndGet(Supplier<T> select, Runnable insert) {
+		T result = select.get();
+		if (result == null) {
+			insert.run();
+			result = select.get();
+		}
+		return result;
+	}
 
 	@GetMapping("")
 	public String accommodationMain(
@@ -158,76 +173,31 @@ public class HouseController {
 	// 항목 자세히 보기
 	@GetMapping("/detail")
 	public String houseDetail(@RequestParam(name = "contentId") Long contentId,
-                              @RequestParam(name = "page", defaultValue = "1") int page,
-                              @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
-                              Model model, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        // 숙소 정보
-        HouseVO vo = null;
-            vo = houseService.selectHouse(contentId);
-            if(vo == null) {
-                houseService.insertWithApi(contentId);
-                vo = houseService.selectHouse(contentId);
-            }
-
-        if (vo == null) {
-            model.addAttribute("message", "정보를 가져올 수 없는 숙소입니다.");
-            model.addAttribute("redirectUrl", "/house");
-            return "views/common/message";
-        }
-
-        // 숙소별 리뷰 목록
-        List<BaseReviewVO> reviewList = baseReviewService.getHouseReviews(contentId, 1, 10);
-        // 숙소별 리뷰 통계
-        ReviewStatisticsVO status = reviewStatisticsService.getReviewStatisticsByHouse(contentId);
-        // 숙소에 찜 여부
-        WishListVO wish_vo = new WishListVO();
-        wish_vo.setContentId(contentId);
-        wish_vo.setContentType(32L); // 숙소 contentTypeId
-        Long memberId = -1L; // Default to -1 for non-logged-in users
-        WishListVO db_wish = null;
-        if (customUserDetails != null && customUserDetails.getMember() != null) {
-            memberId = customUserDetails.getMember().getMemberId();
-            wish_vo.setMemberId(memberId);
-            db_wish = wishListService.selectWishList(wish_vo);
-        }
-
-        // seller 정보 조회
-//        HouseSellerDetailVO sellerDetail = sellerService.getSellerByHouseId(contentId);
-        
-        // room 정보 조회 (페이징 적용)
-        List<RoomDetailVO> roomList = roomService.getRoomsByHouseId(contentId, page, pageSize);
-        int totalRooms = roomService.getTotalRoomCountByHouseId(contentId);
-        
-        // room이 있으면 seller 정보도 다시 조회
-        if (roomList != null && !roomList.isEmpty()) {
-//            sellerDetail = sellerService.getSellerByHouseId(contentId);
-        }
-
-        model.addAttribute("info",vo);
-        model.addAttribute("reviewList",reviewList);
-        model.addAttribute("status", status);
-        model.addAttribute("wish", db_wish);
-//        model.addAttribute("sellerDetail", sellerDetail);
-        model.addAttribute("roomList", roomList);
-        model.addAttribute("totalRooms", totalRooms);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("pageSize", pageSize);
-        model.addAttribute("totalPages", (int)Math.ceil((double)totalRooms / pageSize));
-
-        // API에서 정보를 제공하지 않을 때 공통 템플릿 사용
-        if(vo == null) {
-//           tour_content에서 기본 정보만 가져오기 (HouseService에 selectTourContent 메서드가 있다고 가정)
-             TourVO tourInfo = tourService.selectTourContent(contentId);
-             if(tourInfo != null) {
-                 model.addAttribute("info", tourInfo);
-                 model.addAttribute("contentTypeName", "숙소");
-                 model.addAttribute("reviewActionUrl", "/house/saveReview");
-                 return "views/common/content-detail-basic";
-             }
-        }
-
-        return "views/house/house-detail";
+                         Model model, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    // 숙소 정보
+    HouseVO vo = getOrInsertAndGet(() -> houseService.selectHouse(contentId), () -> houseService.insertWithApi(contentId));
+    if (vo == null) {
+        model.addAttribute("message", "정보를 가져올 수 없는 숙소입니다.");
+        model.addAttribute("redirectUrl", "/house");
+        return "views/common/message";
     }
+    // 숙소에 찜 여부
+    WishListVO wish_vo = new WishListVO();
+    wish_vo.setContentId(contentId);
+    wish_vo.setContentType(32L); // 숙소 contentTypeId
+    Long memberId = -1L;
+    WishListVO db_wish = null;
+    if (customUserDetails != null && customUserDetails.getMember() != null) {
+        memberId = customUserDetails.getMember().getMemberId();
+        wish_vo.setMemberId(memberId);
+        db_wish = wishListService.selectWishList(wish_vo);
+    }
+    ReviewStatisticsVO status = reviewStatisticsService.getReviewStatisticsByHouse(contentId);
+    model.addAttribute("info", vo);
+    model.addAttribute("wish", db_wish);
+    model.addAttribute("status", status);
+    return "views/house/house-detail";
+}
 
 	// 리뷰 작성
 	@PostMapping("/saveReview")
@@ -246,3 +216,4 @@ public class HouseController {
 
 	
 }
+

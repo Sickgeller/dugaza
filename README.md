@@ -41,14 +41,14 @@ DUGAZA : 공공 API 활용 여행 정보 통합 플랫폼
 
 ## 🧪 기술 스택
 
-| 분야 | 기술                                                    |
-|------|-------------------------------------------------------|
-| Backend | Spring Boot 3.x, Spring Security, Spring AOP, MyBatis |
-| DB | MySQL                                                 |
-| API 통신 | RestClient, WebClient (비교 후 RestClient 채택)            |
-| 인증 | FormLogin, OAuth2 (Kakao), Remember-Me                |
-| UI | Thymeleaf, Bootstrap, JavaScript                      |
-| 기타 | GitHub Actions (배포 자동화 준비), AOP Logging               |
+| 분야 | 기술                                                      |
+|------|---------------------------------------------------------|
+| Backend | Spring Boot , Spring Security, Spring AOP               |
+| DB | Oracle, MyBatis                                         |
+| API 통신 | RestClient, WebClient (비교 후 RestClient 채택)              |
+| 인증 | FormLogin, OAuth2 (Kakao), Remember-Me, Spring Security |
+| UI | Thymeleaf, Bootstrap, JavaScript                        |
+| 기타 | GitHub Actions (배포 자동화 준비), AOP Logging                 |
 
 ---
 
@@ -64,6 +64,7 @@ DUGAZA : 공공 API 활용 여행 정보 통합 플랫폼
 
 
 ## 🔎 폴더 구조
+<pre lang="md"> 
 ├── controller/
 ├── service/
 ├── mapper/
@@ -74,6 +75,7 @@ DUGAZA : 공공 API 활용 여행 정보 통합 플랫폼
 ├── entity/
 ├── templates/
 └── docs/ # 상세 설명 분리
+</pre>
 
 
 ## 📎 문서 링크
@@ -83,17 +85,17 @@ DUGAZA : 공공 API 활용 여행 정보 통합 플랫폼
 - [`docs/aop.md`](./docs/aop.md) - AOP 성능 측정 및 로깅 구조
 - [`docs/api.md`](./docs/api.md) - API 구성 및 BaseApiClient 설계
 - [`docs/screenshots.md`](./docs/screenshots.md) - 전체 기능별 UI 화면 모음
+- [`docs/etc.md`]
 
 
 ## 💬 구현하며 마주한 기술적 도전
 
-| 도전 과제 | 해결 방법 |
-|-----------|------------|
-| 기차 하위역 간 검색 불가 문제 | 허브역 기반의 우회 경로 검색 알고리즘 구현 |
-| 공공 API 1건씩만 조회 가능 | Lazy Insert 구조 + 비동기 WebClient 처리 |
-| 다중 사용자 로그인 처리 | Spring Security Filter Chain 분리 적용 |
-| 공통 데이터 반복 주입 문제 | `@ControllerAdvice` 기반 AOP로 모델 자동 주입 |
-| 로그 일관성 부족 | AOP 기반 로깅 체계 구축 (카테고리/성능/파라미터 기준) |
+| 도전 과제                          | 해결 방법                                |
+|--------------------------------|--------------------------------------|
+| 공공 API에서 상세 관광데이터를 1건씩만 조회 가능  | 지연로딩 구조로 API호출 후 동기화                 |
+| Member, Seller 나뉘어진 사용자 로그인 처리 | Spring Security Filter Chain 분리 적용   |
+| 공통 데이터 반복 주입 문제                | `@ControllerAdvice` 기반 AOP로 모델 자동 주입 |
+| 로그 일관성 부족                      | AOP 기반 로깅 체계 구축 (카테고리/성능/파라미터 기준)    |
 
 
 

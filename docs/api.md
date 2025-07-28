@@ -7,7 +7,7 @@
 DUGAZA는 **여행 정보 통합 플랫폼**으로, 관광청, 기차, 고속버스, 카카오 등 다양한 외부 API를 통합하여 사용자에게 풍부한 여행 정보를 제공합니다.
 
 ### 🌟 핵심 특징
-- **다중 HTTP 클라이언트**: RestClient + WebClient 성능 비교 지원
+- **다중 HTTP 클라이언트**: BaseClient 인터페이스로 RestClient + WebClient 둘다 사용ㄱ ㅏ능
 - **통합 API 인터페이스**: 모든 외부 API를 일관된 방식으로 호출
 - **실시간 성능 모니터링**: AOP 기반 실행 시간 측정 및 로깅
 - **비동기 로깅**: API 호출 이력 추적 및 분석
@@ -24,7 +24,7 @@ DUGAZA는 **여행 정보 통합 플랫폼**으로, 관광청, 기차, 고속버
 ├─────────────────────────────────────────────────────────────┤
 │  🔌 HTTP Client Layer                                      │
 │  ├── RestClient (기본)                                     │
-│  ├── WebClient (성능 비교용)                               │
+│  ├── WebClient (구현후 비교후 기각)                               │
 │  └── Interface: BaseApiClient                              │
 ├─────────────────────────────────────────────────────────────┤
 │  🎯 API Client Layer                                       │
@@ -97,7 +97,7 @@ public interface BaseApiClient {
 }
 ```
 
-#### **RestClient 구현체 (기본)**
+#### **RestClient 구현체 (사용중)**
 ```java
 @Slf4j
 @Primary
@@ -305,46 +305,7 @@ public class ExpressBusApiClient {
 }
 ```
 
-### 3. 📊 성능 모니터링 시스템
-
-#### **AOP 기반 실행 시간 측정**
-```java
-@Aspect
-@Component
-@Slf4j
-public class LogExecutionTimeAspect {
-
-    @Around("@annotation(logExecutionTime)")
-    public Object logExecutionTime(ProceedingJoinPoint joinPoint, LogExecutionTime logExecutionTime) throws Throwable {
-        long startTime = System.currentTimeMillis();
-        
-        try {
-            Object result = joinPoint.proceed();
-            long endTime = System.currentTimeMillis();
-            long executionTime = endTime - startTime;
-            
-            log.info("[{}] {} - 실행 시간: {}ms", 
-                    logExecutionTime.category(),
-                    joinPoint.getSignature().getName(),
-                    executionTime);
-            
-            return result;
-        } catch (Exception e) {
-            long endTime = System.currentTimeMillis();
-            long executionTime = endTime - startTime;
-            
-            log.error("[{}] {} - 실행 시간: {}ms, 오류: {}", 
-                    logExecutionTime.category(),
-                    joinPoint.getSignature().getName(),
-                    executionTime,
-                    e.getMessage());
-            throw e;
-        }
-    }
-}
-```
-
-#### **비동기 API 로깅**
+#### **API 로깅 DB에 동기화**
 ```java
 @Slf4j
 @Component
@@ -562,26 +523,26 @@ public class WebClientConfig {
 ## 📊 API 목록
 
 ### 🏛️ 관광청 API
-| API | 설명 | 엔드포인트 | ContentTypeId |
-|-----|------|------------|---------------|
-| 지역 코드 | 전국 지역 코드 조회 | `/areaCode2` | - |
-| 카테고리 코드 | 카테고리 코드 조회 | `/categoryCode2` | - |
-| 관광지 검색 | 지역별 관광지 검색 | `/searchCategory1` | 12 |
-| 관광지 상세 | 관광지 상세 정보 | `/detailCommon1` | 12 |
-| 관광지 소개 | 관광지 소개 정보 | `/detailIntro2` | 12 |
-| 숙박 검색 | 지역별 숙박 검색 | `/searchStay2` | 32 |
-| 숙박 상세 | 숙박 상세 정보 | `/detailCommon1` | 32 |
-| 숙박 소개 | 숙박 소개 정보 | `/detailIntro2` | 32 |
-| 음식점 검색 | 지역별 음식점 검색 | `/searchRestaurant1` | 39 |
-| 음식점 상세 | 음식점 상세 정보 | `/detailCommon1` | 39 |
-| 음식점 소개 | 음식점 소개 정보 | `/detailIntro2` | 39 |
-| 이벤트 검색 | 지역별 이벤트 검색 | `/searchFestival2` | 15 |
-| 이벤트 상세 | 이벤트 상세 정보 | `/detailCommon1` | 15 |
-| 이벤트 소개 | 이벤트 소개 정보 | `/detailIntro2` | 15 |
-| 여행코스 소개 | 여행코스 소개 정보 | `/detailIntro2` | 25 |
-| 레포츠 소개 | 레포츠 소개 정보 | `/detailIntro2` | 28 |
-| 문화시설 소개 | 문화시설 소개 정보 | `/detailIntro2` | 14 |
-| 쇼핑 소개 | 쇼핑 소개 정보 | `/detailIntro2` | 38 |
+| API | 설명 | 엔드포인트 | 
+|-----|------|------------|
+| 지역 코드 | 전국 지역 코드 조회 | `/areaCode2` |
+| 카테고리 코드 | 카테고리 코드 조회 | `/categoryCode2` | 
+| 관광지 검색 | 지역별 관광지 검색 | `/searchCategory1` |
+| 관광지 상세 | 관광지 상세 정보 | `/detailCommon1` | 
+| 관광지 소개 | 관광지 소개 정보 | `/detailIntro2` |
+| 숙박 검색 | 지역별 숙박 검색 | `/searchStay2` | 
+| 숙박 상세 | 숙박 상세 정보 | `/detailCommon1` |
+| 숙박 소개 | 숙박 소개 정보 | `/detailIntro2` | 
+| 음식점 검색 | 지역별 음식점 검색 | `/searchRestaurant1` | 
+| 음식점 상세 | 음식점 상세 정보 | `/detailCommon1` | 
+| 음식점 소개 | 음식점 소개 정보 | `/detailIntro2` |
+| 이벤트 검색 | 지역별 이벤트 검색 | `/searchFestival2` | 
+| 이벤트 상세 | 이벤트 상세 정보 | `/detailCommon1` | 
+| 이벤트 소개 | 이벤트 소개 정보 | `/detailIntro2` |
+| 여행코스 소개 | 여행코스 소개 정보 | `/detailIntro2` | 
+| 레포츠 소개 | 레포츠 소개 정보 | `/detailIntro2` | 
+| 문화시설 소개 | 문화시설 소개 정보 | `/detailIntro2` |
+| 쇼핑 소개 | 쇼핑 소개 정보 | `/detailIntro2` | 
 
 ### 🚄 기차 API
 | API | 설명 | 엔드포인트 |
@@ -628,39 +589,6 @@ public class TourController {
 }
 ```
 
-### 2. **성능 테스트 실행**
-```bash
-# 성능 비교 테스트 (기본 5회)
-GET /api/test/performance
-
-# 성능 비교 테스트 (10회)
-GET /api/test/performance?testCount=10
-```
-
-### 3. **API 로그 조회**
-```sql
--- 최근 API 호출 로그 조회
-SELECT 
-    API_NAME,
-    REQUEST_TIME,
-    EXECUTION_TIME,
-    IS_SUCCESS,
-    ITEM_COUNT
-FROM API_LOG 
-ORDER BY REQUEST_TIME DESC;
-
--- 성공률 통계
-SELECT 
-    API_NAME,
-    COUNT(*) as TOTAL_CALLS,
-    SUM(CASE WHEN IS_SUCCESS = 1 THEN 1 ELSE 0 END) as SUCCESS_CALLS,
-    AVG(EXECUTION_TIME) as AVG_EXECUTION_TIME
-FROM API_LOG 
-GROUP BY API_NAME;
-```
-
----
-
 ## 📈 성능 및 모니터링
 
 ### 🔍 로깅 시스템
@@ -674,69 +602,8 @@ log.info("[RestClientAPI] getAreaCodeData - 실행 시간: 245ms");
 log.info("[WebClientAPI] getAreaCodeData - 실행 시간: 312ms");
 ```
 
-### 📊 성능 메트릭
-- **평균 응답 시간**: 200-500ms
-- **성공률**: 95%+
-- **동시 처리**: 100+ 요청/초
-- **메모리 사용량**: 50MB 이하
-
-### 🎯 성능 최적화
-- **Connection Pooling**: HTTP 연결 재사용
-- **비동기 로깅**: 메인 로직 성능 영향 최소화
-- **응답 캐싱**: 자주 요청되는 데이터 캐시
-- **타임아웃 설정**: 적절한 연결/읽기 타임아웃
-
 ---
 
-## 🔄 확장 가능성
-
-### 🎯 향후 개선 계획
-
-#### **1. 캐싱 시스템 추가**
-```java
-@Cacheable(value = "areaCodes", key = "#root.method.name")
-public List<AreaCodeApiDto> getAreaCodeData() {
-    URI uri = baseApiClient.makeTourUri("/areaCode2");
-    return baseApiClient.callApi(uri, this::createAreaCodeDto);
-}
-```
-
-#### **2. Circuit Breaker 패턴**
-```java
-@CircuitBreaker(name = "tourApi", fallbackMethod = "getAreaCodeDataFallback")
-public List<AreaCodeApiDto> getAreaCodeData() {
-    // API 호출 로직
-}
-
-public List<AreaCodeApiDto> getAreaCodeDataFallback(Exception e) {
-    // 폴백 로직 (캐시된 데이터 반환)
-    return getCachedAreaCodeData();
-}
-```
-
-#### **3. Rate Limiting**
-```java
-@RateLimiter(name = "apiRateLimiter")
-public List<AreaCodeApiDto> getAreaCodeData() {
-    // API 호출 로직
-}
-```
-
-#### **4. 새로운 API 추가**
-```java
-@Component
-public class NewApiClient {
-    
-    private final BaseApiClient baseApiClient;
-    
-    public List<NewApiDto> getNewApiData() {
-        URI uri = baseApiClient.makeNewApiUri("/endpoint");
-        return baseApiClient.callApi(uri, this::createNewApiDto);
-    }
-}
-```
-
----
 
 ## 🎉 결론
 
@@ -749,11 +616,7 @@ DUGAZA의 API 시스템은 **다양한 외부 API를 하나의 인터페이스�
 - **확장성**: 새로운 API 쉽게 추가 가능
 - **안정성**: 비동기 로깅, 예외 처리, 타임아웃 설정
 
-### 🚀 **핵심 가치**
-> **"복잡한 외부 API를 간단하게, 성능과 안정성을 모두 잡다"**
 
 이 시스템을 통해 개발자는 **간편한 API 호출**을, 운영자는 **실시간 모니터링**을, 사용자는 **빠른 응답**을 경험할 수 있습니다.
 
 ---
-
-**🌐 DUGAZA API System - 다양한 API를 하나의 인터페이스로!** 🎯 

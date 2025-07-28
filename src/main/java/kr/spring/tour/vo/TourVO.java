@@ -40,6 +40,12 @@ public class TourVO {
     private Double review_avg;        // 리뷰 평점
     private Long price;               // 가격
     
+    private int reviewCount;
+    public int getReviewCount() { return reviewCount; }
+    public void setReviewCount(int reviewCount) { this.reviewCount = reviewCount; }
+    public Double getAvgReview() { return avgReview; }
+    public void setAvgReview(Double avgReview) { this.avgReview = avgReview; }
+    
     public String getContentTypeName() {
         return ContentType.getNameById(this.contentTypeId);
     }

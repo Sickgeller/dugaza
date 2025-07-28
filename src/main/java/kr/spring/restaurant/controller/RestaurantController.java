@@ -66,6 +66,7 @@ public class RestaurantController {
 			map.put("start", page.getStartRow());
 			map.put("end", page.getEndRow());
 			map.put("keyword", keyword);
+			map.put("pageSize", 9); // 명확히 int 타입으로 추가
 			list = restaurantService.selectList(map);
 		}
 		model.addAttribute("keyword", keyword);
@@ -78,38 +79,20 @@ public class RestaurantController {
 	// 항목 자세히 보기
 	@GetMapping("/detail")
 	public String restaurantDetail(@RequestParam(name = "contentId") Long contentId, Model model) {
-		// 식당 정보
 		RestaurantVO vo = restaurantService.selectRestaurant(contentId);
-
-		// api 정보 insert하고 select 하는 부분
 		if(vo == null){
 			vo = restaurantService.selectRestaurantWithApi(contentId);
 		}
-
-		// 식당별 리뷰 목록
-		List<BaseReviewVO> reviewList = baseReviewService.getHouseReviews(contentId, 1, 10);
-		// 식당별 리뷰 통계
-		ReviewStatisticsVO status = reviewStatisticsService.getReviewStatisticsByHouse(contentId);
-
-		model.addAttribute("info",vo);
-		model.addAttribute("reviewList",reviewList);
-		model.addAttribute("status", status);
-
-		//api에서 정보를 뱉지않을때
 		if(vo == null){
-			// tour_content에서 기본 정보만 가져오기
 			TourVO tourInfo = tourService.selectTourContent(contentId);
 			if(tourInfo != null) {
 				model.addAttribute("info", tourInfo);
 				model.addAttribute("contentTypeName", "음식점");
 				model.addAttribute("reviewActionUrl", "/restaurant/saveReview");
-				// 기본 정보만 있을 때는 status와 reviewList를 null로 설정
-				model.addAttribute("status", null);
-				model.addAttribute("reviewList", null);
 				return "views/common/content-detail-basic";
 			}
 		}
-
+		model.addAttribute("info", vo);
 		return "views/restaurant/restaurant-detail";
 	}
 

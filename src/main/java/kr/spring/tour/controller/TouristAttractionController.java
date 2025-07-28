@@ -48,6 +48,7 @@ public class TouristAttractionController {
 			map.put("start", page.getStartRow());
 			map.put("end", page.getEndRow());
 			map.put("keyword", keyword);
+			map.put("pageSize", 9); // 명확히 int 타입으로 추가
 			list = tourService.selectList(map);
 		}
 		model.addAttribute("keyword", keyword);
@@ -76,9 +77,6 @@ public class TouristAttractionController {
 				model.addAttribute("info", tourInfo);
 				model.addAttribute("contentTypeName", "관광지");
 				model.addAttribute("reviewActionUrl", "/touristAttraction/saveReview");
-				// 기본 정보만 있을 때는 status를 null로 설정
-				model.addAttribute("status", null);
-				model.addAttribute("reviewList", null);
 				return "views/common/content-detail-basic";
 			}
 			// 기본 정보도 없으면 null로 설정
@@ -87,14 +85,6 @@ public class TouristAttractionController {
 			// 정보가 있으면 모델에 추가
 			model.addAttribute("info", vo);
 		}
-
-		// 관광지별 리뷰 목록
-		List<BaseReviewVO> reviewList = baseReviewService.getHouseReviews(contentId, 1, 10);
-		// 관광지별 리뷰 통계
-		ReviewStatisticsVO status = reviewStatisticsService.getReviewStatisticsByHouse(contentId);
-
-		model.addAttribute("reviewList", reviewList);
-		model.addAttribute("status", status);
 
 		return "views/tourist-attraction/tourist-attraction-detail";
 	}

@@ -1,10 +1,80 @@
 # 🔍 DUGAZA AOP 시스템
 
-> **"관심사를 분리하여 코드를 깔끔하게, 로깅을 체계적으로"**
+- **로깅 추상화 적용전**
+```java
+@Transactional
+    @Override
+    public List<AreaCodeApiDto> syncAreaCodes() {
+        log.info("-----지역코드 동기화 시작 (시) -----");
+        try {
+            List<AreaCodeApiDto> siCodes = areaCodeApiClient.getAreaCode();
+
+            // NULL 값이나 빈 값 필터링
+            siCodes = siCodes.stream()
+                    .filter(code -> code.getAreaCode() != null)
+                    .filter(code -> code.getAreaName() != null && !code.getAreaName().isEmpty())
+                    .collect(Collectors.toList());
+
+            log.info("유효한 지역코드 개수: {}", siCodes.size());
+
+            for (AreaCodeApiDto element : siCodes) {
+                try {
+                    Long areaCode = element.getAreaCode();
+                    String areaName = element.getAreaName();
+
+                    // NULL 체크 추가
+                    if (areaCode == null) {
+                        log.warn("지역코드가 null입니다. 건너뜁니다: {}", element);
+                        continue;
+                    }
+
+                    AreaCodeApiDto existing = areaCodeMapper.findByAreaCode(areaCode.toString());
+
+                    if (existing == null) {
+                        try {
+                            log.debug("삽입 시도 전 DTO 상태: {}", element);
+                            areaCodeMapper.insert(element);
+                            log.info("시 코드 추가 : {} - {}", areaCode, areaName);
+                        } catch (Exception e) {
+                            log.error("시 코드 추가 실패 : {} - {}", areaCode, areaName, e);
+                        }
+                    } else {
+                        try {
+                            existing.setAreaName(areaName);
+                            areaCodeMapper.update(existing);
+                            log.info("시도 코드 업데이트: {} - {}", areaCode, areaName);
+                        } catch (Exception e) {
+                            log.error("시도 코드 업데이트 실패: {} - {}", areaCode, areaName, e);
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("시 코드 처리 실패 : {}", element, e);
+                }
+            }
+            log.info("시 코드 처리 완료 - {}개", siCodes.size());
+            return siCodes;
+        } catch (Exception e) {
+            log.error("시 코드 처리 실패  ", e);
+            return new ArrayList<>();
+        }
+    }
+```
+
+- 로깅 추상화 이후
+```java
+    @Transactional
+    @Override
+    @LogExecutionTime(category = "AreaSync")
+    public Map<String, Object> syncAreaCodes() {
+            List<AreaCodeApiDto> dtoList = areaCodeApiClient.getAreaCode();
+            return common.processDataListToDB(areaCodeMapper, dtoList);
+        }
+
+```
 
 ## 🎯 프로젝트 개요
 
-DUGAZA는 **Aspect-Oriented Programming (AOP)**를 활용하여 **로깅, 성능 모니터링, 전역 모델 관리**를 체계적으로 구현했습니다. 이를 통해 비즈니스 로직과 횡단 관심사(Cross-cutting Concerns)를 효과적으로 분리하여 유지보수성과 가독성을 크게 향상시켰습니다.
+DUGAZA는 **Aspect-Oriented Programming (AOP)**를 활용하여 **로깅, 성능 모니터링, 전역 모델 관리**를 추상화했습니다. 이를 통해 비즈니스 로직과 횡단 관심사를 효과적으로 분리하여 유지보수성과 가독성을 크게 향상시켰습니다.
 
 ### 🌟 핵심 특징
 - **다층 로깅 시스템**: Controller, Service, Mapper, API Client별 세분화된 로깅
@@ -136,6 +206,9 @@ public class ControllerLoggingAspect {
 ```java
 @ControllerAdvice
 public class GlobalModelAdvice {
+    
+    // 페이지마다 공통적으로 포함되어있는 헤더에 현재 인증/인가중인 사용자의 정보가 나와야해서 
+    // 계속 주입시켜줌
     
     @ModelAttribute
     public void addModelMemberAndSeller(
@@ -577,61 +650,6 @@ public Object logControllerMethodExecution(ProceedingJoinPoint joinPoint) {
 [Tour] [REST API] 요청 오류 - URI: /api/tour/areas [GET], 실행 시간: 5020ms, 오류: Connection timeout
 ```
 
-### 📈 **운영 분석**
-
-```
-// 사용 패턴 분석
-- 가장 많이 호출되는 API: /api/tour/areas (1,234회/일)
-- 평균 응답 시간: 245ms
-- 성공률: 98.5%
-- 오류 발생 시간대: 14:00-16:00 (트래픽 피크)
-```
-
----
-
-## 🔄 확장 가능성
-
-### 🎯 향후 개선 계획
-
-#### **1. 메트릭 수집**
-```java
-@Aspect
-@Component
-public class MetricsAspect {
-    @Around("@annotation(LogExecutionTime)")
-    public Object collectMetrics(ProceedingJoinPoint joinPoint) {
-        // Prometheus, Grafana 연동
-        // 실시간 대시보드 구축
-    }
-}
-```
-
-#### **2. 분산 추적**
-```java
-@Aspect
-@Component
-public class TracingAspect {
-    @Around("allControllerMethods()")
-    public Object addTracing(ProceedingJoinPoint joinPoint) {
-        // OpenTelemetry, Jaeger 연동
-        // 마이크로서비스 간 호출 추적
-    }
-}
-```
-
-#### **3. 알림 시스템**
-```java
-@Aspect
-@Component
-public class AlertingAspect {
-    @AfterThrowing("allServiceMethods()")
-    public void sendAlert(JoinPoint joinPoint, Exception e) {
-        // Slack, Email 알림
-        // 임계값 초과 시 자동 알림
-    }
-}
-```
-
 ---
 
 ## 🎉 결론
@@ -645,11 +663,12 @@ DUGAZA의 AOP 시스템은 **관심사를 효과적으로 분리**하여 코드�
 - **코드 재사용성**: 커스텀 어노테이션으로 선택적 기능 적용
 - **유지보수성**: 로깅 정책 변경 시 AOP만 수정하면 전체 적용
 
-### 🚀 **핵심 가치**
-> **"관심사를 분리하여 코드를 깔끔하게, 로깅을 체계적으로"**
 
-이 시스템을 통해 개발자는 **깔끔한 비즈니스 로직**에 집중하고, 운영자는 **체계적인 모니터링**을 통해 안정적인 서비스를 제공할 수 있습니다.
+
+
+
+이 시스템을 통해 개발기간동안 개발자는 **비즈니스 로직 구현**에 집중하고,
+
+운영중에도 **체계적인 모니터링**을 통해 안정적인 서비스를 제공할 수 있습니다.
 
 ---
-
-**🔍 DUGAZA AOP System - 관심사를 분리하여 코드를 깔끔하게!** 🎯 

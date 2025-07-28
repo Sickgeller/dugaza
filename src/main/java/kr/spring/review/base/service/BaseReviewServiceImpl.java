@@ -69,4 +69,18 @@ public class BaseReviewServiceImpl implements BaseReviewService {
 			return new ArrayList<>();
 		}
 	}
+
+    @Override
+    public List<BaseReviewVO> getReviewsByContentType(String contentType, Long contentId, int page, int pageSize) {
+        switch (contentType) {
+            case "house":
+                return getHouseReviews(contentId, page, pageSize);
+            case "restaurant":
+                return getHouseReviews(contentId, page, pageSize); // 실제로는 getRestaurantReviews 등으로 분리 가능
+            case "tourist-attraction":
+                return getHouseReviews(contentId, page, pageSize); // 실제로는 getTouristAttractionReviews 등으로 분리 가능
+            default:
+                throw new IllegalArgumentException("지원하지 않는 contentType: " + contentType);
+        }
+    }
 } 

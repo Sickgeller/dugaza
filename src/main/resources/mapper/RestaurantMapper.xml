@@ -115,7 +115,7 @@
 			c.updated_at,
 			c.content_type_id                       
 		ORDER BY c.content_id DESC
-		FETCH FIRST #{pageSize} ROWS ONLY
+		FETCH FIRST #{pageSize, jdbcType=INTEGER} ROWS ONLY
 	</select>
 	
 	<!-- 다음 페이지 존재 여부 확인 -->

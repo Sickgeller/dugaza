@@ -173,7 +173,7 @@
 	            <when test="sort == 'reviews'">review_count DESC NULLS LAST, tc.content_id DESC</when>
 	            <otherwise>wish_count DESC NULLS LAST, tc.content_id DESC</otherwise>
 	        </choose>
-	    FETCH FIRST #{pageSize} ROWS ONLY
+	    FETCH FIRST #{pageSize, jdbcType=INTEGER} ROWS ONLY
 	</select>
 	
 	<!-- 다음 페이지 존재 여부 확인 -->
@@ -438,5 +438,66 @@
 		AND SELLER_ID = #{sellerId}
 		AND STATUS = 'suspending'
 	</delete>
+
+	<!-- 커서 기반 페이지네이션: 전체/검색 목록 (CursorPagingUtil) -->
+	<select id="selectListByCursor" parameterType="kr.spring.util.CursorPagingUtil" resultMap="houseMap">
+	    SELECT
+	        tc.AREA_CODE, tc.CAT1, tc.CAT2, tc.CAT3, tc.CONTENT_ID, tc.CONTENT_TYPE_ID, tc.FIRST_IMAGE, tc.FIRST_IMAGE2, tc.CPYRHT_DIV_CD, tc.MAP_X, tc.MAP_Y, tc.SIGUNGU_CODE, tc.CREATED_AT, tc.UPDATED_AT, tc.SHOW_FLAG, tc.TITLE, tc.ADDR1, tc.ADDR2, tc.ZIPCODE, tc.TEL,
+	        hd.ACCOM_COUNT_LODGING, hd.CHECK_IN_TIME, hd.CHECK_OUT_TIME, hd.CHK_COOKING, hd.FOOD_PLACE, hd.INFO_CENTER_LODGING, hd.PARKING_LODGING, hd.PICKUP, hd.ROOM_COUNT, hd.RESERVATION_LODGING, hd.RESERVATION_URL, hd.ROOM_TYPE, hd.SCALE_LODGING, hd.SUB_FACILITY, hd.BARBECUE, hd.BEAUTY, hd.BEVERAGE, hd.BICYCLE, hd.CAMPFIRE, hd.FITNESS, hd.KARAOKE, hd.PUBLIC_BATH, hd.PUBLIC_PC, hd.SAUNA, hd.SEMINAR, hd.SPORTS, hd.REFUND_REGULATION,
+	        NVL(b.review_avg, 0.0) as review_avg,
+	        NVL(b.review_count, 0) as review_count,
+	        c.price,
+	        NVL(d.wish_count, 0) as wish_count
+	    FROM tour_content tc 
+	    LEFT JOIN house_detail hd ON tc.content_id = hd.content_id
+	    LEFT JOIN (
+	        SELECT 
+	            content_id,
+	            ROUND(AVG(rating),1) as review_avg,
+	            COUNT(*) as review_count
+	        FROM REVIEWS
+	        GROUP BY content_id
+	    ) b ON tc.content_id = b.content_id
+	    LEFT JOIN (
+	        SELECT 
+	            house_id,
+	            MIN(price) as price
+	        FROM HOUSE_ROOM_INFO
+	        GROUP BY house_id
+	    ) c ON tc.content_id = c.house_id
+	    LEFT JOIN (
+	        SELECT
+	            CONTENT_ID,
+	            COUNT(*) as wish_count
+	        FROM WISHLIST
+	        GROUP BY CONTENT_ID
+	    ) d ON tc.content_id = d.content_id
+	    WHERE tc.content_type_id = 32
+	    <if test="keyword != null and keyword != ''">
+	        AND (tc.title LIKE '%' || #{keyword} || '%' OR tc.addr1 LIKE '%' || #{keyword} || '%' OR tc.addr2 LIKE '%' || #{keyword} || '%')
+	    </if>
+	    <if test="category != null and category != ''">
+	        AND tc.content_type_id = #{category}
+	    </if>
+	    <if test="status != null and status != ''">
+	        AND tc.content_id IN (
+	            SELECT hsd.house_id FROM house_seller_detail hsd WHERE hsd.status = #{status}
+	            UNION
+	            SELECT tc2.content_id FROM tour_content tc2 WHERE tc2.content_type_id = 32 AND #{status} = 'suspending' AND tc2.content_id NOT IN (SELECT hsd2.house_id FROM house_seller_detail hsd2)
+	        )
+	    </if>
+	    <if test="cursor != null">
+	        AND tc.content_id &lt; #{cursor}
+	    </if>
+	    ORDER BY
+	        <choose>
+	            <when test="sort == 'price_asc'">c.price ASC NULLS LAST, tc.content_id DESC</when>
+	            <when test="sort == 'price_desc'">c.price DESC NULLS LAST, tc.content_id DESC</when>
+	            <when test="sort == 'rating'">review_avg DESC NULLS LAST, tc.content_id DESC</when>
+	            <when test="sort == 'reviews'">review_count DESC NULLS LAST, tc.content_id DESC</when>
+	            <otherwise>wish_count DESC NULLS LAST, tc.content_id DESC</otherwise>
+	        </choose>
+	    FETCH FIRST #{pageSize, jdbcType=INTEGER} ROWS ONLY
+	</select>
 </mapper>
 

@@ -88,37 +88,5 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
         return null;
     }
-
-    private void updateProviderId(MemberVO member, String registrationId, Long providerId) {
-        if ("kakao".equals(registrationId)) {
-            member.setKakaoId(providerId);
-        } else if ("google".equals(registrationId)) {
-            // member.setGoogleId(providerId);
-        }
-//        memberMapper.updateSocialId(member); // providerId만 업데이트
-    }
-    
-    private MemberVO createNewMember(String registrationId, Long providerId, String email, String name, String profileImage) {
-        MemberVO newMember = new MemberVO();
-        
-        // 기본 정보 설정
-        newMember.setId("kakao_" + providerId); // 고유 ID 생성
-        newMember.setPassword(""); // 소셜 로그인은 비밀번호 없음
-        newMember.setName(name != null ? name : "카카오사용자");
-        newMember.setEmail(email);
-        newMember.setStatus("KAKAO"); // 카카오 미완료 상태
-        newMember.setRole("MEMBER"); // 기본 역할
-        newMember.setProfileImage(profileImage);
-        
-        // 소셜 ID 설정
-        if ("kakao".equals(registrationId)) {
-            newMember.setKakaoId(providerId);
-        }
-        
-        // DB에 저장
-        memberMapper.insertKakaoMember(newMember);
-        
-        return newMember;
-    }
 }
 
