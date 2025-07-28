@@ -7,7 +7,7 @@ DUGAZA : 공공 API 활용 여행 정보 통합 플랫폼
 
 ## 프로젝트 핵심 요약
 - 🧭 **구현 주요 기능**  
-  기차/고속버스 실시간 검색, 관광지 검색, OAuth2 로그인, Spring Security 기반 인증/인가, 관광지 상세 정보 지연로딩
+  기차/고속버스 실시간 검색, OAuth2 로그인, Spring Security 기반 인증/인가, 관광지 상세 정보 지연로딩
 
 - 🔧 **사용 기술 스택**  
   Spring Boot, Spring Security, MyBatis, AOP, RestClient
